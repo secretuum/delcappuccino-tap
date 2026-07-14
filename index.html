@@ -245,6 +245,13 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .contact-actions{flex-direction:column;gap:8px;align-items:center}
   .contact-actions .btn{width:100%;max-width:320px;justify-content:center}
 
+  /* Hide heavy sections on mobile */
+  .hero-photo{display:none}
+  .features{display:none}
+  .showcase{display:none}
+  .story-photo{display:none}
+  .hero{padding:16px 0 20px;gap:10px}
+
   /* Footer */
   footer{padding:18px 0}
   .f-row{justify-content:center;gap:6px;font-size:11px}
@@ -265,8 +272,6 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <a href="#features">Формат</a>
       <a href="#locations">Адреса</a>
     </nav>
-    <div class="hspace"></div>
-    <a class="btn olive" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Заказать ↗</a>
   </div>
 </header>
 
@@ -277,8 +282,9 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <h1>Вкус,<br>который<br>собирает <span>близких</span>.</h1>
       <p class="lead">Завтраки весь день, любимая кухня и хороший кофе. Работаем круглосуточно, чтобы вкусный перерыв всегда был рядом.</p>
       <div class="actions">
-        <a class="btn olive" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Посмотреть меню</a>
-        <button class="btn ghost" onclick="openModal()">Найти кофейню</button>
+        <button class="btn olive" onclick="openModal()">Забронировать столик</button>
+        <button class="btn ghost" onclick="openModal()">Построить маршрут</button>
+        <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Посмотреть меню</a>
       </div>
     </div>
     <div class="hero-photo">
@@ -288,18 +294,6 @@ footer{border-top:1px solid var(--line);padding:24px 0}
         <div><span>работаем</span><span>без выходных</span></div>
       </div>
     </div>
-  </section>
-
-  <section class="quick shell">
-    <a href="https://delcappuccino.kz/" target="_blank" rel="noopener">
-      <small>01 / доставка</small><strong>Заказать онлайн</strong><span>Меню, оплата, доставка по городу</span>
-    </a>
-    <button onclick="openModal()">
-      <small>02 / бронь</small><strong>Забронировать столик</strong><span>WhatsApp ближайшего филиала</span>
-    </button>
-    <button onclick="openModal()">
-      <small>03 / адреса</small><strong>Построить маршрут</strong><span>До ближайшей кофейни в 2GIS</span>
-    </button>
   </section>
 
   <section class="story shell" id="about">
@@ -362,9 +356,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   <img src="assets/logo-mono.png" alt="dC">
   <h2>Загляните<br>на <span>кофе</span>.</h2>
   <div class="contact-actions">
-    <button class="btn olive" onclick="openModal()">WhatsApp ↗</button>
-    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener">@del.cappuccino ↗</a>
-    <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Заказать доставку ↗</a>
+    <button class="btn olive" onclick="openModal()">WhatsApp</button>
+    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener">@del.cappuccino</a>
   </div>
 </section>
 
@@ -404,8 +397,8 @@ function renderLocations(){
       <h3>${b.addr}</h3>
       <div class="loc-links">
         <a href="tel:${b.phone}">Позвонить</a>
-        <a href="${b.route}" target="_blank" rel="noopener">Маршрут ↗</a>
-        <a class="wa" href="${waLink(b.phone,'Здравствуйте! Хочу забронировать столик в Del Cappuccino, '+b.addr)}" target="_blank" rel="noopener">WhatsApp ↗</a>
+        <a href="${b.route}" target="_blank" rel="noopener">Маршрут</a>
+        <a class="wa" href="${waLink(b.phone,'Здравствуйте! Хочу забронировать столик в Del Cappuccino, '+b.addr)}" target="_blank" rel="noopener">WhatsApp</a>
       </div>
     </div>`).join('');
 }
