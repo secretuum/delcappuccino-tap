@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Del Cappuccino — coffee & food, 24/7</title>
+<meta name="description" content="Del Cappuccino — городские кофейни 24/7 в Алматы. Кофе, завтраки весь день, доставка и бронирование столиков.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
+  --olive:#849E29; --sage:#738E5B; --moss:#B4B86C;
+  --ink:#241C15; --ink-2:#5C5245; --line:rgba(66,99,73,.18);
+  --surface:#FFFFFF; --r:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--cream);color:var(--ink);
+  font-family:'Golos Text',-apple-system,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.disp{font-family:Comfortaa,sans-serif}
+a{color:inherit}
+.shell{max-width:1160px;margin:0 auto;padding:0 28px}
+
+/* ── STRIP ─────────────────────────────── */
+.strip{
+  background:var(--forest);color:var(--cream);
+  font-size:12.5px;font-weight:500;
+  display:flex;align-items:center;justify-content:center;gap:9px;
+  padding:9px 16px;letter-spacing:.01em;
+}
+.dot{width:6px;height:6px;border-radius:99px;background:var(--moss);animation:pulse 2s infinite;flex:none}
+@keyframes pulse{50%{opacity:.3}}
+
+/* ── HEADER ────────────────────────────── */
+header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--cream) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hbar{display:flex;align-items:center;gap:26px;padding:12px 28px}
+.logo-d{height:42px;width:auto;display:block;border-radius:8px}
+.logo-m{display:none;height:34px;width:auto;border-radius:0}
+nav{display:flex;gap:22px;margin-left:8px}
+nav a{font-size:13.5px;text-decoration:none;color:var(--ink-2);font-weight:500}
+nav a:hover{color:var(--forest)}
+.hspace{flex:1}
+.btn{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--forest);color:var(--cream);
+  padding:11px 20px;border-radius:99px;text-decoration:none;
+  font-size:13.5px;font-weight:700;white-space:nowrap;border:0;cursor:pointer;
+  transition:transform .15s, background .15s;font-family:'Golos Text';
+}
+.btn:hover{background:var(--forest-dk);transform:translateY(-1px)}
+.btn.ghost{background:transparent;color:var(--forest);border:1.5px solid var(--forest)}
+.btn.ghost:hover{background:var(--forest);color:var(--cream)}
+.btn.olive{background:var(--olive);color:#1D2408}
+.btn.olive:hover{background:#6E8420}
+
+/* ── HERO ──────────────────────────────── */
+.hero{padding:64px 0 80px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;position:relative}
+.tag{
+  font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--olive);
+  font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;
+}
+.tag::before{content:'';width:18px;height:2px;background:var(--olive);border-radius:2px}
+h1{font-family:Comfortaa;font-weight:700;font-size:50px;line-height:1.08;letter-spacing:-.01em;color:var(--forest-dk);margin-bottom:20px}
+h1 span{color:var(--olive)}
+.lead{font-size:16px;color:var(--ink-2);max-width:440px;line-height:1.65;margin-bottom:28px}
+.actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-photo{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 24px 60px -20px rgba(49,73,47,.45)}
+.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.hero-badge{
+  position:absolute;left:18px;bottom:18px;background:var(--forest);color:var(--cream);
+  border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;
+  box-shadow:0 12px 30px -8px rgba(0,0,0,.4);
+}
+.hero-badge b{font-family:Comfortaa;font-size:22px;line-height:1}
+.hero-badge span{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;display:block;margin-top:2px}
+
+/* ── QUICK ─────────────────────────────── */
+.quick{padding:0 0 90px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.quick > a,.quick > button{
+  background:var(--surface);border:1px solid var(--line);border-radius:var(--r);
+  padding:24px 22px;text-align:left;text-decoration:none;color:var(--ink);
+  font:inherit;cursor:pointer;display:flex;flex-direction:column;gap:7px;transition:.15s;
+}
+.quick > a:hover,.quick > button:hover{border-color:var(--olive);transform:translateY(-2px);box-shadow:0 12px 28px -14px rgba(66,99,73,.35)}
+.quick small{font-family:Comfortaa;color:var(--olive);font-size:12px;font-weight:700}
+.quick strong{font-size:16.5px;font-weight:700;font-family:Comfortaa}
+.quick span{font-size:12.5px;color:var(--ink-2)}
+
+/* ── STORY ─────────────────────────────── */
+.story{padding:20px 0 90px}
+.story-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+.story-photo{border-radius:20px;overflow:hidden;aspect-ratio:1/1.15}
+.story-photo img{width:100%;height:100%;object-fit:cover;display:block}
+.story h2{font-family:Comfortaa;font-weight:700;font-size:34px;line-height:1.12;color:var(--forest-dk);margin-bottom:16px}
+.story h2 span{color:var(--olive)}
+.story p{color:var(--ink-2);line-height:1.75;max-width:480px;margin-bottom:26px;font-size:14.5px}
+.stats{display:flex;gap:36px}
+.stats b{display:block;font-family:Comfortaa;font-size:26px;font-weight:700;color:var(--forest)}
+.stats span{display:block;font-size:11.5px;color:var(--ink-2);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+
+/* ── FEATURES (forest bg + leaf pattern) ─ */
+.features{padding:88px 0;background:var(--forest);color:var(--cream);position:relative;overflow:hidden}
+.features::before{
+  content:'';position:absolute;inset:0;opacity:.07;
+  background-image:radial-gradient(circle at 20% 30%, var(--cream) 1.5px, transparent 1.5px),
+                    radial-gradient(circle at 70% 65%, var(--cream) 1.5px, transparent 1.5px),
+                    radial-gradient(circle at 45% 85%, var(--cream) 1.5px, transparent 1.5px);
+  background-size:140px 140px, 190px 190px, 160px 160px;
+}
+.features .shell{position:relative}
+.f-head{margin-bottom:40px}
+.f-head .tag{color:var(--moss)}
+.f-head .tag::before{background:var(--moss)}
+.f-head h2{font-family:Comfortaa;font-weight:700;font-size:34px}
+.f-head h2 span{color:var(--moss)}
+.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.f-grid article{background:color-mix(in srgb, var(--cream) 8%, transparent);border:1px solid color-mix(in srgb, var(--cream) 16%, transparent);border-radius:var(--r);padding:24px 22px;min-height:150px}
+.f-grid b{font-family:Comfortaa;color:var(--moss);font-size:13px;display:block;margin-bottom:12px}
+.f-grid h3{font-size:15.5px;margin-bottom:7px;font-weight:700}
+.f-grid p{font-size:13px;color:color-mix(in srgb, var(--cream) 72%, transparent);line-height:1.55}
+
+/* ── SHOWCASE (merch strip) ─────────────── */
+.showcase{padding:88px 0}
+.sc-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;gap:20px}
+.sc-head h2{font-family:Comfortaa;font-weight:700;font-size:28px;color:var(--forest-dk)}
+.sc-head p{color:var(--ink-2);font-size:13px;max-width:280px;line-height:1.5}
+.sc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.sc-row img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px;display:block}
+
+/* ── LOCATIONS ─────────────────────────── */
+.locations{padding:88px 0;background:var(--cream-2)}
+.loc-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px}
+.loc-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
+.loc-head h2 span{color:var(--olive)}
+.loc-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
+.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.loc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
+.loc-card small{font-family:Comfortaa;font-size:11px;color:var(--olive);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+.loc-card h3{font-family:Comfortaa;font-size:20px;font-weight:700;margin:8px 0 14px;color:var(--forest-dk)}
+.loc-links{display:flex;gap:9px;flex-wrap:wrap}
+.loc-links a{font-size:12.5px;padding:8px 13px;border-radius:99px;border:1px solid var(--line);text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-weight:600}
+.loc-links a:hover{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+.loc-links a.wa{border-color:var(--olive);color:var(--olive)}
+.loc-links a.wa:hover{background:var(--olive);color:#fff}
+
+/* ── CONTACT ───────────────────────────── */
+.contact{padding:90px 0;text-align:center}
+.contact img{height:64px;margin-bottom:24px;border-radius:12px}
+.contact h2{font-family:Comfortaa;font-size:36px;font-weight:700;color:var(--forest-dk);margin-bottom:26px}
+.contact h2 span{color:var(--olive)}
+.contact-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+
+footer{border-top:1px solid var(--line);padding:24px 0}
+.f-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2);flex-wrap:wrap;gap:10px}
+.f-row img{height:24px;border-radius:5px}
+
+/* ── MODAL ─────────────────────────────── */
+.modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center}
+.modal.open{display:flex}
+.backdrop{position:absolute;inset:0;background:rgba(36,28,21,.55);border:0}
+.sheet{position:relative;background:var(--surface);color:var(--ink);width:100%;max-width:460px;border-radius:22px 22px 0 0;padding:28px 26px 32px;animation:up .25s ease;max-height:80vh;overflow:auto}
+@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}}
+@keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
+.sheet .x{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:16px}
+.sheet h3{font-family:Comfortaa;font-size:23px;margin-bottom:6px;font-weight:700;color:var(--forest-dk)}
+.sheet .status{font-size:12.5px;color:var(--ink-2);margin-bottom:18px}
+.branch-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-top:1px solid var(--line)}
+.branch-row:first-of-type{border-top:0}
+.branch-row .bn small{display:block;font-family:Comfortaa;color:var(--olive);font-size:10.5px;text-transform:uppercase;font-weight:700}
+.branch-row .bn b{font-weight:700;font-size:14px}
+.branch-row .dist{font-size:11px;color:var(--ink-2)}
+
+@media(max-width:900px){
+  .hero{grid-template-columns:1fr;gap:32px;padding:40px 0 52px}
+  h1{font-size:36px}
+  .quick,.f-grid,.loc-grid{grid-template-columns:1fr}
+  .story-grid{grid-template-columns:1fr}
+  .sc-row{grid-template-columns:repeat(2,1fr)}
+  nav{display:none}
+  .f-head,.loc-head,.sc-head{flex-direction:column;align-items:flex-start}
+}
+
+@media(max-width:680px){
+  .shell{padding:0 14px}
+  .strip{font-size:11.5px;padding:7px 14px}
+
+  /* Header */
+  .hbar{padding:9px 14px;gap:10px}
+  .hbar .btn{display:none}
+  .logo-d{display:none}
+  .logo-m{display:block}
+
+  /* Hero */
+  .hero{padding:20px 0 24px;gap:14px}
+  h1{font-size:26px;line-height:1.12;margin-bottom:12px}
+  .lead{font-size:13.5px;line-height:1.6;margin-bottom:16px;max-width:100%}
+  .actions{flex-direction:column;gap:8px}
+  .actions .btn{justify-content:center;width:100%;padding:14px 20px;font-size:14.5px}
+  .hero-photo{aspect-ratio:16/9;border-radius:14px}
+
+  /* Quick */
+  .quick{padding:0 0 22px;gap:8px}
+  .quick>a,.quick>button{padding:14px 14px;gap:3px}
+  .quick strong{font-size:15px}
+  .quick span{font-size:12px}
+
+  /* Story */
+  .story{padding:8px 0 24px}
+  .story-photo{display:none}
+  .story h2{font-size:26px}
+  .story p{font-size:13.5px;margin-bottom:18px}
+  .stats{gap:16px}
+  .stats b{font-size:22px}
+
+  /* Features */
+  .features{padding:34px 0}
+  .f-head{margin-bottom:18px}
+  .f-head h2{font-size:24px}
+  .f-grid{gap:8px}
+  .f-grid article{padding:14px 14px;min-height:auto}
+
+  /* Showcase */
+  .showcase{padding:26px 0}
+  .sc-head{margin-bottom:14px}
+  .sc-head h2{font-size:20px}
+  .sc-row{gap:8px}
+
+  /* Locations */
+  .locations{padding:32px 0}
+  .loc-head{margin-bottom:18px}
+  .loc-head h2{font-size:22px}
+  .loc-card{padding:14px}
+  .loc-card h3{font-size:17px;margin:6px 0 10px}
+  .loc-links a{font-size:12px;padding:7px 11px}
+
+  /* Contact */
+  .contact{padding:32px 0}
+  .contact img{height:44px;margin-bottom:12px;border-radius:8px}
+  .contact h2{font-size:22px;margin-bottom:16px}
+  .contact-actions{flex-direction:column;gap:8px;align-items:center}
+  .contact-actions .btn{width:100%;max-width:320px;justify-content:center}
+
+  /* Footer */
+  footer{padding:18px 0}
+  .f-row{justify-content:center;gap:6px;font-size:11px}
+  .f-row img{display:none}
+}
+</style>
+</head>
+<body>
+
+<div class="strip"><span class="dot"></span> Работаем круглосуточно — 4 кофейни в Алматы, каждый день без выходных</div>
+
+<header>
+  <div class="hbar">
+    <img class="logo-d" src="assets/logo-lockup.png" alt="Del Cappuccino">
+    <img class="logo-m" src="assets/logo-mono.png" alt="Del Cappuccino">
+    <nav>
+      <a href="#about">О нас</a>
+      <a href="#features">Формат</a>
+      <a href="#locations">Адреса</a>
+    </nav>
+    <div class="hspace"></div>
+    <a class="btn olive" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Заказать ↗</a>
+  </div>
+</header>
+
+<main>
+  <section class="hero shell">
+    <div>
+      <p class="tag">coffee &amp; food · almaty</p>
+      <h1>Вкус,<br>который<br>собирает <span>близких</span>.</h1>
+      <p class="lead">Завтраки весь день, любимая кухня и хороший кофе. Работаем круглосуточно, чтобы вкусный перерыв всегда был рядом.</p>
+      <div class="actions">
+        <a class="btn olive" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Посмотреть меню</a>
+        <button class="btn ghost" onclick="openModal()">Найти кофейню</button>
+      </div>
+    </div>
+    <div class="hero-photo">
+      <img src="assets/photo_01.jpg" alt="Вывеска del Cappuccino">
+      <div class="hero-badge">
+        <b>24/7</b>
+        <div><span>работаем</span><span>без выходных</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="quick shell">
+    <a href="https://delcappuccino.kz/" target="_blank" rel="noopener">
+      <small>01 / доставка</small><strong>Заказать онлайн</strong><span>Меню, оплата, доставка по городу</span>
+    </a>
+    <button onclick="openModal()">
+      <small>02 / бронь</small><strong>Забронировать столик</strong><span>WhatsApp ближайшего филиала</span>
+    </button>
+    <button onclick="openModal()">
+      <small>03 / адреса</small><strong>Построить маршрут</strong><span>До ближайшей кофейни в 2GIS</span>
+    </button>
+  </section>
+
+  <section class="story shell" id="about">
+    <div class="story-grid">
+      <div class="story-photo"><img src="assets/photo_10.jpg" alt="Команда del Cappuccino"></div>
+      <div>
+        <h2>Кофе, еда<br>и <span>забота</span>.</h2>
+        <p>Зайти по дороге, провести встречу, позавтракать поздним утром или заказать любимые блюда домой. Для семейных визитов у нас есть детские комнаты, для спокойных встреч — VIP-залы, а для молитвы — намазхана.</p>
+        <div class="stats">
+          <div><b>24/7</b><span>каждый день</span></div>
+          <div><b>4</b><span>филиала</span></div>
+          <div><b>all day</b><span>завтраки</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="shell">
+      <div class="f-head">
+        <p class="tag">больше, чем кофейня</p>
+        <h2>Место для <span>ваших планов</span>.</h2>
+      </div>
+      <div class="f-grid">
+        <article><b>01</b><h3>Круглосуточно</h3><p>Все филиалы работают 24/7. Заходите тогда, когда удобно вам.</p></article>
+        <article><b>02</b><h3>Завтраки весь день</h3><p>Любимые завтраки без привязки ко времени на часах.</p></article>
+        <article><b>03</b><h3>Детские комнаты</h3><p>Игровые пространства в ЖК Вавилон и ЖК Комфорт Сити.</p></article>
+        <article><b>04</b><h3>VIP-залы</h3><p>Для деловых завтраков, камерных встреч и мастер-классов.</p></article>
+        <article><b>05</b><h3>Банкеты</h3><p>Проведём ваше событие для компании до 40 человек.</p></article>
+        <article><b>06</b><h3>Намазхана</h3><p>Отдельное пространство для молитвы в комфортной обстановке.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="showcase shell">
+    <div class="sc-head">
+      <h2>Фирменный стиль<br>в каждой детали.</h2>
+      <p>Один и тот же характер бренда — на вывеске, стаканчике, крафт-пакете и фартуке бариста.</p>
+    </div>
+    <div class="sc-row">
+      <img src="assets/photo_06.jpg" alt="Крафт-пакеты del Cappuccino" loading="lazy">
+      <img src="assets/photo_07.jpg" alt="Стаканчики del Cappuccino" loading="lazy">
+      <img src="assets/photo_08.jpg" alt="Кофе навынос" loading="lazy">
+      <img src="assets/photo_09.jpg" alt="Упаковка пиццы del Cappuccino" loading="lazy">
+    </div>
+  </section>
+</main>
+
+<section class="locations" id="locations">
+  <div class="shell">
+    <div class="loc-head">
+      <div><p class="tag">алматы · открыты 24/7</p><h2>Выберите<br><span>свой филиал</span>.</h2></div>
+      <p>Позвоните напрямую, откройте маршрут в 2GIS — или напишите нам в WhatsApp для брони столика.</p>
+    </div>
+    <div class="loc-grid" id="loc-grid"></div>
+  </div>
+</section>
+
+<section class="contact shell" id="contacts">
+  <img src="assets/logo-mono.png" alt="dC">
+  <h2>Загляните<br>на <span>кофе</span>.</h2>
+  <div class="contact-actions">
+    <button class="btn olive" onclick="openModal()">WhatsApp ↗</button>
+    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener">@del.cappuccino ↗</a>
+    <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Заказать доставку ↗</a>
+  </div>
+</section>
+
+<footer class="shell">
+  <div class="f-row">
+    <img src="assets/logo-mono.png" alt="dC">
+    <span>coffee &amp; food · Алматы</span>
+    <span>© 2026 Del Cappuccino</span>
+  </div>
+</footer>
+
+<div class="modal" id="modal">
+  <button class="backdrop" onclick="closeModal()"></button>
+  <div class="sheet">
+    <button class="x" onclick="closeModal()">×</button>
+    <p class="tag" style="margin-bottom:8px">ближайшие филиалы</p>
+    <h3>Выберите<br>кофейню.</h3>
+    <p class="status" id="modal-status">Определяем ваше местоположение…</p>
+    <div id="branch-list"></div>
+  </div>
+</div>
+
+<script>
+const BRANCHES = [
+  {n:'01 · ЖК Вавилон', addr:'Розыбакиева, 247/8', phone:'+77025672332', geo:[43.2027,76.8907], route:'https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8'},
+  {n:'02 · ЖК Комфорт Сити', addr:'Серкебаева, 146', phone:'+77053673232', geo:[43.2381,76.9126], route:'https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146'},
+  {n:'03 · БП Promenade', addr:'Абая, 44А', phone:'+77769079070', geo:[43.2411,76.9298], route:'https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90'},
+  {n:'04 · Del Cappuccino', addr:'Толе Би, 64', phone:'+77770355617', geo:[43.2519,76.9286], route:'https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064'},
+];
+
+function waLink(phone,text){return `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`}
+
+function renderLocations(){
+  document.getElementById('loc-grid').innerHTML = BRANCHES.map(b=>`
+    <div class="loc-card">
+      <small>${b.n}</small>
+      <h3>${b.addr}</h3>
+      <div class="loc-links">
+        <a href="tel:${b.phone}">Позвонить</a>
+        <a href="${b.route}" target="_blank" rel="noopener">Маршрут ↗</a>
+        <a class="wa" href="${waLink(b.phone,'Здравствуйте! Хочу забронировать столик в Del Cappuccino, '+b.addr)}" target="_blank" rel="noopener">WhatsApp ↗</a>
+      </div>
+    </div>`).join('');
+}
+renderLocations();
+
+function dist(a,b){
+  const R=6371, dLat=(b[0]-a[0])*Math.PI/180, dLon=(b[1]-a[1])*Math.PI/180;
+  const s=Math.sin(dLat/2)**2+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
+}
+
+function openModal(){
+  document.getElementById('modal').classList.add('open');
+  const list = document.getElementById('branch-list');
+  const status = document.getElementById('modal-status');
+  if(navigator.geolocation){
+    navigator.geolocation.getCurrentPosition(pos=>{
+      const here=[pos.coords.latitude,pos.coords.longitude];
+      const ordered = [...BRANCHES].map(b=>({...b,d:dist(here,b.geo)})).sort((a,b)=>a.d-b.d);
+      status.textContent = 'Ближайшая к вам кофейня — сверху';
+      draw(ordered,true);
+    }, ()=>{ status.textContent='Не удалось определить геолокацию — выберите филиал вручную'; draw(BRANCHES,false); },
+    {timeout:4000});
+  } else { status.textContent='Выберите филиал вручную'; draw(BRANCHES,false); }
+  function draw(arr,showDist){
+    list.innerHTML = arr.map(b=>`
+      <div class="branch-row">
+        <div class="bn"><small>${b.n}</small><b>${b.addr}</b></div>
+        <div style="display:flex;align-items:center;gap:10px">
+          ${showDist&&b.d!==undefined?`<span class="dist">${b.d.toFixed(1)} км</span>`:''}
+          <a class="btn ghost" style="padding:6px 12px;font-size:12px" href="${b.route}" target="_blank" rel="noopener">Маршрут</a>
+        </div>
+      </div>`).join('');
+  }
+}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+</script>
+</body>
+</html>
