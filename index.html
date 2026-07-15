@@ -295,9 +295,9 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <h1>Вкус,<br>который<br>собирает <span>близких</span>.</h1>
       <p class="lead">Завтраки весь день, любимая кухня и хороший кофе. Работаем круглосуточно, чтобы вкусный перерыв всегда был рядом.</p>
       <div class="actions">
-        <button class="btn olive" onclick="openModal()">Забронировать столик</button>
-        <button class="btn ghost hide-mobile" onclick="openModal()">Построить маршрут</button>
-        <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Посмотреть меню</a>
+        <button class="btn olive" onclick="track('cta_book');openModal()">Забронировать столик</button>
+        <button class="btn ghost hide-mobile" onclick="track('cta_route');openModal()">Построить маршрут</button>
+        <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_menu')">Посмотреть меню</a>
       </div>
     </div>
     <div class="hero-photo">
@@ -375,8 +375,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   <img src="assets/logo-mono.png" alt="dC">
   <h2>Загляните<br>на <span>кофе</span>.</h2>
   <div class="contact-actions">
-    <button class="btn olive" onclick="openModal()">WhatsApp</button>
-    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener">@del.cappuccino</a>
+    <button class="btn olive" onclick="track('cta_wa_contact');openModal()">WhatsApp</button>
+    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram')">@del.cappuccino</a>
   </div>
 </section>
 
@@ -400,6 +400,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 </div>
 
 <script>
+function track(name,params){if(typeof gtag!=='undefined')gtag('event',name,params||{})}
+
 const BRANCHES = [
   {n:'01 · ЖК Вавилон', addr:'Розыбакиева, 247/8', phone:'+77025672332', geo:[43.2027,76.8907], route:'https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8'},
   {n:'02 · ЖК Комфорт Сити', addr:'Серкебаева, 146', phone:'+77053673232', geo:[43.2381,76.9126], route:'https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146'},
@@ -415,9 +417,9 @@ function renderLocations(){
       <small>${b.n}</small>
       <h3>${b.addr}</h3>
       <div class="loc-links">
-        <a href="tel:${b.phone}">Позвонить</a>
-        <a href="${b.route}" target="_blank" rel="noopener">Маршрут</a>
-        <a class="wa" href="${waLink(b.phone,'Здравствуйте! Хочу забронировать столик в Del Cappuccino, '+b.addr)}" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:${b.phone}" onclick="track('loc_call',{branch:'${b.n}'})">Позвонить</a>
+        <a href="${b.route}" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'${b.n}'})">Маршрут</a>
+        <a class="wa" href="${waLink(b.phone,'Здравствуйте! Хочу забронировать столик в Del Cappuccino, '+b.addr)}" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'${b.n}'})">WhatsApp</a>
       </div>
     </div>`).join('');
 }
