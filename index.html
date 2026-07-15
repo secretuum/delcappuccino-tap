@@ -155,6 +155,7 @@ h1 span{color:var(--olive)}
 .contact h2 span{color:var(--olive)}
 .contact-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
 
+.mini-stats{display:none}
 footer{border-top:1px solid var(--line);padding:24px 0}
 .f-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2);flex-wrap:wrap;gap:10px}
 .f-row img{height:24px;border-radius:5px}
@@ -221,27 +222,40 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .loc-card{padding:14px 16px}
   .loc-card small{font-size:10px}
   .loc-card h3{font-size:16px;margin:4px 0 10px}
-  .loc-links{flex-direction:column;gap:8px}
-  .loc-links a{
-    font-size:15px;padding:13px 16px;
-    justify-content:center;border-radius:12px;
-    text-align:center;
-  }
-
   /* Contact */
   .contact{padding:24px 0}
   .contact img{height:38px;margin-bottom:10px;border-radius:0}
   .contact h2{font-size:20px;margin-bottom:14px}
-  .contact-actions{flex-direction:column;gap:10px;align-items:stretch}
-  .contact-actions .btn{
-    width:100%;justify-content:center;
-    padding:17px 20px;font-size:16px;border-radius:14px;
-  }
 
   /* Footer */
   footer{padding:14px 0}
   .f-row{justify-content:center;font-size:11px;gap:4px}
   .f-row img{display:none}
+
+  /* Hide on mobile */
+  .hide-mobile{display:none}
+
+  /* Mini stats */
+  .mini-stats{
+    display:flex;justify-content:space-around;
+    padding:20px 16px 4px;
+  }
+  .mini-stats b{display:block;font-family:Comfortaa;font-size:22px;font-weight:700;color:var(--forest);text-align:center}
+  .mini-stats span{display:block;font-size:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em;text-align:center;margin-top:3px}
+
+  /* Loc card buttons: Позвонить + Маршрут в ряд, WhatsApp полная ширина */
+  .loc-links{flex-direction:row;flex-wrap:wrap;gap:8px}
+  .loc-links a:not(.wa){flex:1;min-width:0}
+  .loc-links a.wa{width:100%}
+  .loc-links a{
+    font-size:14px;padding:12px 10px;
+    justify-content:center;border-radius:12px;
+    text-align:center;
+  }
+
+  /* Contact buttons в ряд */
+  .contact-actions{flex-direction:row}
+  .contact-actions .btn{flex:1;padding:14px 10px;font-size:14px;border-radius:14px}
 }
 </style>
 </head>
@@ -269,7 +283,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <p class="lead">Завтраки весь день, любимая кухня и хороший кофе. Работаем круглосуточно, чтобы вкусный перерыв всегда был рядом.</p>
       <div class="actions">
         <button class="btn olive" onclick="openModal()">Забронировать столик</button>
-        <button class="btn ghost" onclick="openModal()">Построить маршрут</button>
+        <button class="btn ghost hide-mobile" onclick="openModal()">Построить маршрут</button>
         <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Посмотреть меню</a>
       </div>
     </div>
@@ -327,6 +341,12 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     </div>
   </section>
 </main>
+
+<div class="mini-stats shell">
+  <div><b>24/7</b><span>каждый день</span></div>
+  <div><b>4</b><span>филиала</span></div>
+  <div><b>all day</b><span>завтраки</span></div>
+</div>
 
 <section class="locations" id="locations">
   <div class="shell">
