@@ -71,6 +71,11 @@ nav a:hover{color:var(--forest)}
 .btn.olive{background:var(--olive);color:#1D2408}
 .btn.olive:hover{background:#6E8420}
 
+/* ── HALAL BADGE ───────────────────────── */
+.halal-badge{display:flex;align-items:center;gap:12px;margin-top:22px}
+.halal-badge img{height:52px;width:52px;object-fit:contain;mix-blend-mode:multiply;flex:none}
+.halal-badge span{font-size:12px;color:var(--ink-2);line-height:1.55}
+
 /* ── HERO ──────────────────────────────── */
 .hero{padding:16px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:flex-start;position:relative}
 .tag{
@@ -298,6 +303,10 @@ footer{border-top:1px solid var(--line);padding:24px 0}
         <button class="btn olive" onclick="track('cta_book');openModal()">Забронировать столик</button>
         <button class="btn ghost hide-mobile" onclick="track('cta_route');openModal()">Построить маршрут</button>
         <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_menu')">Посмотреть меню</a>
+      </div>
+      <div class="halal-badge">
+        <img src="assets/4.png" alt="КМДБ Halal">
+        <span>Продукция сертифицирована<br>КМДБ · halaldamu.kz</span>
       </div>
     </div>
     <div class="hero-photo">
