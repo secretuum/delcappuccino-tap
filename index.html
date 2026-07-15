@@ -8,6 +8,16 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="assets/logo-mono.png">
+<link rel="apple-touch-icon" href="assets/logo-mono.png">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Del Cappuccino — coffee & food, 24/7">
+<meta property="og:description" content="Завтраки весь день, любимая кухня и хороший кофе. Работаем круглосуточно — 4 кофейни в Алматы.">
+<meta property="og:image" content="assets/photo_01.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Del Cappuccino — coffee & food, 24/7">
+<meta name="twitter:description" content="Завтраки весь день, любимая кухня и хороший кофе. Работаем круглосуточно — 4 кофейни в Алматы.">
+<meta name="twitter:image" content="assets/photo_01.jpg">
 <style>
 :root{
   --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
@@ -93,7 +103,7 @@ h1 span{color:var(--olive)}
 
 /* ── STORY ─────────────────────────────── */
 .story{padding:16px 0 56px}
-.story-grid{display:grid;grid-template-columns:.8fr 1.2fr;gap:56px;align-items:center}
+.story-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}
 .story-photo{border-radius:20px;overflow:hidden;aspect-ratio:1/1.15}
 .story-photo img{width:100%;height:100%;object-fit:cover;display:block}
 .story h2{font-family:Comfortaa;font-weight:700;font-size:34px;line-height:1.12;color:var(--forest-dk);margin-bottom:16px}
@@ -126,9 +136,9 @@ h1 span{color:var(--olive)}
 
 /* ── SHOWCASE (merch strip) ─────────────── */
 .showcase{padding:56px 0}
-.sc-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;gap:20px}
+.sc-head{display:flex;flex-direction:column;align-items:flex-start;margin-bottom:28px;gap:10px}
 .sc-head h2{font-family:Comfortaa;font-weight:700;font-size:28px;color:var(--forest-dk)}
-.sc-head p{color:var(--ink-2);font-size:13px;max-width:280px;line-height:1.5}
+.sc-head p{color:var(--ink-2);font-size:13px;max-width:480px;line-height:1.5}
 .sc-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
 .sc-row img{width:100%;aspect-ratio:3/4;object-fit:cover;border-radius:16px;display:block}
 
