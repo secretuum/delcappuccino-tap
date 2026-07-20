@@ -9,7 +9,7 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="icon" type="image/png" href="assets/logo-mono.png">
 <link rel="apple-touch-icon" href="assets/logo-mono.png">
 <meta property="og:type" content="website">
@@ -275,6 +275,44 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .contact-actions{flex-direction:row}
   .contact-actions .btn{flex:1;padding:14px 10px;font-size:14px;border-radius:14px}
 }
+
+/* ── MENU OVERLAY ──────────────────────── */
+.menu-modal{position:fixed;inset:0;z-index:120;display:none;background:#F7EFE2;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.menu-modal.open{display:block}
+.mm-top{position:sticky;top:0;z-index:5;display:flex;align-items:center;gap:14px;padding:12px 24px;background:color-mix(in srgb,#F7EFE2 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.mm-logo{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;letter-spacing:.3em;color:var(--forest);margin-right:4px}
+.mm-tabs{display:flex;gap:6px}
+.mm-tab{border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:99px;padding:7px 16px;font-family:'Golos Text';font-size:12.5px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:.15s}
+.mm-tab.on{background:var(--forest);color:var(--cream)}
+.mm-x{margin-left:auto;width:34px;height:34px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:17px;cursor:pointer}
+.mm-body{max-width:1150px;margin:0 auto;padding:36px 30px 64px}
+.mm-cols{columns:3;column-gap:46px}
+.mm-mark{break-inside:avoid;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:104px;line-height:.92;color:var(--forest);letter-spacing:.04em;margin-bottom:30px}
+.mm-sec{break-inside:avoid;margin-bottom:32px}
+.mm-sec h4{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:16.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--forest);margin-bottom:6px}
+.mm-badge{background:var(--forest);color:var(--cream);border-radius:3px;padding:3px 8px;font-family:'Golos Text';font-size:9.5px;font-weight:600;letter-spacing:.06em;white-space:nowrap}
+.mm-note{font-size:10.5px;color:var(--ink-2);margin:-2px 0 8px;line-height:1.5}
+.mm-it{display:flex;align-items:baseline;gap:6px;padding:4px 0;font-size:13px;line-height:1.35}
+.mm-it .nm{color:var(--ink)}
+.mm-it .vol{font-size:10.5px;color:var(--ink-2);white-space:nowrap}
+.mm-it .sp{flex:1;min-width:12px}
+.mm-it .pr{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
+.mk{font-style:normal;font-size:10.5px;color:var(--forest)}
+.mk-new{color:var(--olive);font-weight:800;font-size:9px;letter-spacing:.04em;vertical-align:1px}
+.mm-legend{break-inside:avoid;margin-bottom:32px;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.mm-legend div{font-size:11px;color:var(--ink-2);padding:2.5px 0}
+.mm-foot{margin-top:20px;text-align:center}
+.mm-oval{display:inline-block;border:1.5px solid var(--forest);border-radius:50%;padding:16px 40px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15.5px;color:var(--forest);line-height:1.3}
+.mm-fee{margin-top:14px;font-size:11px;color:var(--ink-2);line-height:1.6}
+@media(max-width:1020px){.mm-cols{columns:2}.mm-mark{font-size:88px}}
+@media(max-width:680px){
+  .mm-cols{columns:1}
+  .mm-mark{font-size:58px;margin-bottom:20px}
+  .mm-body{padding:22px 18px 48px}
+  .mm-top{padding:10px 14px;gap:10px}
+  .mm-logo{font-size:16px;letter-spacing:.22em}
+  .mm-tab{padding:7px 13px;font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -286,6 +324,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     <img class="logo-d" src="assets/logo-lockup.png" alt="Del Cappuccino">
     <img class="logo-m" src="assets/logo-mono.png" alt="Del Cappuccino">
     <nav>
+      <a href="#" onclick="event.preventDefault();track('cta_menu',{src:'nav'});openMenu()">Меню</a>
       <a href="#about">О нас</a>
       <a href="#features">Формат</a>
       <a href="#locations">Адреса</a>
@@ -302,7 +341,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <div class="actions">
         <button class="btn olive" onclick="track('cta_book');openModal()">Забронировать столик</button>
         <button class="btn ghost hide-mobile" onclick="track('cta_route');openModal()">Построить маршрут</button>
-        <a class="btn ghost" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_menu')">Посмотреть меню</a>
+        <button class="btn ghost" onclick="track('cta_menu');openMenu()">Посмотреть меню</button>
       </div>
       <div class="halal-badge">
         <img src="assets/4.png" alt="КМДБ Halal">
@@ -408,6 +447,24 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   </div>
 </div>
 
+<div class="menu-modal" id="menu-modal" role="dialog" aria-label="Меню">
+  <div class="mm-top">
+    <span class="mm-logo">MENU</span>
+    <div class="mm-tabs">
+      <button class="mm-tab on" id="mm-tab-kitchen" onclick="switchMenuTab('kitchen')">Кухня</button>
+      <button class="mm-tab" id="mm-tab-bar" onclick="switchMenuTab('bar')">Бар</button>
+    </div>
+    <button class="mm-x" onclick="closeMenu()" aria-label="Закрыть">×</button>
+  </div>
+  <div class="mm-body">
+    <div class="mm-cols" id="mm-cols"></div>
+    <div class="mm-foot">
+      <span class="mm-oval">Предупредите официанта<br>об аллергии на продукты</span>
+      <p class="mm-fee">Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.</p>
+    </div>
+  </div>
+</div>
+
 <script>
 function track(name,params){if(typeof gtag!=='undefined')gtag('event',name,params||{})}
 
@@ -465,7 +522,338 @@ function openModal(){
   }
 }
 function closeModal(){document.getElementById('modal').classList.remove('open')}
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeModal()}});
+
+/* ── МЕНЮ ─────────────────────────────── */
+/* Кухня: цены «Меню Июнь» · Бар: цены зала от 02.07 */
+const MENU_KITCHEN = [
+ {t:'Завтраки', badge:'весь день', items:[
+  {n:'Каша овсяная с гранолой и персиком', p:2000, m:['new']},
+  {n:'Каша рисовая с гранолой и бананом', p:2000, m:['new']},
+  {n:'Скрэмбл с запечёнными томатами черри', p:2600},
+  {n:'Омлет с грибами и с сыром', p:2800},
+  {n:'Крок Мадам с копчёной индейкой', p:3000, m:['new']},
+  {n:'Хашбраун с индейкой', p:3000, m:['new']},
+  {n:'Алматинский завтрак', p:3200, m:['hit']},
+  {n:'Деревенский завтрак', p:2900, m:['alrg']},
+  {n:'Шакшука с томлёной говядиной', p:4200, m:['alrg']},
+  {n:'Английский завтрак', p:3200, m:['hit']},
+  {n:'Завтрак с лососем', p:4000, m:['new']},
+  {n:'Завтрак по-турецки', p:4200, m:['new']},
+  {n:'Скрэмбл со слабосолёным лососем и крем-чизом', p:4600, m:['pp']},
+ ]},
+ {t:'Сладкие завтраки', items:[
+  {n:'Блины со сметаной и мёдом', p:1700, m:['alrg']},
+  {n:'Блины с бананом и с шоколадом', p:1900, m:['alrg']},
+  {n:'Мини-панкейки', p:2200, m:['new']},
+  {n:'Бельгийские вафли', p:2500},
+  {n:'Сырники классические', p:2500, m:['hit']},
+  {n:'Сырники с иримшиком', p:2500, m:['rec']},
+ ]},
+ {t:'Салаты', items:[
+  {n:'Греческий салат', p:2700},
+  {n:'Тёплый салат из баклажан с соусом Ассай', p:2800, m:['rec']},
+  {n:'Цезарь с курицей', p:3000},
+  {n:'Салат с запечённой сёмгой в соусе терияки', p:3200, m:['new']},
+  {n:'Салат с цыплёнком гриль', p:2800, m:['new']},
+  {n:'Салат с рукколой и вырезкой из телятины', p:3400},
+  {n:'Салат с рукколой и креветками в имбирном соусе', p:3800, m:['new']},
+ ]},
+ {t:'Боулы', items:[
+  {n:'Боул с курицей', p:3000, m:['rec','pp']},
+  {n:'Боул с креветками', p:3100, m:['pp']},
+  {n:'Боул вегетарианский', p:3100, m:['pp']},
+  {n:'Боул с сёмгой', p:3700, m:['hit','pp']},
+ ]},
+ {t:'Супы', items:[
+  {n:'Борщ с говядиной и бородинским хлебом', p:2100, m:['hit']},
+  {n:'Чечевичный крем-суп', p:2000},
+  {n:'Суп с фрикадельками', p:2000, m:['hit']},
+  {n:'Суп лапша куриная', p:1800},
+  {n:'Пельмени с говядиной', p:2200, m:['rec']},
+  {n:'Окрошка овощная', p:1800, m:['new']},
+  {n:'Окрошка мясная', p:2000, m:['new']},
+ ]},
+ {t:'Сэндвичи / Закуски', items:[
+  {n:'Наггетсы', p:1900},
+  {n:'Панини «Цезарь» с курицей', p:2800},
+  {n:'Панини с томлёной говядиной', p:3500, m:['new']},
+  {n:'Клаб сэндвич с курицей и картофелем фри', p:3600, m:['hit']},
+  {n:'Курица Динамит', p:2800, m:['new']},
+  {n:'Кесадилья с курицей', p:3700},
+  {n:'Бургер классический с картофелем фри', p:3600, m:['new']},
+  {n:'Бургер с томлёной говядиной', p:3600, m:['new']},
+  {n:'Чебуреки с фаршем', p:2500},
+  {n:'Чебуреки с джусаем', p:2500},
+ ]},
+ {t:'Пицца', items:[
+  {n:'Пицца Маргарита', p:3300},
+  {n:'Пицца Пепперони', p:3800},
+  {n:'Пицца с курицей и грибами', p:3800},
+  {n:'Пицца Болоньезе', p:3800, m:['hit','hot']},
+  {n:'Пицца «4 сезона»', p:3800, m:['rec']},
+ ]},
+ {t:'Паназия', items:[
+  {n:'Курица по-тайски с рисом', p:2900, m:['hit']},
+  {n:'Чикен спайс с рисом', p:3000, m:['hot']},
+  {n:'Жареный рис с хрустящей курочкой', p:3000, m:['hit']},
+  {n:'Лапша по-сингапурски', p:3100, m:['new']},
+  {n:'Рамен с курицей', p:3800},
+  {n:'Том Ям с курицей', p:3300, m:['hit','hot']},
+  {n:'Рамен с креветками', p:4000},
+  {n:'Том Ям с креветками', p:3700, m:['hot']},
+ ]},
+ {t:'Паста фреш', note:'для пасты используем муку semola', items:[
+  {n:'Альфредо с курицей и грибами', p:3200, m:['hit']},
+  {n:'Паста с курицей, томатом и шпинатом', p:3200},
+  {n:'Спагетти болоньезе', p:3200},
+  {n:'Паста с креветками', p:3700},
+  {n:'Фарфалле с томлёной говядиной', p:3700, m:['new']},
+  {n:'Фарфалле с лососем', p:4100},
+ ]},
+ {t:'Горячие блюда', items:[
+  {n:'Курочка в сливочном соусе с грибами и рисом', p:3000, m:['hit']},
+  {n:'Котлеты пожарские', p:3200},
+  {n:'Котлеты говяжьи по-домашнему с пюре', p:3200},
+  {n:'Куриный рулет с моцареллой и рисом в соусе терияки', p:3200},
+  {n:'Куриное филе со шпинатом в сливочном соусе', p:3600, m:['rec']},
+  {n:'Цыплёнок с чимичурри', p:2900, m:['new']},
+  {n:'Гуляш с картофельным пюре', p:4000, m:['new']},
+  {n:'Томлёная говядина с картофельным пюре', p:4800, m:['new']},
+  {n:'Бифштекс с коул-слоу', p:3200, m:['new']},
+  {n:'Фрикадельки с картофелем по-домашнему', p:3100, m:['new']},
+  {n:'Бефстроганов из говядины с картофельным пюре', p:4200, m:['rec']},
+  {n:'Томлёные рёбра', p:4800},
+ ]},
+ {t:'Блюда на гриле', items:[
+  {n:'Цыплёнок по-азиатски', vol:'350 гр', p:5000, m:['wait','alrg']},
+  {n:'Рибай на кости', vol:'350 гр', p:7200, m:['wait']},
+  {n:'Рибай без кости', vol:'300 гр', p:7200, m:['wait']},
+  {n:'Дорадо на гриле', vol:'350 гр', p:7500, m:['wait']},
+  {n:'Стейк лосося с молодым картофелем', vol:'250 гр', p:7200, m:['wait']},
+  {n:'Тибон стейк с молодым картофелем', vol:'350 гр', p:7200, m:['wait']},
+ ]},
+ {t:'Гарниры', items:[
+  {n:'Рис', p:1300},
+  {n:'Картофельное пюре', p:1300},
+  {n:'Картофель фри', p:1500},
+  {n:'Картофельные дольки', p:1500},
+  {n:'Хашбраун со сметаной', p:1700},
+  {n:'Овощи на гриле', p:2400},
+ ]},
+ {t:'Соусы', items:[
+  {n:'Кетчуп', p:500},{n:'Дзадзики', p:500},{n:'Цезарь', p:500},{n:'Сырный', p:500},
+  {n:'Горчичный', p:500},{n:'Шрирача', p:500},{n:'Sweet chili', p:500},
+ ]},
+ {t:'Хлеба', badge:'из собственной пекарни', items:[
+  {n:'Хрустящие лепёшки', p:1300},
+  {n:'Багет', p:1000},
+  {n:'Чесночный хлеб', p:1000},
+ ]},
+ {t:'На компанию', items:[
+  {n:'Ассорти колбасок на 4–5 персон', p:21000},
+  {n:'Микс гриль на 5–6 персон', p:41000},
+  {n:'Рыбный микс на 5–6 персон', p:45000},
+  {n:'Бешбармак на 4–5 персон (только по предзаказу)', p:30000},
+  {n:'Куырдак на 4–5 персон (только по предзаказу)', p:30000},
+ ]},
+];
+
+const MENU_BAR = [
+ {t:'Классический кофе', note:'зерно на выбор — 100% арабика: Бразилия Можиана (арахис, грецкий орех, шоколад) или Эфиопия Сидамо Гуджи (персик, цитрусовые, цветы)', items:[
+  {n:'Эспрессо / Доппио', vol:'25/50 мл', p:'1000/1200'},
+  {n:'Капучино', vol:'200/300/400 мл', p:'1400/1500/1700'},
+  {n:'Американо', vol:'200/300/400 мл', p:'1100/1200/1300'},
+  {n:'Латте', vol:'300/400 мл', p:'1500/1700'},
+  {n:'Флэт уайт', vol:'200 мл', p:1800},
+  {n:'Пуровер V60', vol:'300 мл', p:1200, m:['new']},
+ ]},
+ {t:'Холодный кофе', badge:'330 мл', items:[
+  {n:'Ice Американо', p:1400},
+  {n:'Колд-брю: цитрус, вишня-лайм', p:1400},
+  {n:'Ice Латте', p:1600},
+  {n:'Ice Капучино', p:1600},
+  {n:'Эспрессо-тоник', p:2000},
+  {n:'Бамбл кофе на соке / на фреше', p:2100},
+  {n:'Фраппучино: карамель, шоколад', p:2400},
+ ]},
+ {t:'Листовые чаи', note:'чашка 330 мл / чайник 1 л', items:[
+  {n:'Ассам', p:'1300/2400'},
+  {n:'Жасмин', p:'1300/2400'},
+  {n:'Молочный улун', p:'1300/2400'},
+ ]},
+ {t:'Авторские чаи', note:'чашка 330 мл / чайник 900 мл', items:[
+  {n:'Чай по-казахски (нават, иримшик)', p:'1500/2700', m:['honey']},
+  {n:'Ташкентский', p:'1500/2700', m:['honey']},
+  {n:'Марокканский', p:'1500/2700'},
+  {n:'Фруктовый', p:'1500/2700'},
+  {n:'Груша-мята', p:'1500/2700'},
+  {n:'Облепиховый', p:'1500/2700', m:['honey']},
+  {n:'Клюква-апельсин', p:'1500/2700'},
+  {n:'Ягодный', p:'1500/2700'},
+  {n:'Малина-имбирь', p:'1500/2700', m:['honey']},
+ ]},
+ {t:'Ice tea', badge:'330 мл', items:[
+  {n:'Классический', p:1400},
+  {n:'Персиковый', p:1400},
+  {n:'Ягодный', p:1400},
+  {n:'Манго-груша', p:1400},
+  {n:'Жасмин-яблоко', p:1400},
+  {n:'Клубничный улун', p:1400},
+ ]},
+ {t:'Лимонады', note:'стакан 330 мл / графин 900 мл', items:[
+  {n:'Манго-маракуйя', p:'1400/2700'},
+  {n:'Мохито', p:'1400/2700'},
+  {n:'Клубничный мохито', p:'1400/2700'},
+  {n:'Ягодный микс', p:'1400/2700'},
+  {n:'Ананас-черника', p:'1400/2700'},
+  {n:'Киви-яблоко', p:'1400/2700'},
+  {n:'Цитрусовый', p:'1400/2700', m:['new']},
+ ]},
+ {t:'Милкшейки', badge:'375 мл', items:[
+  {n:'Ванильный', p:2300},
+  {n:'Oreo', p:2300},
+  {n:'Клубничный', p:2300},
+ ]},
+ {t:'Фреши', badge:'300 мл', items:[
+  {n:'Яблочный', p:2300},
+  {n:'Апельсиновый', p:2600},
+  {n:'Грейпфрутовый', p:2600},
+ ]},
+ {t:'Раф', badge:'375 мл', note:'*любой раф можем сделать айс', items:[
+  {n:'Классический', p:2000},
+  {n:'Медовый', p:2000, m:['honey']},
+  {n:'С солёной карамелью', p:2000},
+ ]},
+ {t:'Спешл напитки', badge:'375 мл', items:[
+  {n:'Латте печенье', p:2400},
+  {n:'Матча-пломбир', p:2400},
+  {n:'Матча-латте', p:2400},
+  {n:'Айс матча малина тоник', p:2500},
+  {n:'Айс клубничный капучино', p:2400},
+  {n:'Киви-тоник', p:2400},
+  {n:'Ginger-тоник', p:2400},
+  {n:'Пина колада (б/а)', p:2400},
+  {n:'Моккачино', p:2400},
+  {n:'Ice cream-Cola', p:2600},
+  {n:'Горячий шоколад', vol:'200/300 мл', p:'1500/1800'},
+ ]},
+ {t:'Глинтвейн б/а', badge:'375 мл', items:[
+  {n:'Яблочный', p:1600},
+  {n:'Вишнёвый', p:1600},
+  {n:'Апельсин-облепиха', p:1600},
+ ]},
+ {t:'Смузи', badge:'375 мл', items:[
+  {n:'Зелёный', p:2300},
+  {n:'Манго-чиа', p:2300},
+  {n:'Малина-банан', p:2300},
+  {n:'Черника-банан', p:2300},
+  {n:'Апельсин-банан', p:2300},
+  {n:'Свекольный (витамины A, C, B)', p:2600, m:['new','pp']},
+  {n:'Шпинат-киви-банан (витамины A, B6, C, K)', p:2600, m:['new','pp']},
+  {n:'Протеиновый коктейль', p:3100, m:['new']},
+ ]},
+ {t:'Напитки', items:[
+  {n:'Морс клюквенный', vol:'300 мл / 1 л', p:'800/2300'},
+  {n:'Морс ягодный', vol:'300 мл / 1 л', p:'800/2300', m:['new']},
+  {n:'Сок Da Da (для детей, с трубочкой)', vol:'200 мл', p:700},
+  {n:'Вода del Cappuccino газ / без газа', vol:'500 мл', p:800},
+  {n:'A’SU glass', vol:'250 мл', p:900},
+  {n:'A’SU glass', vol:'500 мл', p:1400},
+  {n:'Salam Premium Cola glass', vol:'250 мл', p:1100},
+  {n:'Salam Premium Cola can', vol:'450 мл', p:1200},
+  {n:'AVA Lemonade Citron can', vol:'450 мл', p:1200},
+  {n:'Сок Gracio glass', vol:'250 мл', p:1200},
+  {n:'Сок Gracio в ассортименте', vol:'950 мл', p:2700},
+  {n:'Borjomi glass', vol:'500 мл', p:1600},
+  {n:'Borjomi can: тархун, мандарин, цитрус, груша', vol:'330 мл', p:1700},
+ ]},
+ {t:'Дополнения', items:[
+  {n:'Лимон', p:400},
+  {n:'Мёд', p:400, m:['honey']},
+  {n:'Нават', p:400},
+  {n:'Молоко', p:500},
+  {n:'Сироп в ассортименте', p:400},
+  {n:'Декаф', p:600},
+  {n:'Альтернативное молоко', p:600},
+  {n:'Безлактозное молоко', p:800},
+ ]},
+ {t:'Банка-кейки', items:[
+  {n:'Орео', p:1300},
+  {n:'Фисташковый', p:1400},
+  {n:'Тирамису', p:1500},
+ ]},
+ {t:'Десерты', items:[
+  {n:'Картошка', p:600},
+  {n:'Маффин', p:600},
+  {n:'Кукис', p:600},
+  {n:'Дениш с персиком', p:890},
+  {n:'Дениш с клубникой', p:890},
+  {n:'Шу ягодный', p:1090},
+  {n:'Шу абрикос-мак', p:1090},
+  {n:'Синнабон', p:1300},
+  {n:'Тарталетка Банофи пай', p:1300, m:['new']},
+  {n:'Наполеон', p:1700},
+  {n:'Медовик', p:1700},
+  {n:'Молочная девочка', p:1700},
+  {n:'Сникерс', p:1700},
+  {n:'Испанский чизкейк', p:2000},
+  {n:'Чизкейк по-казахски', p:2000},
+  {n:'Меренговый рулет', p:2000},
+  {n:'Фисташковый рулет', p:2000},
+  {n:'Вупи-пай', p:2100},
+  {n:'Фисташка-малина', p:2100},
+  {n:'Дубайский', p:2600},
+ ]},
+];
+
+const MK = {
+  new:'<b class="mk mk-new">NEW</b>', hit:'<i class="mk">☆</i>', rec:'<i class="mk">👍</i>',
+  hot:'<i class="mk">🌶</i>', pp:'<i class="mk">🥦</i>', alrg:'<i class="mk">▲</i>',
+  wait:'<i class="mk">⏱</i>', honey:'<i class="mk">🍯</i>'
+};
+const LEGEND = {
+  kitchen:['🌶 — острое блюдо','👍 — особенно рекомендуем','☆ — популярное','NEW — новинка','🥦 — правильное питание','⏱ — время ожидания от 30 минут','▲ — продукты, которые вызывают аллергию'],
+  bar:['NEW — новинка','🍯 — содержит мёд','🥦 — правильное питание'],
+};
+
+function fmtP(p){return String(p).split('/').map(x=>(+String(x).trim()).toLocaleString('ru-RU')).join(' / ')}
+
+function renderMenuTab(tab){
+  const data = tab==='bar' ? MENU_BAR : MENU_KITCHEN;
+  const secs = data.map(s=>`
+    <section class="mm-sec">
+      <h4>${s.t}${s.badge?` <span class="mm-badge">${s.badge}</span>`:''}</h4>
+      ${s.note?`<p class="mm-note">${s.note}</p>`:''}
+      ${s.items.map(it=>`
+        <div class="mm-it">
+          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${it.n}${it.vol?` <span class="vol">${it.vol}</span>`:''}</span>
+          <span class="sp"></span>
+          <span class="pr">${fmtP(it.p)}</span>
+        </div>`).join('')}
+    </section>`).join('');
+  const legend = `<section class="mm-legend">${LEGEND[tab].map(l=>`<div>${l}</div>`).join('')}</section>`;
+  document.getElementById('mm-cols').innerHTML = `<div class="mm-mark">ME<br>NU</div>` + secs + legend;
+  document.getElementById('mm-tab-kitchen').classList.toggle('on', tab!=='bar');
+  document.getElementById('mm-tab-bar').classList.toggle('on', tab==='bar');
+}
+
+let menuTab='kitchen';
+function switchMenuTab(tab){
+  menuTab=tab; renderMenuTab(tab);
+  document.getElementById('menu-modal').scrollTop=0;
+  track('menu_tab',{tab});
+}
+function openMenu(){
+  renderMenuTab(menuTab);
+  document.getElementById('menu-modal').classList.add('open');
+  document.body.style.overflow='hidden';
+  track('menu_open');
+}
+function closeMenu(){
+  document.getElementById('menu-modal').classList.remove('open');
+  document.body.style.overflow='';
+}
 </script>
 </body>
 </html>
