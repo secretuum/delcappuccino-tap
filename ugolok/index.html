@@ -1,22 +1,22 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="kk">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Уголок потребителя · Тұтынушы бұрышы — Del Cappuccino</title>
-<meta name="description" content="Уголок потребителя Del Cappuccino: паспорта налогоплательщика 4 филиалов, информация потребителю и порядок урегулирования споров. Тұтынушы бұрышы.">
+<title>Тұтынушы бұрышы — Del Cappuccino</title>
+<meta name="description" content="Del Cappuccino тұтынушы бұрышы / Уголок потребителя / Consumer Corner — салық төлеушінің паспорттары, тұтынушыға ақпарат, дауларды реттеу. ҚАЗ · РУС · ENG.">
 <meta name="robots" content="index, follow">
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-D50YPM8RMK"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700&family=Golos+Text:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="../assets/logo-mono.png">
-<link rel="apple-touch-icon" href="../assets/logo-mono.png">
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" type="image/png" href="/assets/logo-mono.png">
+<link rel="apple-touch-icon" href="/assets/logo-mono.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tap.delcappuccino.kz/ugolok">
-<meta property="og:title" content="Уголок потребителя — Del Cappuccino">
-<meta property="og:description" content="Паспорта налогоплательщика, информация потребителю и порядок урегулирования споров.">
+<meta property="og:title" content="Тұтынушы бұрышы — Del Cappuccino">
+<meta property="og:description" content="Салық төлеушінің паспорттары, тұтынушыға ақпарат және дауларды реттеу тәртібі.">
 <style>
 :root{
   --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
@@ -28,14 +28,22 @@
 html{scroll-behavior:smooth}
 body{
   background:var(--cream);color:var(--ink);
-  font-family:'Golos Text',-apple-system,sans-serif;
+  font-family:Montserrat,-apple-system,sans-serif;
   -webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;
 }
 a{color:inherit}
 .shell{max-width:960px;margin:0 auto;padding:0 24px}
 
+/* ── TOP BAR + LANG SWITCH ─────────────── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--forest-dk);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px}
+.tb-brand{font-family:Montserrat,sans-serif;font-weight:600;font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:color-mix(in srgb,var(--cream) 72%,transparent)}
+.lang-switch{display:flex;gap:3px;background:rgba(255,255,255,.12);border-radius:99px;padding:3px}
+.lang-btn{border:0;background:transparent;color:color-mix(in srgb,var(--cream) 82%,transparent);font-family:Montserrat,sans-serif;font-weight:700;font-size:12px;letter-spacing:.03em;padding:6px 12px;border-radius:99px;cursor:pointer;transition:background .15s,color .15s}
+.lang-btn:hover{color:var(--cream)}
+.lang-btn.on{background:var(--cream);color:var(--forest-dk)}
+
 /* ── HERO ──────────────────────────────── */
-.uk-hero{background:var(--forest);color:var(--cream);position:relative;overflow:hidden;padding:34px 0 30px}
+.uk-hero{background:var(--forest);color:var(--cream);position:relative;overflow:hidden;padding:32px 0 30px}
 .uk-hero::before{
   content:'';position:absolute;inset:0;opacity:.07;
   background-image:radial-gradient(circle at 20% 30%, var(--cream) 1.5px, transparent 1.5px),
@@ -44,9 +52,10 @@ a{color:inherit}
   background-size:140px 140px, 190px 190px, 160px 160px;
 }
 .uk-hero .shell{position:relative}
-.uk-logo{height:40px;width:auto;border-radius:9px;display:block;margin-bottom:20px}
-.uk-hero .kz{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:17px;letter-spacing:.16em;text-transform:uppercase;color:var(--moss);margin-bottom:2px}
-.uk-hero h1{font-family:Comfortaa;font-weight:700;font-size:34px;line-height:1.08;letter-spacing:-.01em}
+.uk-logo{height:40px;width:auto;border-radius:9px;display:block;margin-bottom:18px}
+.uk-hero .eyebrow{color:var(--moss)}
+.uk-hero .eyebrow::before{background:var(--moss)}
+.uk-hero h1{font-family:Montserrat;font-weight:700;font-size:34px;line-height:1.08;letter-spacing:-.01em;margin-top:4px}
 .uk-sub{margin-top:14px;font-size:13px;color:color-mix(in srgb,var(--cream) 82%,transparent);line-height:1.5}
 .uk-sub .dot{display:inline-block;width:6px;height:6px;border-radius:99px;background:var(--moss);margin-right:7px;vertical-align:middle}
 
@@ -54,8 +63,7 @@ a{color:inherit}
 main{padding:40px 0 20px}
 .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--olive);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:6px}
 .eyebrow::before{content:'';width:16px;height:2px;background:var(--olive);border-radius:2px;flex:none}
-.sec-title{font-family:Comfortaa;font-weight:700;font-size:23px;color:var(--forest-dk);line-height:1.15}
-.sec-title .kz{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;letter-spacing:.04em;color:var(--sage);text-transform:none;margin-top:2px}
+.sec-title{font-family:Montserrat;font-weight:700;font-size:23px;color:var(--forest-dk);line-height:1.15}
 .sec{margin-bottom:44px}
 .sec > .sec-head{margin-bottom:18px}
 
@@ -63,10 +71,10 @@ main{padding:40px 0 20px}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
 .pass{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;display:flex;flex-direction:column}
 .pass-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:4px}
-.pass-num{font-family:Comfortaa;font-weight:700;font-size:13px;color:var(--cream);background:var(--forest);border-radius:9px;padding:6px 10px;flex:none;line-height:1}
-.pass-place small{display:block;font-family:Comfortaa;font-size:10.5px;color:var(--olive);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-.pass-place h3{font-family:Comfortaa;font-size:18px;font-weight:700;color:var(--forest-dk);line-height:1.12;margin-top:3px}
-.pass-kicker{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:14px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
+.pass-num{font-family:Montserrat;font-weight:700;font-size:13px;color:var(--cream);background:var(--forest);border-radius:9px;padding:6px 10px;flex:none;line-height:1}
+.pass-place small{display:block;font-family:Montserrat;font-size:10.5px;color:var(--olive);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
+.pass-place h3{font-family:Montserrat;font-size:18px;font-weight:700;color:var(--forest-dk);line-height:1.12;margin-top:3px}
+.pass-kicker{font-family:Montserrat,sans-serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:14px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
 .pass-name{font-weight:700;font-size:14.5px;color:var(--ink);margin-bottom:12px}
 .rows{display:flex;flex-direction:column;gap:9px;flex:1}
 .row .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--olive);font-weight:600;display:block;margin-bottom:1px}
@@ -81,18 +89,16 @@ main{padding:40px 0 20px}
 
 /* ── INFO BLOCKS ───────────────────────── */
 .info{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
-.info + .info{margin-top:14px}
 .info ul{list-style:none;display:flex;flex-direction:column;gap:14px}
-.info li{padding-left:22px;position:relative;font-size:13.5px;color:var(--ink-2);line-height:1.55}
+.info li{padding-left:22px;position:relative;font-size:14px;color:var(--ink);line-height:1.55}
 .info li::before{content:'';position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:99px;background:var(--moss)}
-.info li .kz{display:block;color:var(--sage);font-size:12.5px;margin-bottom:2px}
-.info li b{color:var(--ink);font-weight:600}
 .contact-grid{display:flex;flex-direction:column;gap:12px}
 .contact-grid .row .v a{color:var(--forest);font-weight:600;text-decoration:none}
 .contact-grid .row .v a:hover{text-decoration:underline}
+.disp-intro{font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:16px}
 .steps{counter-reset:st;display:flex;flex-direction:column;gap:12px;margin-top:4px}
-.steps li{list-style:none;padding-left:38px;position:relative;font-size:13.5px;color:var(--ink-2);line-height:1.5}
-.steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:99px;background:var(--cream-2);color:var(--forest);font-family:Comfortaa;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.steps li{list-style:none;padding-left:38px;position:relative;font-size:14px;color:var(--ink);line-height:1.5}
+.steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:99px;background:var(--cream-2);color:var(--forest);font-family:Montserrat;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
 .perechen{margin-top:16px;background:var(--cream-2);border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
 .perechen b{color:var(--forest-dk)}
 .note{display:flex;gap:12px;align-items:flex-start;background:var(--cream-2);border-radius:14px;padding:16px 18px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
@@ -103,13 +109,13 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
 .f-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
 .f-row a.back{display:inline-flex;align-items:center;gap:7px;color:var(--forest);font-weight:600;text-decoration:none}
 .f-row a.back:hover{text-decoration:underline}
-.f-row img{height:22px;border-radius:5px}
 
 @media(max-width:720px){
   .shell{padding:0 16px}
+  .topbar{padding:7px 14px}
+  .tb-brand{font-size:13px;letter-spacing:.16em}
   .uk-hero{padding:26px 0 24px}
   .uk-hero h1{font-size:26px}
-  .uk-hero .kz{font-size:14px}
   main{padding:28px 0 12px}
   .sec{margin-bottom:34px}
   .sec-title{font-size:20px}
@@ -117,18 +123,31 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   .info{padding:20px 18px}
   .pass{padding:18px 18px 18px}
 }
+@media(max-width:380px){
+  .tb-brand{display:none}
+  .topbar{justify-content:flex-end}
+}
 </style>
 </head>
 <body>
 
+<div class="topbar">
+  <span class="tb-brand">Del Cappuccino</span>
+  <div class="lang-switch" role="group" aria-label="Тіл / Язык / Language">
+    <button class="lang-btn on" data-lang="kk" onclick="setLang('kk')">ҚАЗ</button>
+    <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">РУС</button>
+    <button class="lang-btn" data-lang="en" onclick="setLang('en')">ENG</button>
+  </div>
+</div>
+
 <header class="uk-hero">
   <div class="shell">
-    <img class="uk-logo" src="../assets/logo-lockup.png" alt="Del Cappuccino">
-    <div class="kz">Тұтынушы бұрышы</div>
-    <h1>Уголок потребителя</h1>
+    <a href="/" aria-label="Del Cappuccino — басты бет"><img class="uk-logo" src="/assets/logo-lockup.png" alt="Del Cappuccino"></a>
+    <p class="eyebrow" data-i18n="hero_eyebrow">Ресми ақпарат</p>
+    <h1 data-i18n="title">Тұтынушы бұрышы</h1>
     <div class="uk-sub">
       <span class="dot"></span>
-      <span>Del Cappuccino · Алматы · Жұмыс режимі / Режим работы: 24/7</span>
+      <span data-i18n="hero_sub">Del Cappuccino · Алматы · Жұмыс режимі: 24/7</span>
     </div>
   </div>
 </header>
@@ -138,8 +157,8 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   <!-- ── ПАСПОРТА НАЛОГОПЛАТЕЛЬЩИКА ── -->
   <section class="sec">
     <div class="sec-head">
-      <p class="eyebrow">4 филиала · 4 филиал</p>
-      <h2 class="sec-title">Паспорт налогоплательщика<span class="kz">Салық төлеушінің паспорты</span></h2>
+      <p class="eyebrow" data-i18n="sec1_eyebrow">4 филиал</p>
+      <h2 class="sec-title" data-i18n="sec1_title">Салық төлеушінің паспорты</h2>
     </div>
 
     <div class="cards">
@@ -149,25 +168,25 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
         <div class="pass-top">
           <span class="pass-num">01</span>
           <div class="pass-place">
-            <small>ЖК Вавилон</small>
-            <h3>Розыбакиева, 247, блок В</h3>
+            <small data-i18n="c1_place">Вавилон ТК</small>
+            <h3 data-i18n="c1_addr">Розыбакиев к-сі, 247, В блок</h3>
           </div>
         </div>
-        <div class="pass-kicker">Салық төлеушінің паспорты · Паспорт налогоплательщика</div>
-        <div class="pass-name">ИП РУСТАМОВА ФАРАНГИЗ НАСИРОВНА</div>
+        <div class="pass-kicker" data-i18n="kicker">Салық төлеушінің паспорты</div>
+        <div class="pass-name" data-i18n="c1_ip">ЖК РУСТАМОВА ФАРАНГИЗ НАСИРОВНА</div>
         <div class="rows">
-          <div class="row"><span class="k">ЖСН / ИИН</span><span class="v">840903400971</span></div>
-          <div class="row"><span class="k">Нақты мекенжайы / Фактический адрес</span><span class="v">г. Алматы, ул. Розыбакиева, 247, блок В</span></div>
-          <div class="row"><span class="k">Заңды мекенжайы / Юридический адрес</span><span class="v">г. Алматы, мкр. Мамыр-7, дом 21, кв./офис 58</span></div>
-          <div class="row"><span class="k">Жұмыс режимі / Режим работы</span><span class="v">24/7, демалыссыз / без выходных</span></div>
-          <div class="row"><span class="k">Байланыс телефоны / Контактный телефон</span><span class="v"><a href="tel:+77025672332">+7 702 567 23 32</a></span></div>
-          <div class="row"><span class="k">Мемлекеттік тіркеу / Государственная регистрация</span><span class="v">Регистрация уведомления о начале деятельности ИП: 16.02.2023</span></div>
-          <div class="row"><span class="k">Орган / Орган</span><span class="v">УГД по Ауэзовскому району</span></div>
-          <div class="talon-line">Талон № <b>KZ95TWQ02741884</b> · Входящий № <b>KZ85UWQ04709368</b></div>
+          <div class="row"><span class="k" data-i18n="lbl_iin">ЖСН</span><span class="v">840903400971</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_fact">Нақты мекенжайы</span><span class="v" data-i18n="c1_fact">Алматы қ., Розыбакиев к-сі, 247, В блок</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_legal">Заңды мекенжайы</span><span class="v" data-i18n="c1_legal">Алматы қ., Мамыр-7 ы/а, 21-үй, 58-пәтер/кеңсе</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_hours">Жұмыс режимі</span><span class="v" data-i18n="val_hours">24/7, демалыссыз</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77025672332">+7 702 567 23 32</a></span></div>
+          <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg1">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 16.02.2023</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_auezov">Әуезов ауданы бойынша МКБ</span></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ95TWQ02741884</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ85UWQ04709368</b></div>
         </div>
-        <a class="pass-btn" href="talon-rustamova.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'rustamova'})">
+        <a class="pass-btn" href="/ugolok/talon-rustamova.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'rustamova'})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          Талонды ашу / Открыть талон (PDF)
+          <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
 
@@ -176,25 +195,25 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
         <div class="pass-top">
           <span class="pass-num">02</span>
           <div class="pass-place">
-            <small>ЖК Комфорт Сити</small>
-            <h3>Серкебаева, 146</h3>
+            <small data-i18n="c2_place">Комфорт Сити ТК</small>
+            <h3 data-i18n="c2_addr">Серкебаев к-сі, 146</h3>
           </div>
         </div>
-        <div class="pass-kicker">Салық төлеушінің паспорты · Паспорт налогоплательщика</div>
-        <div class="pass-name">ИП ТУРЕХАН АҚБОТА МУРАТХАНҚЫЗЫ</div>
+        <div class="pass-kicker" data-i18n="kicker">Салық төлеушінің паспорты</div>
+        <div class="pass-name" data-i18n="c2_ip">ЖК ТУРЕХАН АҚБОТА МУРАТХАНҚЫЗЫ</div>
         <div class="rows">
-          <div class="row"><span class="k">ЖСН / ИИН</span><span class="v">950902401642</span></div>
-          <div class="row"><span class="k">Нақты мекенжайы / Фактический адрес</span><span class="v">г. Алматы, ул. Серкебаева, 146</span></div>
-          <div class="row"><span class="k">Заңды мекенжайы / Юридический адрес</span><span class="v">г. Шымкент, жилой массив Игилик, ул. Алдабек Майлыбаев, дом 7</span></div>
-          <div class="row"><span class="k">Жұмыс режимі / Режим работы</span><span class="v">24/7, демалыссыз / без выходных</span></div>
-          <div class="row"><span class="k">Байланыс телефоны / Контактный телефон</span><span class="v"><a href="tel:+77053673232">+7 705 367 32 32</a></span></div>
-          <div class="row"><span class="k">Мемлекеттік тіркеу / Государственная регистрация</span><span class="v">Изменение регистрационных данных ИП от 06.10.2023</span></div>
-          <div class="row"><span class="k">Орган / Орган</span><span class="v">УГД по Бостандыкскому району</span></div>
-          <div class="talon-line">Талон № <b>KZ43TWQ03401062</b> · Входящий № <b>KZ90UWQ05548910</b></div>
+          <div class="row"><span class="k" data-i18n="lbl_iin">ЖСН</span><span class="v">950902401642</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_fact">Нақты мекенжайы</span><span class="v" data-i18n="c2_fact">Алматы қ., Серкебаев к-сі, 146</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_legal">Заңды мекенжайы</span><span class="v" data-i18n="c2_legal">Шымкент қ., Игілік тұрғын алабы, Алдабек Майлыбаев к-сі, 7-үй</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_hours">Жұмыс режимі</span><span class="v" data-i18n="val_hours">24/7, демалыссыз</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77053673232">+7 705 367 32 32</a></span></div>
+          <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg2">ЖК тіркеу деректерінің өзгеруі: 06.10.2023</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_bostandyk">Бостандық ауданы бойынша МКБ</span></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ43TWQ03401062</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ90UWQ05548910</b></div>
         </div>
-        <a class="pass-btn" href="talon-turekhan.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'turekhan'})">
+        <a class="pass-btn" href="/ugolok/talon-turekhan.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'turekhan'})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          Талонды ашу / Открыть талон (PDF)
+          <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
 
@@ -203,25 +222,25 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
         <div class="pass-top">
           <span class="pass-num">03</span>
           <div class="pass-place">
-            <small>БП Promenade</small>
-            <h3>Абая, 44А</h3>
+            <small data-i18n="c3_place">Promenade БО</small>
+            <h3 data-i18n="c3_addr">Абай даңғ., 44А</h3>
           </div>
         </div>
-        <div class="pass-kicker">Салық төлеушінің паспорты · Паспорт налогоплательщика</div>
-        <div class="pass-name">ИП АЛИМКУЛОВА ЭЛЕОНОРА АЛЕКСАНДРОВНА</div>
+        <div class="pass-kicker" data-i18n="kicker">Салық төлеушінің паспорты</div>
+        <div class="pass-name" data-i18n="c3_ip">ЖК АЛИМКУЛОВА ЭЛЕОНОРА АЛЕКСАНДРОВНА</div>
         <div class="rows">
-          <div class="row"><span class="k">ЖСН / ИИН</span><span class="v">830203499031</span></div>
-          <div class="row"><span class="k">Нақты мекенжайы / Фактический адрес</span><span class="v">г. Алматы, пр. Абая, 44А, Promenade</span></div>
-          <div class="row"><span class="k">Заңды мекенжайы / Юридический адрес</span><span class="v">г. Алматы, ул. Тайманова, дом 136, кв./офис 40</span></div>
-          <div class="row"><span class="k">Жұмыс режимі / Режим работы</span><span class="v">24/7, демалыссыз / без выходных</span></div>
-          <div class="row"><span class="k">Байланыс телефоны / Контактный телефон</span><span class="v"><a href="tel:+77770355617">+7 777 035 56 17</a></span></div>
-          <div class="row"><span class="k">Мемлекеттік тіркеу / Государственная регистрация</span><span class="v">Регистрация уведомления о начале деятельности ИП: 29.04.2024</span></div>
-          <div class="row"><span class="k">Орган / Орган</span><span class="v">УГД по Бостандыкскому району</span></div>
-          <div class="talon-line">Талон № <b>KZ91TWQ03955717</b> · Входящий № <b>KZ83UWQ06335706</b></div>
+          <div class="row"><span class="k" data-i18n="lbl_iin">ЖСН</span><span class="v">830203499031</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_fact">Нақты мекенжайы</span><span class="v" data-i18n="c3_fact">Алматы қ., Абай даңғ., 44А, Promenade</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_legal">Заңды мекенжайы</span><span class="v" data-i18n="c3_legal">Алматы қ., Тайманов к-сі, 136-үй, 40-пәтер/кеңсе</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_hours">Жұмыс режимі</span><span class="v" data-i18n="val_hours">24/7, демалыссыз</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77770355617">+7 777 035 56 17</a></span></div>
+          <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg3">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 29.04.2024</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_bostandyk">Бостандық ауданы бойынша МКБ</span></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ91TWQ03955717</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ83UWQ06335706</b></div>
         </div>
-        <a class="pass-btn" href="talon-alimkulova.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'alimkulova'})">
+        <a class="pass-btn" href="/ugolok/talon-alimkulova.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'alimkulova'})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          Талонды ашу / Открыть талон (PDF)
+          <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
 
@@ -230,25 +249,25 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
         <div class="pass-top">
           <span class="pass-num">04</span>
           <div class="pass-place">
-            <small>Del Cappuccino</small>
-            <h3>Толе Би, 64</h3>
+            <small data-i18n="c4_place">Del Cappuccino</small>
+            <h3 data-i18n="c4_addr">Төле би к-сі, 64</h3>
           </div>
         </div>
-        <div class="pass-kicker">Салық төлеушінің паспорты · Паспорт налогоплательщика</div>
-        <div class="pass-name">ИП КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ</div>
+        <div class="pass-kicker" data-i18n="kicker">Салық төлеушінің паспорты</div>
+        <div class="pass-name" data-i18n="c4_ip">ЖК КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ</div>
         <div class="rows">
-          <div class="row"><span class="k">ЖСН / ИИН</span><span class="v">810127300096</span></div>
-          <div class="row"><span class="k">Нақты мекенжайы / Фактический адрес</span><span class="v">г. Алматы, ул. Толе би, 64</span></div>
-          <div class="row"><span class="k">Заңды мекенжайы / Юридический адрес</span><span class="v">г. Алматы, мкр. Мамыр-7, дом 21</span></div>
-          <div class="row"><span class="k">Жұмыс режимі / Режим работы</span><span class="v">24/7, демалыссыз / без выходных</span></div>
-          <div class="row"><span class="k">Байланыс телефоны / Контактный телефон</span><span class="v"><a href="tel:+77769079070">+7 776 907 90 70</a></span></div>
-          <div class="row"><span class="k">Мемлекеттік тіркеу / Государственная регистрация</span><span class="v">Регистрация уведомления о начале деятельности ИП: 23.08.2022</span></div>
-          <div class="row"><span class="k">Орган / Орган</span><span class="v">УГД по Ауэзовскому району</span></div>
-          <div class="talon-line">Талон № <b>KZ26TWQ02214961</b> · Входящий № <b>KZ94UWQ03863366</b></div>
+          <div class="row"><span class="k" data-i18n="lbl_iin">ЖСН</span><span class="v">810127300096</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_fact">Нақты мекенжайы</span><span class="v" data-i18n="c4_fact">Алматы қ., Төле би к-сі, 64</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_legal">Заңды мекенжайы</span><span class="v" data-i18n="c4_legal">Алматы қ., Мамыр-7 ы/а, 21-үй</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_hours">Жұмыс режимі</span><span class="v" data-i18n="val_hours">24/7, демалыссыз</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77769079070">+7 776 907 90 70</a></span></div>
+          <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg4">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 23.08.2022</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_auezov">Әуезов ауданы бойынша МКБ</span></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ26TWQ02214961</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ94UWQ03863366</b></div>
         </div>
-        <a class="pass-btn" href="talon-koshkarov.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'koshkarov'})">
+        <a class="pass-btn" href="/ugolok/talon-koshkarov.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'koshkarov'})">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
-          Талонды ашу / Открыть талон (PDF)
+          <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
 
@@ -258,23 +277,14 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   <!-- ── ИНФОРМАЦИЯ ПОТРЕБИТЕЛЮ ── -->
   <section class="sec">
     <div class="sec-head">
-      <p class="eyebrow">условия · шарттар</p>
-      <h2 class="sec-title">Информация потребителю<span class="kz">Тұтынушыға ақпарат</span></h2>
+      <p class="eyebrow" data-i18n="sec2_eyebrow">Шарттар</p>
+      <h2 class="sec-title" data-i18n="sec2_title">Тұтынушыға ақпарат</h2>
     </div>
     <div class="info">
       <ul>
-        <li>
-          <span class="kz">Қоғамдық тамақтану қызметтері. Бағалар теңгемен көрсетіледі.</span>
-          <b>Услуги общественного питания. Цены указываются в тенге.</b>
-        </li>
-        <li>
-          <span class="kz">Сатушы төлемді растайтын құжатты (фискалдық чекті) беруге міндетті.</span>
-          <b>Продавец обязан выдать документ, подтверждающий оплату (фискальный чек).</b>
-        </li>
-        <li>
-          <span class="kz">ҚР «Тұтынушылардың құқықтарын қорғау туралы» Заңы.</span>
-          <b>Закон РК «О защите прав потребителей».</b>
-        </li>
+        <li data-i18n="info1">Қоғамдық тамақтану қызметтері. Бағалар теңгемен көрсетіледі.</li>
+        <li data-i18n="info2">Сатушы төлемді растайтын құжатты (фискалдық чекті) беруге міндетті.</li>
+        <li data-i18n="info3">ҚР «Тұтынушылардың құқықтарын қорғау туралы» Заңы.</li>
       </ul>
     </div>
   </section>
@@ -282,18 +292,15 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   <!-- ── УПОЛНОМОЧЕННЫЙ ОРГАН ── -->
   <section class="sec">
     <div class="sec-head">
-      <p class="eyebrow">куда обратиться · уәкілетті орган</p>
-      <h2 class="sec-title">Уполномоченный орган<span class="kz">Уәкілетті орган</span></h2>
+      <p class="eyebrow" data-i18n="sec3_eyebrow">Қайда жүгінуге болады</p>
+      <h2 class="sec-title" data-i18n="sec3_title">Уәкілетті орган</h2>
     </div>
     <div class="info">
-      <div class="pass-name" style="margin-bottom:16px">
-        Комитет по защите прав потребителей МТИ РК
-        <span style="display:block;color:var(--sage);font-weight:600;font-size:12.5px;margin-top:3px">ҚР Сауда және интеграция министрлігінің Тұтынушылардың құқықтарын қорғау комитеті</span>
-      </div>
+      <div class="pass-name" data-i18n="org_name" style="margin-bottom:16px">ҚР СИМ Тұтынушылардың құқықтарын қорғау комитеті</div>
       <div class="contact-grid">
-        <div class="row"><span class="k">Мекенжайы / Адрес</span><span class="v">г. Астана, пр. Мәңгілік Ел, 8, «Дом министерств», 2 подъезд</span></div>
-        <div class="row"><span class="k">Тел. / Телефон</span><span class="v"><a href="tel:+77172749832">+7 (7172) 74-98-32</a> · <a href="tel:+77172750649">+7 (7172) 75-06-49</a> · <a href="tel:+77172749836">+7 (7172) 74-98-36</a></span></div>
-        <div class="row"><span class="k">Алматы қ. департаменті / Департамент по г. Алматы</span><span class="v"><a href="tel:+77273922154">+7 (727) 392-21-54</a></span></div>
+        <div class="row"><span class="k" data-i18n="lbl_address">Мекенжайы</span><span class="v" data-i18n="org_address">Астана қ., Мәңгілік Ел даңғ., 8, «Министрліктер үйі», 2-кіреберіс</span></div>
+        <div class="row"><span class="k" data-i18n="lbl_phone2">Телефон</span><span class="v"><a href="tel:+77172749832">+7 (7172) 74-98-32</a> · <a href="tel:+77172750649">+7 (7172) 75-06-49</a> · <a href="tel:+77172749836">+7 (7172) 74-98-36</a></span></div>
+        <div class="row"><span class="k" data-i18n="lbl_almaty_dept">Алматы қ. департаменті</span><span class="v"><a href="tel:+77273922154">+7 (727) 392-21-54</a></span></div>
         <div class="row"><span class="k">e-Tutynushy</span><span class="v"><a href="https://e-tutynushy.kz" target="_blank" rel="noopener">e-tutynushy.kz</a></span></div>
         <div class="row"><span class="k">eOtinish</span><span class="v"><a href="https://eotinish.kz" target="_blank" rel="noopener">eotinish.kz</a></span></div>
       </div>
@@ -303,47 +310,166 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   <!-- ── УРЕГУЛИРОВАНИЕ СПОРОВ ── -->
   <section class="sec">
     <div class="sec-head">
-      <p class="eyebrow">права потребителя · дауларды реттеу</p>
-      <h2 class="sec-title">Урегулирование споров<span class="kz">Дауларды реттеу</span></h2>
+      <p class="eyebrow" data-i18n="sec4_eyebrow">Тұтынушының құқықтары</p>
+      <h2 class="sec-title" data-i18n="sec4_title">Дауларды реттеу</h2>
     </div>
     <div class="info">
-      <p style="font-size:13.5px;color:var(--ink-2);line-height:1.55;margin-bottom:4px">
-        <span style="display:block;color:var(--sage);font-size:12.5px;margin-bottom:4px">Тұтынушы бұзылған құқықтарын қорғау үшін сатушыға талап қоюға, уәкілетті органға, сотқа дейінгі реттеу субъектілеріне немесе сотқа жүгінуге құқылы.</span>
-        Потребитель вправе обратиться с претензией к продавцу, в уполномоченный орган, к субъектам досудебного урегулирования либо в суд.
-      </p>
+      <p class="disp-intro" data-i18n="disp_intro">Тұтынушы бұзылған құқықтарын қорғау үшін сатушыға талап қоюға, уәкілетті органға, сотқа дейінгі реттеу субъектілеріне немесе сотқа жүгінуге құқылы.</p>
       <ol class="steps">
-        <li>Претензия продавцу / Сатушыға талап қою</li>
-        <li>Уполномоченный орган / Уәкілетті орган</li>
-        <li>Субъекты досудебного урегулирования / Сотқа дейінгі реттеу субъектілері</li>
-        <li>Суд / Сот</li>
+        <li data-i18n="step1">Сатушыға талап қою</li>
+        <li data-i18n="step2">Уәкілетті орган</li>
+        <li data-i18n="step3">Сотқа дейінгі реттеу субъектілері</li>
+        <li data-i18n="step4">Сот</li>
       </ol>
       <div class="perechen">
-        <b>Актуальный перечень субъектов досудебного урегулирования</b><br>
-        <span style="color:var(--sage)">Сотқа дейінгі реттеу субъектілерінің өзекті тізімі:</span><br>
-        gov.kz → Комитет по защите прав потребителей → Документы → Перечень субъектов досудебного урегулирования
+        <b data-i18n="perechen_title">Сотқа дейінгі реттеу субъектілерінің өзекті тізімі</b><br>
+        <span data-i18n="perechen_path">gov.kz → Тұтынушылардың құқықтарын қорғау комитеті → Құжаттар → Сотқа дейінгі реттеу субъектілерінің тізімі</span>
       </div>
     </div>
   </section>
 
   <div class="note">
     <span class="ic">ℹ️</span>
-    <span>
-      <span style="display:block;color:var(--sage);margin-bottom:3px">Ескерту: салық төлеушінің QR-паспорттарын МКД қалыптастырады және оларды ККМ жанында әрі жалпыға қолжетімді жерде орналастыру қажет.</span>
-      Примечание: QR-паспорта налогоплательщика формируются КГД и должны размещаться возле ККМ и в общедоступном месте.
-    </span>
+    <span data-i18n="note">Ескерту: салық төлеушінің QR-паспорттарын МКД қалыптастырады және оларды ККМ жанында әрі жалпыға қолжетімді жерде орналастыру қажет.</span>
   </div>
 
 </main>
 
 <footer class="shell">
   <div class="f-row">
-    <a class="back" href="../">
+    <a class="back" href="/">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
-      На главную · Басты бетке
+      <span data-i18n="back">Басты бетке</span>
     </a>
     <span>© 2026 Del Cappuccino · coffee &amp; food · Алматы</span>
   </div>
 </footer>
 
+<script>
+const I18N = {
+  kk: {
+    pageTitle:"Тұтынушы бұрышы — Del Cappuccino",
+    hero_eyebrow:"Ресми ақпарат", title:"Тұтынушы бұрышы", hero_sub:"Del Cappuccino · Алматы · Жұмыс режимі: 24/7",
+    sec1_eyebrow:"4 филиал", sec1_title:"Салық төлеушінің паспорты", kicker:"Салық төлеушінің паспорты",
+    c1_place:"Вавилон ТК", c2_place:"Комфорт Сити ТК", c3_place:"Promenade БО", c4_place:"Del Cappuccino",
+    c1_addr:"Розыбакиев к-сі, 247, В блок", c2_addr:"Серкебаев к-сі, 146", c3_addr:"Абай даңғ., 44А", c4_addr:"Төле би к-сі, 64",
+    c1_ip:"ЖК РУСТАМОВА ФАРАНГИЗ НАСИРОВНА", c2_ip:"ЖК ТУРЕХАН АҚБОТА МУРАТХАНҚЫЗЫ", c3_ip:"ЖК АЛИМКУЛОВА ЭЛЕОНОРА АЛЕКСАНДРОВНА", c4_ip:"ЖК КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ",
+    lbl_iin:"ЖСН", lbl_fact:"Нақты мекенжайы", lbl_legal:"Заңды мекенжайы", lbl_hours:"Жұмыс режимі", lbl_phone:"Байланыс телефоны", lbl_reg:"Мемлекеттік тіркеу", lbl_org:"Орган",
+    c1_fact:"Алматы қ., Розыбакиев к-сі, 247, В блок", c1_legal:"Алматы қ., Мамыр-7 ы/а, 21-үй, 58-пәтер/кеңсе",
+    c2_fact:"Алматы қ., Серкебаев к-сі, 146", c2_legal:"Шымкент қ., Игілік тұрғын алабы, Алдабек Майлыбаев к-сі, 7-үй",
+    c3_fact:"Алматы қ., Абай даңғ., 44А, Promenade", c3_legal:"Алматы қ., Тайманов к-сі, 136-үй, 40-пәтер/кеңсе",
+    c4_fact:"Алматы қ., Төле би к-сі, 64", c4_legal:"Алматы қ., Мамыр-7 ы/а, 21-үй",
+    val_hours:"24/7, демалыссыз",
+    reg1:"ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 16.02.2023",
+    reg2:"ЖК тіркеу деректерінің өзгеруі: 06.10.2023",
+    reg3:"ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 29.04.2024",
+    reg4:"ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 23.08.2022",
+    org_auezov:"Әуезов ауданы бойынша МКБ", org_bostandyk:"Бостандық ауданы бойынша МКБ",
+    lbl_talon:"Талон №", lbl_incoming:"Кіріс №", btn_talon:"Талонды ашу (PDF)",
+    sec2_eyebrow:"Шарттар", sec2_title:"Тұтынушыға ақпарат",
+    info1:"Қоғамдық тамақтану қызметтері. Бағалар теңгемен көрсетіледі.",
+    info2:"Сатушы төлемді растайтын құжатты (фискалдық чекті) беруге міндетті.",
+    info3:"ҚР «Тұтынушылардың құқықтарын қорғау туралы» Заңы.",
+    sec3_eyebrow:"Қайда жүгінуге болады", sec3_title:"Уәкілетті орган",
+    org_name:"ҚР СИМ Тұтынушылардың құқықтарын қорғау комитеті",
+    lbl_address:"Мекенжайы", org_address:"Астана қ., Мәңгілік Ел даңғ., 8, «Министрліктер үйі», 2-кіреберіс",
+    lbl_phone2:"Телефон", lbl_almaty_dept:"Алматы қ. департаменті",
+    sec4_eyebrow:"Тұтынушының құқықтары", sec4_title:"Дауларды реттеу",
+    disp_intro:"Тұтынушы бұзылған құқықтарын қорғау үшін сатушыға талап қоюға, уәкілетті органға, сотқа дейінгі реттеу субъектілеріне немесе сотқа жүгінуге құқылы.",
+    step1:"Сатушыға талап қою", step2:"Уәкілетті орган", step3:"Сотқа дейінгі реттеу субъектілері", step4:"Сот",
+    perechen_title:"Сотқа дейінгі реттеу субъектілерінің өзекті тізімі",
+    perechen_path:"gov.kz → Тұтынушылардың құқықтарын қорғау комитеті → Құжаттар → Сотқа дейінгі реттеу субъектілерінің тізімі",
+    note:"Ескерту: салық төлеушінің QR-паспорттарын МКД қалыптастырады және оларды ККМ жанында әрі жалпыға қолжетімді жерде орналастыру қажет.",
+    back:"Басты бетке"
+  },
+  ru: {
+    pageTitle:"Уголок потребителя — Del Cappuccino",
+    hero_eyebrow:"Официальная информация", title:"Уголок потребителя", hero_sub:"Del Cappuccino · Алматы · Режим работы: 24/7",
+    sec1_eyebrow:"4 филиала", sec1_title:"Паспорт налогоплательщика", kicker:"Паспорт налогоплательщика",
+    c1_place:"ЖК Вавилон", c2_place:"ЖК Комфорт Сити", c3_place:"БП Promenade", c4_place:"Del Cappuccino",
+    c1_addr:"Розыбакиева, 247, блок В", c2_addr:"Серкебаева, 146", c3_addr:"Абая, 44А", c4_addr:"Толе Би, 64",
+    c1_ip:"ИП РУСТАМОВА ФАРАНГИЗ НАСИРОВНА", c2_ip:"ИП ТУРЕХАН АҚБОТА МУРАТХАНҚЫЗЫ", c3_ip:"ИП АЛИМКУЛОВА ЭЛЕОНОРА АЛЕКСАНДРОВНА", c4_ip:"ИП КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ",
+    lbl_iin:"ИИН", lbl_fact:"Фактический адрес", lbl_legal:"Юридический адрес", lbl_hours:"Режим работы", lbl_phone:"Контактный телефон", lbl_reg:"Государственная регистрация", lbl_org:"Орган",
+    c1_fact:"г. Алматы, ул. Розыбакиева, 247, блок В", c1_legal:"г. Алматы, мкр. Мамыр-7, дом 21, кв./офис 58",
+    c2_fact:"г. Алматы, ул. Серкебаева, 146", c2_legal:"г. Шымкент, жилой массив Игилик, ул. Алдабек Майлыбаев, дом 7",
+    c3_fact:"г. Алматы, пр. Абая, 44А, Promenade", c3_legal:"г. Алматы, ул. Тайманова, дом 136, кв./офис 40",
+    c4_fact:"г. Алматы, ул. Толе би, 64", c4_legal:"г. Алматы, мкр. Мамыр-7, дом 21",
+    val_hours:"24/7, без выходных",
+    reg1:"Регистрация уведомления о начале деятельности ИП: 16.02.2023",
+    reg2:"Изменение регистрационных данных ИП от 06.10.2023",
+    reg3:"Регистрация уведомления о начале деятельности ИП: 29.04.2024",
+    reg4:"Регистрация уведомления о начале деятельности ИП: 23.08.2022",
+    org_auezov:"УГД по Ауэзовскому району", org_bostandyk:"УГД по Бостандыкскому району",
+    lbl_talon:"Талон №", lbl_incoming:"Входящий №", btn_talon:"Открыть талон (PDF)",
+    sec2_eyebrow:"Условия", sec2_title:"Информация потребителю",
+    info1:"Услуги общественного питания. Цены указываются в тенге.",
+    info2:"Продавец обязан выдать документ, подтверждающий оплату (фискальный чек).",
+    info3:"Закон РК «О защите прав потребителей».",
+    sec3_eyebrow:"Куда обратиться", sec3_title:"Уполномоченный орган",
+    org_name:"Комитет по защите прав потребителей МТИ РК",
+    lbl_address:"Адрес", org_address:"г. Астана, пр. Мәңгілік Ел, 8, «Дом министерств», 2 подъезд",
+    lbl_phone2:"Телефон", lbl_almaty_dept:"Департамент по г. Алматы",
+    sec4_eyebrow:"Права потребителя", sec4_title:"Урегулирование споров",
+    disp_intro:"Потребитель вправе обратиться с претензией к продавцу, в уполномоченный орган, к субъектам досудебного урегулирования либо в суд.",
+    step1:"Претензия продавцу", step2:"Уполномоченный орган", step3:"Субъекты досудебного урегулирования", step4:"Суд",
+    perechen_title:"Актуальный перечень субъектов досудебного урегулирования",
+    perechen_path:"gov.kz → Комитет по защите прав потребителей → Документы → Перечень субъектов досудебного урегулирования",
+    note:"Примечание: QR-паспорта налогоплательщика формируются КГД и должны размещаться возле ККМ и в общедоступном месте.",
+    back:"На главную"
+  },
+  en: {
+    pageTitle:"Consumer Corner — Del Cappuccino",
+    hero_eyebrow:"Official information", title:"Consumer Corner", hero_sub:"Del Cappuccino · Almaty · Open 24/7",
+    sec1_eyebrow:"4 locations", sec1_title:"Taxpayer passport", kicker:"Taxpayer passport",
+    c1_place:"Vavilon RC", c2_place:"Comfort City RC", c3_place:"Promenade BC", c4_place:"Del Cappuccino",
+    c1_addr:"Rozybakiev St., 247, block V", c2_addr:"Serkebaev St., 146", c3_addr:"Abai Ave., 44A", c4_addr:"Tole Bi St., 64",
+    c1_ip:"Sole proprietor RUSTAMOVA FARANGIZ NASIROVNA", c2_ip:"Sole proprietor TUREKHAN AKBOTA MURATKHANKYZY", c3_ip:"Sole proprietor ALIMKULOVA ELEONORA ALEKSANDROVNA", c4_ip:"Sole proprietor KOSHKAROV ASYLBEK KASYMBEKOVICH",
+    lbl_iin:"IIN (individual ID)", lbl_fact:"Actual address", lbl_legal:"Legal address", lbl_hours:"Working hours", lbl_phone:"Contact phone", lbl_reg:"State registration", lbl_org:"Authority",
+    c1_fact:"Almaty, Rozybakiev St., 247, block V", c1_legal:"Almaty, Mamyr-7 microdistrict, house 21, apt./office 58",
+    c2_fact:"Almaty, Serkebaev St., 146", c2_legal:"Shymkent, Igilik residential area, Aldabek Mailybaev St., house 7",
+    c3_fact:"Almaty, Abai Ave., 44A, Promenade", c3_legal:"Almaty, Taimanov St., house 136, apt./office 40",
+    c4_fact:"Almaty, Tole Bi St., 64", c4_legal:"Almaty, Mamyr-7 microdistrict, house 21",
+    val_hours:"24/7, no days off",
+    reg1:"Registration of notice of commencement of sole-proprietor activity: 16.02.2023",
+    reg2:"Change of sole-proprietor registration data: 06.10.2023",
+    reg3:"Registration of notice of commencement of sole-proprietor activity: 29.04.2024",
+    reg4:"Registration of notice of commencement of sole-proprietor activity: 23.08.2022",
+    org_auezov:"State Revenue Department, Auezov district", org_bostandyk:"State Revenue Department, Bostandyk district",
+    lbl_talon:"Coupon No.", lbl_incoming:"Incoming No.", btn_talon:"Open coupon (PDF)",
+    sec2_eyebrow:"Terms", sec2_title:"Consumer information",
+    info1:"Public catering services. Prices are shown in tenge.",
+    info2:"The seller is obliged to issue a document confirming payment (fiscal receipt).",
+    info3:"Law of the Republic of Kazakhstan “On Protection of Consumer Rights”.",
+    sec3_eyebrow:"Where to appeal", sec3_title:"Authorized body",
+    org_name:"Committee for Consumer Rights Protection, Ministry of Trade and Integration of the RK",
+    lbl_address:"Address", org_address:"Astana, Mangilik El Ave., 8, “House of Ministries”, entrance 2",
+    lbl_phone2:"Phone", lbl_almaty_dept:"Almaty city department",
+    sec4_eyebrow:"Consumer rights", sec4_title:"Dispute resolution",
+    disp_intro:"The consumer has the right to file a claim with the seller, the authorized body, pre-trial dispute resolution entities, or the court.",
+    step1:"Claim to the seller", step2:"Authorized body", step3:"Pre-trial dispute resolution entities", step4:"Court",
+    perechen_title:"Current list of pre-trial dispute resolution entities",
+    perechen_path:"gov.kz → Committee for Consumer Rights Protection → Documents → List of pre-trial dispute resolution entities",
+    note:"Note: taxpayer QR passports are generated by the State Revenue Committee and must be placed near the cash register and in a publicly accessible place.",
+    back:"Back to home"
+  }
+};
+
+function setLang(lang){
+  const dict = I18N[lang] || I18N.kk;
+  document.documentElement.lang = lang;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    const k = el.getAttribute('data-i18n');
+    if(dict[k] !== undefined) el.textContent = dict[k];
+  });
+  document.querySelectorAll('.lang-btn').forEach(function(b){
+    b.classList.toggle('on', b.getAttribute('data-lang') === lang);
+  });
+  if(dict.pageTitle) document.title = dict.pageTitle;
+  track('ugolok_lang', {lang: lang});
+}
+
+/* Always open in Kazakh */
+setLang('kk');
+</script>
 </body>
 </html>
