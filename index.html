@@ -295,26 +295,33 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-top{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--line)}
 .mm-cats{position:relative;display:flex;gap:7px;overflow-x:auto;padding:9px 24px;scrollbar-width:none}
 .mm-cats::-webkit-scrollbar{display:none}
-.mm-cat{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink-2);border-radius:99px;padding:6px 13px;font-family:'Golos Text';font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s}
+.mm-cat{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink-2);border-radius:99px;padding:8px 16px;font-family:'Golos Text';font-size:13px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s}
 .mm-cat:hover{border-color:var(--olive);color:var(--forest)}
 .mm-cat.on{background:var(--olive);color:#1D2408;border-color:var(--olive)}
 .mm-logo{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:21px;letter-spacing:.3em;color:var(--forest);margin-right:4px}
 .mm-tabs{display:flex;gap:6px}
-.mm-tab{border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:99px;padding:7px 16px;font-family:'Golos Text';font-size:12.5px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:.15s}
+.mm-tab{border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:99px;padding:9px 20px;font-family:'Golos Text';font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:.15s}
 .mm-tab.on{background:var(--forest);color:var(--cream)}
 .mm-mode{display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
-.mm-mode-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:.15s}
+.mm-mode-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:13px;font-weight:600;padding:8px 14px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:.15s}
 .mm-mode-btn:hover{color:var(--forest)}
 .mm-mode-btn.on{background:var(--olive);color:#1D2408}
 .mm-lang-wrap{margin-left:auto;position:relative;flex:none}
 .mm-lang{display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
-.mm-lang-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11px;font-weight:700;letter-spacing:.03em;padding:5px 9px;border-radius:99px;cursor:pointer;transition:.15s}
+.mm-lang-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:12.5px;font-weight:700;letter-spacing:.03em;padding:8px 12px;border-radius:99px;cursor:pointer;transition:.15s}
 .mm-lang-btn:hover{color:var(--forest)}
 .mm-lang-btn.on{background:var(--forest);color:var(--cream)}
-.mm-x{width:34px;height:34px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:17px;cursor:pointer}
+.mm-x{width:42px;height:42px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:20px;cursor:pointer}
 .mm-body{max-width:1150px;margin:0 auto;padding:36px 30px 64px}
 .mm-cols{columns:3;column-gap:46px}
 .mm-cols.single{columns:1;max-width:640px}
+.mm-intro{break-inside:avoid;display:flex;align-items:flex-end;gap:22px;margin-bottom:30px}
+.mm-intro .mm-mark{margin-bottom:0}
+.mm-where{font-size:12px;line-height:1.55;color:var(--ink-2);padding-bottom:6px}
+.mm-where-t{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:15px;letter-spacing:.14em;text-transform:uppercase;color:var(--forest);margin-bottom:3px}
+.mm-where-btn{position:relative;margin-top:9px;min-height:34px;padding:0 14px;border:1.5px solid var(--forest);border-radius:99px;background:transparent;color:var(--forest);font-family:'Golos Text';font-size:12.5px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s}
+.mm-where-btn::after{content:'';position:absolute;inset:-5px 0}
+.mm-where-btn:hover{background:var(--forest);color:var(--cream)}
 .mm-mark{break-inside:avoid;font-family:'Cormorant Garamond',serif;font-weight:500;font-size:104px;line-height:.92;color:var(--forest);letter-spacing:.04em;margin-bottom:30px}
 .mm-sec{break-inside:avoid;margin-bottom:32px}
 .mm-sec h4{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:16.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--forest);margin-bottom:6px}
@@ -342,29 +349,34 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-foot{margin-top:20px;text-align:center}
 .mm-oval{display:inline-block;border:1.5px solid var(--forest);border-radius:50%;padding:16px 40px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15.5px;color:var(--forest);line-height:1.3}
 .mm-fee{margin-top:14px;font-size:11px;color:var(--ink-2);line-height:1.6}
-@media(max-width:1020px){.mm-cols{columns:2}.mm-mark{font-size:88px}}
+@media(max-width:1020px){.mm-cols{columns:2}.mm-mark{font-size:88px}.mm-top{flex-wrap:wrap;row-gap:10px}.mm-tabs{order:3;width:100%}}
 @media(max-width:680px){
   .mm-cols{columns:1}
   .mm-cols.single{max-width:none}
   .mm-mark{font-size:52px;margin-bottom:18px}
+  .mm-intro{gap:16px;margin-bottom:22px}
+  .mm-where{font-size:12px;line-height:1.5;padding-bottom:2px}
+  .mm-where-t{font-size:13.5px;letter-spacing:.1em}
+  .mm-where-btn{margin-top:8px;min-height:36px;font-size:12.5px}
+  .mm-where-btn::after{inset:-4px 0}
   .mm-body{padding:20px 16px 48px}
   .mm-head{transition:transform .25s ease}
   .mm-head.compact{transform:translateY(calc(-1 * var(--mm-top-h,0px)))}
   .mm-top{padding:8px 12px;gap:8px;flex-wrap:wrap}
   .mm-logo{display:none}
-  .mm-mode{flex:1;min-width:0;height:40px;box-sizing:border-box}
-  .mm-mode-btn{flex:1;min-width:0;padding:0 8px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
-  .mm-lang-wrap{width:58px;height:40px}
+  .mm-mode{flex:1;min-width:0;height:44px;box-sizing:border-box}
+  .mm-mode-btn{flex:1;min-width:0;padding:0 8px;font-size:13.5px;overflow:hidden;text-overflow:ellipsis}
+  .mm-lang-wrap{width:60px;height:44px}
   .mm-lang{position:absolute;top:0;right:0;flex-direction:column;background:#F7EFE2;z-index:10}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
   .mm-lang.open{border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
-  .mm-lang-btn{min-width:52px;height:34px;padding:0 8px;font-size:12px}
-  .mm-x{width:40px;height:40px;font-size:20px}
+  .mm-lang-btn{min-width:54px;height:38px;padding:0 8px;font-size:13px}
+  .mm-x{width:44px;height:44px;font-size:22px}
   .mm-tabs{order:3;width:100%;gap:6px;overflow-x:auto;scrollbar-width:none}
   .mm-tabs::-webkit-scrollbar{display:none}
-  .mm-tab{flex:1 0 auto;height:40px;padding:0 12px;font-size:13px;white-space:nowrap}
+  .mm-tab{flex:1 0 auto;height:44px;padding:0 12px;font-size:14px;white-space:nowrap}
   .mm-cats{padding:6px 12px;gap:6px;scroll-behavior:smooth;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent)}
-  .mm-cat{height:40px;padding:0 15px;font-size:12.5px}
+  .mm-cat{height:44px;padding:0 16px;font-size:13.5px}
   .mm-sec h4{font-size:15px;letter-spacing:.2em}
   .mm-note{font-size:11.5px}
   .mm-it{gap:8px;padding:6px 0;font-size:14px}
@@ -1092,15 +1104,15 @@ const MENU_MODES = {
    Данные меню остаются на русском; перевод — словарь «русская строка → перевод».
    Нет перевода — показываем по-русски (новые позиции из Excel не ломают меню). */
 const MENU_UI = {
-  ru:{only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
+  ru:{to_togo:'Меню Жандосова', to_cafe:'Меню кофеен', only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', all:'Все', close:'Закрыть', dialog:'Меню',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
-  kk:{only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
+  kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', all:'Барлығы', close:'Жабу', dialog:'Мәзір',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
-  en:{only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
+  en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', all:'All', close:'Close', dialog:'Menu',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
@@ -1474,7 +1486,7 @@ function renderSections(){
     cols.classList.remove('single');
     const leg = MENU_MODES[menuMode].legend[menuTab];
     const legend = leg.length ? `<section class="mm-legend">${leg.map(l=>`<div>${T(l)}</div>`).join('')}</section>` : '';
-    cols.innerHTML = `<div class="mm-mark">ME<br>NU</div>` + data.map(secHTML).join('') + legend;
+    cols.innerHTML = `<div class="mm-intro"><div class="mm-mark">ME<br>NU</div>${whereHTML()}</div>` + data.map(secHTML).join('') + legend;
   }
   document.getElementById('menu-modal').scrollTop=0;
 }
@@ -1531,6 +1543,21 @@ function closeMenu(){
   hidePop(); closeLangMenu();
   document.getElementById('menu-modal').classList.remove('open');
   document.body.style.overflow='';
+}
+
+/* ── Где действует меню: адреса из BRANCHES (точка с menu:'togo' — Bakery to go, остальные — кофейни) ── */
+function whereHTML(){
+  const ui=MENU_UI[menuLang], togo=menuMode==='togo';
+  const list=BRANCHES.filter(b=>(b.menu==='togo')===togo);
+  if(togo){
+    return `<div class="mm-where"><div class="mm-where-t">${ui.mode_togo}</div>` +
+      list.map(b=>{const t=(b.hours||'').match(/\d{1,2}:\d{2}\s*[–-]\s*\d{1,2}:\d{2}/); return `<div>${T(b.addr)}${t?` · ${t[0]}`:''}</div>`;}).join('') +
+      `<button type="button" class="mm-where-btn" onclick="switchMenuMode('cafe')">← ${ui.to_cafe}</button></div>`;
+  }
+  const allDay=list.length && list.every(b=>b.hours==='24/7');
+  return `<div class="mm-where"><div class="mm-where-t">${ui.mode_cafe}${allDay?' · 24/7':''}</div>` +
+    list.map(b=>`<div>${T(b.addr)}</div>`).join('') +
+    `<button type="button" class="mm-where-btn" onclick="switchMenuMode('togo')">${ui.to_togo} →</button></div>`;
 }
 
 /* ── «Есть не во всех кофейнях»: значок «!» у позиции с only:['03','01'] (номера точек из BRANCHES) ── */
