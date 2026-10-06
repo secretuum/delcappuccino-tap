@@ -301,6 +301,10 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-tabs{display:flex;gap:6px}
 .mm-tab{border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:99px;padding:7px 16px;font-family:'Golos Text';font-size:12.5px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:.15s}
 .mm-tab.on{background:var(--forest);color:var(--cream)}
+.mm-mode{display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
+.mm-mode-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:.15s}
+.mm-mode-btn:hover{color:var(--forest)}
+.mm-mode-btn.on{background:var(--olive);color:#1D2408}
 .mm-lang{margin-left:auto;display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
 .mm-lang-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11px;font-weight:700;letter-spacing:.03em;padding:5px 9px;border-radius:99px;cursor:pointer;transition:.15s}
 .mm-lang-btn:hover{color:var(--forest)}
@@ -335,7 +339,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .mm-mark{font-size:58px;margin-bottom:20px}
   .mm-body{padding:22px 18px 48px}
   .mm-top{padding:10px 14px;gap:8px 8px;flex-wrap:wrap}
-  .mm-logo{font-size:15px;letter-spacing:.14em;margin-right:0}
+  .mm-logo{display:none}
+  .mm-mode-btn{padding:5px 9px;font-size:11px}
   .mm-tabs{gap:5px;order:3;width:100%}
   .mm-lang-btn{padding:5px 8px;font-size:10.5px}
   .mm-tab{padding:6px 10px;font-size:11.5px}
@@ -483,11 +488,11 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   <div class="mm-head">
     <div class="mm-top">
       <span class="mm-logo">MENU</span>
-      <div class="mm-tabs">
-        <button class="mm-tab on" id="mm-tab-kitchen" data-mm="tab_kitchen" onclick="switchMenuTab('kitchen')">Кухня</button>
-        <button class="mm-tab" id="mm-tab-bar" data-mm="tab_bar" onclick="switchMenuTab('bar')">Бар</button>
-        <button class="mm-tab" id="mm-tab-dessert" data-mm="tab_dessert" onclick="switchMenuTab('dessert')">Десерты</button>
+      <div class="mm-mode" role="group">
+        <button class="mm-mode-btn on" data-mode="cafe" data-mm="mode_cafe" onclick="switchMenuMode('cafe')">Кофейни</button>
+        <button class="mm-mode-btn" data-mode="togo" data-mm="mode_togo" onclick="switchMenuMode('togo')">Bakery to go</button>
       </div>
+      <div class="mm-tabs" id="mm-tabs"></div>
       <div class="mm-lang" role="group" aria-label="Тіл / Язык / Language">
         <button class="mm-lang-btn" data-lang="kk" onclick="switchMenuLang('kk')">ҚАЗ</button>
         <button class="mm-lang-btn on" data-lang="ru" onclick="switchMenuLang('ru')">РУС</button>
@@ -867,6 +872,174 @@ const MENU_DESSERT = [
  ]},
 ];
 
+/* Точка 05 · Bakery to go (Жандосова): цены пекарни, свой бар — листы «Меню_Жандосова» и «Барное_Меню_Жандосова» */
+const TOGO_DESSERT = [
+ {t:'Десерты', items:[
+  {n:'Кукис', p:300},
+  {n:'Картошка', p:350},
+  {n:'Маффин', p:400},
+  {n:'Дениш с клубникой', p:600},
+  {n:'Дениш с персиком', p:600},
+  {n:'Шу абрикосовый', p:700},
+  {n:'Шу ягодный', p:700},
+  {n:'Тарталетка Банофи пай', p:750},
+  {n:'Медовик', p:850},
+  {n:'Молочная девочка', p:850},
+  {n:'Синнабон классический', p:1000},
+  {n:'Испанский чизкейк', p:1000},
+  {n:'Вупи-пай', vol:'125 гр', p:1000},
+  {n:'Чизкейк по-казахски', p:1000},
+  {n:'Сникерс', vol:'125 гр', p:1000},
+  {n:'Наполеон', vol:'125 гр', p:1000},
+  {n:'Меренговый рулет', p:1000},
+  {n:'Фисташковый рулет', p:1200},
+  {n:'Фисташка-малина', p:1200},
+  {n:'Дубайский', p:1450},
+ ]},
+ {t:'Торты (целиком)', items:[
+  {n:'Меренговый рулет', p:6700},
+  {n:'Медовик', p:7000},
+  {n:'Молочная девочка', p:7000},
+  {n:'Наполеон', p:7000},
+  {n:'Чизкейк по-казахски', p:7700},
+  {n:'Чизкейк испанский', p:7700},
+  {n:'Сникерс', p:8700},
+  {n:'Вупи-пай', p:8700},
+  {n:'Фисташка-малина', p:8700},
+  {n:'Фисташковый рулет', p:9000},
+  {n:'Дубайский', p:12700},
+ ]},
+ {t:'Сэндвичи', items:[
+  {n:'Сэндвичи в ассортименте', p:990},
+ ]},
+];
+
+const TOGO_FROZEN = [
+ {t:'Полуфабрикаты', items:[
+  {n:'Вареники', vol:'500 гр', p:1550},
+  {n:'Котлеты говяжьи', vol:'4 шт', p:3300},
+  {n:'Котлеты куриные', vol:'4 шт', p:2400},
+  {n:'Манты с говядиной', vol:'10 шт', p:3000},
+  {n:'Пельмени с говядиной', vol:'500 гр', p:2900},
+  {n:'Самса с говядиной', vol:'8 шт', p:2000},
+  {n:'Самса с курицей', vol:'8 шт', p:1700},
+  {n:'Сырники классические', vol:'6 шт', p:1900},
+  {n:'Сырники с иримшиком', vol:'6 шт', p:2000},
+ ]},
+ {t:'Мясо', p:3596, items:[
+  {n:'Мякоть', vol:'500 гр'},
+  {n:'Фарш', vol:'500 гр'},
+  {n:'Рибай', vol:'1 шт (~300 гр)'},
+  {n:'Ти-бон', vol:'1 шт (~300 гр)'},
+ ]},
+];
+
+const TOGO_BAR = [
+ {t:'Классический кофе', note:'зерно — 100% арабика Бразилия Суль-де-Минас (орехи, какао, карамель)', items:[
+  {n:'Эспрессо / Доппио', vol:'25/50 мл', p:'1000/1200'},
+  {n:'Капучино', vol:'200/300/400 мл', p:'1400/1500/1700', m:['hit']},
+  {n:'Американо', vol:'200/300/400 мл', p:'1100/1200/1300'},
+  {n:'Латте', vol:'300/400 мл', p:'1500/1700'},
+  {n:'Флэт уайт', vol:'200 мл', p:1800},
+  {n:'Капучино 0.3 + синнабон', p:1890, m:['rec']},
+ ]},
+ {t:'Холодные кофейные напитки', badge:'330 мл', items:[
+  {n:'Ice Американо', p:1400},
+  {n:'Ice Латте', p:1600},
+  {n:'Ice Капучино', p:1600},
+  {n:'Эспрессо-тоник', p:2000},
+  {n:'Колд-брю: цитрус, вишня-лайм', p:2000},
+  {n:'Бамбл кофе на соке / на фреше', p:2100},
+  {n:'Фраппучино: карамель, шоколад', p:2400},
+ ]},
+ {t:'Листовые чаи', badge:'400 мл', items:[
+  {n:'Ассам', p:1300},
+  {n:'Жасмин', p:1300},
+  {n:'Молочный улун', p:1300},
+ ]},
+ {t:'Авторские чаи', badge:'400 мл', items:[
+  {n:'Чай по-казахски (нават, иримшик)', p:1500, m:['hit','honey']},
+  {n:'Ташкентский', p:1500, m:['hit']},
+  {n:'Марокканский', p:1500},
+  {n:'Груша-мята', p:1500},
+  {n:'Имбирь-цитрус-мёд', p:1500, m:['new','honey']},
+  {n:'Облепиха-мёд-апельсин', p:1500, m:['new','honey']},
+  {n:'Малина-лимон', p:1500, m:['new']},
+  {n:'Маракуйя-апельсин-мёд', p:1500, m:['new','honey']},
+ ]},
+ {t:'Ice tea', badge:'330 мл', items:[
+  {n:'Классический', p:1500},
+  {n:'Персиковый', p:1500},
+  {n:'Жасмин-яблоко', p:1500, m:['rec']},
+  {n:'Клубничный улун', p:1500, m:['rec']},
+ ]},
+ {t:'Лимонады', badge:'375 мл', items:[
+  {n:'Щавель-лайм', p:1400, m:['new']},
+  {n:'Манго-маракуйя', p:1400, m:['hit']},
+  {n:'Мохито', p:1400},
+  {n:'Гуава-гуарана', p:1400, m:['new']},
+  {n:'Клубничный мохито', p:1400},
+  {n:'Киви-яблоко', p:1400},
+  {n:'Ананас-черника', p:1400},
+ ]},
+ {t:'Милкшейки', badge:'375 мл', items:[
+  {n:'Ванильный', p:2300},
+  {n:'Oreo', p:2300},
+  {n:'Клубничный', p:2300},
+ ]},
+ {t:'Фреши', badge:'300 мл', items:[
+  {n:'Яблочный', p:2300},
+  {n:'Грейпфрутовый', p:2600},
+  {n:'Апельсиновый', p:2600},
+ ]},
+ {t:'Раф', badge:'375 мл', note:'*любой раф можем подать айс', items:[
+  {n:'Классический', p:2000},
+  {n:'Медовый', p:2000, m:['honey']},
+  {n:'С солёной карамелью', p:2000},
+ ]},
+ {t:'Спешл напитки', badge:'375 мл', items:[
+  {n:'Киви-тоник', p:2400},
+  {n:'Ginger-тоник', p:2400, m:['new','honey']},
+  {n:'Матча-латте', p:2400},
+  {n:'Моккачино', p:2400},
+  {n:'Ice матча малина тоник', p:2400, m:['hit']},
+  {n:'Ice клубничный капучино', p:2400},
+  {n:'Горячий шоколад', vol:'200/300 мл', p:'1500/1800'},
+ ]},
+ {t:'Глинтвейн б/а', badge:'375 мл', items:[
+  {n:'Яблочный', p:1600},
+  {n:'Вишнёвый', p:1600},
+  {n:'Апельсин-облепиха', p:1600},
+ ]},
+ {t:'Смузи', badge:'350 мл', items:[
+  {n:'Зелёный', p:2300},
+  {n:'Манго-чиа', p:2300},
+  {n:'Малина-банан', p:2300},
+  {n:'Черника-банан', p:2300},
+ ]},
+ {t:'Напитки', items:[
+  {n:'Морс клюквенный', vol:'300 мл', p:800},
+  {n:'Морс ягодный', vol:'300 мл', p:800, m:['new']},
+  {n:'Вода Del Cappuccino без газа', vol:'500 мл', p:800},
+  {n:'A’SU glass', vol:'250 мл', p:900},
+  {n:'A’SU glass', vol:'500 мл', p:1400},
+  {n:'Borjomi glass', vol:'500 мл', p:1600},
+  {n:'Salam Premium Cola glass', vol:'250 мл', p:1100},
+  {n:'Salam Premium Cola can', vol:'450 мл', p:1200},
+  {n:'AVA lemonade citrus', vol:'450 мл', p:1200},
+  {n:'Gracio: вишня, яблоко, апельсин', vol:'250 мл', p:1200},
+ ]},
+ {t:'Дополнения', items:[
+  {n:'Лимон', p:400},
+  {n:'Мёд', p:400, m:['honey']},
+  {n:'Молоко', p:400},
+  {n:'Сироп в ассортименте', vol:'30 мл', p:300},
+  {n:'Декаф', p:600},
+  {n:'Альтернативное молоко', p:600},
+  {n:'Безлактозное молоко', p:500},
+ ]},
+];
+
 const MK = {
   new:'<b class="mk mk-new">NEW</b>', hit:'<i class="mk">☆</i>', rec:'<i class="mk">👍</i>',
   hot:'<i class="mk">🌶</i>', pp:'<i class="mk">🥦</i>', alrg:'<i class="mk">▲</i>',
@@ -879,18 +1052,27 @@ const LEGEND = {
 };
 
 const MENU_TABS = {kitchen:MENU_KITCHEN, bar:MENU_BAR, dessert:MENU_DESSERT};
+/* режимы оверлея: кофейни (по умолчанию) и точка 05 Bakery to go — openMenu('togo') */
+const MENU_MODES = {
+  cafe:{tabs:MENU_TABS, legend:LEGEND, fee:true},
+  togo:{tabs:{dessert:TOGO_DESSERT, frozen:TOGO_FROZEN, bar:TOGO_BAR},
+        legend:{dessert:[], frozen:[], bar:LEGEND.bar}, fee:false},
+};
 
 /* ── Языки меню: ҚАЗ / РУС / ENG ──────────────
    Данные меню остаются на русском; перевод — словарь «русская строка → перевод».
    Нет перевода — показываем по-русски (новые позиции из Excel не ломают меню). */
 const MENU_UI = {
-  ru:{tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', all:'Все', close:'Закрыть', dialog:'Меню',
+  ru:{mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
+      tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', all:'Все', close:'Закрыть', dialog:'Меню',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
-  kk:{tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', all:'Барлығы', close:'Жабу', dialog:'Мәзір',
+  kk:{mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
+      tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', all:'Барлығы', close:'Жабу', dialog:'Мәзір',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
-  en:{tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', all:'All', close:'Close', dialog:'Menu',
+  en:{mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
+      tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', all:'All', close:'Close', dialog:'Menu',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
 };
@@ -908,14 +1090,12 @@ const MENU_TR = {
   'Горячие блюда':'Ыстық тағамдар', 'Блюда на гриле':'Грильдегі тағамдар', 'Хлеба':'Нан', 'Гарниры':'Гарнирлер',
   'Соусы':'Тұздықтар', 'На компанию':'Топқа арналған тағамдар',
   'Классический кофе':'Классикалық кофе',
-  'зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, молочный шоколад, грейпфрут)':
-    'дәнді таңдауға болады — 100% арабика: Бразилия Суль-де-Минас (жаңғақ, какао, карамель) немесе Эфиопия Иргачиф (гүл, жидек, сүтті шоколад, грейпфрут)',
   'Холодные кофейные напитки':'Салқын кофе сусындары', 'Листовые чаи':'Жапырақты шайлар', 'чашка 330 мл / чайник 1 л':'кесе 330 мл / шәйнек 1 л',
   'Авторские чаи':'Авторлық шайлар', 'чашка 330 мл / чайник 900 мл':'кесе 330 мл / шәйнек 900 мл', 'Ice tea':'Мұздай шай',
   'Лимонады':'Лимонадтар', 'стакан 330 мл / графин 900 мл':'стақан 330 мл / графин 900 мл', 'Милкшейки':'Милкшейктер',
   'Фреши':'Жаңа сығылған шырындар', 'Раф':'Раф кофе', '*любой раф можем подать айс':'*кез келген рафты мұздай етіп бере аламыз',
   'Спешл напитки':'Арнайы сусындар', 'Глинтвейн б/а':'Алкогольсіз глинтвейн', 'Смузи':'Смузи', 'Напитки':'Сусындар',
-  'Дополнения':'Қосымшалар', 'Десерты':'Десерттер', 'Банка-кейки':'Банкадағы десерттер', 'Торты (целиком)':'Тұтас торттар',
+  'Дополнения':'Қосымшалар', 'Десерты':'Десерттер','Торты (целиком)':'Тұтас торттар',
   /* кухня */
   'Каша овсяная с гранолой и персиком':'Гранола мен шабдалы қосылған сұлы ботқасы',
   'Каша рисовая с гранолой и бананом':'Гранола мен банан қосылған күріш ботқасы',
@@ -948,7 +1128,7 @@ const MENU_TR = {
   'Болоньезе':'Болоньезе', 'Четыре сезона':'Төрт маусым',
   'Курица по-тайски с рисом':'Тайша тауық еті, күрішпен', 'Рамен сливочный':'Кілегейлі рамен',
   '+ курица 500 / + креветки 800':'+ тауық 500 / + асшаян 800',
-  'Курица терияки':'Терияки тұздығындағы тауық', 'Говядина с овощами':'Көкөніс қосылған сиыр еті',
+'Говядина с овощами':'Көкөніс қосылған сиыр еті',
   'Том Ям с курицей':'Тауық еті қосылған Том Ям', 'Том Ям с креветками':'Асшаян қосылған Том Ям',
   'Альфредо с курицей и грибами':'Тауық еті мен саңырауқұлақ қосылған Альфредо', 'Спагетти болоньезе':'Спагетти болоньезе',
   'Паста с креветками':'Асшаян қосылған паста', 'Фарфалле с томлёной говядиной':'Бұқтырылған сиыр еті қосылған фарфалле',
@@ -998,12 +1178,11 @@ const MENU_TR = {
   'Альтернативное молоко':'Өсімдік сүті', 'Безлактозное молоко':'Лактозасыз сүт',
   /* десерты */
   'Кукис':'Кукис', 'Картошка':'«Картошка» десерті', 'Маффин':'Маффин', 'Дениш с персиком':'Шабдалы қосылған дениш',
-  'Дениш с клубникой':'Құлпынай қосылған дениш', 'Шу ягодный':'Жидекті шу', 'Шу абрикос-мак':'Өрік-көкнәр шу',
-  'Тарталетка Банофи пай':'Банофи пай тарталеткасы', 'Синнабон':'Синнабон', 'Медовик':'«Медовик» бал торты', 'Молочная девочка':'«Сүтті қыз» торты',
+  'Дениш с клубникой':'Құлпынай қосылған дениш', 'Шу ягодный':'Жидекті шу',
+  'Тарталетка Банофи пай':'Банофи пай тарталеткасы','Медовик':'«Медовик» бал торты', 'Молочная девочка':'«Сүтті қыз» торты',
   'Наполеон':'Наполеон', 'Сникерс':'Сникерс', 'Испанский чизкейк':'Испан чизкейгі', 'Чизкейк испанский':'Испан чизкейгі',
   'Чизкейк по-казахски':'Қазақша чизкейк', 'Меренговый рулет':'Меренга рулеті', 'Вупи-пай':'Вупи-пай',
   'Фисташковый рулет':'Пісте рулеті', 'Фисташка-малина':'Пісте-таңқурай', 'Дубайский':'«Дубай»',
-  'Орео':'Oreo', 'Фисташковый':'Пісте', 'Тирамису':'Тирамису',
   'Sweet chili':'Тәтті чили',
   'A’SU glass':'A’SU (шыны бөтелке)',
   'Borjomi glass':'Borjomi (шыны бөтелке)',
@@ -1036,6 +1215,11 @@ const MENU_TR = {
   'Фарш':'Тартылған ет',
   'Рибай':'Рибай',
   'Ти-бон':'Ти-бон',
+  'Сэндвичи':'Сэндвичтер',
+  'Сэндвичи в ассортименте':'Түрлі сэндвичтер',
+  'Сырники с иримшиком':'Ірімшік қосылған сүзбе құймақтары',
+  'Gracio: вишня, яблоко, апельсин':'Gracio: шие, алма, апельсин',
+  'зерно — 100% арабика Бразилия Суль-де-Минас (орехи, какао, карамель)':'дән — 100% арабика, Бразилия Суль-де-Минас (жаңғақ, какао, карамель)',
  },
  en:{
   '🌶 — острое блюдо':'🌶 — spicy', '👍 — особенно рекомендуем':'👍 — highly recommended', '☆ — популярное':'☆ — popular',
@@ -1047,14 +1231,12 @@ const MENU_TR = {
   'Горячие блюда':'Mains', 'Блюда на гриле':'Grill', 'Хлеба':'Bread', 'Гарниры':'Sides',
   'Соусы':'Sauces', 'На компанию':'Sharing platters',
   'Классический кофе':'Classic coffee',
-  'зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, молочный шоколад, грейпфрут)':
-    'choice of beans — 100% Arabica: Brazil Sul de Minas (nuts, cocoa, caramel) or Ethiopia Yirgacheffe (floral, berries, milk chocolate, grapefruit)',
   'Холодные кофейные напитки':'Iced coffee', 'Листовые чаи':'Loose-leaf teas', 'чашка 330 мл / чайник 1 л':'cup 330 ml / pot 1 L',
   'Авторские чаи':'Signature teas', 'чашка 330 мл / чайник 900 мл':'cup 330 ml / pot 900 ml', 'Ice tea':'Iced tea',
   'Лимонады':'Lemonades', 'стакан 330 мл / графин 900 мл':'glass 330 ml / carafe 900 ml', 'Милкшейки':'Milkshakes',
   'Фреши':'Fresh-squeezed juices', 'Раф':'Raf coffee', '*любой раф можем подать айс':'*any raf can be served iced',
   'Спешл напитки':'Specialty drinks', 'Глинтвейн б/а':'Non-alcoholic mulled wine', 'Смузи':'Smoothies', 'Напитки':'Soft drinks',
-  'Дополнения':'Add-ons', 'Десерты':'Desserts', 'Банка-кейки':'Cakes in a jar', 'Торты (целиком)':'Whole cakes',
+  'Дополнения':'Add-ons', 'Десерты':'Desserts','Торты (целиком)':'Whole cakes',
   'Каша овсяная с гранолой и персиком':'Oatmeal with granola and peach',
   'Каша рисовая с гранолой и бананом':'Rice porridge with granola and banana',
   'Датский завтрак':'Danish breakfast', 'Деревенский завтрак':'Country breakfast',
@@ -1086,7 +1268,7 @@ const MENU_TR = {
   'Болоньезе':'Bolognese', 'Четыре сезона':'Quattro Stagioni',
   'Курица по-тайски с рисом':'Thai-style chicken with rice', 'Рамен сливочный':'Creamy ramen',
   '+ курица 500 / + креветки 800':'add chicken 500 / add shrimp 800',
-  'Курица терияки':'Teriyaki chicken', 'Говядина с овощами':'Beef with vegetables',
+'Говядина с овощами':'Beef with vegetables',
   'Том Ям с курицей':'Tom Yum with chicken', 'Том Ям с креветками':'Tom Yum with shrimp',
   'Альфредо с курицей и грибами':'Chicken and mushroom Alfredo', 'Спагетти болоньезе':'Spaghetti Bolognese',
   'Паста с креветками':'Shrimp pasta', 'Фарфалле с томлёной говядиной':'Farfalle with braised beef',
@@ -1134,12 +1316,11 @@ const MENU_TR = {
   'Лимон':'Lemon', 'Мёд':'Honey', 'Нават':'Navat (rock sugar)', 'Молоко':'Milk', 'Сироп в ассортименте':'Syrup (various flavors)', 'Декаф':'Decaf',
   'Альтернативное молоко':'Plant-based milk', 'Безлактозное молоко':'Lactose-free milk',
   'Кукис':'Cookie', 'Картошка':'Kartoshka (chocolate truffle cake)', 'Маффин':'Muffin', 'Дениш с персиком':'Peach Danish',
-  'Дениш с клубникой':'Strawberry Danish', 'Шу ягодный':'Berry choux', 'Шу абрикос-мак':'Apricot & poppy seed choux',
-  'Тарталетка Банофи пай':'Banoffee pie tartlet', 'Синнабон':'Cinnamon roll', 'Медовик':'Medovik (honey cake)', 'Молочная девочка':'Milk Girl cake',
+  'Дениш с клубникой':'Strawberry Danish', 'Шу ягодный':'Berry choux',
+  'Тарталетка Банофи пай':'Banoffee pie tartlet','Медовик':'Medovik (honey cake)', 'Молочная девочка':'Milk Girl cake',
   'Наполеон':'Napoleon (mille-feuille)', 'Сникерс':'Snickers cake', 'Испанский чизкейк':'Spanish cheesecake', 'Чизкейк испанский':'Spanish cheesecake',
   'Чизкейк по-казахски':'Kazakh-style cheesecake', 'Меренговый рулет':'Meringue roll', 'Вупи-пай':'Whoopie pie',
   'Фисташковый рулет':'Pistachio roll', 'Фисташка-малина':'Pistachio & raspberry', 'Дубайский':'Dubai chocolate cake',
-  'Орео':'Oreo', 'Фисташковый':'Pistachio', 'Тирамису':'Tiramisu',
   'A’SU glass':'A’SU (glass bottle)',
   'Borjomi glass':'Borjomi (glass bottle)',
   'Salam Premium Cola glass':'Salam Premium Cola (glass bottle)',
@@ -1171,6 +1352,11 @@ const MENU_TR = {
   'Фарш':'Ground meat',
   'Рибай':'Ribeye',
   'Ти-бон':'T-bone',
+  'Сэндвичи':'Sandwiches',
+  'Сэндвичи в ассортименте':'Assorted sandwiches',
+  'Сырники с иримшиком':'Syrniki with irimshik (Kazakh dried curd)',
+  'Gracio: вишня, яблоко, апельсин':'Gracio: cherry, apple, orange',
+  'зерно — 100% арабика Бразилия Суль-де-Минас (орехи, какао, карамель)':'beans — 100% Arabica, Brazil Sul de Minas (nuts, cocoa, caramel)',
  },
 };
 
@@ -1202,10 +1388,12 @@ function switchMenuLang(lang){
   if(!MENU_LANGS.includes(lang)) return;
   menuLang=lang;
   try{ localStorage.setItem('dc_menu_lang', lang); }catch(e){}
-  applyMenuLang(); renderCats(); renderSections();
+  applyMenuLang(); renderTabs(); renderCats(); renderSections();
   track('menu_lang',{lang});
 }
+let menuMode='cafe';
 let menuTab='kitchen';
+function curTabs(){return MENU_MODES[menuMode].tabs}
 let menuCat=-1; /* -1 = все категории */
 
 function fmtP(p){return String(p).split('/').map(x=>(+String(x).trim()).toLocaleString('ru-RU')).join(' / ')}
@@ -1225,21 +1413,22 @@ function secHTML(s){
 }
 
 function renderSections(){
-  const data = MENU_TABS[menuTab];
+  const data = curTabs()[menuTab];
   const cols = document.getElementById('mm-cols');
   if(menuCat>=0){
     cols.classList.add('single');
     cols.innerHTML = secHTML(data[menuCat]);
   } else {
     cols.classList.remove('single');
-    const legend = `<section class="mm-legend">${LEGEND[menuTab].map(l=>`<div>${T(l)}</div>`).join('')}</section>`;
+    const leg = MENU_MODES[menuMode].legend[menuTab];
+    const legend = leg.length ? `<section class="mm-legend">${leg.map(l=>`<div>${T(l)}</div>`).join('')}</section>` : '';
     cols.innerHTML = `<div class="mm-mark">ME<br>NU</div>` + data.map(secHTML).join('') + legend;
   }
   document.getElementById('menu-modal').scrollTop=0;
 }
 
 function renderCats(){
-  const data = MENU_TABS[menuTab];
+  const data = curTabs()[menuTab];
   document.getElementById('mm-cats').innerHTML =
     `<button class="mm-cat${menuCat<0?' on':''}" onclick="filterCat(-1)">${MENU_UI[menuLang].all}</button>` +
     data.map((s,i)=>`<button class="mm-cat${menuCat===i?' on':''}" onclick="filterCat(${i})">${T(s.t)}</button>`).join('');
@@ -1247,24 +1436,38 @@ function renderCats(){
 
 function filterCat(i){
   menuCat=i; renderCats(); renderSections();
-  track('menu_cat',{tab:menuTab, cat:i<0?'все':MENU_TABS[menuTab][i].t});
+  track('menu_cat',{mode:menuMode, tab:menuTab, cat:i<0?'все':curTabs()[menuTab][i].t});
+}
+
+function renderTabs(){
+  const ui=MENU_UI[menuLang];
+  document.getElementById('mm-tabs').innerHTML = Object.keys(curTabs()).map(t=>
+    `<button class="mm-tab${t===menuTab?' on':''}" onclick="switchMenuTab('${t}')">${ui['tab_'+t]}</button>`).join('');
 }
 
 function renderMenuTab(tab){
   menuTab=tab; menuCat=-1;
-  ['kitchen','bar','dessert'].forEach(t=>
-    document.getElementById('mm-tab-'+t).classList.toggle('on', t===tab));
-  renderCats(); renderSections();
+  renderTabs(); renderCats(); renderSections();
 }
 
-function switchMenuTab(tab){ renderMenuTab(tab); track('menu_tab',{tab}); }
+function switchMenuTab(tab){ renderMenuTab(tab); track('menu_tab',{mode:menuMode, tab}); }
 
-function openMenu(){
+function setMenuMode(mode){
+  menuMode = mode==='togo' ? 'togo' : 'cafe';
+  document.querySelectorAll('.mm-mode-btn').forEach(b=>b.classList.toggle('on', b.dataset.mode===menuMode));
+  document.querySelector('#menu-modal .mm-fee').style.display = MENU_MODES[menuMode].fee ? '' : 'none';
+  if(!curTabs()[menuTab]) menuTab = Object.keys(curTabs())[0];
+}
+function switchMenuMode(mode){ setMenuMode(mode); renderMenuTab(menuTab); track('menu_mode',{mode:menuMode}); }
+
+/* openMenu() — меню кофеен; openMenu('togo') — меню точки 05 Bakery to go */
+function openMenu(mode){
   applyMenuLang();
+  setMenuMode(mode);
   renderMenuTab(menuTab);
   document.getElementById('menu-modal').classList.add('open');
   document.body.style.overflow='hidden';
-  track('menu_open');
+  track('menu_open',{mode:menuMode});
 }
 function closeMenu(){
   document.getElementById('menu-modal').classList.remove('open');
