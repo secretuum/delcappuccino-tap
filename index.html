@@ -340,7 +340,10 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-x{width:34px;height:34px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:17px;cursor:pointer}
 .mm-body{max-width:1150px;margin:0 auto;padding:36px 30px 64px}
 .mm-cols{columns:3;column-gap:46px}
-.mm-cols.single{columns:1;max-width:640px}
+.mm-part-h{display:flex;align-items:center;gap:18px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:40px;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin:56px 0 26px}
+.mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:36px}
+.mm-part-h::after{content:'';flex:1;height:1px;background:var(--forest);opacity:.3}
+.mm-legend-row{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:11.5px;color:var(--ink-2);padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .mm-intro{break-inside:avoid;display:flex;flex-wrap:wrap;align-items:flex-end;gap:14px 22px;margin-bottom:30px}
 .mm-intro .mm-mark{margin-bottom:0}
 .mm-where{font-size:12px;line-height:1.55;color:var(--ink-2);padding-bottom:6px}
@@ -371,15 +374,15 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-pop[hidden]{display:none}
 .mk{font-style:normal;font-size:10.5px;color:var(--forest)}
 .mk-new{color:var(--olive);font-weight:800;font-size:9px;letter-spacing:.04em;vertical-align:1px}
-.mm-legend{break-inside:avoid;margin-bottom:32px;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
-.mm-legend div{font-size:11px;color:var(--ink-2);padding:2.5px 0}
 .mm-foot{margin-top:20px;text-align:center}
 .mm-oval{display:inline-block;border:1.5px solid var(--forest);border-radius:50%;padding:16px 40px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:15.5px;color:var(--forest);line-height:1.3}
 .mm-fee{margin-top:14px;font-size:11px;color:var(--ink-2);line-height:1.6}
 @media(max-width:1020px){.mm-cols{columns:2}.mm-mark{font-size:88px}.mm-top{flex-wrap:wrap;row-gap:10px}.mm-tabs{order:3;width:100%}}
 @media(max-width:680px){
   .mm-cols{columns:1}
-  .mm-cols.single{max-width:none}
+  .mm-part-h{font-size:27px;letter-spacing:.14em;gap:14px;margin:40px 0 16px}
+  .mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:28px}
+  .mm-legend-row{gap:3px 14px;font-size:11px;padding:9px 0}
   .mm-mark{font-size:52px;margin-bottom:18px}
   .mm-intro{gap:16px;margin-bottom:22px}
   .mm-where{font-size:12px;line-height:1.5;padding-bottom:2px}
@@ -572,7 +575,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     <div class="mm-cats" id="mm-cats"></div>
   </div>
   <div class="mm-body">
-    <div class="mm-cols" id="mm-cols"></div>
+    <div class="mm-feed" id="mm-cols"></div>
     <div class="mm-foot">
       <span class="mm-oval" data-mm="allergy">Предупредите официанта<br>об аллергии на продукты</span>
       <p class="mm-fee" data-mm="fee">Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.</p>
@@ -936,6 +939,9 @@ const MENU_DESSERT = [
   {n:'Фисташковый рулет', p:9000},
   {n:'Дубайский', p:13000},
  ]},
+];
+
+const MENU_FROZEN = [
  {t:'Полуфабрикаты', items:[
   {n:'Вареники', vol:'500 гр', p:1550},
   {n:'Самса с курицей', vol:'8 шт', p:1700},
@@ -1131,9 +1137,10 @@ const LEGEND = {
   kitchen:['🌶 — острое блюдо','👍 — особенно рекомендуем','☆ — популярное','NEW — новинка','🥦 — правильное питание','⏱ — время ожидания от 30 минут'],
   bar:['NEW — новинка','☆ — популярное','👍 — особенно рекомендуем','🍯 — содержит мёд'],
   dessert:[],
+  frozen:[],
 };
 
-const MENU_TABS = {kitchen:MENU_KITCHEN, bar:MENU_BAR, dessert:MENU_DESSERT};
+const MENU_TABS = {kitchen:MENU_KITCHEN, bar:MENU_BAR, dessert:MENU_DESSERT, frozen:MENU_FROZEN};
 /* режимы оверлея: кофейни (по умолчанию) и точка 05 Bakery to go — openMenu('togo') */
 const MENU_MODES = {
   cafe:{tabs:MENU_TABS, legend:LEGEND, fee:true},
@@ -1146,15 +1153,15 @@ const MENU_MODES = {
    Нет перевода — показываем по-русски (новые позиции из Excel не ломают меню). */
 const MENU_UI = {
   ru:{to_togo:'Меню Жандосова', to_cafe:'Меню кофеен', only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
-      tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', all:'Все', close:'Закрыть', dialog:'Меню',
+      tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
-      tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', all:'Барлығы', close:'Жабу', dialog:'Мәзір',
+      tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
-      tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', all:'All', close:'Close', dialog:'Menu',
+      tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
 };
@@ -1492,19 +1499,21 @@ function switchMenuLang(lang){
   if(!MENU_LANGS.includes(lang)) return;
   menuLang=lang;
   try{ localStorage.setItem('dc_menu_lang', lang); }catch(e){}
-  applyMenuLang(); renderTabs(); renderCats(); renderSections(); setTopH();
+  const tab=menuTab, cat=menuCat;
+  applyMenuLang(); renderFeed(); renderTabs(); renderCats(); setTopH();
+  if(document.getElementById('menu-modal').scrollTop>0) scrollToMenuEl(document.getElementById(`mm-sec-${tab}-${cat}`), false);
   track('menu_lang',{lang});
 }
 let menuMode='cafe';
 let menuTab='kitchen';
 function curTabs(){return MENU_MODES[menuMode].tabs}
-let menuCat=-1; /* -1 = все категории */
+let menuCat=0;   /* активная категория текущей вкладки (подсветка, scroll-spy) */
 
 function fmtP(p){return String(p).split('/').map(x=>(+String(x).trim()).toLocaleString('ru-RU')).join(' / ')}
 
-function secHTML(s){
+function secHTML(s, tab, i){
   return `
-    <section class="mm-sec">
+    <section class="mm-sec" id="mm-sec-${tab}-${i}" data-i="${i}">
       <h4>${T(s.t)}${s.badge?` <span class="mm-badge">${T(s.badge)}</span>`:''}${s.p!=null?`<span class="mm-secp">${fmtP(s.p)}</span>`:''}</h4>
       ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
       ${s.items.map(it=>`
@@ -1516,34 +1525,33 @@ function secHTML(s){
     </section>`;
 }
 
-function renderSections(){
+/* Всё меню режима одной лентой: ME/NU с адресами → легенда → части по вкладкам (внутри — колонки) */
+function legendLine(){
+  const L=MENU_MODES[menuMode].legend, seen=new Set(), out=[];
+  Object.keys(curTabs()).forEach(t=>(L[t]||[]).forEach(l=>{ if(!seen.has(l)){ seen.add(l); out.push(l); } }));
+  return out.length ? `<div class="mm-legend-row">${out.map(l=>`<span>${T(l)}</span>`).join('')}</div>` : '';
+}
+function renderFeed(){
   hidePop();
-  const data = curTabs()[menuTab];
-  const cols = document.getElementById('mm-cols');
-  if(menuCat>=0){
-    cols.classList.add('single');
-    cols.innerHTML = secHTML(data[menuCat]);
-  } else {
-    cols.classList.remove('single');
-    const leg = MENU_MODES[menuMode].legend[menuTab];
-    const legend = leg.length ? `<section class="mm-legend">${leg.map(l=>`<div>${T(l)}</div>`).join('')}</section>` : '';
-    cols.innerHTML = `<div class="mm-intro"><div class="mm-mark">ME<br>NU</div>${whereHTML()}</div>` + data.map(secHTML).join('') + legend;
-  }
-  document.getElementById('menu-modal').scrollTop=0;
+  const ui=MENU_UI[menuLang], tabs=curTabs();
+  document.getElementById('mm-cols').innerHTML =
+    `<div class="mm-intro"><div class="mm-mark">ME<br>NU</div>${whereHTML()}</div>` + legendLine() +
+    Object.keys(tabs).map(t=>`
+    <section class="mm-part" id="mm-part-${t}" data-tab="${t}">
+      <h3 class="mm-part-h">${ui['tab_'+t]}</h3>
+      <div class="mm-cols">${tabs[t].map((s,i)=>secHTML(s,t,i)).join('')}</div>
+    </section>`).join('');
 }
 
 function renderCats(){
-  const data = curTabs()[menuTab];
-  document.getElementById('mm-cats').innerHTML =
-    `<button class="mm-cat${menuCat<0?' on':''}" onclick="filterCat(-1)">${MENU_UI[menuLang].all}</button>` +
-    data.map((s,i)=>`<button class="mm-cat${menuCat===i?' on':''}" onclick="filterCat(${i})">${T(s.t)}</button>`).join('');
-  const cats=document.getElementById('mm-cats'), on=cats.querySelector('.mm-cat.on');
-  if(on) cats.scrollTo({left:Math.max(0, on.offsetLeft-(cats.clientWidth-on.offsetWidth)/2), behavior:'smooth'});
+  const cats=document.getElementById('mm-cats');
+  cats.innerHTML = curTabs()[menuTab].map((s,i)=>
+    `<button class="mm-cat${menuCat===i?' on':''}" onclick="goMenuCat(${i})">${T(s.t)}</button>`).join('');
+  centerCat(false);
 }
-
-function filterCat(i){
-  menuCat=i; renderCats(); renderSections();
-  track('menu_cat',{mode:menuMode, tab:menuTab, cat:i<0?'все':curTabs()[menuTab][i].t});
+function centerCat(smooth){
+  const cats=document.getElementById('mm-cats'), on=cats.querySelector('.mm-cat.on');
+  if(on) cats.scrollTo({left:Math.max(0, on.offsetLeft-(cats.clientWidth-on.offsetWidth)/2), behavior:smooth?'smooth':'auto'});
 }
 
 function renderTabs(){
@@ -1552,29 +1560,73 @@ function renderTabs(){
     `<button class="mm-tab${t===menuTab?' on':''}" onclick="switchMenuTab('${t}')">${ui['tab_'+t]}</button>`).join('');
 }
 
-function renderMenuTab(tab){
-  menuTab=tab; menuCat=-1;
-  renderTabs(); renderCats(); renderSections();
+/* подсветка вкладки и категории; при смене вкладки полоса категорий показывает её разделы */
+function setActive(tab, cat){
+  if(tab!==menuTab){ menuTab=tab; menuCat=cat; renderTabs(); renderCats(); return; }
+  if(cat===menuCat) return;
+  menuCat=cat;
+  document.querySelectorAll('#mm-cats .mm-cat').forEach((b,i)=>b.classList.toggle('on', i===cat));
+  centerCat(true);
 }
 
-function switchMenuTab(tab){ renderMenuTab(tab); track('menu_tab',{mode:menuMode, tab}); }
+/* прокрутка к месту с поправкой на липкую шапку (на мобильном при движении вниз верх шапки уезжает) */
+let spyLock=false, spyTimer=0;
+function lockSpy(){ spyLock=true; clearTimeout(spyTimer); spyTimer=setTimeout(()=>{ spyLock=false; }, 900); }
+function scrollToMenuEl(el, smooth){
+  if(!el) return;
+  const modal=document.getElementById('menu-modal'), head=modal.querySelector('.mm-head');
+  const y=el.getBoundingClientRect().top - modal.getBoundingClientRect().top + modal.scrollTop;
+  const down = y > modal.scrollTop;
+  const off = (mmMobile.matches && down ? document.getElementById('mm-cats').offsetHeight : head.offsetHeight) + 10;
+  lockSpy();
+  modal.scrollTo({top:Math.max(0, y-off), behavior:smooth===false?'auto':'smooth'});
+}
+function menuSpy(){
+  if(spyLock) return;
+  const modal=document.getElementById('menu-modal'), feed=document.getElementById('mm-cols');
+  const probe=modal.querySelector('.mm-head').getBoundingClientRect().bottom + 16;
+  const parts=[...feed.querySelectorAll('.mm-part')]; if(!parts.length) return;
+  let part=parts[0];
+  const atEnd = modal.scrollTop + modal.clientHeight >= modal.scrollHeight - 4;
+  if(atEnd) part=parts[parts.length-1];
+  else parts.forEach(p=>{ if(p.getBoundingClientRect().top<=probe) part=p; });
+  let cat=0, best=-Infinity;
+  part.querySelectorAll('.mm-sec').forEach(sec=>{ const t=sec.getBoundingClientRect().top; if(t<=probe && t>=best){ best=t; cat=+sec.dataset.i; } });
+  setActive(part.dataset.tab, cat);
+}
+
+function switchMenuTab(tab){
+  setActive(tab, 0);
+  scrollToMenuEl(document.getElementById('mm-part-'+tab));
+  track('menu_tab',{mode:menuMode, tab});
+}
+function goMenuCat(i){
+  setActive(menuTab, i);
+  scrollToMenuEl(document.getElementById(`mm-sec-${menuTab}-${i}`));
+  track('menu_cat',{mode:menuMode, tab:menuTab, cat:curTabs()[menuTab][i].t});
+}
+
+/* новая лента режима — с начала */
+function renderMenuStart(){
+  menuTab=Object.keys(curTabs())[0]; menuCat=0;
+  renderFeed(); renderTabs(); renderCats();
+  lockSpy(); document.getElementById('menu-modal').scrollTop=0;
+}
 
 function setMenuMode(mode){
   const next = mode==='togo' ? 'togo' : 'cafe';
-  if(next!==menuMode) menuTab = Object.keys(MENU_MODES[next].tabs)[0];  /* новый режим — с первой вкладки */
   menuMode = next;
   document.querySelectorAll('.mm-mode-btn').forEach(b=>b.classList.toggle('on', b.dataset.mode===menuMode));
   document.querySelector('#menu-modal .mm-fee').style.display = MENU_MODES[menuMode].fee ? '' : 'none';
-  if(!curTabs()[menuTab]) menuTab = Object.keys(curTabs())[0];
 }
-function switchMenuMode(mode){ setMenuMode(mode); renderMenuTab(menuTab); track('menu_mode',{mode:menuMode}); }
+function switchMenuMode(mode){ setMenuMode(mode); renderMenuStart(); track('menu_mode',{mode:menuMode}); }
 
 /* openMenu() — меню кофеен; openMenu('togo') — меню точки 05 Bakery to go */
 function openMenu(mode){
   applyMenuLang();
   setMenuMode(mode);
-  renderMenuTab(menuTab);
   document.getElementById('menu-modal').classList.add('open');
+  renderMenuStart();
   document.body.style.overflow='hidden';
   document.querySelector('#menu-modal .mm-head').classList.remove('compact');
   setTopH(); syncLangAria();
@@ -1686,7 +1738,7 @@ function setTopH(){
     if(hidePop()){ e.stopPropagation(); if(b) b.focus(); }
     else if(closeLangMenu()){ e.stopPropagation(); modal.querySelector('.mm-lang-btn.on').focus(); }
   }, true);
-  let lastY=0;
+  let lastY=0, spyRaf=0;
   modal.addEventListener('scroll', ()=>{
     const y=modal.scrollTop;
     hidePop();
@@ -1695,6 +1747,8 @@ function setTopH(){
     else if(y>lastY+6) head.classList.add('compact');
     else if(y<lastY-6) head.classList.remove('compact');
     lastY=y;
+    if(spyLock){ clearTimeout(spyTimer); spyTimer=setTimeout(()=>{ spyLock=false; menuSpy(); }, 150); }
+    else if(!spyRaf) spyRaf=requestAnimationFrame(()=>{ spyRaf=0; menuSpy(); });
   }, {passive:true});
   window.addEventListener('resize', ()=>{
     hidePop();
