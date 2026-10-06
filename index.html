@@ -58,6 +58,7 @@ nav{display:flex;gap:22px;margin-left:8px}
 nav a{font-size:13.5px;text-decoration:none;color:var(--ink-2);font-weight:500}
 nav a:hover{color:var(--forest)}
 .hspace{flex:1}
+.hbar-m{display:none}
 .btn{
   display:inline-flex;align-items:center;gap:6px;
   background:var(--forest);color:var(--cream);
@@ -191,19 +192,27 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center}
 .modal.open{display:flex}
 .backdrop{position:absolute;inset:0;background:rgba(36,28,21,.55);border:0}
-.sheet{position:relative;background:var(--surface);color:var(--ink);width:100%;max-width:460px;border-radius:22px 22px 0 0;padding:28px 26px 32px;animation:up .25s ease;max-height:80vh;overflow:auto}
-@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}}
+.sheet{position:relative;background:var(--surface);color:var(--ink);width:100%;max-width:480px;border-radius:22px 22px 0 0;padding:28px 26px 32px;padding-bottom:calc(24px + env(safe-area-inset-bottom));animation:up .25s ease;max-height:86vh;max-height:86dvh;overflow:auto;overscroll-behavior:contain}
+.sheet::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
+@media(min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}.sheet::before{display:none}}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
-.sheet .x{position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:16px}
+.sheet .x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:16px}
 .sheet h3{font-family:Comfortaa;font-size:23px;margin-bottom:6px;font-weight:700;color:var(--forest-dk)}
 .sheet .status{font-size:12.5px;color:var(--ink-2);margin-bottom:18px}
-.branch-row{display:flex;justify-content:space-between;align-items:center;padding:13px 0;border-top:1px solid var(--line)}
+.branch-row{padding:14px 0;border-top:1px solid var(--line)}
+.br-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:10px}
+.br-acts{display:flex;flex-wrap:wrap;gap:6px}
+.br-btn{flex:1 1 0;min-width:84px;min-height:44px;display:inline-flex;align-items:center;justify-content:center;padding:0 10px;border-radius:12px;border:1px solid var(--line);background:var(--surface);color:var(--forest-dk);font:inherit;font-size:13.5px;font-weight:700;text-decoration:none;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s,border-color .15s}
+.br-btn:hover{border-color:var(--forest)}
+.br-btn.wa{color:var(--olive);border-color:var(--olive)}
+.br-btn.on{background:var(--forest);color:var(--cream);border-color:var(--forest)}
+.br-btn.wa.on{background:var(--olive);color:#1D2408;border-color:var(--olive)}
 .branch-row:first-of-type{border-top:0}
 .branch-row .bn small{display:block;font-family:Comfortaa;color:var(--olive);font-size:10.5px;text-transform:uppercase;font-weight:700}
 .branch-row .bn b{font-weight:700;font-size:14px}
-.branch-row .bn .hrs{display:block;font-size:11px;color:var(--ink-2);margin-top:2px}
-.branch-row .dist{font-size:11px;color:var(--ink-2);white-space:nowrap}
-.branch-row .bn-menu{border:0;background:none;padding:0;margin-top:4px;font:inherit;font-size:12px;font-weight:700;color:var(--olive);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
+.branch-row .bn b{display:block;margin-top:2px}
+.branch-row .bn .hrs{display:block;font-size:12px;color:var(--ink-2);margin-top:3px;line-height:1.4}
+.branch-row .dist{font-size:12px;font-weight:600;color:var(--forest);white-space:nowrap;background:var(--cream);border-radius:99px;padding:4px 9px}
 
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;gap:32px;padding:40px 0 52px}
@@ -224,23 +233,38 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .hbar{padding:10px 16px;gap:10px}
   .logo-d{display:none}
   .logo-m{display:block}
+  .hbar > a:first-child{min-height:44px;min-width:44px}
+  .hbar-m{display:flex;gap:8px;margin-left:auto}
+  .hbar-m a,.hbar-m button{min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;border:1.5px solid var(--forest);background:transparent;color:var(--forest);font:inherit;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer}
+  .hbar-m button{background:var(--forest);color:var(--cream)}
 
   /* Hero */
   .hero{grid-template-columns:1fr;padding:16px 20px 28px;gap:16px}
   .hero-photo{display:block;order:-1;aspect-ratio:16/9;border-radius:16px}
   .tag{font-size:11px;margin-bottom:8px}
-  h1{font-size:24px;line-height:1.15;margin-bottom:10px}
-  .lead{font-size:13.5px;line-height:1.55;margin-bottom:20px}
+  h1{font-size:28px;line-height:1.12;margin-bottom:10px}
+  .lead{font-size:14.5px;line-height:1.6;margin-bottom:20px}
   .actions{flex-direction:column;gap:10px}
   .actions .btn{
     width:100%;justify-content:center;
     padding:17px 20px;font-size:16px;border-radius:14px;
   }
 
-  /* Hide decorative sections */
+  /* Story прячем (его цифры — в mini-stats); формат и витрину — лентами с прокруткой вбок */
   .story{display:none}
-  .features{display:none}
-  .showcase{display:none}
+  .features{padding:30px 0 28px}
+  .f-head{margin-bottom:16px}
+  .f-head h2{font-size:22px}
+  .f-grid,.sc-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:16px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+  .f-grid::-webkit-scrollbar,.sc-row::-webkit-scrollbar{display:none}
+  .f-grid article{flex:0 0 76%;scroll-snap-align:start;min-height:0;padding:18px}
+  .f-grid b{margin-bottom:8px}
+  .f-grid h3{font-size:15px}
+  .f-grid p{font-size:13.5px}
+  .showcase{padding:28px 16px 6px;overflow:hidden}
+  .sc-head{margin-bottom:14px;gap:6px}
+  .sc-head h2{font-size:20px}
+  .sc-row img{flex:0 0 58%;width:58%;scroll-snap-align:start;border-radius:14px}
 
   /* Locations */
   .locations{padding:24px 0}
@@ -248,19 +272,21 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .loc-head h2{font-size:22px}
   .loc-head p{display:none}
   .loc-grid{grid-template-columns:1fr;gap:10px}
-  .loc-card{padding:14px 16px}
-  .loc-card small{font-size:10px}
-  .loc-card h3{font-size:16px;margin:4px 0 10px}
-  .loc-meta{font-size:11.5px;margin-bottom:10px}
+  .loc-card{padding:16px}
+  .loc-card small{font-size:10.5px}
+  .loc-card h3{font-size:18px;margin:5px 0 10px}
+  .loc-meta{font-size:13px;margin-bottom:12px}
   /* Contact */
-  .contact{padding:24px 0}
+  .contact{padding:28px 16px}
   .contact img{height:38px;margin-bottom:10px;border-radius:0}
+  .contact > a:first-child{display:inline-flex;min-height:44px;min-width:44px;align-items:center;justify-content:center}
   .contact h2{font-size:20px;margin-bottom:14px}
 
   /* Footer */
   footer{padding:14px 0}
   .f-row{justify-content:center;font-size:11px;gap:4px}
   .f-row img{display:none}
+  .f-row a.f-ugolok{padding:12px 18px;font-size:12.5px}
 
   /* Hide on mobile */
   .hide-mobile{display:none}
@@ -285,7 +311,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 
   /* Contact buttons в ряд */
   .contact-actions{flex-direction:row}
-  .contact-actions .btn{flex:1;padding:14px 10px;font-size:14px;border-radius:14px}
+  .contact-actions .btn{flex:1;justify-content:center;min-height:48px;padding:14px 10px;font-size:14px;border-radius:14px}
 }
 
 /* ── MENU OVERLAY ──────────────────────── */
@@ -402,6 +428,10 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <a href="#features">Формат</a>
       <a href="#locations">Адреса</a>
     </nav>
+    <div class="hbar-m">
+      <button onclick="track('cta_menu',{src:'hbar_m'});openMenu()">Меню</button>
+      <a href="#locations" onclick="track('cta_locations',{src:'hbar_m'})">Адреса</a>
+    </div>
   </div>
 </header>
 
@@ -412,8 +442,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <h1>Вкус,<br>который<br>собирает <span>близких</span>.</h1>
       <p class="lead">Завтраки весь день, любимая кухня и хороший кофе. Кофейни работают круглосуточно, чтобы вкусный перерыв всегда был рядом, а в bakery to go — десерты и кофе с собой.</p>
       <div class="actions">
-        <button class="btn olive" onclick="track('cta_book');openModal()">Забронировать столик</button>
-        <button class="btn ghost hide-mobile" onclick="track('cta_route');openModal()">Построить маршрут</button>
+        <button class="btn olive" onclick="track('cta_book');openModal('book')">Забронировать столик</button>
+        <button class="btn ghost hide-mobile" onclick="track('cta_route');openModal('route')">Построить маршрут</button>
         <button class="btn ghost" onclick="track('cta_menu');openMenu()">Посмотреть меню</button>
       </div>
       <div class="halal-badge">
@@ -496,7 +526,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   <a href="#top" onclick="event.preventDefault();goHome()" aria-label="На главную"><img src="assets/logo-mono.png" alt="dC"></a>
   <h2>Загляните<br>на <span>кофе</span>.</h2>
   <div class="contact-actions">
-    <button class="btn olive" onclick="track('cta_wa_contact');openModal()">WhatsApp</button>
+    <button class="btn olive" onclick="track('cta_wa_contact');openModal('wa')">WhatsApp</button>
     <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram')">@del.cappuccino</a>
   </div>
 </section>
@@ -564,6 +594,7 @@ const BRANCHES = [
 ];
 
 function waLink(phone,text){return `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`}
+function branchWa(b){return waLink(b.phone,(b.wa||'Здравствуйте! Хочу забронировать столик в Del Cappuccino, ')+b.addr)}
 
 function renderLocations(){
   document.getElementById('loc-grid').innerHTML = BRANCHES.map(b=>`
@@ -575,7 +606,7 @@ function renderLocations(){
         <a href="tel:${b.phone}" onclick="track('loc_call',{branch:'${b.n}'})">Позвонить</a>
         <a href="${b.route}" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'${b.n}'})">Маршрут</a>
         ${b.menu?`<a href="#" onclick="event.preventDefault();track('loc_menu',{branch:'${b.n}'});openMenu('${b.menu}')">Меню</a>`:''}
-        <a class="wa" href="${waLink(b.phone,(b.wa||'Здравствуйте! Хочу забронировать столик в Del Cappuccino, ')+b.addr)}" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'${b.n}'})">WhatsApp</a>
+        <a class="wa" href="${branchWa(b)}" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'${b.n}'})">WhatsApp</a>
       </div>
     </div>`).join('');
 }
@@ -587,26 +618,36 @@ function dist(a,b){
   return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
 }
 
-function openModal(){
+function openModal(intent){
+  intent=intent||'route';
   document.getElementById('modal').classList.add('open');
   const list = document.getElementById('branch-list');
   const status = document.getElementById('modal-status');
+  const hint = {book:'Забронируйте столик в WhatsApp или по телефону', wa:'Напишите нам в WhatsApp', route:'Откройте маршрут в 2GIS'}[intent]||'';
+  list.innerHTML='';
   if(navigator.geolocation){
+    status.textContent='Определяем ваше местоположение…';
     navigator.geolocation.getCurrentPosition(pos=>{
       const here=[pos.coords.latitude,pos.coords.longitude];
       const ordered = [...BRANCHES].map(b=>({...b,d:dist(here,b.geo)})).sort((a,b)=>a.d-b.d);
-      status.textContent = 'Ближайший к вам филиал — сверху';
+      status.textContent = 'Ближайший к вам филиал — сверху. '+hint;
       draw(ordered,true);
-    }, ()=>{ status.textContent='Не удалось определить геолокацию — выберите филиал вручную'; draw(BRANCHES,false); },
+    }, ()=>{ status.textContent='Не удалось определить геолокацию — выберите филиал вручную. '+hint; draw(BRANCHES,false); },
     {timeout:4000});
-  } else { status.textContent='Выберите филиал вручную'; draw(BRANCHES,false); }
+  } else { status.textContent='Выберите филиал вручную. '+hint; draw(BRANCHES,false); }
   function draw(arr,showDist){
+    const on=k=>k===intent||(k==='wa'&&intent==='book')?' on':'';
     list.innerHTML = arr.map(b=>`
       <div class="branch-row">
-        <div class="bn"><small>${b.n}</small><b>${b.addr}</b><span class="hrs">${b.hours}</span>${b.menu?`<button class="bn-menu" onclick="track('modal_menu',{branch:'${b.n}'});closeModal();openMenu('${b.menu}')">Меню точки →</button>`:''}</div>
-        <div style="display:flex;align-items:center;gap:10px">
+        <div class="br-top">
+          <div class="bn"><small>${b.n}</small><b>${b.addr}</b><span class="hrs">${b.hours}${b.note?` · ${b.note}`:''}</span></div>
           ${showDist&&b.d!==undefined?`<span class="dist">${b.d.toFixed(1)} км</span>`:''}
-          <a class="btn ghost" style="padding:6px 12px;font-size:12px" href="${b.route}" target="_blank" rel="noopener">Маршрут</a>
+        </div>
+        <div class="br-acts">
+          <a class="br-btn" href="tel:${b.phone}" onclick="track('modal_call',{branch:'${b.n}'})">Позвонить</a>
+          <a class="br-btn wa${on('wa')}" href="${branchWa(b)}" target="_blank" rel="noopener" onclick="track('modal_wa',{branch:'${b.n}',intent:'${intent}'})">WhatsApp</a>
+          <a class="br-btn${on('route')}" href="${b.route}" target="_blank" rel="noopener" onclick="track('modal_route',{branch:'${b.n}'})">Маршрут</a>
+          ${b.menu?`<button class="br-btn" onclick="track('modal_menu',{branch:'${b.n}'});closeModal();openMenu('${b.menu}')">Меню</button>`:''}
         </div>
       </div>`).join('');
   }
