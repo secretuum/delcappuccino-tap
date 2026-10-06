@@ -147,7 +147,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
     <h1 data-i18n="title">Тұтынушы бұрышы</h1>
     <div class="uk-sub">
       <span class="dot"></span>
-      <span data-i18n="hero_sub">Del Cappuccino · Алматы · Жұмыс режимі: 24/7</span>
+      <span data-i18n="hero_sub">Del Cappuccino · Алматы · Кофеханалар 24/7, bakery to go 07:00–22:00</span>
     </div>
   </div>
 </header>
@@ -157,7 +157,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   <!-- ── ПАСПОРТА НАЛОГОПЛАТЕЛЬЩИКА ── -->
   <section class="sec">
     <div class="sec-head">
-      <p class="eyebrow" data-i18n="sec1_eyebrow">4 филиал</p>
+      <p class="eyebrow" data-i18n="sec1_eyebrow">5 филиал</p>
       <h2 class="sec-title" data-i18n="sec1_title">Салық төлеушінің паспорты</h2>
     </div>
 
@@ -271,6 +271,33 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
         </a>
       </article>
 
+      <!-- 05 · Жандосова 94/12, bakery to go (ИП Кошкаров — тот же талон, что у Толе Би 64) -->
+      <article class="pass">
+        <div class="pass-top">
+          <span class="pass-num">05</span>
+          <div class="pass-place">
+            <small data-i18n="c5_place">Bakery to go · City ТК</small>
+            <h3 data-i18n="c5_addr">Жандосов к-сі, 94/12</h3>
+          </div>
+        </div>
+        <div class="pass-kicker" data-i18n="kicker">Салық төлеушінің паспорты</div>
+        <div class="pass-name" data-i18n="c4_ip">ЖК КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ</div>
+        <div class="rows">
+          <div class="row"><span class="k" data-i18n="lbl_iin">ЖСН</span><span class="v">810127300096</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_fact">Нақты мекенжайы</span><span class="v" data-i18n="c5_fact">Алматы қ., Жандосов к-сі, 94/12</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_legal">Заңды мекенжайы</span><span class="v" data-i18n="c4_legal">Алматы қ., Мамыр-7 ы/а, 21-үй</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_hours">Жұмыс режимі</span><span class="v" data-i18n="val_hours5">Күн сайын 07:00–22:00</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77773278566">+7 777 327 85 66</a></span></div>
+          <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg4">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 23.08.2022</span></div>
+          <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_auezov">Әуезов ауданы бойынша МКБ</span></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ26TWQ02214961</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ94UWQ03863366</b></div>
+        </div>
+        <a class="pass-btn" href="/ugolok/talon-koshkarov.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'koshkarov-togo'})">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
+        </a>
+      </article>
+
     </div>
   </section>
 
@@ -349,17 +376,18 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
 const I18N = {
   kk: {
     pageTitle:"Тұтынушы бұрышы — Del Cappuccino",
-    hero_eyebrow:"Ресми ақпарат", title:"Тұтынушы бұрышы", hero_sub:"Del Cappuccino · Алматы · Жұмыс режимі: 24/7",
-    sec1_eyebrow:"4 филиал", sec1_title:"Салық төлеушінің паспорты", kicker:"Салық төлеушінің паспорты",
-    c1_place:"Вавилон ТК", c2_place:"Комфорт Сити ТК", c3_place:"Promenade БО", c4_place:"Del Cappuccino",
-    c1_addr:"Розыбакиев к-сі, 247, В блок", c2_addr:"Серкебаев к-сі, 146", c3_addr:"Абай даңғ., 44А", c4_addr:"Төле би к-сі, 64",
+    hero_eyebrow:"Ресми ақпарат", title:"Тұтынушы бұрышы", hero_sub:"Del Cappuccino · Алматы · Кофеханалар 24/7, bakery to go 07:00–22:00",
+    sec1_eyebrow:"5 филиал", sec1_title:"Салық төлеушінің паспорты", kicker:"Салық төлеушінің паспорты",
+    c1_place:"Вавилон ТК", c2_place:"Комфорт Сити ТК", c3_place:"Promenade БО", c4_place:"Del Cappuccino", c5_place:"Bakery to go · City ТК",
+    c1_addr:"Розыбакиев к-сі, 247, В блок", c2_addr:"Серкебаев к-сі, 146", c3_addr:"Абай даңғ., 44А", c4_addr:"Төле би к-сі, 64", c5_addr:"Жандосов к-сі, 94/12",
     c1_ip:"ЖК РУСТАМОВА ФАРАНГИЗ НАСИРОВНА", c2_ip:"ЖК ТУРЕХАН АҚБОТА МУРАТХАНҚЫЗЫ", c3_ip:"ЖК АЛИМКУЛОВА ЭЛЕОНОРА АЛЕКСАНДРОВНА", c4_ip:"ЖК КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ",
     lbl_iin:"ЖСН", lbl_fact:"Нақты мекенжайы", lbl_legal:"Заңды мекенжайы", lbl_hours:"Жұмыс режимі", lbl_phone:"Байланыс телефоны", lbl_reg:"Мемлекеттік тіркеу", lbl_org:"Орган",
     c1_fact:"Алматы қ., Розыбакиев к-сі, 247, В блок", c1_legal:"Алматы қ., Мамыр-7 ы/а, 21-үй, 58-пәтер/кеңсе",
     c2_fact:"Алматы қ., Серкебаев к-сі, 146", c2_legal:"Шымкент қ., Игілік тұрғын алабы, Алдабек Майлыбаев к-сі, 7-үй",
     c3_fact:"Алматы қ., Абай даңғ., 44А, Promenade", c3_legal:"Алматы қ., Тайманов к-сі, 136-үй, 40-пәтер/кеңсе",
     c4_fact:"Алматы қ., Төле би к-сі, 64", c4_legal:"Алматы қ., Мамыр-7 ы/а, 21-үй",
-    val_hours:"24/7, демалыссыз",
+    c5_fact:"Алматы қ., Жандосов к-сі, 94/12",
+    val_hours:"24/7, демалыссыз", val_hours5:"Күн сайын 07:00–22:00",
     reg1:"ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 16.02.2023",
     reg2:"ЖК тіркеу деректерінің өзгеруі: 06.10.2023",
     reg3:"ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 29.04.2024",
@@ -384,17 +412,18 @@ const I18N = {
   },
   ru: {
     pageTitle:"Уголок потребителя — Del Cappuccino",
-    hero_eyebrow:"Официальная информация", title:"Уголок потребителя", hero_sub:"Del Cappuccino · Алматы · Режим работы: 24/7",
-    sec1_eyebrow:"4 филиала", sec1_title:"Паспорт налогоплательщика", kicker:"Паспорт налогоплательщика",
-    c1_place:"ЖК Вавилон", c2_place:"ЖК Комфорт Сити", c3_place:"БП Promenade", c4_place:"Del Cappuccino",
-    c1_addr:"Розыбакиева, 247, блок В", c2_addr:"Серкебаева, 146", c3_addr:"Абая, 44А", c4_addr:"Толе Би, 64",
+    hero_eyebrow:"Официальная информация", title:"Уголок потребителя", hero_sub:"Del Cappuccino · Алматы · Кофейни 24/7, bakery to go 07:00–22:00",
+    sec1_eyebrow:"5 точек", sec1_title:"Паспорт налогоплательщика", kicker:"Паспорт налогоплательщика",
+    c1_place:"ЖК Вавилон", c2_place:"ЖК Комфорт Сити", c3_place:"БП Promenade", c4_place:"Del Cappuccino", c5_place:"Bakery to go · ЖК City",
+    c1_addr:"Розыбакиева, 247, блок В", c2_addr:"Серкебаева, 146", c3_addr:"Абая, 44А", c4_addr:"Толе Би, 64", c5_addr:"Жандосова, 94/12",
     c1_ip:"ИП РУСТАМОВА ФАРАНГИЗ НАСИРОВНА", c2_ip:"ИП ТУРЕХАН АҚБОТА МУРАТХАНҚЫЗЫ", c3_ip:"ИП АЛИМКУЛОВА ЭЛЕОНОРА АЛЕКСАНДРОВНА", c4_ip:"ИП КОШКАРОВ АСЫЛБЕК КАСЫМБЕКОВИЧ",
     lbl_iin:"ИИН", lbl_fact:"Фактический адрес", lbl_legal:"Юридический адрес", lbl_hours:"Режим работы", lbl_phone:"Контактный телефон", lbl_reg:"Государственная регистрация", lbl_org:"Орган",
     c1_fact:"г. Алматы, ул. Розыбакиева, 247, блок В", c1_legal:"г. Алматы, мкр. Мамыр-7, дом 21, кв./офис 58",
     c2_fact:"г. Алматы, ул. Серкебаева, 146", c2_legal:"г. Шымкент, жилой массив Игилик, ул. Алдабек Майлыбаев, дом 7",
     c3_fact:"г. Алматы, пр. Абая, 44А, Promenade", c3_legal:"г. Алматы, ул. Тайманова, дом 136, кв./офис 40",
     c4_fact:"г. Алматы, ул. Толе би, 64", c4_legal:"г. Алматы, мкр. Мамыр-7, дом 21",
-    val_hours:"24/7, без выходных",
+    c5_fact:"г. Алматы, ул. Жандосова, 94/12",
+    val_hours:"24/7, без выходных", val_hours5:"Ежедневно 07:00–22:00",
     reg1:"Регистрация уведомления о начале деятельности ИП: 16.02.2023",
     reg2:"Изменение регистрационных данных ИП от 06.10.2023",
     reg3:"Регистрация уведомления о начале деятельности ИП: 29.04.2024",
@@ -419,17 +448,18 @@ const I18N = {
   },
   en: {
     pageTitle:"Consumer Corner — Del Cappuccino",
-    hero_eyebrow:"Official information", title:"Consumer Corner", hero_sub:"Del Cappuccino · Almaty · Open 24/7",
-    sec1_eyebrow:"4 locations", sec1_title:"Taxpayer passport", kicker:"Taxpayer passport",
-    c1_place:"Vavilon RC", c2_place:"Comfort City RC", c3_place:"Promenade BC", c4_place:"Del Cappuccino",
-    c1_addr:"Rozybakiev St., 247, block V", c2_addr:"Serkebaev St., 146", c3_addr:"Abai Ave., 44A", c4_addr:"Tole Bi St., 64",
+    hero_eyebrow:"Official information", title:"Consumer Corner", hero_sub:"Del Cappuccino · Almaty · Cafés open 24/7, bakery to go 07:00–22:00",
+    sec1_eyebrow:"5 locations", sec1_title:"Taxpayer passport", kicker:"Taxpayer passport",
+    c1_place:"Vavilon RC", c2_place:"Comfort City RC", c3_place:"Promenade BC", c4_place:"Del Cappuccino", c5_place:"Bakery to go · City RC",
+    c1_addr:"Rozybakiev St., 247, block V", c2_addr:"Serkebaev St., 146", c3_addr:"Abai Ave., 44A", c4_addr:"Tole Bi St., 64", c5_addr:"Zhandosov St., 94/12",
     c1_ip:"Sole proprietor RUSTAMOVA FARANGIZ NASIROVNA", c2_ip:"Sole proprietor TUREKHAN AKBOTA MURATKHANKYZY", c3_ip:"Sole proprietor ALIMKULOVA ELEONORA ALEKSANDROVNA", c4_ip:"Sole proprietor KOSHKAROV ASYLBEK KASYMBEKOVICH",
     lbl_iin:"IIN (individual ID)", lbl_fact:"Actual address", lbl_legal:"Legal address", lbl_hours:"Working hours", lbl_phone:"Contact phone", lbl_reg:"State registration", lbl_org:"Authority",
     c1_fact:"Almaty, Rozybakiev St., 247, block V", c1_legal:"Almaty, Mamyr-7 microdistrict, house 21, apt./office 58",
     c2_fact:"Almaty, Serkebaev St., 146", c2_legal:"Shymkent, Igilik residential area, Aldabek Mailybaev St., house 7",
     c3_fact:"Almaty, Abai Ave., 44A, Promenade", c3_legal:"Almaty, Taimanov St., house 136, apt./office 40",
     c4_fact:"Almaty, Tole Bi St., 64", c4_legal:"Almaty, Mamyr-7 microdistrict, house 21",
-    val_hours:"24/7, no days off",
+    c5_fact:"Almaty, Zhandosov St., 94/12",
+    val_hours:"24/7, no days off", val_hours5:"Daily 07:00–22:00",
     reg1:"Registration of notice of commencement of sole-proprietor activity: 16.02.2023",
     reg2:"Change of sole-proprietor registration data: 06.10.2023",
     reg3:"Registration of notice of commencement of sole-proprietor activity: 29.04.2024",
