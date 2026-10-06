@@ -301,7 +301,11 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-tabs{display:flex;gap:6px}
 .mm-tab{border:1.5px solid var(--forest);background:transparent;color:var(--forest);border-radius:99px;padding:7px 16px;font-family:'Golos Text';font-size:12.5px;font-weight:600;cursor:pointer;letter-spacing:.02em;transition:.15s}
 .mm-tab.on{background:var(--forest);color:var(--cream)}
-.mm-x{margin-left:auto;width:34px;height:34px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:17px;cursor:pointer}
+.mm-lang{margin-left:auto;display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
+.mm-lang-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11px;font-weight:700;letter-spacing:.03em;padding:5px 9px;border-radius:99px;cursor:pointer;transition:.15s}
+.mm-lang-btn:hover{color:var(--forest)}
+.mm-lang-btn.on{background:var(--forest);color:var(--cream)}
+.mm-x{width:34px;height:34px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:17px;cursor:pointer}
 .mm-body{max-width:1150px;margin:0 auto;padding:36px 30px 64px}
 .mm-cols{columns:3;column-gap:46px}
 .mm-cols.single{columns:1;max-width:640px}
@@ -329,9 +333,10 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .mm-cols.single{max-width:none}
   .mm-mark{font-size:58px;margin-bottom:20px}
   .mm-body{padding:22px 18px 48px}
-  .mm-top{padding:10px 14px;gap:8px}
+  .mm-top{padding:10px 14px;gap:8px 8px;flex-wrap:wrap}
   .mm-logo{font-size:15px;letter-spacing:.14em;margin-right:0}
-  .mm-tabs{gap:5px}
+  .mm-tabs{gap:5px;order:3;width:100%}
+  .mm-lang-btn{padding:5px 8px;font-size:10.5px}
   .mm-tab{padding:6px 10px;font-size:11.5px}
   .mm-cats{padding:8px 14px}
   .mm-cat{padding:6px 11px;font-size:11.5px}
@@ -478,19 +483,24 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     <div class="mm-top">
       <span class="mm-logo">MENU</span>
       <div class="mm-tabs">
-        <button class="mm-tab on" id="mm-tab-kitchen" onclick="switchMenuTab('kitchen')">Кухня</button>
-        <button class="mm-tab" id="mm-tab-bar" onclick="switchMenuTab('bar')">Бар</button>
-        <button class="mm-tab" id="mm-tab-dessert" onclick="switchMenuTab('dessert')">Десерты</button>
+        <button class="mm-tab on" id="mm-tab-kitchen" data-mm="tab_kitchen" onclick="switchMenuTab('kitchen')">Кухня</button>
+        <button class="mm-tab" id="mm-tab-bar" data-mm="tab_bar" onclick="switchMenuTab('bar')">Бар</button>
+        <button class="mm-tab" id="mm-tab-dessert" data-mm="tab_dessert" onclick="switchMenuTab('dessert')">Десерты</button>
       </div>
-      <button class="mm-x" onclick="closeMenu()" aria-label="Закрыть">×</button>
+      <div class="mm-lang" role="group" aria-label="Тіл / Язык / Language">
+        <button class="mm-lang-btn" data-lang="kk" onclick="switchMenuLang('kk')">ҚАЗ</button>
+        <button class="mm-lang-btn on" data-lang="ru" onclick="switchMenuLang('ru')">РУС</button>
+        <button class="mm-lang-btn" data-lang="en" onclick="switchMenuLang('en')">ENG</button>
+      </div>
+      <button class="mm-x" id="mm-x" onclick="closeMenu()" aria-label="Закрыть">×</button>
     </div>
     <div class="mm-cats" id="mm-cats"></div>
   </div>
   <div class="mm-body">
     <div class="mm-cols" id="mm-cols"></div>
     <div class="mm-foot">
-      <span class="mm-oval">Предупредите официанта<br>об аллергии на продукты</span>
-      <p class="mm-fee">Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.</p>
+      <span class="mm-oval" data-mm="allergy">Предупредите официанта<br>об аллергии на продукты</span>
+      <p class="mm-fee" data-mm="fee">Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.</p>
     </div>
   </div>
 </div>
@@ -845,6 +855,269 @@ const LEGEND = {
 };
 
 const MENU_TABS = {kitchen:MENU_KITCHEN, bar:MENU_BAR, dessert:MENU_DESSERT};
+
+/* ── Языки меню: ҚАЗ / РУС / ENG ──────────────
+   Данные меню остаются на русском; перевод — словарь «русская строка → перевод».
+   Нет перевода — показываем по-русски (новые позиции из Excel не ломают меню). */
+const MENU_UI = {
+  ru:{tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', all:'Все', close:'Закрыть', dialog:'Меню',
+      allergy:'Предупредите официанта<br>об аллергии на продукты',
+      fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
+  kk:{tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', all:'Барлығы', close:'Жабу', dialog:'Мәзір',
+      allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
+      fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
+  en:{tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', all:'All', close:'Close', dialog:'Menu',
+      allergy:'Please tell your server<br>about any food allergies',
+      fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
+};
+
+const MENU_TR = {
+ kk:{
+  /* легенда */
+  '🌶 — острое блюдо':'🌶 — ащы тағам', '👍 — особенно рекомендуем':'👍 — ерекше ұсынамыз', '☆ — популярное':'☆ — танымал',
+  'NEW — новинка':'NEW — жаңа', '🥦 — правильное питание':'🥦 — дұрыс тамақтану', '⏱ — время ожидания от 30 минут':'⏱ — дайындалу уақыты 30 минуттан бастап',
+  '🍯 — содержит мёд':'🍯 — құрамында бал бар', 'зачёркнутая цена — цена до скидки':'сызылған баға — жеңілдікке дейінгі баға',
+  /* категории, бейджи, примечания */
+  'Завтраки':'Таңғы ас', 'весь день':'күні бойы', 'Сладкие завтраки':'Тәтті таңғы ас', 'Салаты':'Салаттар', 'Боулы':'Боулдар',
+  'Супы':'Сорпалар', 'Сэндвичи / Закуски':'Сэндвичтер / Тіскебасарлар', 'Пицца':'Пицца', 'Паназия':'Паназия',
+  'Паста фреш':'Фреш паста', 'для пасты используем муку semola':'пастаны semola ұнынан дайындаймыз',
+  'Горячие блюда':'Ыстық тағамдар', 'Блюда на гриле':'Грильдегі тағамдар', 'Хлеба':'Нан', 'Гарниры':'Гарнирлер',
+  'Соусы':'Тұздықтар', 'На компанию':'Топқа арналған',
+  'Классический кофе':'Классикалық кофе',
+  'зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, молочный шоколад, грейпфрут)':
+    'дәнді таңдауға болады — 100% арабика: Бразилия Суль-де-Минас (жаңғақ, какао, карамель) немесе Эфиопия Иргачиф (гүл, жидек, сүтті шоколад, грейпфрут)',
+  'Холодные кофейные напитки':'Салқын кофе сусындары', 'Листовые чаи':'Жапырақ шай', 'чашка 330 мл / чайник 1 л':'кесе 330 мл / шәйнек 1 л',
+  'Авторские чаи':'Авторлық шайлар', 'чашка 330 мл / чайник 900 мл':'кесе 330 мл / шәйнек 900 мл', 'Ice tea':'Мұздай шай',
+  'Лимонады':'Лимонадтар', 'стакан 330 мл / графин 900 мл':'стақан 330 мл / графин 900 мл', 'Милкшейки':'Милкшейктер',
+  'Фреши':'Фрештер', 'Раф':'Раф', '*любой раф можем подать айс':'*кез келген рафты мұздай етіп бере аламыз',
+  'Спешл напитки':'Арнайы сусындар', 'Глинтвейн б/а':'Алкогольсіз глинтвейн', 'Смузи':'Смузи', 'Напитки':'Сусындар',
+  'Дополнения':'Қосымшалар', 'Десерты':'Десерттер', 'Банка-кейки':'Банкадағы кейктер', 'Торты (целиком)':'Тұтас торттар',
+  /* кухня */
+  'Каша овсяная с гранолой и персиком':'Гранола мен шабдалы қосылған сұлы ботқасы',
+  'Каша рисовая с гранолой и бананом':'Гранола мен банан қосылған күріш ботқасы',
+  'Датский завтрак':'Дат таңғы асы', 'Деревенский завтрак':'Ауылша таңғы ас',
+  'Яичница-глазунья с сосисками и соусом релиш':'Шұжық пен релиш тұздығы қосылған қуырылған жұмыртқа',
+  'Крок Мадам с копчёной индейкой':'Ысталған күркетауық қосылған Крок Мадам',
+  'Алматинский завтрак':'Алматы таңғы асы', 'Английский завтрак':'Ағылшын таңғы асы',
+  'Бургер бриошь с куриной котлетой и омлетом':'Тауық котлеті мен омлет қосылған бриошь бургер',
+  'Картофельные драники с лососем и соусом голландез':'Албырт пен голландез тұздығы қосылған картоп драниктері',
+  'Шакшука с тартином':'Тартин қосылған шакшука',
+  'Вафли из цукини с малосольным лососем':'Аз тұздалған албырт қосылған цукини вафлиі',
+  'Круассан спайси с креветками и скрэмблом':'Асшаян мен скрэмбл қосылған спайси круассан',
+  'Стейк-омлет':'Стейк-омлет', 'Завтрак с лососем':'Албырт қосылған таңғы ас',
+  'Блины со сметаной и мёдом':'Қаймақ пен бал қосылған құймақ', 'Блины с бананом и с шоколадом':'Банан мен шоколад қосылған құймақ',
+  'Мини-панкейки':'Мини-панкейктер', 'Бельгийские вафли':'Бельгия вафлиі', 'Сырники классические':'Классикалық сырниктер',
+  'Греческий салат':'Грек салаты', 'Салат с цыплёнком гриль':'Грильде пісірілген тауық еті қосылған салат',
+  'Тёплый салат из баклажана с соусом Ассай':'Ассай тұздығы қосылған баклажаннан жылы салат',
+  'Салат с запечённой сёмгой в соусе терияки':'Терияки тұздығында пісірілген албырт қосылған салат',
+  'Салат со стейком':'Стейк қосылған салат',
+  'Боул с курицей':'Тауық еті қосылған боул', 'Боул с креветками':'Асшаян қосылған боул', 'Боул с сёмгой':'Албырт қосылған боул',
+  'Суп лапша куриная':'Тауық етімен кеспе көже', 'Чечевичный крем-суп':'Жасымық крем-сорпасы', 'Тыквенный крем-суп':'Асқабақ крем-сорпасы',
+  'Суп с фрикадельками':'Фрикаделька қосылған сорпа', 'Борщ с говядиной и бородинским хлебом':'Сиыр етімен борщ, бородин нанымен',
+  'Чучвара (пельмени с говядиной)':'Шүшпара (сиыр етімен тұшпара)',
+  'Лепёшка с пюре и сыром':'Картоп пюресі мен сыр салынған күлше', 'Наггетсы':'Наггетстер', 'Чебуреки с фаршем':'Тартылған ет салынған шебурек',
+  'Сэндвич с куриным шницелем':'Тауық шницелі бар сэндвич', 'Кесадилья с курицей':'Тауық еті қосылған кесадилья',
+  'Бургер с томлёной говядиной':'Бұқтырылған сиыр еті қосылған бургер',
+  'Клаб сэндвич с курицей и картофелем фри':'Тауық еті бар клаб сэндвич, фри картобымен',
+  'Бургер классический с картофелем фри':'Классикалық бургер, фри картобымен',
+  'Маргарита':'Маргарита', 'Пепперони':'Пепперони', 'С курицей и грибами':'Тауық еті мен саңырауқұлақ қосылған',
+  'Болоньезе':'Болоньезе', 'Четыре сезона':'Төрт маусым',
+  'Курица по-тайски с рисом':'Күріш қосылған тайша тауық', 'Рамен сливочный':'Кілегейлі рамен',
+  '+ курица 500 / + креветки 800':'+ тауық 500 / + асшаян 800',
+  'Курица терияки':'Терияки тауық', 'Говядина с овощами':'Көкөніс қосылған сиыр еті',
+  'Том Ям с курицей':'Тауық еті қосылған Том Ям', 'Том Ям с креветками':'Асшаян қосылған Том Ям',
+  'Альфредо с курицей и грибами':'Тауық еті мен саңырауқұлақ қосылған Альфредо', 'Спагетти болоньезе':'Спагетти болоньезе',
+  'Паста с креветками':'Асшаян қосылған паста', 'Фарфалле с томлёной говядиной':'Бұқтырылған сиыр еті қосылған фарфалле',
+  'Фарфалле с лососем':'Албырт қосылған фарфалле',
+  'Курочка в сливочном соусе с грибами и рисом':'Саңырауқұлақ қосылған кілегей тұздығындағы тауық, күрішпен',
+  'Цезарь с куриным шницелем':'Тауық шницелі қосылған Цезарь', 'Котлеты пожарские':'Пожарский котлеттері',
+  'Котлеты говяжьи по-домашнему с пюре':'Үй котлеттері сиыр етінен, пюремен',
+  'Куриный рулет с моцареллой и рисом в соусе терияки':'Терияки тұздығындағы моцарелла салынған тауық рулеті, күрішпен',
+  'Куриное филе со шпинатом в сливочном соусе':'Кілегей тұздығындағы шпинат қосылған тауық филесі',
+  'Томлёная говядина с картофельным пюре':'Картоп пюресі қосылған бұқтырылған сиыр еті',
+  'Говяжий шницель':'Сиыр етінен шницель', 'Томлёные рёбра':'Бұқтырылған қабырға',
+  'Люля из говядины с салатом и питой':'Салат пен пита қосылған сиыр етінен люля',
+  'Шашлычки из говядины с питой':'Пита қосылған сиыр етінен шашлық', 'Рибай на кости':'Сүйектегі рибай',
+  'Стейк лосося с молодым картофелем':'Жас картоп қосылған албырт стейгі',
+  'Ти-бон стейк с молодым картофелем':'Жас картоп қосылған ти-бон стейк',
+  'Багет':'Багет', 'Чесночный хлеб':'Сарымсақ наны', 'Хлебная корзина':'Нан себеті',
+  'Рис':'Күріш', 'Картофельное пюре':'Картоп пюресі', 'Картофель фри':'Фри картобы', 'Картофельные дольки':'Картоп тілімдері',
+  'Хашбраун со сметаной':'Қаймақ қосылған хашбраун', 'Овощи на гриле':'Грильдегі көкөністер',
+  'Кетчуп':'Кетчуп', 'Дзадзики':'Дзадзики', 'Цезарь':'Цезарь', 'Сырный':'Сыр тұздығы', 'Горчичный':'Қыша тұздығы', 'Шрирача':'Шрирача',
+  'Ассорти колбасок на 4–5 персон':'4–5 адамға арналған шұжық ассортиі', 'Микс гриль на 5–6 персон':'5–6 адамға арналған гриль-микс',
+  'Рыбный микс на 5–6 персон':'5–6 адамға арналған балық миксі',
+  'Бешбармак на 4–5 персон (только по предзаказу)':'4–5 адамға арналған бешбармақ (тек алдын ала тапсырыспен)',
+  'Куырдак на 4–5 персон (только по предзаказу)':'4–5 адамға арналған қуырдақ (тек алдын ала тапсырыспен)',
+  /* бар */
+  'Эспрессо / Доппио':'Эспрессо / Доппио', 'Капучино':'Капучино', 'Американо':'Американо', 'Латте':'Латте', 'Флэт уайт':'Флэт уайт',
+  'Пуровер V60':'Пуровер V60', 'Батч Брю':'Батч брю', 'Капучино 0.3 + синнабон':'Капучино 0,3 + синнабон',
+  'Ice Американо':'Ice американо', 'Ice Латте':'Ice латте', 'Ice Капучино':'Ice капучино',
+  'Колд-брю: цитрус, вишня-лайм':'Колд-брю: цитрус, шие-лайм', 'Эспрессо-тоник':'Эспрессо-тоник',
+  'Бамбл кофе на соке / на фреше':'Бамбл кофе (шырынмен / фрешпен)', 'Фраппучино: карамель, шоколад':'Фраппучино: карамель, шоколад',
+  'Ассам':'Ассам', 'Жасмин':'Жасмин', 'Молочный улун':'Сүтті улун',
+  'Чай по-казахски (нават, иримшик)':'Қазақша шай (нават, ірімшік)', 'Ташкентский':'Ташкент шайы', 'Марокканский':'Марокко шайы',
+  'Груша-мята':'Алмұрт-жалбыз', 'Имбирь-цитрус-мёд':'Зімбір-цитрус-бал', 'Облепиха-мёд-апельсин':'Шырғанақ-бал-апельсин',
+  'Малина-лимон':'Таңқурай-лимон', 'Маракуйя-апельсин-мёд':'Маракуйя-апельсин-бал',
+  'Классический':'Классикалық', 'Персиковый':'Шабдалы', 'Жасмин-яблоко':'Жасмин-алма', 'Клубничный улун':'Құлпынай улуны',
+  'Щавель-лайм':'Қымыздық-лайм', 'Манго-маракуйя':'Манго-маракуйя', 'Мохито':'Мохито', 'Гуава-гуарана':'Гуава-гуарана',
+  'Клубничный мохито':'Құлпынай мохитосы', 'Киви-яблоко':'Киви-алма', 'Ананас-черника':'Ананас-қаражидек',
+  'Ванильный':'Ваниль', 'Oreo':'Oreo', 'Клубничный':'Құлпынай',
+  'Яблочный':'Алма', 'Грейпфрутовый':'Грейпфрут', 'Апельсиновый':'Апельсин',
+  'Медовый':'Балды', 'С солёной карамелью':'Тұзды карамельмен',
+  'Латте печенье':'Печенье латте', 'Матча-пломбир':'Матча-пломбир', 'Матча-латте':'Матча-латте', 'Моккачино':'Моккачино',
+  'Киви-тоник':'Киви-тоник', 'Ginger-тоник':'Ginger-тоник', 'Ice матча малина тоник':'Ice матча-таңқурай тоник',
+  'Ice клубничный капучино':'Ice құлпынай капучино', 'Ice cream-Cola':'Ice cream-Cola', 'Горячий шоколад':'Ыстық шоколад',
+  'Вишнёвый':'Шие', 'Апельсин-облепиха':'Апельсин-шырғанақ',
+  'Зелёный':'Жасыл', 'Манго-чиа':'Манго-чиа', 'Малина-банан':'Таңқурай-банан', 'Черника-банан':'Қаражидек-банан',
+  'Морс клюквенный':'Мүкжидек морсы', 'Морс ягодный':'Жидек морсы', 'Вода Del Cappuccino без газа':'Del Cappuccino газсыз суы',
+  'Лимон':'Лимон', 'Мёд':'Бал', 'Нават':'Нават', 'Молоко':'Сүт', 'Сироп в ассортименте':'Сироп (түрлі дәмде)', 'Декаф':'Декаф',
+  'Альтернативное молоко':'Өсімдік сүті', 'Безлактозное молоко':'Лактозасыз сүт',
+  /* десерты */
+  'Кукис':'Кукис', 'Картошка':'Картошка', 'Маффин':'Маффин', 'Дениш с персиком':'Шабдалы қосылған дениш',
+  'Дениш с клубникой':'Құлпынай қосылған дениш', 'Шу ягодный':'Жидекті шу', 'Шу абрикос-мак':'Өрік-көкнәр шу',
+  'Тарталетка Банофи пай':'Банофи пай тарталеткасы', 'Синнабон':'Синнабон', 'Медовик':'Медовик', 'Молочная девочка':'Молочная девочка',
+  'Наполеон':'Наполеон', 'Сникерс':'Сникерс', 'Испанский чизкейк':'Испан чизкейгі', 'Чизкейк испанский':'Испан чизкейгі',
+  'Чизкейк по-казахски':'Қазақша чизкейк', 'Меренговый рулет':'Меренга рулеті', 'Вупи-пай':'Вупи-пай',
+  'Фисташковый рулет':'Пісте рулеті', 'Фисташка-малина':'Пісте-таңқурай', 'Дубайский':'Дубай',
+  'Орео':'Oreo', 'Фисташковый':'Пісте', 'Тирамису':'Тирамису',
+ },
+ en:{
+  '🌶 — острое блюдо':'🌶 — spicy', '👍 — особенно рекомендуем':'👍 — highly recommended', '☆ — популярное':'☆ — popular',
+  'NEW — новинка':'NEW — new item', '🥦 — правильное питание':'🥦 — healthy choice', '⏱ — время ожидания от 30 минут':'⏱ — cooking time from 30 min',
+  '🍯 — содержит мёд':'🍯 — contains honey', 'зачёркнутая цена — цена до скидки':'crossed-out price — price before discount',
+  'Завтраки':'Breakfast', 'весь день':'all day', 'Сладкие завтраки':'Sweet breakfast', 'Салаты':'Salads', 'Боулы':'Bowls',
+  'Супы':'Soups', 'Сэндвичи / Закуски':'Sandwiches / Snacks', 'Пицца':'Pizza', 'Паназия':'Pan-Asian',
+  'Паста фреш':'Fresh pasta', 'для пасты используем муку semola':'our pasta is made with semola flour',
+  'Горячие блюда':'Mains', 'Блюда на гриле':'From the grill', 'Хлеба':'Bread', 'Гарниры':'Sides',
+  'Соусы':'Sauces', 'На компанию':'To share',
+  'Классический кофе':'Classic coffee',
+  'зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, молочный шоколад, грейпфрут)':
+    'choice of beans — 100% Arabica: Brazil Sul de Minas (nuts, cocoa, caramel) or Ethiopia Yirgacheffe (floral, berries, milk chocolate, grapefruit)',
+  'Холодные кофейные напитки':'Iced coffee', 'Листовые чаи':'Loose-leaf tea', 'чашка 330 мл / чайник 1 л':'cup 330 ml / pot 1 L',
+  'Авторские чаи':'Signature teas', 'чашка 330 мл / чайник 900 мл':'cup 330 ml / pot 900 ml', 'Ice tea':'Iced tea',
+  'Лимонады':'Lemonades', 'стакан 330 мл / графин 900 мл':'glass 330 ml / carafe 900 ml', 'Милкшейки':'Milkshakes',
+  'Фреши':'Fresh juices', 'Раф':'Raf coffee', '*любой раф можем подать айс':'*any raf can be served iced',
+  'Спешл напитки':'Specials', 'Глинтвейн б/а':'Non-alcoholic mulled wine', 'Смузи':'Smoothies', 'Напитки':'Drinks',
+  'Дополнения':'Extras', 'Десерты':'Desserts', 'Банка-кейки':'Cakes in a jar', 'Торты (целиком)':'Whole cakes',
+  'Каша овсяная с гранолой и персиком':'Oatmeal with granola and peach',
+  'Каша рисовая с гранолой и бананом':'Rice porridge with granola and banana',
+  'Датский завтрак':'Danish breakfast', 'Деревенский завтрак':'Country breakfast',
+  'Яичница-глазунья с сосисками и соусом релиш':'Sunny-side-up eggs with sausages and relish',
+  'Крок Мадам с копчёной индейкой':'Croque Madame with smoked turkey',
+  'Алматинский завтрак':'Almaty breakfast', 'Английский завтрак':'English breakfast',
+  'Бургер бриошь с куриной котлетой и омлетом':'Brioche burger with chicken patty and omelette',
+  'Картофельные драники с лососем и соусом голландез':'Potato pancakes with salmon and hollandaise',
+  'Шакшука с тартином':'Shakshuka with tartine',
+  'Вафли из цукини с малосольным лососем':'Zucchini waffles with lightly salted salmon',
+  'Круассан спайси с креветками и скрэмблом':'Spicy croissant with shrimp and scrambled eggs',
+  'Стейк-омлет':'Steak & omelette', 'Завтрак с лососем':'Salmon breakfast',
+  'Блины со сметаной и мёдом':'Crêpes with sour cream and honey', 'Блины с бананом и с шоколадом':'Crêpes with banana and chocolate',
+  'Мини-панкейки':'Mini pancakes', 'Бельгийские вафли':'Belgian waffles', 'Сырники классические':'Classic syrniki (cottage cheese pancakes)',
+  'Греческий салат':'Greek salad', 'Салат с цыплёнком гриль':'Grilled chicken salad',
+  'Тёплый салат из баклажана с соусом Ассай':'Warm eggplant salad with Assai sauce',
+  'Салат с запечённой сёмгой в соусе терияки':'Salad with baked salmon in teriyaki sauce',
+  'Салат со стейком':'Steak salad',
+  'Боул с курицей':'Chicken bowl', 'Боул с креветками':'Shrimp bowl', 'Боул с сёмгой':'Salmon bowl',
+  'Суп лапша куриная':'Chicken noodle soup', 'Чечевичный крем-суп':'Cream of lentil soup', 'Тыквенный крем-суп':'Cream of pumpkin soup',
+  'Суп с фрикадельками':'Meatball soup', 'Борщ с говядиной и бородинским хлебом':'Beef borscht with Borodinsky rye bread',
+  'Чучвара (пельмени с говядиной)':'Chuchvara (beef dumplings)',
+  'Лепёшка с пюре и сыром':'Flatbread with mashed potatoes and cheese', 'Наггетсы':'Chicken nuggets', 'Чебуреки с фаршем':'Chebureki (fried meat pastries)',
+  'Сэндвич с куриным шницелем':'Chicken schnitzel sandwich', 'Кесадилья с курицей':'Chicken quesadilla',
+  'Бургер с томлёной говядиной':'Slow-cooked beef burger',
+  'Клаб сэндвич с курицей и картофелем фри':'Chicken club sandwich with fries',
+  'Бургер классический с картофелем фри':'Classic burger with fries',
+  'Маргарита':'Margherita', 'Пепперони':'Pepperoni', 'С курицей и грибами':'Chicken & mushroom',
+  'Болоньезе':'Bolognese', 'Четыре сезона':'Quattro Stagioni',
+  'Курица по-тайски с рисом':'Thai-style chicken with rice', 'Рамен сливочный':'Creamy ramen',
+  '+ курица 500 / + креветки 800':'+ chicken 500 / + shrimp 800',
+  'Курица терияки':'Teriyaki chicken', 'Говядина с овощами':'Beef with vegetables',
+  'Том Ям с курицей':'Tom Yum with chicken', 'Том Ям с креветками':'Tom Yum with shrimp',
+  'Альфредо с курицей и грибами':'Alfredo with chicken and mushrooms', 'Спагетти болоньезе':'Spaghetti Bolognese',
+  'Паста с креветками':'Shrimp pasta', 'Фарфалле с томлёной говядиной':'Farfalle with slow-cooked beef',
+  'Фарфалле с лососем':'Farfalle with salmon',
+  'Курочка в сливочном соусе с грибами и рисом':'Chicken in creamy mushroom sauce with rice',
+  'Цезарь с куриным шницелем':'Caesar with chicken schnitzel', 'Котлеты пожарские':'Pozharsky chicken cutlets',
+  'Котлеты говяжьи по-домашнему с пюре':'Homestyle beef cutlets with mashed potatoes',
+  'Куриный рулет с моцареллой и рисом в соусе терияки':'Chicken roll with mozzarella and rice in teriyaki sauce',
+  'Куриное филе со шпинатом в сливочном соусе':'Chicken fillet with spinach in cream sauce',
+  'Томлёная говядина с картофельным пюре':'Slow-cooked beef with mashed potatoes',
+  'Говяжий шницель':'Beef schnitzel', 'Томлёные рёбра':'Slow-cooked ribs',
+  'Люля из говядины с салатом и питой':'Beef lula kebab with salad and pita',
+  'Шашлычки из говядины с питой':'Beef skewers with pita', 'Рибай на кости':'Bone-in ribeye',
+  'Стейк лосося с молодым картофелем':'Salmon steak with baby potatoes',
+  'Ти-бон стейк с молодым картофелем':'T-bone steak with baby potatoes',
+  'Багет':'Baguette', 'Чесночный хлеб':'Garlic bread', 'Хлебная корзина':'Bread basket',
+  'Рис':'Rice', 'Картофельное пюре':'Mashed potatoes', 'Картофель фри':'French fries', 'Картофельные дольки':'Potato wedges',
+  'Хашбраун со сметаной':'Hash brown with sour cream', 'Овощи на гриле':'Grilled vegetables',
+  'Кетчуп':'Ketchup', 'Дзадзики':'Tzatziki', 'Цезарь':'Caesar', 'Сырный':'Cheese', 'Горчичный':'Mustard', 'Шрирача':'Sriracha',
+  'Ассорти колбасок на 4–5 персон':'Sausage platter for 4–5', 'Микс гриль на 5–6 персон':'Mixed grill for 5–6',
+  'Рыбный микс на 5–6 персон':'Fish platter for 5–6',
+  'Бешбармак на 4–5 персон (только по предзаказу)':'Beshbarmak for 4–5 (pre-order only)',
+  'Куырдак на 4–5 персон (только по предзаказу)':'Kuyrdak for 4–5 (pre-order only)',
+  'Эспрессо / Доппио':'Espresso / Doppio', 'Капучино':'Cappuccino', 'Американо':'Americano', 'Латте':'Latte', 'Флэт уайт':'Flat white',
+  'Пуровер V60':'Pour-over V60', 'Батч Брю':'Batch brew', 'Капучино 0.3 + синнабон':'Cappuccino 0.3 + cinnamon roll',
+  'Ice Американо':'Iced Americano', 'Ice Латте':'Iced Latte', 'Ice Капучино':'Iced Cappuccino',
+  'Колд-брю: цитрус, вишня-лайм':'Cold brew: citrus, cherry-lime', 'Эспрессо-тоник':'Espresso tonic',
+  'Бамбл кофе на соке / на фреше':'Bumble coffee with juice / fresh juice', 'Фраппучино: карамель, шоколад':'Frappuccino: caramel, chocolate',
+  'Ассам':'Assam', 'Жасмин':'Jasmine', 'Молочный улун':'Milk oolong',
+  'Чай по-казахски (нават, иримшик)':'Kazakh-style tea (navat, irimshik)', 'Ташкентский':'Tashkent tea', 'Марокканский':'Moroccan tea',
+  'Груша-мята':'Pear & mint', 'Имбирь-цитрус-мёд':'Ginger, citrus & honey', 'Облепиха-мёд-апельсин':'Sea buckthorn, honey & orange',
+  'Малина-лимон':'Raspberry & lemon', 'Маракуйя-апельсин-мёд':'Passion fruit, orange & honey',
+  'Классический':'Classic', 'Персиковый':'Peach', 'Жасмин-яблоко':'Jasmine & apple', 'Клубничный улун':'Strawberry oolong',
+  'Щавель-лайм':'Sorrel & lime', 'Манго-маракуйя':'Mango & passion fruit', 'Мохито':'Mojito', 'Гуава-гуарана':'Guava & guarana',
+  'Клубничный мохито':'Strawberry mojito', 'Киви-яблоко':'Kiwi & apple', 'Ананас-черника':'Pineapple & blueberry',
+  'Ванильный':'Vanilla', 'Oreo':'Oreo', 'Клубничный':'Strawberry',
+  'Яблочный':'Apple', 'Грейпфрутовый':'Grapefruit', 'Апельсиновый':'Orange',
+  'Медовый':'Honey', 'С солёной карамелью':'Salted caramel',
+  'Латте печенье':'Cookie latte', 'Матча-пломбир':'Matcha ice cream', 'Матча-латте':'Matcha latte', 'Моккачино':'Mochaccino',
+  'Киви-тоник':'Kiwi tonic', 'Ginger-тоник':'Ginger tonic', 'Ice матча малина тоник':'Iced matcha raspberry tonic',
+  'Ice клубничный капучино':'Iced strawberry cappuccino', 'Ice cream-Cola':'Ice cream Cola', 'Горячий шоколад':'Hot chocolate',
+  'Вишнёвый':'Cherry', 'Апельсин-облепиха':'Orange & sea buckthorn',
+  'Зелёный':'Green', 'Манго-чиа':'Mango & chia', 'Малина-банан':'Raspberry & banana', 'Черника-банан':'Blueberry & banana',
+  'Морс клюквенный':'Cranberry mors (berry drink)', 'Морс ягодный':'Berry mors (berry drink)', 'Вода Del Cappuccino без газа':'Del Cappuccino still water',
+  'Лимон':'Lemon', 'Мёд':'Honey', 'Нават':'Navat (rock sugar)', 'Молоко':'Milk', 'Сироп в ассортименте':'Syrup (assorted)', 'Декаф':'Decaf',
+  'Альтернативное молоко':'Plant-based milk', 'Безлактозное молоко':'Lactose-free milk',
+  'Кукис':'Cookie', 'Картошка':'Kartoshka (chocolate truffle cake)', 'Маффин':'Muffin', 'Дениш с персиком':'Peach Danish',
+  'Дениш с клубникой':'Strawberry Danish', 'Шу ягодный':'Berry choux', 'Шу абрикос-мак':'Apricot & poppy seed choux',
+  'Тарталетка Банофи пай':'Banoffee pie tartlet', 'Синнабон':'Cinnamon roll', 'Медовик':'Medovik (honey cake)', 'Молочная девочка':'Milk Girl cake',
+  'Наполеон':'Napoleon', 'Сникерс':'Snickers', 'Испанский чизкейк':'Spanish cheesecake', 'Чизкейк испанский':'Spanish cheesecake',
+  'Чизкейк по-казахски':'Kazakh-style cheesecake', 'Меренговый рулет':'Meringue roll', 'Вупи-пай':'Whoopie pie',
+  'Фисташковый рулет':'Pistachio roll', 'Фисташка-малина':'Pistachio & raspberry', 'Дубайский':'Dubai',
+  'Орео':'Oreo', 'Фисташковый':'Pistachio', 'Тирамису':'Tiramisu',
+ },
+};
+
+const MENU_LANGS = ['kk','ru','en'];
+let menuLang = 'ru';
+try{ const l=localStorage.getItem('dc_menu_lang'); if(MENU_LANGS.includes(l)) menuLang=l; }catch(e){}
+
+/* единицы в объёмах/весах без словаря: «350 гр», «300 мл / 1 л» */
+function trUnits(s){
+  if(menuLang==='en') return s.replace(/мл/g,'ml').replace(/(\d) гр/g,'$1 g').replace(/(\d) л(?![а-яё])/g,'$1 L');
+  if(menuLang==='kk') return s.replace(/(\d) гр/g,'$1 г');
+  return s;
+}
+function T(s){
+  if(menuLang==='ru' || !s) return s;
+  const d=MENU_TR[menuLang];
+  return d[s]!==undefined ? d[s] : trUnits(String(s));
+}
+
+function applyMenuLang(){
+  const ui=MENU_UI[menuLang];
+  document.querySelectorAll('#menu-modal [data-mm]').forEach(el=>{ el.innerHTML=ui[el.dataset.mm]; });
+  document.getElementById('menu-modal').setAttribute('aria-label', ui.dialog);
+  document.getElementById('menu-modal').lang = menuLang;
+  document.getElementById('mm-x').setAttribute('aria-label', ui.close);
+  document.querySelectorAll('.mm-lang-btn').forEach(b=>b.classList.toggle('on', b.dataset.lang===menuLang));
+}
+function switchMenuLang(lang){
+  if(!MENU_LANGS.includes(lang)) return;
+  menuLang=lang;
+  try{ localStorage.setItem('dc_menu_lang', lang); }catch(e){}
+  applyMenuLang(); renderCats(); renderSections();
+  track('menu_lang',{lang});
+}
 let menuTab='kitchen';
 let menuCat=-1; /* -1 = все категории */
 
@@ -853,11 +1126,11 @@ function fmtP(p){return String(p).split('/').map(x=>(+String(x).trim()).toLocale
 function secHTML(s){
   return `
     <section class="mm-sec">
-      <h4>${s.t}${s.badge?` <span class="mm-badge">${s.badge}</span>`:''}</h4>
-      ${s.note?`<p class="mm-note">${s.note}</p>`:''}
+      <h4>${T(s.t)}${s.badge?` <span class="mm-badge">${T(s.badge)}</span>`:''}</h4>
+      ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
       ${s.items.map(it=>`
         <div class="mm-it">
-          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${it.n}${it.vol?` <span class="vol">${it.vol}</span>`:''}</span>
+          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${T(it.n)}${it.vol?` <span class="vol">${T(it.vol)}</span>`:''}</span>
           <span class="sp"></span>
           <span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> `:''}${fmtP(it.p)}</span>
         </div>`).join('')}
@@ -872,7 +1145,7 @@ function renderSections(){
     cols.innerHTML = secHTML(data[menuCat]);
   } else {
     cols.classList.remove('single');
-    const legend = `<section class="mm-legend">${LEGEND[menuTab].map(l=>`<div>${l}</div>`).join('')}</section>`;
+    const legend = `<section class="mm-legend">${LEGEND[menuTab].map(l=>`<div>${T(l)}</div>`).join('')}</section>`;
     cols.innerHTML = `<div class="mm-mark">ME<br>NU</div>` + data.map(secHTML).join('') + legend;
   }
   document.getElementById('menu-modal').scrollTop=0;
@@ -881,8 +1154,8 @@ function renderSections(){
 function renderCats(){
   const data = MENU_TABS[menuTab];
   document.getElementById('mm-cats').innerHTML =
-    `<button class="mm-cat${menuCat<0?' on':''}" onclick="filterCat(-1)">Все</button>` +
-    data.map((s,i)=>`<button class="mm-cat${menuCat===i?' on':''}" onclick="filterCat(${i})">${s.t}</button>`).join('');
+    `<button class="mm-cat${menuCat<0?' on':''}" onclick="filterCat(-1)">${MENU_UI[menuLang].all}</button>` +
+    data.map((s,i)=>`<button class="mm-cat${menuCat===i?' on':''}" onclick="filterCat(${i})">${T(s.t)}</button>`).join('');
 }
 
 function filterCat(i){
@@ -900,6 +1173,7 @@ function renderMenuTab(tab){
 function switchMenuTab(tab){ renderMenuTab(tab); track('menu_tab',{tab}); }
 
 function openMenu(){
+  applyMenuLang();
   renderMenuTab(menuTab);
   document.getElementById('menu-modal').classList.add('open');
   document.body.style.overflow='hidden';
