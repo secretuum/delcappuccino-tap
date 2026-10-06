@@ -202,7 +202,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .branch-row .bn small{display:block;font-family:Comfortaa;color:var(--olive);font-size:10.5px;text-transform:uppercase;font-weight:700}
 .branch-row .bn b{font-weight:700;font-size:14px}
 .branch-row .bn .hrs{display:block;font-size:11px;color:var(--ink-2);margin-top:2px}
-.branch-row .dist{font-size:11px;color:var(--ink-2)}
+.branch-row .dist{font-size:11px;color:var(--ink-2);white-space:nowrap}
+.branch-row .bn-menu{border:0;background:none;padding:0;margin-top:4px;font:inherit;font-size:12px;font-weight:700;color:var(--olive);cursor:pointer;text-decoration:underline;text-underline-offset:2px}
 
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;gap:32px;padding:40px 0 52px}
@@ -520,7 +521,7 @@ const BRANCHES = [
   {n:'02 · ЖК Комфорт Сити', addr:'Серкебаева, 146', phone:'+77053673232', geo:[43.2381,76.9126], hours:'24/7', route:'https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146'},
   {n:'03 · БП Promenade', addr:'Абая, 44А', phone:'+77770355617', geo:[43.2411,76.9298], hours:'24/7', route:'https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90'},
   {n:'04 · Del Cappuccino', addr:'Толе Би, 64', phone:'+77769079070', geo:[43.2519,76.9286], hours:'24/7', route:'https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064'},
-  {n:'05 · Bakery to go · ЖК City', addr:'Жандосова, 94/12', phone:'+77773278566', geo:[43.220416,76.885263], hours:'ежедневно 07:00–22:00', note:'Десерты, полуфабрикаты и кофе навынос', wa:'Здравствуйте! Хочу сделать заказ навынос в delCappuccino bakery to go, ', route:'https://2gis.kz/almaty/firm/70000001116068964'},
+  {n:'05 · Bakery to go · ЖК City', addr:'Жандосова, 94/12', phone:'+77773278566', geo:[43.220416,76.885263], hours:'ежедневно 07:00–22:00', note:'Десерты, полуфабрикаты и кофе навынос', menu:'togo', wa:'Здравствуйте! Хочу сделать заказ навынос в delCappuccino bakery to go, ', route:'https://2gis.kz/almaty/firm/70000001116068964'},
 ];
 
 function waLink(phone,text){return `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`}
@@ -534,6 +535,7 @@ function renderLocations(){
       <div class="loc-links">
         <a href="tel:${b.phone}" onclick="track('loc_call',{branch:'${b.n}'})">Позвонить</a>
         <a href="${b.route}" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'${b.n}'})">Маршрут</a>
+        ${b.menu?`<a href="#" onclick="event.preventDefault();track('loc_menu',{branch:'${b.n}'});openMenu('${b.menu}')">Меню</a>`:''}
         <a class="wa" href="${waLink(b.phone,(b.wa||'Здравствуйте! Хочу забронировать столик в Del Cappuccino, ')+b.addr)}" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'${b.n}'})">WhatsApp</a>
       </div>
     </div>`).join('');
@@ -562,7 +564,7 @@ function openModal(){
   function draw(arr,showDist){
     list.innerHTML = arr.map(b=>`
       <div class="branch-row">
-        <div class="bn"><small>${b.n}</small><b>${b.addr}</b><span class="hrs">${b.hours}</span></div>
+        <div class="bn"><small>${b.n}</small><b>${b.addr}</b><span class="hrs">${b.hours}</span>${b.menu?`<button class="bn-menu" onclick="track('modal_menu',{branch:'${b.n}'});closeModal();openMenu('${b.menu}')">Меню точки →</button>`:''}</div>
         <div style="display:flex;align-items:center;gap:10px">
           ${showDist&&b.d!==undefined?`<span class="dist">${b.d.toFixed(1)} км</span>`:''}
           <a class="btn ghost" style="padding:6px 12px;font-size:12px" href="${b.route}" target="_blank" rel="noopener">Маршрут</a>
