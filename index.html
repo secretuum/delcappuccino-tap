@@ -293,7 +293,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .menu-modal.open{display:block}
 .mm-head{position:sticky;top:0;z-index:5;background:color-mix(in srgb,#F7EFE2 94%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
 .mm-top{display:flex;align-items:center;gap:14px;padding:12px 24px;border-bottom:1px solid var(--line)}
-.mm-cats{display:flex;gap:7px;overflow-x:auto;padding:9px 24px;scrollbar-width:none}
+.mm-cats{position:relative;display:flex;gap:7px;overflow-x:auto;padding:9px 24px;scrollbar-width:none}
 .mm-cats::-webkit-scrollbar{display:none}
 .mm-cat{flex:none;border:1px solid var(--line);background:transparent;color:var(--ink-2);border-radius:99px;padding:6px 13px;font-family:'Golos Text';font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s}
 .mm-cat:hover{border-color:var(--olive);color:var(--forest)}
@@ -306,7 +306,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-mode-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11.5px;font-weight:600;padding:5px 11px;border-radius:99px;cursor:pointer;white-space:nowrap;transition:.15s}
 .mm-mode-btn:hover{color:var(--forest)}
 .mm-mode-btn.on{background:var(--olive);color:#1D2408}
-.mm-lang{margin-left:auto;display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
+.mm-lang-wrap{margin-left:auto;position:relative;flex:none}
+.mm-lang{display:flex;gap:2px;flex:none;border:1px solid var(--line);border-radius:99px;padding:2px}
 .mm-lang-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11px;font-weight:700;letter-spacing:.03em;padding:5px 9px;border-radius:99px;cursor:pointer;transition:.15s}
 .mm-lang-btn:hover{color:var(--forest)}
 .mm-lang-btn.on{background:var(--forest);color:var(--cream)}
@@ -327,6 +328,13 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-it .sp{flex:1;min-width:12px}
 .mm-it .pr{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
 .mm-it .pr .old{font-weight:400;color:var(--ink-2);text-decoration:line-through;margin-right:4px;font-size:11.5px}
+.mm-only{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin:0 2px 0 5px;padding:0;border:1.3px solid var(--forest);border-radius:50%;background:transparent;color:var(--forest);font-family:'Golos Text';font-size:10px;font-weight:800;line-height:1;vertical-align:1px;cursor:pointer;transition:.15s}
+.mm-only::after{content:'';position:absolute;inset:-13px}
+.mm-only:hover,.mm-only[aria-expanded="true"]{background:var(--forest);color:var(--cream)}
+.mm-only:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+.mm-pop{position:fixed;z-index:140;max-width:min(280px,calc(100vw - 24px));background:var(--forest);color:var(--cream);font-family:'Golos Text';font-size:12px;line-height:1.5;padding:10px 13px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.mm-pop b{display:block;font-weight:700;margin-bottom:2px}
+.mm-pop[hidden]{display:none}
 .mk{font-style:normal;font-size:10.5px;color:var(--forest)}
 .mk-new{color:var(--olive);font-weight:800;font-size:9px;letter-spacing:.04em;vertical-align:1px}
 .mm-legend{break-inside:avoid;margin-bottom:32px;border:1px solid var(--line);border-radius:10px;padding:14px 16px}
@@ -338,16 +346,31 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 @media(max-width:680px){
   .mm-cols{columns:1}
   .mm-cols.single{max-width:none}
-  .mm-mark{font-size:58px;margin-bottom:20px}
-  .mm-body{padding:22px 18px 48px}
-  .mm-top{padding:10px 14px;gap:8px 8px;flex-wrap:wrap}
+  .mm-mark{font-size:52px;margin-bottom:18px}
+  .mm-body{padding:20px 16px 48px}
+  .mm-head{transition:transform .25s ease}
+  .mm-head.compact{transform:translateY(calc(-1 * var(--mm-top-h,0px)))}
+  .mm-top{padding:8px 12px;gap:8px;flex-wrap:wrap}
   .mm-logo{display:none}
-  .mm-mode-btn{padding:5px 9px;font-size:11px}
-  .mm-tabs{gap:5px;order:3;width:100%}
-  .mm-lang-btn{padding:5px 8px;font-size:10.5px}
-  .mm-tab{padding:6px 10px;font-size:11.5px}
-  .mm-cats{padding:8px 14px}
-  .mm-cat{padding:6px 11px;font-size:11.5px}
+  .mm-mode{flex:1;min-width:0;height:40px;box-sizing:border-box}
+  .mm-mode-btn{flex:1;min-width:0;padding:0 8px;font-size:12.5px;overflow:hidden;text-overflow:ellipsis}
+  .mm-lang-wrap{width:58px;height:40px}
+  .mm-lang{position:absolute;top:0;right:0;flex-direction:column;background:#F7EFE2;z-index:10}
+  .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
+  .mm-lang.open{border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
+  .mm-lang-btn{min-width:52px;height:34px;padding:0 8px;font-size:12px}
+  .mm-x{width:40px;height:40px;font-size:20px}
+  .mm-tabs{order:3;width:100%;gap:6px;overflow-x:auto;scrollbar-width:none}
+  .mm-tabs::-webkit-scrollbar{display:none}
+  .mm-tab{flex:1 0 auto;height:40px;padding:0 12px;font-size:13px;white-space:nowrap}
+  .mm-cats{padding:6px 12px;gap:6px;scroll-behavior:smooth;-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent)}
+  .mm-cat{height:40px;padding:0 15px;font-size:12.5px}
+  .mm-sec h4{font-size:15px;letter-spacing:.2em}
+  .mm-note{font-size:11.5px}
+  .mm-it{gap:8px;padding:6px 0;font-size:14px}
+  .mm-it .pr{font-size:14px}
+  .mm-it .vol{font-size:11px}
+  .mm-oval{padding:14px 28px;font-size:15px}
 }
 </style>
 </head>
@@ -495,10 +518,12 @@ footer{border-top:1px solid var(--line);padding:24px 0}
         <button class="mm-mode-btn" data-mode="togo" data-mm="mode_togo" onclick="switchMenuMode('togo')">Bakery to go</button>
       </div>
       <div class="mm-tabs" id="mm-tabs"></div>
-      <div class="mm-lang" role="group" aria-label="Тіл / Язык / Language">
-        <button class="mm-lang-btn" data-lang="kk" onclick="switchMenuLang('kk')">ҚАЗ</button>
-        <button class="mm-lang-btn on" data-lang="ru" onclick="switchMenuLang('ru')">РУС</button>
-        <button class="mm-lang-btn" data-lang="en" onclick="switchMenuLang('en')">ENG</button>
+      <div class="mm-lang-wrap">
+        <div class="mm-lang" role="group" aria-label="Тіл / Язык / Language">
+          <button class="mm-lang-btn" data-lang="kk" onclick="menuLangClick('kk')">ҚАЗ</button>
+          <button class="mm-lang-btn on" data-lang="ru" onclick="menuLangClick('ru')">РУС</button>
+          <button class="mm-lang-btn" data-lang="en" onclick="menuLangClick('en')">ENG</button>
+        </div>
       </div>
       <button class="mm-x" id="mm-x" onclick="closeMenu()" aria-label="Закрыть">×</button>
     </div>
@@ -511,6 +536,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <p class="mm-fee" data-mm="fee">Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.</p>
     </div>
   </div>
+  <div class="mm-pop" id="mm-pop" role="tooltip" hidden></div>
 </div>
 
 <script>
@@ -718,7 +744,7 @@ const MENU_BAR = [
   {n:'Латте', vol:'300/400 мл', p:'1500/1700'},
   {n:'Флэт уайт', vol:'200 мл', p:1800},
   {n:'Пуровер V60', vol:'300 мл', p:1200},
-  {n:'Батч Брю', vol:'200/300 мл', note:'только в филиалах Вавилон (Розыбакиева, 247/8) и Променад (Абая, 44А)', p:'1200/1300', m:['new']},
+  {n:'Батч Брю', vol:'200/300 мл', only:['03','01'], p:'1200/1300', m:['new']},
   {n:'Капучино 0.3 + синнабон', p:1890, m:['rec']},
  ]},
  {t:'Холодные кофейные напитки', badge:'330 мл', items:[
@@ -1066,15 +1092,15 @@ const MENU_MODES = {
    Данные меню остаются на русском; перевод — словарь «русская строка → перевод».
    Нет перевода — показываем по-русски (новые позиции из Excel не ломают меню). */
 const MENU_UI = {
-  ru:{mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
+  ru:{only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', all:'Все', close:'Закрыть', dialog:'Меню',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
-  kk:{mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
+  kk:{only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', all:'Барлығы', close:'Жабу', dialog:'Мәзір',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
-  en:{mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
+  en:{only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', all:'All', close:'Close', dialog:'Menu',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
@@ -1203,7 +1229,6 @@ const MENU_TR = {
   'Курица терияки с рисом':'Терияки тұздығындағы тауық, күрішпен',
   'Курица карри с рисом и лепёшкой':'Карри тауық, күріш пен күлшемен',
   'зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, грейпфрут)':'дәнді таңдауға болады — 100% арабика: Бразилия Суль-де-Минас (жаңғақ, какао, карамель) немесе Эфиопия Иргачиф (гүл, жидек, грейпфрут)',
-  'только в филиалах Вавилон (Розыбакиева, 247/8) и Променад (Абая, 44А)':'тек Вавилон (Розыбакиев көшесі, 247/8) және Променад (Абай даңғылы, 44А) филиалдарында',
   'Малина-розмарин-лимон':'Таңқурай-розмарин-лимон',
   'Маракуйя-ананас-апельсин':'Маракуйя-ананас-апельсин',
   'Шу абрикосовый':'Өрікті шу',
@@ -1224,6 +1249,17 @@ const MENU_TR = {
   'Сырники с иримшиком':'Ірімшік қосылған сүзбе құймақтары',
   'Gracio: вишня, яблоко, апельсин':'Gracio: шие, алма, апельсин',
   'зерно — 100% арабика Бразилия Суль-де-Минас (орехи, какао, карамель)':'дән — 100% арабика, Бразилия Суль-де-Минас (жаңғақ, какао, карамель)',
+  /* точки (названия и адреса из BRANCHES) — для пометки «Только:» */
+  'ЖК Вавилон':'«Вавилон» ТК',
+  'ЖК Комфорт Сити':'«Комфорт Сити» ТК',
+  'БП Promenade':'Promenade бизнес-паркі',
+  'Del Cappuccino':'Del Cappuccino',
+  'Bakery to go · ЖК City':'Bakery to go · «City» ТК',
+  'Розыбакиева, 247/8':'Розыбакиев көшесі, 247/8',
+  'Серкебаева, 146':'Серкебаев көшесі, 146',
+  'Абая, 44А':'Абай даңғылы, 44А',
+  'Толе Би, 64':'Төле би көшесі, 64',
+  'Жандосова, 94/12':'Жандосов көшесі, 94/12',
  },
  en:{
   '🌶 — острое блюдо':'🌶 — spicy', '👍 — особенно рекомендуем':'👍 — highly recommended', '☆ — популярное':'☆ — popular',
@@ -1341,7 +1377,6 @@ const MENU_TR = {
   'Курица терияки с рисом':'Teriyaki chicken with rice',
   'Курица карри с рисом и лепёшкой':'Chicken curry with rice and flatbread',
   'зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, грейпфрут)':'choice of beans — 100% Arabica: Brazil Sul de Minas (nuts, cocoa, caramel) or Ethiopia Yirgacheffe (floral, berries, grapefruit)',
-  'только в филиалах Вавилон (Розыбакиева, 247/8) и Променад (Абая, 44А)':'only at Vavilon (247/8 Rozybakiev St) and Promenade (44A Abay Ave)',
   'Малина-розмарин-лимон':'Raspberry, rosemary & lemon',
   'Маракуйя-ананас-апельсин':'Passion fruit, pineapple & orange',
   'Шу абрикосовый':'Apricot choux',
@@ -1362,6 +1397,17 @@ const MENU_TR = {
   'Сырники с иримшиком':'Syrniki with irimshik (Kazakh dried curd)',
   'Gracio: вишня, яблоко, апельсин':'Gracio: cherry, apple, orange',
   'зерно — 100% арабика Бразилия Суль-де-Минас (орехи, какао, карамель)':'beans — 100% Arabica, Brazil Sul de Minas (nuts, cocoa, caramel)',
+  /* точки (названия и адреса из BRANCHES) */
+  'ЖК Вавилон':'Vavilon Residential Complex',
+  'ЖК Комфорт Сити':'Komfort City Residential Complex',
+  'БП Promenade':'Promenade Business Park',
+  'Del Cappuccino':'Del Cappuccino',
+  'Bakery to go · ЖК City':'Bakery to go · City Residential Complex',
+  'Розыбакиева, 247/8':'247/8 Rozybakiev St',
+  'Серкебаева, 146':'146 Serkebaev St',
+  'Абая, 44А':'44A Abay Ave',
+  'Толе Би, 64':'64 Tole Bi St',
+  'Жандосова, 94/12':'94/12 Zhandosov St',
  },
 };
 
@@ -1393,7 +1439,7 @@ function switchMenuLang(lang){
   if(!MENU_LANGS.includes(lang)) return;
   menuLang=lang;
   try{ localStorage.setItem('dc_menu_lang', lang); }catch(e){}
-  applyMenuLang(); renderTabs(); renderCats(); renderSections();
+  applyMenuLang(); renderTabs(); renderCats(); renderSections(); setTopH();
   track('menu_lang',{lang});
 }
 let menuMode='cafe';
@@ -1410,7 +1456,7 @@ function secHTML(s){
       ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
       ${s.items.map(it=>`
         <div class="mm-it">
-          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${T(it.n)}${it.vol?` <span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
+          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${T(it.n)}${onlyBtn(it)}${it.vol?` <span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
           <span class="sp"></span>
           ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> `:''}${fmtP(it.p)}</span>`:''}
         </div>`).join('')}
@@ -1418,6 +1464,7 @@ function secHTML(s){
 }
 
 function renderSections(){
+  hidePop();
   const data = curTabs()[menuTab];
   const cols = document.getElementById('mm-cols');
   if(menuCat>=0){
@@ -1437,6 +1484,8 @@ function renderCats(){
   document.getElementById('mm-cats').innerHTML =
     `<button class="mm-cat${menuCat<0?' on':''}" onclick="filterCat(-1)">${MENU_UI[menuLang].all}</button>` +
     data.map((s,i)=>`<button class="mm-cat${menuCat===i?' on':''}" onclick="filterCat(${i})">${T(s.t)}</button>`).join('');
+  const cats=document.getElementById('mm-cats'), on=cats.querySelector('.mm-cat.on');
+  if(on) cats.scrollTo({left:Math.max(0, on.offsetLeft-(cats.clientWidth-on.offsetWidth)/2), behavior:'smooth'});
 }
 
 function filterCat(i){
@@ -1458,7 +1507,9 @@ function renderMenuTab(tab){
 function switchMenuTab(tab){ renderMenuTab(tab); track('menu_tab',{mode:menuMode, tab}); }
 
 function setMenuMode(mode){
-  menuMode = mode==='togo' ? 'togo' : 'cafe';
+  const next = mode==='togo' ? 'togo' : 'cafe';
+  if(next!==menuMode) menuTab = Object.keys(MENU_MODES[next].tabs)[0];  /* новый режим — с первой вкладки */
+  menuMode = next;
   document.querySelectorAll('.mm-mode-btn').forEach(b=>b.classList.toggle('on', b.dataset.mode===menuMode));
   document.querySelector('#menu-modal .mm-fee').style.display = MENU_MODES[menuMode].fee ? '' : 'none';
   if(!curTabs()[menuTab]) menuTab = Object.keys(curTabs())[0];
@@ -1472,12 +1523,117 @@ function openMenu(mode){
   renderMenuTab(menuTab);
   document.getElementById('menu-modal').classList.add('open');
   document.body.style.overflow='hidden';
+  document.querySelector('#menu-modal .mm-head').classList.remove('compact');
+  setTopH(); syncLangAria();
   track('menu_open',{mode:menuMode});
 }
 function closeMenu(){
+  hidePop(); closeLangMenu();
   document.getElementById('menu-modal').classList.remove('open');
   document.body.style.overflow='';
 }
+
+/* ── «Есть не во всех кофейнях»: значок «!» у позиции с only:['03','01'] (номера точек из BRANCHES) ── */
+const mmMobile = window.matchMedia('(max-width:680px)');
+const mmHover = window.matchMedia('(hover:hover)');
+function branchLabel(id){
+  const b = BRANCHES.find(b=>b.n.startsWith(id+' '));
+  if(!b) return id;
+  return `${T(b.n.slice(b.n.indexOf(' · ')+3))} (${T(b.addr)})`;
+}
+function onlyBtn(it){
+  return it.only ? `<button type="button" class="mm-only" data-only="${it.only.join(',')}" aria-label="${MENU_UI[menuLang].only_aria}" aria-expanded="false" aria-controls="mm-pop">!</button>` : '';
+}
+let popBtn=null, popPinned=false;
+function showPop(btn, pin){
+  const pop=document.getElementById('mm-pop');
+  if(popBtn && popBtn!==btn){ popBtn.setAttribute('aria-expanded','false'); popBtn.removeAttribute('aria-describedby'); }
+  popBtn=btn; popPinned=pin;
+  pop.innerHTML = `<b>${MENU_UI[menuLang].only}</b>` + btn.dataset.only.split(',').map(id=>`<div>${branchLabel(id)}</div>`).join('');
+  pop.hidden=false;
+  btn.setAttribute('aria-expanded','true'); btn.setAttribute('aria-describedby','mm-pop');
+  const r=btn.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
+  const vw=document.documentElement.clientWidth, vh=window.innerHeight;
+  let top=r.bottom+8; if(top+h>vh-8) top=Math.max(8, r.top-h-8);
+  pop.style.left = Math.max(8, Math.min(r.left+r.width/2-w/2, vw-w-8))+'px';
+  pop.style.top = top+'px';
+}
+function hidePop(){
+  const pop=document.getElementById('mm-pop');
+  if(!pop || pop.hidden) return false;
+  pop.hidden=true;
+  if(popBtn){ popBtn.setAttribute('aria-expanded','false'); popBtn.removeAttribute('aria-describedby'); }
+  popBtn=null; popPinned=false;
+  return true;
+}
+
+/* язык на мобильном: видна только текущая кнопка, тап раскрывает список */
+function syncLangAria(){
+  document.querySelectorAll('.mm-lang-btn').forEach(b=>{
+    if(mmMobile.matches && b.classList.contains('on')) b.setAttribute('aria-expanded', document.querySelector('.mm-lang').classList.contains('open'));
+    else b.removeAttribute('aria-expanded');
+  });
+}
+function closeLangMenu(){
+  const l=document.querySelector('.mm-lang');
+  if(!l.classList.contains('open')) return false;
+  l.classList.remove('open'); syncLangAria(); return true;
+}
+function menuLangClick(lang){
+  const l=document.querySelector('.mm-lang');
+  if(mmMobile.matches && lang===menuLang && !l.classList.contains('open')){ l.classList.add('open'); syncLangAria(); return; }
+  l.classList.remove('open');
+  if(lang!==menuLang) switchMenuLang(lang);
+  syncLangAria();
+}
+
+/* высота верхней строки шапки — на мобильном она уезжает при прокрутке вниз, категории остаются */
+function setTopH(){
+  const m=document.getElementById('menu-modal');
+  m.style.setProperty('--mm-top-h', m.querySelector('.mm-top').offsetHeight+'px');
+}
+
+(function(){
+  const modal=document.getElementById('menu-modal'), head=modal.querySelector('.mm-head'), cols=document.getElementById('mm-cols');
+  cols.addEventListener('click', e=>{
+    const b=e.target.closest('.mm-only'); if(!b) return;
+    if(popBtn===b && popPinned) hidePop(); else showPop(b, true);
+  });
+  cols.addEventListener('mouseover', e=>{
+    const b=e.target.closest('.mm-only');
+    if(b && mmHover.matches && !popPinned) showPop(b, false);
+  });
+  cols.addEventListener('mouseout', e=>{
+    const b=e.target.closest('.mm-only');
+    if(b && mmHover.matches && !popPinned && !b.contains(e.relatedTarget)) hidePop();
+  });
+  modal.addEventListener('click', e=>{
+    if(!e.target.closest('.mm-only, #mm-pop')) hidePop();
+    if(!e.target.closest('.mm-lang')) closeLangMenu();
+  });
+  /* Esc сначала закрывает окошко/список языков, а не всё меню */
+  window.addEventListener('keydown', e=>{
+    if(e.key!=='Escape' || !modal.classList.contains('open')) return;
+    const b=popBtn;
+    if(hidePop()){ e.stopPropagation(); if(b) b.focus(); }
+    else if(closeLangMenu()){ e.stopPropagation(); modal.querySelector('.mm-lang-btn.on').focus(); }
+  }, true);
+  let lastY=0;
+  modal.addEventListener('scroll', ()=>{
+    const y=modal.scrollTop;
+    hidePop();
+    closeLangMenu();
+    if(!mmMobile.matches || y<120) head.classList.remove('compact');
+    else if(y>lastY+6) head.classList.add('compact');
+    else if(y<lastY-6) head.classList.remove('compact');
+    lastY=y;
+  }, {passive:true});
+  window.addEventListener('resize', ()=>{
+    hidePop();
+    if(modal.classList.contains('open')){ setTopH(); syncLangAria(); }
+    if(!mmMobile.matches) head.classList.remove('compact');
+  });
+})();
 </script>
 </body>
 </html>
