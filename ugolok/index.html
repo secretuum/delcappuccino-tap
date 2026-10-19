@@ -6,18 +6,21 @@
 <title>Тұтынушы бұрышы — Del Cappuccino</title>
 <meta name="description" content="Del Cappuccino тұтынушы бұрышы / Уголок потребителя / Consumer Corner — салық төлеушінің паспорттары, тұтынушыға ақпарат, дауларды реттеу. ҚАЗ · РУС · ENG.">
 <meta name="robots" content="index, follow">
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-D50YPM8RMK"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<link rel="icon" type="image/png" href="/assets/logo-mono.png">
-<link rel="apple-touch-icon" href="/assets/logo-mono.png">
+<link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
+<meta name="theme-color" content="#426349">
+<link rel="manifest" href="/manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://tap.delcappuccino.kz/ugolok">
 <meta property="og:title" content="Тұтынушы бұрышы — Del Cappuccino">
 <meta property="og:description" content="Салық төлеушінің паспорттары, тұтынушыға ақпарат және дауларды реттеу тәртібі.">
 <style>
+/* Шрифт self-host (assets/fonts, tools/fetch_fonts.py): Montserrat 400–700, latin+cyrillic+cyrillic-ext (казахский) */
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 :root{
   --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
   --olive:#849E29; --sage:#738E5B; --moss:#B4B86C;
@@ -142,7 +145,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
 
 <header class="uk-hero">
   <div class="shell">
-    <a href="/" aria-label="Del Cappuccino — басты бет"><img class="uk-logo" src="/assets/logo-lockup.png" alt="Del Cappuccino"></a>
+    <a href="/" aria-label="Del Cappuccino — басты бет"><img class="uk-logo" src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="80px" width="256" height="127" alt="Del Cappuccino"></a>
     <p class="eyebrow" data-i18n="hero_eyebrow">Ресми ақпарат</p>
     <h1 data-i18n="title">Тұтынушы бұрышы</h1>
     <div class="uk-sub">
@@ -500,6 +503,15 @@ function setLang(lang){
 
 /* Always open in Kazakh */
 setLang('kk');
+</script>
+<script>
+/* Аналитика — после load, в простое; service worker общий с главной (правила — в /sw.js) */
+(function(){
+  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=G-D50YPM8RMK';s.async=true;document.head.appendChild(s)}
+  function idle(){('requestIdleCallback'in window)?requestIdleCallback(loadGtag,{timeout:4000}):setTimeout(loadGtag,1500)}
+  if(document.readyState==='complete')idle();else addEventListener('load',idle);
+  if('serviceWorker'in navigator)addEventListener('load',function(){navigator.serviceWorker.register('/sw.js').catch(function(){})});
+})();
 </script>
 </body>
 </html>
