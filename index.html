@@ -210,7 +210,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .sheet::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
 @media(min-width:640px){.modal{align-items:center}.sheet{border-radius:22px}.sheet::before{display:none}}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
-.sheet .x{position:absolute;top:14px;right:14px;width:40px;height:40px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer;font-size:16px}
+.sheet .x{position:absolute;top:12px;right:12px;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--ink);cursor:pointer}
 .sheet h3{font-family:Comfortaa;font-size:23px;margin-bottom:6px;font-weight:700;color:var(--forest-dk)}
 .sheet .status{font-size:12.5px;color:var(--ink-2);margin-bottom:18px}
 .branch-row{padding:14px 0;border-top:1px solid var(--line)}
@@ -351,7 +351,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-lang-btn{border:0;background:transparent;color:var(--ink-2);font-family:'Golos Text';font-size:11px;font-weight:700;letter-spacing:.03em;padding:5px 9px;border-radius:99px;cursor:pointer;transition:.15s}
 .mm-lang-btn:hover{color:var(--forest)}
 .mm-lang-btn.on{background:var(--forest);color:var(--cream)}
-.mm-x{width:34px;height:34px;flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);font-size:17px;cursor:pointer}
+.mm-x{flex:none;border-radius:99px;border:1px solid var(--line);background:transparent;color:var(--forest);cursor:pointer}
 .mm-body{max-width:1150px;margin:0 auto;padding:36px 30px 64px}
 .mm-cols{columns:3;column-gap:46px}
 .mm-part-h{display:flex;align-items:center;gap:18px;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:40px;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin:56px 0 26px}
@@ -396,7 +396,13 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-card-box{position:relative;width:100%;max-width:520px;max-height:88vh;max-height:88dvh;overflow:auto;overscroll-behavior:contain;background:var(--cream);color:var(--ink);border-radius:22px 22px 0 0;padding:22px 22px 24px;padding-bottom:calc(24px + env(safe-area-inset-bottom));animation:up .25s ease;font-family:'Golos Text'}
 .mm-card-box:focus{outline:none}
 .mm-card-box::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
-.mm-card-x{position:absolute;top:12px;right:12px;z-index:1;width:36px;height:36px;border-radius:99px;border:1px solid var(--line);background:var(--cream);color:var(--ink);cursor:pointer;font-size:18px;line-height:1}
+.mm-card-x{position:absolute;top:12px;right:12px;z-index:1;border-radius:99px;border:1px solid var(--line);background:var(--cream);color:var(--ink);cursor:pointer}
+/* ── крестики закрытия (модалка филиалов, шапка меню, карточка): один размер, центр без привязки к базовой линии шрифта ── */
+.sheet .x,.mm-x,.mm-card-x{position:absolute;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;margin:0;line-height:1;font-size:0;box-sizing:border-box}
+.mm-x{position:relative}
+.sheet .x::before,.sheet .x::after,.mm-x::before,.mm-x::after,.mm-card-x::before,.mm-card-x::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:1.5px;margin:-0.75px 0 0 -7px;background:currentColor;border-radius:1px}
+.sheet .x::before,.mm-x::before,.mm-card-x::before{transform:rotate(45deg)}
+.sheet .x::after,.mm-x::after,.mm-card-x::after{transform:rotate(-45deg)}
 .mm-card-x:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
 .mm-card-img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;margin:8px 0 14px;background:var(--cream-2)}
 .mm-card-t{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--forest-dk);margin:4px 44px 4px 0}
@@ -438,7 +444,6 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
   .mm-lang.open{border-radius:14px;box-shadow:0 8px 24px rgba(0,0,0,.15)}
   .mm-lang-btn{min-width:52px;height:34px;padding:0 8px;font-size:12px}
-  .mm-x{width:40px;height:40px;font-size:20px}
   .mm-tabs{order:3;width:100%;gap:6px;overflow-x:auto;scrollbar-width:none}
   .mm-tabs::-webkit-scrollbar{display:none}
   .mm-tab{flex:1 0 auto;height:40px;padding:0 12px;font-size:13px;white-space:nowrap}
@@ -584,7 +589,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 <div class="modal" id="modal">
   <button class="backdrop" onclick="closeModal()"></button>
   <div class="sheet">
-    <button class="x" onclick="closeModal()">×</button>
+    <button class="x" onclick="closeModal()" aria-label="Закрыть">×</button>
     <p class="tag" style="margin-bottom:8px">ближайшие филиалы</p>
     <h3>Выберите<br>филиал.</h3>
     <p class="status" id="modal-status">Определяем ваше местоположение…</p>
@@ -616,7 +621,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     <div class="mm-feed" id="mm-cols"></div>
     <div class="mm-foot">
       <span class="mm-oval" data-mm="allergy">Предупредите официанта<br>об аллергии на продукты</span>
-      <p class="mm-fee" data-mm="fee">Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.</p>
+      <p class="mm-fee" data-mm="fee">Сервисный сбор 10% добавляется к счёту.</p>
     </div>
   </div>
   <div class="mm-pop" id="mm-pop" role="tooltip" hidden></div>
@@ -1199,17 +1204,17 @@ const MENU_UI = {
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
       card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы', card_stub:'Данные уточняются',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
-      fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
+      fee:'Сервисный сбор 10% добавляется к счёту.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
       card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу', card_stub:'Деректер нақтыланады',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
-      fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
+      fee:'Шотқа 10% қызмет ақысы қосылады.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
       card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs', card_stub:'Data to be confirmed',
       allergy:'Please tell your server<br>about any food allergies',
-      fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
+      fee:'A 10% service charge is added to the bill.'},
 };
 
 const MENU_TR = {
