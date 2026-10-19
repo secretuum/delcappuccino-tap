@@ -372,6 +372,30 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-pop{position:fixed;z-index:140;max-width:min(280px,calc(100vw - 24px));background:var(--forest);color:var(--cream);font-family:'Golos Text';font-size:12px;line-height:1.5;padding:10px 13px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
 .mm-pop b{display:block;font-weight:700;margin-bottom:2px}
 .mm-pop[hidden]{display:none}
+/* ── карточка блюда (тап по названию): фото, описание, состав, КБЖУ; данные — menu/cards.json ── */
+.nm-t.has-card{cursor:pointer;text-decoration:underline;text-decoration-color:var(--moss);text-decoration-thickness:1px;text-underline-offset:3px}
+.nm-t.has-card:hover{text-decoration-color:var(--forest)}
+.nm-t.has-card:focus-visible{outline:2px solid var(--olive);outline-offset:2px;border-radius:3px}
+.mm-card{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center}
+.mm-card[hidden]{display:none}
+.mm-card-bg{position:absolute;inset:0;background:rgba(36,28,21,.55)}
+.mm-card-box{position:relative;width:100%;max-width:520px;max-height:88vh;max-height:88dvh;overflow:auto;overscroll-behavior:contain;background:var(--cream);color:var(--ink);border-radius:22px 22px 0 0;padding:22px 22px 24px;padding-bottom:calc(24px + env(safe-area-inset-bottom));animation:up .25s ease;font-family:'Golos Text'}
+.mm-card-box:focus{outline:none}
+.mm-card-box::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
+.mm-card-x{position:absolute;top:12px;right:12px;z-index:1;width:36px;height:36px;border-radius:99px;border:1px solid var(--line);background:var(--cream);color:var(--ink);cursor:pointer;font-size:18px;line-height:1}
+.mm-card-x:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
+.mm-card-img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;margin:8px 0 14px;background:var(--cream-2)}
+.mm-card-t{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--forest-dk);margin:4px 44px 4px 0}
+.mm-card-w{font-size:12px;color:var(--ink-2);margin-bottom:10px}
+.mm-card-d{font-size:13.5px;line-height:1.5;margin-bottom:12px}
+.mm-card-h{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin:12px 0 4px}
+.mm-card-ing{font-size:13px;line-height:1.5}
+.mm-card-k{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.mm-card-k div{background:var(--cream-2);border-radius:10px;padding:8px 6px;text-align:center}
+.mm-card-k b{display:block;font-size:15px;color:var(--forest-dk);font-variant-numeric:tabular-nums}
+.mm-card-k span{font-size:10.5px;color:var(--ink-2)}
+.mm-card-stub{font-size:10.5px;font-style:italic;color:var(--ink-2);margin-top:8px}
+@media(min-width:681px){.mm-card{align-items:center;padding:24px}.mm-card-box{border-radius:22px;max-height:min(88vh,760px)}.mm-card-box::before{display:none}}
 .mk{font-style:normal;font-size:10.5px;color:var(--forest)}
 .mk-new{color:var(--olive);font-weight:800;font-size:9px;letter-spacing:.04em;vertical-align:1px}
 .mm-foot{margin-top:20px;text-align:center}
@@ -582,6 +606,10 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     </div>
   </div>
   <div class="mm-pop" id="mm-pop" role="tooltip" hidden></div>
+  <div class="mm-card" id="mm-card" hidden>
+    <div class="mm-card-bg" id="mm-card-bg"></div>
+    <div class="mm-card-box" id="mm-card-box" role="dialog" aria-modal="true" aria-labelledby="mm-card-t" tabindex="-1"></div>
+  </div>
 </div>
 
 <script>
@@ -1155,14 +1183,17 @@ const MENU_MODES = {
 const MENU_UI = {
   ru:{to_togo:'Меню Жандосова', to_cafe:'Меню кофеен', only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
+      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы', card_stub:'Данные уточняются',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.<br>Оформляя заказ, вы соглашаетесь с условиями публичной оферты.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
+      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу', card_stub:'Деректер нақтыланады',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.<br>Тапсырыс беру арқылы сіз жария оферта шарттарымен келісесіз.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
+      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs', card_stub:'Data to be confirmed',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.<br>By placing an order, you accept the terms of the public offer.'},
 };
@@ -1501,7 +1532,7 @@ function switchMenuLang(lang){
   menuLang=lang;
   try{ localStorage.setItem('dc_menu_lang', lang); }catch(e){}
   const tab=menuTab, cat=menuCat;
-  applyMenuLang(); renderFeed(); renderTabs(); renderCats(); setTopH();
+  applyMenuLang(); renderFeed(); renderTabs(); renderCats(); setTopH(); refreshCard();
   if(document.getElementById('menu-modal').scrollTop>0) scrollToMenuEl(document.getElementById(`mm-sec-${tab}-${cat}`), false);
   track('menu_lang',{lang});
 }
@@ -1509,6 +1540,14 @@ let menuMode='cafe';
 let menuTab='kitchen';
 function curTabs(){return MENU_MODES[menuMode].tabs}
 let menuCat=0;   /* активная категория текущей вкладки (подсветка, scroll-spy) */
+
+/* карточки блюд: menu/cards.json, ключ — русское название как в n:; null — ещё не грузили */
+let CARDS=null;
+function escA(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
+function nameHTML(it){
+  if(CARDS && CARDS[it.n]) return `<span class="nm-t has-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="${escA(T(it.n))} — ${MENU_UI[menuLang].card_aria}" data-n="${escA(it.n)}">${T(it.n)}</span>`;
+  return `<span class="nm-t">${T(it.n)}</span>`;
+}
 
 function fmtP(p){return String(p).split('/').map(x=>(+String(x).trim()).toLocaleString('ru-RU')).join(' / ')}
 
@@ -1519,7 +1558,7 @@ function secHTML(s, tab, i){
       ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
       ${s.items.map(it=>`
         <div class="mm-it">
-          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${T(it.n)}${onlyBtn(it)}${it.vol?` <span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
+          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it)}${onlyBtn(it)}${it.vol?` <span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
           <span class="sp"></span>
           ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> `:''}${fmtP(it.p)}</span>`:''}
         </div>`).join('')}
@@ -1628,13 +1667,14 @@ function openMenu(mode){
   setMenuMode(mode);
   document.getElementById('menu-modal').classList.add('open');
   renderMenuStart();
+  loadCards();
   document.body.style.overflow='hidden';
   document.querySelector('#menu-modal .mm-head').classList.remove('compact');
   setTopH(); syncLangAria();
   track('menu_open',{mode:menuMode});
 }
 function closeMenu(){
-  hidePop(); closeLangMenu();
+  closeCard(); hidePop(); closeLangMenu();
   document.getElementById('menu-modal').classList.remove('open');
   document.body.style.overflow='';
 }
@@ -1688,6 +1728,66 @@ function hidePop(){
   return true;
 }
 
+/* ── Карточка блюда: фото / описание / состав / КБЖУ из menu/cards.json.
+   Файл грузится один раз при первом открытии меню (иначе не узнать, какие названия кликабельны),
+   кэш — в CARDS; без записи название остаётся обычным текстом, пустой карточки не бывает. ── */
+const CARDS_URL='menu/cards.json';
+let cardsReq=null, cardName=null, cardOpener=null;
+function loadCards(){
+  if(cardsReq) return cardsReq;
+  cardsReq = fetch(CARDS_URL).then(r=>r.ok?r.json():{}).catch(()=>({})).then(j=>{
+    CARDS = (j && typeof j==='object' && !Array.isArray(j)) ? j : {};
+    if(Object.keys(CARDS).length && document.getElementById('menu-modal').classList.contains('open')) renderFeed();
+    return CARDS;
+  });
+  return cardsReq;
+}
+function cardLang(o){ return o ? (o[menuLang] || o.ru || '') : ''; }
+function cardW(w){
+  if(menuLang==='en') return w.replace(/(\d)\s*гр?(?![а-яё])/g,'$1 g').replace(/мл/g,'ml');
+  if(menuLang==='kk') return w.replace(/(\d)\s*гр(?![а-яё])/g,'$1 г');
+  return w;
+}
+function cardHTML(name){
+  const c=CARDS[name], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);
+  return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
+    (c.img ? `<img class="mm-card-img" src="${escA(c.img)}" alt="" loading="lazy" decoding="async">` : '') +
+    `<h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` +
+    (c.w ? `<div class="mm-card-w">${ui.card_w}: ${escA(cardW(String(c.w)))}</div>` : '') +
+    (d ? `<p class="mm-card-d">${escA(d)}</p>` : '') +
+    (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
+    (k ? `<div class="mm-card-h">${ui.card_kbju}</div><div class="mm-card-k">` +
+         [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '') +
+    (c._stub ? `<p class="mm-card-stub">${ui.card_stub}</p>` : '');
+}
+function openCard(name, opener){
+  if(!CARDS || !CARDS[name]) return false;
+  hidePop(); closeLangMenu();
+  const wrap=document.getElementById('mm-card'), box=document.getElementById('mm-card-box');
+  cardName=name; cardOpener=opener||document.activeElement;
+  box.innerHTML=cardHTML(name);
+  wrap.hidden=false;
+  document.getElementById('menu-modal').style.overflow='hidden';
+  box.scrollTop=0; box.focus();
+  track('menu_card',{name});
+  return true;
+}
+function closeCard(){
+  const wrap=document.getElementById('mm-card');
+  if(!wrap || wrap.hidden) return false;
+  wrap.hidden=true; cardName=null;
+  document.getElementById('menu-modal').style.overflow='';
+  if(cardOpener && cardOpener.focus) cardOpener.focus();
+  cardOpener=null;
+  return true;
+}
+/* смена языка при открытой карточке — перерисовать её */
+function refreshCard(){
+  if(!cardName) return;
+  if(CARDS && CARDS[cardName]) document.getElementById('mm-card-box').innerHTML=cardHTML(cardName);
+  else closeCard();
+}
+
 /* язык на мобильном: видна только текущая кнопка, тап раскрывает список */
 function syncLangAria(){
   document.querySelectorAll('.mm-lang-btn').forEach(b=>{
@@ -1717,6 +1817,8 @@ function setTopH(){
 (function(){
   const modal=document.getElementById('menu-modal'), head=modal.querySelector('.mm-head'), cols=document.getElementById('mm-cols');
   cols.addEventListener('click', e=>{
+    const nb=e.target.closest('.nm-t.has-card');
+    if(nb){ openCard(nb.dataset.n, nb); return; }
     const b=e.target.closest('.mm-only'); if(!b) return;
     if(popBtn===b && popPinned) hidePop(); else showPop(b, true);
   });
@@ -1728,13 +1830,29 @@ function setTopH(){
     const b=e.target.closest('.mm-only');
     if(b && mmHover.matches && !popPinned && !b.contains(e.relatedTarget)) hidePop();
   });
+  cols.addEventListener('keydown', e=>{
+    if(e.key!=='Enter' && e.key!==' ') return;
+    const nb=e.target.closest('.nm-t.has-card'); if(!nb) return;
+    e.preventDefault(); openCard(nb.dataset.n, nb);
+  });
+  /* карточка блюда: крестик, фон; Tab не уходит из карточки */
+  const card=document.getElementById('mm-card'), cardBox=document.getElementById('mm-card-box');
+  card.addEventListener('click', e=>{ if(e.target.closest('.mm-card-x, .mm-card-bg')) closeCard(); });
+  card.addEventListener('keydown', e=>{
+    if(e.key!=='Tab') return;
+    const f=[...cardBox.querySelectorAll('button, a[href], [tabindex]:not([tabindex="-1"])')]; if(!f.length) return;
+    const first=f[0], last=f[f.length-1], a=document.activeElement;
+    if(e.shiftKey && (a===first || a===cardBox)){ e.preventDefault(); last.focus(); }
+    else if(!e.shiftKey && a===last){ e.preventDefault(); first.focus(); }
+  });
   modal.addEventListener('click', e=>{
     if(!e.target.closest('.mm-only, #mm-pop')) hidePop();
     if(!e.target.closest('.mm-lang')) closeLangMenu();
   });
-  /* Esc сначала закрывает окошко/список языков, а не всё меню */
+  /* Esc сначала закрывает карточку / окошко / список языков, а не всё меню */
   window.addEventListener('keydown', e=>{
     if(e.key!=='Escape' || !modal.classList.contains('open')) return;
+    if(closeCard()){ e.stopPropagation(); return; }
     const b=popBtn;
     if(hidePop()){ e.stopPropagation(); if(b) b.focus(); }
     else if(closeLangMenu()){ e.stopPropagation(); modal.querySelector('.mm-lang-btn.on').focus(); }
