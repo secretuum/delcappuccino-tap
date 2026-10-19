@@ -331,7 +331,7 @@
       1254,
       1254
     ],
-    "w": "300 г",
+    "w": "422 г",
     "kbju": {
       "kcal": 1144,
       "p": 59,
@@ -2561,9 +2561,9 @@
       "en": "Espresso from your choice of beans; doppio is a double shot."
     },
     "ing": {
-      "ru": "эспрессо",
-      "kk": "эспрессо",
-      "en": "espresso"
+      "ru": "кофе зерновой",
+      "kk": "дәнді кофе",
+      "en": "coffee beans"
     }
   },
   "Капучино": {
@@ -2664,9 +2664,9 @@
       "en": "Double espresso with milk and a thin velvety foam; stronger on coffee than a latte."
     },
     "ing": {
-      "ru": "эспрессо, молоко",
-      "kk": "эспрессо, сүт",
-      "en": "espresso, milk"
+      "ru": "кофе зерновой, молоко",
+      "kk": "дәнді кофе, сүт",
+      "en": "coffee beans, milk"
     }
   },
   "Пуровер V60": {
@@ -2689,9 +2689,9 @@
       "en": "Hand-brewed filter coffee in a V60 dripper from your choice of beans."
     },
     "ing": {
-      "ru": "эспрессо",
-      "kk": "эспрессо",
-      "en": "espresso"
+      "ru": "кофе зерновой",
+      "kk": "дәнді кофе",
+      "en": "coffee beans"
     }
   },
   "Батч Брю": {
@@ -2714,9 +2714,9 @@
       "en": "Filter coffee from your choice of beans, brewed in a batch brewer."
     },
     "ing": {
-      "ru": "эспрессо",
-      "kk": "эспрессо",
-      "en": "espresso"
+      "ru": "кофе зерновой",
+      "kk": "дәнді кофе",
+      "en": "coffee beans"
     }
   },
   "Капучино 0.3 + синнабон": {
@@ -2765,9 +2765,9 @@
       "en": "Espresso with cold water and ice; your choice of beans."
     },
     "ing": {
-      "ru": "эспрессо",
-      "kk": "эспрессо",
-      "en": "espresso"
+      "ru": "кофе зерновой",
+      "kk": "дәнді кофе",
+      "en": "coffee beans"
     }
   },
   "Ice Латте": {
@@ -2790,9 +2790,9 @@
       "en": "Espresso with cold milk and ice; your choice of beans."
     },
     "ing": {
-      "ru": "молоко, эспрессо",
-      "kk": "сүт, эспрессо",
-      "en": "milk, espresso"
+      "ru": "молоко, кофе зерновой",
+      "kk": "сүт, дәнді кофе",
+      "en": "milk, coffee beans"
     }
   },
   "Ice Капучино": {
@@ -2841,9 +2841,9 @@
       "en": "Cold brew coffee over ice; choose citrus or cherry-lime."
     },
     "ing": {
-      "ru": "эспрессо, грейпфрут, лимон, апельсин",
-      "kk": "эспрессо, грейпфрут, лимон, апельсин",
-      "en": "espresso, grapefruit, lemon, orange"
+      "ru": "кофе зерновой, грейпфрут, лимон, апельсин",
+      "kk": "дәнді кофе, грейпфрут, лимон, апельсин",
+      "en": "coffee beans, grapefruit, lemon, orange"
     }
   },
   "Эспрессо-тоник": {
@@ -2866,9 +2866,9 @@
       "en": "Espresso with tonic water, a slice of lemon and ice."
     },
     "ing": {
-      "ru": "эспрессо, тоник, лайм",
-      "kk": "эспрессо, тоник, лайм",
-      "en": "espresso, tonic water, lime"
+      "ru": "кофе зерновой, тоник, лайм",
+      "kk": "дәнді кофе, тоник, лайм",
+      "en": "coffee beans, tonic water, lime"
     }
   },
   "Бамбл кофе на соке / на фреше": {
@@ -2891,9 +2891,9 @@
       "en": "Espresso with orange juice and ice; choose packaged juice or fresh-squeezed."
     },
     "ing": {
-      "ru": "эспрессо, ананас",
-      "kk": "эспрессо, ананас",
-      "en": "espresso, pineapple"
+      "ru": "кофе зерновой, ананас",
+      "kk": "дәнді кофе, ананас",
+      "en": "coffee beans, pineapple"
     }
   },
   "Фраппучино: карамель, шоколад": {
@@ -2916,9 +2916,9 @@
       "en": "Blended iced coffee with espresso, milk and ice cream; choose caramel or chocolate."
     },
     "ing": {
-      "ru": "мороженое, эспрессо, сливки 33%, молоко",
-      "kk": "балмұздақ, эспрессо, кілегей 33%, сүт",
-      "en": "ice cream, espresso, heavy cream, milk"
+      "ru": "мороженое, кофе зерновой, сливки 33%, молоко",
+      "kk": "балмұздақ, дәнді кофе, кілегей 33%, сүт",
+      "en": "ice cream, coffee beans, heavy cream, milk"
     }
   },
   "Ассам": {
@@ -3615,9 +3615,9 @@
       "en": "Classic raf coffee: espresso whipped with cream and syrup."
     },
     "ing": {
-      "ru": "эспрессо, сливки 10%",
-      "kk": "эспрессо, кілегей 10%",
-      "en": "espresso, light cream"
+      "ru": "кофе зерновой, сливки 10%",
+      "kk": "дәнді кофе, кілегей 10%",
+      "en": "coffee beans, light cream"
     }
   },
   "Медовый": {
@@ -3640,9 +3640,9 @@
       "en": "Raf coffee: espresso whipped with cream and honey."
     },
     "ing": {
-      "ru": "эспрессо, сливки 10%, мёд",
-      "kk": "эспрессо, кілегей 10%, бал",
-      "en": "espresso, light cream, honey"
+      "ru": "кофе зерновой, сливки 10%, мёд",
+      "kk": "дәнді кофе, кілегей 10%, бал",
+      "en": "coffee beans, light cream, honey"
     }
   },
   "С солёной карамелью": {
@@ -3665,9 +3665,9 @@
       "en": "Raf coffee: espresso whipped with cream and salted caramel."
     },
     "ing": {
-      "ru": "эспрессо, сливки 10%",
-      "kk": "эспрессо, кілегей 10%",
-      "en": "espresso, light cream"
+      "ru": "кофе зерновой, сливки 10%",
+      "kk": "дәнді кофе, кілегей 10%",
+      "en": "coffee beans, light cream"
     }
   },
   "Латте печенье": {
@@ -3690,9 +3690,9 @@
       "en": "Latte with syrup and cookie crumbs on the milk foam."
     },
     "ing": {
-      "ru": "порошковая смесь для напитков, молоко, эспрессо",
-      "kk": "сусынға арналған ұнтақ қоспа, сүт, эспрессо",
-      "en": "powdered drink mix, milk, espresso"
+      "ru": "порошковая смесь для напитков, молоко, кофе зерновой",
+      "kk": "сусынға арналған ұнтақ қоспа, сүт, дәнді кофе",
+      "en": "powdered drink mix, milk, coffee beans"
     }
   },
   "Матча-пломбир": {
@@ -3765,9 +3765,9 @@
       "en": "Espresso with milk, chocolate sauce and whipped cream."
     },
     "ing": {
-      "ru": "шоколад тёмный, эспрессо, молоко",
-      "kk": "қара шоколад, эспрессо, сүт",
-      "en": "dark chocolate, espresso, milk"
+      "ru": "шоколад тёмный, кофе зерновой, молоко",
+      "kk": "қара шоколад, дәнді кофе, сүт",
+      "en": "dark chocolate, coffee beans, milk"
     }
   },
   "Киви-тоник": {
@@ -4416,9 +4416,9 @@
       "en": "Decaf espresso, a swap for any coffee drink."
     },
     "ing": {
-      "ru": "эспрессо",
-      "kk": "эспрессо",
-      "en": "espresso"
+      "ru": "кофе зерновой",
+      "kk": "дәнді кофе",
+      "en": "coffee beans"
     }
   },
   "Альтернативное молоко": {
