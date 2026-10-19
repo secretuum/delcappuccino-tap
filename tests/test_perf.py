@@ -323,25 +323,17 @@ class TestFirstScreen(unittest.TestCase):
         self.assertIn('rel="manifest"', head)
 
 
-def ring_coverage(d):
-    """Доля площади, которую закрывает SVG-кольцо «внешний контур − внутренний» (path из M/L/Z, evenodd).
-    Площадь каждого подконтура — формула шнурков; покрытие = |внешний − внутренний| / внешний."""
-    subs = []
-    for sub in re.split(r'\s*Z\s*', d.strip()):
-        if not sub.strip():
-            continue
-        nums = [float(x) for x in re.findall(r'-?\d+(?:\.\d+)?', sub)]
-        assert re.fullmatch(r'[ML\d\s.\-]+', sub.strip()), 'в path рамки только M/L/Z: ' + sub[:40]
-        pts = list(zip(nums[0::2], nums[1::2]))
-        subs.append(abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1]
-                            for i in range(len(pts)))) / 2)
-    outer = max(subs)
-    return (outer - min(subs)) / outer
+def polygon_area_pct(clip):
+    """Площадь clip-path: polygon(x% y%, ...) в долях бокса (формула шнурков)."""
+    nums = [float(x) for x in re.findall(r'(-?\d+(?:\.\d+)?)%', clip)]
+    pts = list(zip(nums[0::2], nums[1::2]))
+    return abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1]
+                   for i in range(len(pts)))) / 2 / (100 * 100)
 
 
 class TestGrillPromo(unittest.TestCase):
-    """Акция «Курица гриль» в hero: видео не тяжелит первый экран, огненная рамка ≤ 20% площади."""
-    FIRE_MAX = 0.20
+    """Акция «Курица гриль» в hero: видео не тяжелит первый экран, в окне огня его видно ≥ 50% бокса."""
+    VIDEO_MIN = 0.50
 
     @classmethod
     def setUpClass(cls):
@@ -374,16 +366,39 @@ class TestGrillPromo(unittest.TestCase):
         self.assertIn('IntersectionObserver', self.html)
         self.assertIn('prefers-reduced-motion', self.html)
 
-    def test_fire_frame_coverage(self):
+    def test_fire_window_shows_video(self):
+        """Огонёк — SVG с плавными кривыми, видео в окне-языке видно не меньше половины своего бокса."""
         m = re.search(r'<svg class="grill-fire"[^>]*viewBox="0 0 (\d+) (\d+)"[^>]*>(.*?)</svg>', self.html, re.S)
         self.assertIsNotNone(m, 'нет <svg class="grill-fire">')
         paths = re.findall(r'<path[^>]*\sd="([^"]+)"', m.group(3))
-        self.assertTrue(paths, 'в рамке нет path')
-        covs = [ring_coverage(d) for d in paths]
-        for c in covs:
-            self.assertLessEqual(c, self.FIRE_MAX, f'рамка закрывает {c:.1%} видео > {self.FIRE_MAX:.0%}')
-        self.assertEqual(covs, sorted(covs, reverse=True), 'внутренние кольца должны быть не больше внешнего')
+        self.assertGreaterEqual(len(paths), 2, 'нужны внешнее пламя и внутренний язык')
+        for d in paths:
+            self.assertRegex(d, r'[CQ]', 'контур пламени должен быть плавным (кривые C/Q)')
         self.assertNotIn('<image', m.group(3), 'рамка — только CSS/SVG, без растров')
+        self.assertIn('#FFE500', m.group(3).upper(), 'внутри пламени нет жёлтого')
+        clip = re.search(r'\.grill-win\{[^}]*clip-path:polygon\(([^)]+)\)', self.html)
+        self.assertIsNotNone(clip, 'у окна .grill-win нет clip-path: polygon(...)')
+        visible = polygon_area_pct(clip.group(1))
+        self.assertGreaterEqual(visible, self.VIDEO_MIN, f'окно оставляет {visible:.0%} бокса видео < {self.VIDEO_MIN:.0%}')
+
+    def test_video_layer_above_fire(self):
+        """Заявка 20992 вернулась: svg лежал поверх видео. Окно с видео должно рисоваться над пламенем,
+        а тикер и виньетка — внутри окна (режутся его контуром, на кремовом фоне текста нет)."""
+        def z(sel):
+            m = re.search(r'\n' + re.escape(sel) + r'\{([^}]*)\}', self.html)
+            self.assertIsNotNone(m, 'нет правила ' + sel)
+            zi = re.search(r'z-index:(-?\d+)', m.group(1))
+            return int(zi.group(1)) if zi else 0
+        self.assertGreater(z('.grill-win'), z('.grill-fire'), 'окно .grill-win должно быть над svg .grill-fire')
+        frame = re.search(r'<div class="grill-frame">(.*?)<p class="grill-cap">', self.html, re.S).group(1)
+        self.assertLess(frame.index('<svg class="grill-fire"'), frame.index('<div class="grill-win">'),
+                        'svg пламени должен идти в DOM раньше окна с видео')
+        win = re.search(r'<div class="grill-win">(.*?)\n\s*</div>\n\s*</div>', frame, re.S).group(1)
+        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<div class="grill-ticker"'):
+            self.assertIn(part, win, part + ' должен быть внутри окна .grill-win')
+        self.assertNotIn('z-index:1', re.search(r'\n\.grill-fire\{([^}]*)\}', self.html).group(1))
+        glow = re.search(r'\n\.grill-glow\{([^}]*)\}', self.html).group(1)
+        self.assertIn('transparent', glow, 'центр виньетки должен быть прозрачным')
 
     def test_ticker_seamless_and_static_on_reduced_motion(self):
         spans = re.findall(r'<div class="grill-ticker"[^>]*>(.*?)</div>', self.html, re.S)
@@ -394,6 +409,10 @@ class TestGrillPromo(unittest.TestCase):
         self.assertIn('ВНИМАНИЕ', parts[0])
         self.assertRegex(self.html, r'@keyframes grill-run\{to\{transform:translateX\(-100%\)\}\}')
         self.assertRegex(self.html, r'prefers-reduced-motion:reduce\)\{\.grill-ticker span\{animation:none\}')
+        ticker_css = re.search(r'\.grill-ticker\{([^}]*)\}', self.html).group(1)
+        self.assertIn('color:#FFE500', ticker_css, 'бегущая строка должна быть чисто-жёлтой')
+        self.assertGreaterEqual(int(re.search(r'font-weight:(\d+)', ticker_css).group(1)), 800)
+        self.assertIn('text-shadow', ticker_css, 'нужно свечение, чтобы читалось на красном')
 
 
 class TestServiceWorker(unittest.TestCase):
