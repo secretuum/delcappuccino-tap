@@ -376,10 +376,29 @@ class TestGrillPromo(unittest.TestCase):
             self.assertRegex(d, r'[CQ]', 'контур пламени должен быть плавным (кривые C/Q)')
         self.assertNotIn('<image', m.group(3), 'рамка — только CSS/SVG, без растров')
         self.assertIn('#FFE500', m.group(3).upper(), 'внутри пламени нет жёлтого')
-        clip = re.search(r'\.grill-video\{[^}]*clip-path:polygon\(([^)]+)\)', self.html)
-        self.assertIsNotNone(clip, 'у .grill-video нет clip-path: polygon(...)')
+        clip = re.search(r'\.grill-win\{[^}]*clip-path:polygon\(([^)]+)\)', self.html)
+        self.assertIsNotNone(clip, 'у окна .grill-win нет clip-path: polygon(...)')
         visible = polygon_area_pct(clip.group(1))
         self.assertGreaterEqual(visible, self.VIDEO_MIN, f'окно оставляет {visible:.0%} бокса видео < {self.VIDEO_MIN:.0%}')
+
+    def test_video_layer_above_fire(self):
+        """Заявка 20992 вернулась: svg лежал поверх видео. Окно с видео должно рисоваться над пламенем,
+        а тикер и виньетка — внутри окна (режутся его контуром, на кремовом фоне текста нет)."""
+        def z(sel):
+            m = re.search(r'\n' + re.escape(sel) + r'\{([^}]*)\}', self.html)
+            self.assertIsNotNone(m, 'нет правила ' + sel)
+            zi = re.search(r'z-index:(-?\d+)', m.group(1))
+            return int(zi.group(1)) if zi else 0
+        self.assertGreater(z('.grill-win'), z('.grill-fire'), 'окно .grill-win должно быть над svg .grill-fire')
+        frame = re.search(r'<div class="grill-frame">(.*?)<p class="grill-cap">', self.html, re.S).group(1)
+        self.assertLess(frame.index('<svg class="grill-fire"'), frame.index('<div class="grill-win">'),
+                        'svg пламени должен идти в DOM раньше окна с видео')
+        win = re.search(r'<div class="grill-win">(.*?)\n\s*</div>\n\s*</div>', frame, re.S).group(1)
+        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<div class="grill-ticker"'):
+            self.assertIn(part, win, part + ' должен быть внутри окна .grill-win')
+        self.assertNotIn('z-index:1', re.search(r'\n\.grill-fire\{([^}]*)\}', self.html).group(1))
+        glow = re.search(r'\n\.grill-glow\{([^}]*)\}', self.html).group(1)
+        self.assertIn('transparent', glow, 'центр виньетки должен быть прозрачным')
 
     def test_ticker_seamless_and_static_on_reduced_motion(self):
         spans = re.findall(r'<div class="grill-ticker"[^>]*>(.*?)</div>', self.html, re.S)

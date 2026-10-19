@@ -3,8 +3,9 @@
 
 Запуск из корня:  python3 tools/flame_frame.py            — печатает блоки для index.html:
   1) <svg class="grill-fire">  — внешнее пламя (красный → оранжевый) и внутренний язык (оранжевый → жёлтый);
-  2) CSS .grill-video          — положение бокса видео в % рамки и clip-path: polygon(...) — окно в форме языка,
-                                  в % бокса видео (точки — выборка той же кривой, что у внутреннего языка, чуть меньше).
+  2) CSS .grill-win            — окно: положение бокса в % рамки, clip-path: polygon(...) в % бокса (точки — выборка
+                                  той же кривой, что у внутреннего языка, чуть меньше), z-index:1 — окно лежит НАД svg;
+                                  внутри окна: видео (object-fit:cover), виньетка и бегущая строка — всё режется контуром.
   --preview файл.png            — отрисовать постер в рамке (Pillow) для проверки глазами.
 В stderr: доля бокса видео, которую оставляет окно (tests/test_perf.py требует ≥ 50 %).
 
@@ -93,8 +94,8 @@ def build():
            f'<path class="grill-fire-outer" fill="url(#grill-g1)" d="{d_attr(OUTER)}"/>'
            f'<path class="grill-fire-inner" fill="url(#grill-g2)" d="{d_attr(inner)}"/>'
            '</svg>')
-    css = (f'.grill-video{{position:absolute;left:{bx / W * 100:.2f}%;top:{by / H * 100:.2f}%;width:{bw / W * 100:.2f}%;height:{bh / H * 100:.2f}%;'
-           'object-fit:cover;display:block;clip-path:polygon(' +
+    css = (f'.grill-win{{position:absolute;left:{bx / W * 100:.2f}%;top:{by / H * 100:.2f}%;width:{bw / W * 100:.2f}%;height:{bh / H * 100:.2f}%;'
+           'overflow:hidden;z-index:1;clip-path:polygon(' +
            ','.join(f'{x:.1f}% {y:.1f}%' for x, y in poly) + ')}')
     return svg, css, poly, visible, inner, window
 
