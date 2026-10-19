@@ -91,6 +91,23 @@ nav a:hover{color:var(--forest)}
 .halal-badge img{height:52px;width:52px;object-fit:contain;mix-blend-mode:multiply;flex:none}
 .halal-badge span{font-size:12px;color:var(--ink-2);line-height:1.55}
 
+/* ── GRILL PROMO — акция «Курица гриль» (19.10.2026): видео в огненной рамке + бегущая строка.
+   Рамка — SVG-кольцо (внешний прямоугольник − внутренний многоугольник с языками пламени), только M/L/Z:
+   tests/test_perf.py считает площадь по формуле шнурков, красное кольцо ≤ 20% площади видео (сейчас 18,7%),
+   оранжевое — внутри красного. Видео: preload=none, play() по IntersectionObserver, при reduced-motion — постер. ── */
+.grill-promo{margin-top:26px;max-width:560px;cursor:pointer}
+.grill-frame{position:relative;border-radius:16px;overflow:hidden;aspect-ratio:910/512;background:#2A1A12;box-shadow:0 18px 40px -18px rgba(215,38,30,.55)}
+.grill-frame video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.grill-fire{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.grill-ticker{position:absolute;left:0;right:0;bottom:0;height:9.4%;min-height:20px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:Comfortaa,sans-serif;font-weight:700;font-size:clamp(11px,1.1vw + 6px,16px);letter-spacing:.14em;color:#FFE14D;text-shadow:0 1px 0 rgba(0,0,0,.3)}
+.grill-ticker span{display:inline-block;padding-right:.6em;animation:grill-run 9s linear infinite}
+@keyframes grill-run{to{transform:translateX(-100%)}}
+.grill-cap{margin-top:10px;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
+.grill-cap b{color:var(--forest-dk)}
+.grill-cap a{color:var(--forest);font-weight:600;text-decoration:none;white-space:nowrap}
+@media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}
+@media(max-width:680px){.grill-promo{margin-top:20px;max-width:none}.grill-cap{font-size:12.5px}}
+
 /* ── HERO ──────────────────────────────── */
 .hero{padding:16px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:flex-start;position:relative}
 .tag{
@@ -500,6 +517,17 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <div class="halal-badge">
         <img src="assets/halal-104.webp" srcset="assets/halal-104.webp 104w, assets/halal-156.webp 156w" sizes="52px" width="104" height="104" decoding="async" alt="КМДБ Halal">
         <span>Продукция сертифицирована<br>КМДБ · halaldamu.kz</span>
+      </div>
+      <!-- Акция «Курица гриль»: видео (assets/grill-closeup.*.mp4, 910×512, 4 с) с постером; тап — меню на «Блюда на гриле» -->
+      <div class="grill-promo" onclick="openGrill()">
+        <div class="grill-frame">
+          <video class="grill-video" poster="assets/grill-poster.e74142ba.webp" width="910" height="512" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">
+            <source src="assets/grill-closeup.701739c2.mp4" type="video/mp4">
+          </video>
+          <svg class="grill-fire" viewBox="0 0 910 512" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path fill="#D7261E" fill-rule="evenodd" d="M0 0 L910 0 L910 512 L0 512Z M0 9 L13 14 L28 20 L48 14 L65 9 L82 20 L103 34 L118 20 L130 9 L145 20 L163 34 L181 20 L195 9 L208 17 L223 26 L243 17 L260 9 L277 18 L297 28 L313 18 L325 9 L336 21 L351 36 L372 21 L390 9 L404 20 L421 33 L440 20 L455 9 L473 19 L496 31 L509 19 L520 9 L530 16 L543 24 L566 16 L585 9 L602 15 L623 22 L638 15 L650 9 L664 19 L680 30 L699 19 L715 9 L729 22 L746 37 L765 22 L780 9 L795 18 L813 29 L831 18 L845 9 L861 18 L881 28 L897 18 L910 9 L901 0 L894 19 L886 41 L894 54 L901 64 L887 78 L869 95 L887 113 L901 128 L894 143 L886 160 L894 178 L901 192 L894 207 L886 224 L894 242 L901 256 L891 267 L879 281 L891 303 L901 320 L894 331 L886 345 L894 366 L901 384 L888 401 L873 422 L888 436 L901 448 L889 466 L874 489 L889 502 L901 512 L910 466 L893 458 L873 449 L857 458 L845 466 L833 458 L818 447 L797 458 L780 466 L768 460 L754 454 L733 460 L715 466 L701 457 L684 447 L665 457 L650 466 L640 460 L627 453 L604 460 L585 466 L570 461 L552 454 L534 461 L520 466 L503 458 L482 448 L467 458 L455 466 L439 458 L420 448 L404 458 L390 466 L379 461 L366 454 L344 461 L325 466 L314 460 L301 453 L279 460 L260 466 L242 458 L220 447 L206 458 L195 466 L180 459 L163 451 L145 459 L130 466 L113 460 L93 452 L77 460 L65 466 L48 457 L28 446 L12 457 L0 466 L9 512 L18 498 L30 481 L18 463 L9 448 L21 436 L37 421 L21 401 L9 384 L17 366 L28 344 L17 331 L9 320 L22 308 L37 294 L22 273 L9 256 L20 238 L33 216 L20 203 L9 192 L22 179 L38 164 L22 144 L9 128 L16 114 L24 97 L16 79 L9 64 L24 50 L41 32 L24 14 L9 0Z"/><path fill="#FF8A1F" fill-rule="evenodd" d="M0 0 L910 0 L910 512 L0 512Z M0 5 L13 8 L28 12 L48 8 L65 5 L82 12 L103 20 L118 12 L130 5 L145 12 L163 20 L181 12 L195 5 L208 10 L223 15 L243 10 L260 5 L277 10 L297 17 L313 10 L325 5 L336 12 L351 21 L372 12 L390 5 L404 12 L421 20 L440 12 L455 5 L473 11 L496 18 L509 11 L520 5 L530 9 L543 14 L566 9 L585 5 L602 9 L623 13 L638 9 L650 5 L664 11 L680 18 L699 11 L715 5 L729 13 L746 22 L765 13 L780 5 L795 10 L813 17 L831 10 L845 5 L861 10 L881 17 L897 10 L910 5 L905 0 L901 19 L896 41 L901 54 L905 64 L896 78 L886 95 L896 113 L905 128 L901 143 L896 160 L901 178 L905 192 L901 207 L896 224 L901 242 L905 256 L899 267 L892 281 L899 303 L905 320 L901 331 L896 345 L901 366 L905 384 L898 401 L888 422 L898 436 L905 448 L898 466 L889 489 L898 502 L905 512 L910 472 L893 468 L873 463 L857 468 L845 472 L833 467 L818 462 L797 467 L780 472 L768 469 L754 465 L733 469 L715 472 L701 467 L684 462 L665 467 L650 472 L640 469 L627 465 L604 469 L585 472 L570 469 L552 466 L534 469 L520 472 L503 467 L482 462 L467 467 L455 472 L439 468 L420 462 L404 468 L390 472 L379 469 L366 465 L344 469 L325 472 L314 469 L301 465 L279 469 L260 472 L242 467 L220 462 L206 467 L195 472 L180 468 L163 464 L145 468 L130 472 L113 468 L93 464 L77 468 L65 472 L48 467 L28 461 L12 467 L0 472 L5 512 L11 498 L17 481 L11 463 L5 448 L12 436 L21 421 L12 401 L5 384 L10 366 L16 344 L10 331 L5 320 L12 308 L22 294 L12 273 L5 256 L11 238 L19 216 L11 203 L5 192 L13 179 L22 164 L13 144 L5 128 L9 114 L14 97 L9 79 L5 64 L14 50 L24 32 L14 14 L5 0Z"/></svg>
+          <div class="grill-ticker" aria-hidden="true"><span>ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ ·</span><span>ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ ·</span></div>
+        </div>
+        <p class="grill-cap"><b>Курица гриль</b> · 6000 ₸ · Толе Би, 64 и Серкебаева, 146 · <a href="#" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль — открыть в меню">смотреть в меню →</a></p>
       </div>
     </div>
     <div class="hero-photo">
@@ -1941,6 +1969,22 @@ function setTopH(){
 })();
 </script>
 <script>
+/* Акция «Курица гриль»: открыть меню на разделе «Блюда на гриле» (функции меню — зона menu-i18n, здесь только вызовы) */
+function openGrill(){
+  track('cta_grill');
+  openMenu();
+  var i=MENU_KITCHEN.findIndex(function(s){return s.t==='Блюда на гриле'});
+  if(i>=0)requestAnimationFrame(function(){goMenuCat(i)});
+}
+/* Видео акции: без autoplay/preload — play() только когда блок виден (IntersectionObserver), пауза вне экрана; reduced-motion — только постер */
+(function(){
+  var v=document.querySelector('.grill-video'); if(!v)return;
+  if(matchMedia('(prefers-reduced-motion:reduce)').matches)return;
+  v.muted=true;
+  function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}
+  if(!('IntersectionObserver'in window)){play();return}
+  new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?play():v.pause()})},{threshold:.25}).observe(v);
+})();
 /* Аналитика — после load и в простое, чтобы не мешать первому экрану; gtag() выше в <head> складывает события в dataLayer до загрузки */
 (function(){
   function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=G-D50YPM8RMK';s.async=true;document.head.appendChild(s)}
