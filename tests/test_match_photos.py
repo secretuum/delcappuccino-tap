@@ -207,7 +207,7 @@ class TestBuildWithFolderPhotos(unittest.TestCase):
         self.assertEqual(cards['Маргарита']['img'], os.path.relpath(self.img, bc.ROOT).replace(os.sep, '/') + '/margarita.webp')
         self.assertEqual(cards['Маргарита']['d'], {'ru': 'Тонкое тесто.'})
         self.assertIn('img', cards['Стейк-омлет'])                              # из iiko
-        self.assertEqual(list(cards['Борщ с говядиной и бородинским хлебом']), ['img'])   # только фото из папки
+        self.assertEqual(list(cards['Борщ с говядиной и бородинским хлебом']), ['img', 'img480', 'ar'])   # только фото из папки
         self.assertNotIn('Тыквенный крем-суп', cards)                            # файла нет → карточки нет
         self.assertIn('нет файла кухня/нет такого.png', rep)
         src = json.load(open(os.path.join(self.img, 'sources.json'), encoding='utf-8'))
@@ -216,6 +216,14 @@ class TestBuildWithFolderPhotos(unittest.TestCase):
         from PIL import Image
         with Image.open(os.path.join(self.img, 'margarita.webp')) as im:
             self.assertEqual(im.size, (400, 300))                                 # взят png из папки (400×300), не iiko (500×400)
+        # второй размер 480 и натуральная пропорция в карточке
+        self.assertEqual(cards['Маргарита']['img480'], cards['Маргарита']['img'][:-5] + '-480.webp')
+        self.assertEqual(cards['Маргарита']['ar'], [400, 300])
+        p480 = os.path.join(self.img, 'margarita-480.webp')
+        self.assertTrue(os.path.isfile(p480)); self.assertLessEqual(os.path.getsize(p480), 35 * 1024)
+        with Image.open(p480) as im:
+            self.assertLessEqual(max(im.size), 480)
+        self.assertLessEqual(os.path.getsize(os.path.join(self.img, 'margarita.webp')), 90 * 1024)
         # источник сменился (iiko → папка) — перекодируется без --refresh
         with open(self.map, 'w', encoding='utf-8') as f:
             json.dump({'Стейк-омлет': {'iiko': 'k3', 'drive_file': 'кухня/стейк омлет.png'}}, f, ensure_ascii=False)
