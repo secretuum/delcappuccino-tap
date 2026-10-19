@@ -38,11 +38,17 @@
   "Бургер бриошь с куриной котлетой и омлетом": {
     "img": "img/menu/burger-briosh-s-kurinoj-kotletoj-i-omletom.webp"
   },
+  "Картофельные драники с лососем и соусом голландез": {
+    "img": "img/menu/kartofelnye-draniki-s-lososem-i-sousom-gollandez.webp"
+  },
   "Шакшука с тартином": {
     "img": "img/menu/shakshuka-s-tartinom.webp"
   },
   "Вафли из цукини с малосольным лососем": {
     "img": "img/menu/vafli-iz-cukini-s-malosolnym-lososem.webp"
+  },
+  "Круассан спайси с креветками и скрэмблом": {
+    "img": "img/menu/kruassan-spajsi-s-krevetkami-i-skremblom.webp"
   },
   "Стейк-омлет": {
     "img": "img/menu/stejk-omlet.webp"
@@ -240,6 +246,9 @@
   "Курица терияки с рисом": {
     "img": "img/menu/kurica-teriyaki-s-risom.webp"
   },
+  "Рамен сливочный": {
+    "img": "img/menu/ramen-slivochnyj.webp"
+  },
   "Говядина с овощами": {
     "img": "img/menu/govyadina-s-ovoschami.webp"
   },
@@ -374,6 +383,9 @@
   "Стейк лосося с молодым картофелем": {
     "img": "img/menu/stejk-lososya-s-molodym-kartofelem.webp"
   },
+  "Багет": {
+    "img": "img/menu/baget.webp"
+  },
   "Чесночный хлеб": {
     "img": "img/menu/chesnochnyj-hleb.webp",
     "w": "127 г"
@@ -467,6 +479,12 @@
       "ru": "Нежный флэт уайт с бархатистой молочной пенкой и насыщенным кофейным вкусом, создающий гармоничное сочетание мягкости и бодрящей горчинки. Идеальный напиток для уютного утра или перерыва"
     }
   },
+  "Пуровер V60": {
+    "img": "img/menu/purover-v60.webp"
+  },
+  "Батч Брю": {
+    "img": "img/menu/batch-bryu.webp"
+  },
   "Ice Латте": {
     "img": "img/menu/ice-latte.webp",
     "w": "330 г"
@@ -520,8 +538,14 @@
   "Имбирь-цитрус-мёд": {
     "img": "img/menu/imbir-citrus-med.webp"
   },
+  "Облепиха-мёд-апельсин": {
+    "img": "img/menu/oblepiha-med-apelsin.webp"
+  },
   "Малина-розмарин-лимон": {
     "img": "img/menu/malina-rozmarin-limon.webp"
+  },
+  "Классический": {
+    "img": "img/menu/klassicheskij.webp"
   },
   "Персиковый": {
     "img": "img/menu/persikovyj.webp",
@@ -591,6 +615,9 @@
   "Яблочный": {
     "img": "img/menu/yablochnyj.webp"
   },
+  "Грейпфрутовый": {
+    "img": "img/menu/grejpfrutovyj.webp"
+  },
   "Апельсиновый": {
     "img": "img/menu/apelsinovyj.webp",
     "w": "300 г",
@@ -621,6 +648,9 @@
   },
   "Ginger-тоник": {
     "img": "img/menu/ginger-tonik.webp"
+  },
+  "Ice клубничный капучино": {
+    "img": "img/menu/ice-klubnichnyj-kapuchino.webp"
   },
   "Ice cream-Cola": {
     "img": "img/menu/ice-cream-cola.webp"
@@ -666,6 +696,24 @@
   "Borjomi glass": {
     "img": "img/menu/borjomi-glass.webp",
     "w": "500 г"
+  },
+  "Coca-Cola": {
+    "img": "img/menu/coca-cola.webp"
+  },
+  "Coca-Cola Zero": {
+    "img": "img/menu/coca-cola-zero.webp"
+  },
+  "Fanta": {
+    "img": "img/menu/fanta.webp"
+  },
+  "Sprite": {
+    "img": "img/menu/sprite.webp"
+  },
+  "Piko mini": {
+    "img": "img/menu/piko-mini.webp"
+  },
+  "Schweppes": {
+    "img": "img/menu/schweppes.webp"
   },
   "Лимон": {
     "img": "img/menu/limon.webp",
@@ -724,6 +772,7 @@
     }
   },
   "Тарталетка Банофи пай": {
+    "img": "img/menu/tartaletka-banofi-paj.webp",
     "w": "120 г",
     "kbju": {
       "kcal": 376,
@@ -752,6 +801,14 @@
       "ru": "Нежный торт «Молочная девочка» с мягкими бисквитными коржами, пропитанными молочным кремом, и сладкой сливочной текстурой. Идеальный десерт для уютного чаепития и сладких моментов"
     }
   },
+  "Шу ягодный": {
+    "img": "img/menu/shu-yagodnyj.webp",
+    "w": "136 г"
+  },
+  "Шу абрикосовый": {
+    "img": "img/menu/shu-abrikosovyj.webp",
+    "w": "136 г"
+  },
   "Синнабон классический": {
     "img": "img/menu/sinnabon-klassicheskij.webp",
     "w": "104 г",
@@ -764,6 +821,9 @@
     "d": {
       "ru": "Нежный синнабон на закваске с ароматной корицей, мягким тестом и сладкой глазурью, тающей во рту. Идеальный десерт для уютного утра или сладкого перекуса"
     }
+  },
+  "Синнабон черника": {
+    "img": "img/menu/sinnabon-chernika.webp"
   },
   "Испанский чизкейк": {
     "img": "img/menu/ispanskij-chizkejk.webp",
@@ -813,6 +873,10 @@
     "img": "img/menu/merengovyj-rulet.webp",
     "w": "156 г"
   },
+  "Фисташковый рулет": {
+    "img": "img/menu/fistashkovyj-rulet.webp",
+    "w": "163 г"
+  },
   "Фисташка-малина": {
     "img": "img/menu/fistashka-malina.webp",
     "w": "125 г"
@@ -849,6 +913,10 @@
     "img": "img/menu/denish-s-persikom.webp",
     "w": "136 г"
   },
+  "Сырники с иримшиком": {
+    "img": "img/menu/syrniki-s-irimshikom.webp",
+    "w": "360 г"
+  },
   "Малина-лимон": {
     "img": "img/menu/malina-limon.webp"
   },
@@ -857,5 +925,9 @@
   },
   "Гуава-гуарана": {
     "img": "img/menu/guava-guarana.webp"
+  },
+  "Salam Premium Cola glass": {
+    "img": "img/menu/salam-premium-cola-glass.webp",
+    "w": "250 г"
   }
 }

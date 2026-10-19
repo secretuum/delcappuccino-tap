@@ -25,7 +25,7 @@
  },
  "Salam Premium Cola glass": {
   "iiko": "07099bc1-e34e-4f8a-8801-b79cf284043f",
-  "drive_file": null
+  "drive_file": "бар/SALAM Cola 0,45 ml.jpg"
  },
  "Sweet chili": {
   "iiko": "52bd40b2-7471-4e46-b854-ee6b192a2f04",
@@ -105,7 +105,7 @@
  },
  "Вишнёвый": {
   "iiko": "f7f85e8a-cb9b-4430-b97e-7c5b2661eb58",
-  "drive_file": null
+  "drive_file": "бар/Глинтвейн Вишня.jpg"
  },
  "Вода Del Cappuccino без газа": {
   "iiko": "93c97605-de31-40d3-b4aa-eed6ef608463",
@@ -360,7 +360,7 @@
   "iiko_also": [
    "84f39d6b-ff3f-4dc9-89e5-ead64c3565ad"
   ],
-  "drive_file": null
+  "drive_file": "десерты/синнабон.jfif"
  },
  "Сироп в ассортименте": {
   "iiko": "9a7f9f8b-44d1-473a-8bef-86b2c0901d2f",
@@ -388,7 +388,7 @@
  },
  "Сырники с иримшиком": {
   "iiko": "ab5a830c-2eaa-4298-ae57-db093ec0f98f",
-  "drive_file": null
+  "drive_file": "пф и мясо/сырники иримшик.jfif"
  },
  "Сырный": {
   "iiko": "9ffd39be-fa08-49d0-9695-4ce81fbd2ee3",
@@ -396,7 +396,7 @@
  },
  "Тарталетка Банофи пай": {
   "iiko": "0099b939-ed62-4bba-962e-6414e3209178",
-  "drive_file": null
+  "drive_file": "десерты целые/тарталетка баннофи пай.jpg"
  },
  "Ташкентский": {
   "iiko": "a546cf45-24cd-471c-be19-08d92397eda6",
@@ -420,7 +420,7 @@
  },
  "Фисташковый рулет": {
   "iiko": "d81e4ac1-abef-467b-b0e7-006a61fd9b44",
-  "drive_file": null
+  "drive_file": "десерты/фисташка рулет.jfif"
  },
  "Флэт уайт": {
   "iiko": "94982b60-7896-4d86-b210-509c33304989",
@@ -460,7 +460,7 @@
  },
  "Чечевичный крем-суп": {
   "iiko": "7ae295e7-61d5-4203-9811-668f8cc70a9d",
-  "drive_file": null
+  "drive_file": "кухня/Суп чечевичный.jpg"
  },
  "Чизкейк по-казахски": {
   "iiko": "92998491-a1fe-4a97-9458-5f0ebcfb9897",
@@ -475,11 +475,11 @@
  },
  "Шу абрикосовый": {
   "iiko": "1cbf2e11-0c56-418a-9fbb-269a1d019ab8",
-  "drive_file": null
+  "drive_file": "десерты/шу мак абрикос.jfif"
  },
  "Шу ягодный": {
   "iiko": "225f292e-a619-4348-ae9e-cb02169a46e6",
-  "drive_file": null
+  "drive_file": "десерты/шу малиновый.jfif"
  },
  "Эспрессо / Доппио": {
   "iiko": "080befe5-16ab-4687-bbb6-ae77061ddcf9",
@@ -764,5 +764,73 @@
  "Киви-тоник": {
   "iiko": null,
   "drive_file": "бар/Киви тоник 375 мл.jpg"
+ },
+ "Картофельные драники с лососем и соусом голландез": {
+  "iiko": null,
+  "drive_file": "кухня/Драники картофельные с лососеми соусом голландез.png"
+ },
+ "Круассан спайси с креветками и скрэмблом": {
+  "iiko": null,
+  "drive_file": "кухня/круассан спайс с креветками.png"
+ },
+ "Piko mini": {
+  "iiko": null,
+  "drive_file": "бар/пико 200мл.jpg"
+ },
+ "Пуровер V60": {
+  "iiko": null,
+  "drive_file": "бар/Пуровер V60 и Батч брю.jpeg"
+ },
+ "Батч Брю": {
+  "iiko": null,
+  "drive_file": "бар/Пуровер V60 и Батч брю.jpeg"
+ },
+ "Синнабон черника": {
+  "iiko": null,
+  "drive_file": "десерты целые/синнабон черника.jpg"
+ },
+ "Coca-Cola": {
+  "iiko": null,
+  "drive_file": "бар/кола 0.25.jpg"
+ },
+ "Coca-Cola Zero": {
+  "iiko": null,
+  "drive_file": "бар/кола 0.25 зеро.jpg"
+ },
+ "Schweppes": {
+  "iiko": null,
+  "drive_file": "бар/швэпс 0.45.jpg"
+ },
+ "Классический": {
+  "iiko": null,
+  "drive_file": "бар/Айс ти Классический.jpg"
+ },
+ "Облепиха-мёд-апельсин": {
+  "iiko": null,
+  "drive_file": "бар/авторский чай/облепиха мел.png"
+ },
+ "Sprite": {
+  "iiko": null,
+  "drive_file": "бар/спрайт 0.25.jpg"
+ },
+ "Ice клубничный капучино": {
+  "iiko": null,
+  "drive_file": "бар/25.08/айс клубничный капучино.jpg"
+ },
+ "Fanta": {
+  "iiko": null,
+  "drive_file": "бар/фанта 0.25.webp"
+ },
+ "Багет": {
+  "iiko": null,
+  "drive_file": "кухня/Багет классический 1шт.png"
+ },
+ "Грейпфрутовый": {
+  "iiko": null,
+  "drive_file": "бар/Фреш грейпфрут.webp"
+ },
+ "Рамен сливочный": {
+  "iiko": null,
+  "drive_file": "кухня/Рамен сливочный с курицей.png"
  }
 }

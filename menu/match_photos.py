@@ -9,6 +9,7 @@
 цифры должны совпадать). Среди дублей лучше: png/jpg над jfif, большее разрешение (PIL), литеральное
 совпадение. Не берём: «ChatGPT Image», «1кг/1 кг», «бокс», «мякоть», «фарш».
 
+Ручные пары — menu/name_map_overrides.json {сайт: путь|null}, накладываются поверх автоматики.
 Результат — поле "drive_file" в menu/name_map.json (путь относительно menu/menu_photos/) рядом с
 ключом iiko: {название_сайта: {"iiko": key|null, "drive_file": "кухня/Рибай на кости.png"|null}}.
 Отчёт (спорные, ненайденные, лишние файлы) — menu/photo_map_report.md.
@@ -202,6 +203,9 @@ def match(site, files, cutoff=0.88):
 def report_text(report, stats, source):
     L = [f'источник: {source}', f'фото: файлов {stats["files"]} (без мусора), позиций сайта {stats["site"]}, с фото {stats["mapped"]} '
          f'(буквально {stats["literal"]}, спорных {stats["fuzzy"]}), без фото {stats["missing"]}, файлов без пары {stats["unused"]}', '']
+    L.append(f'## Ручные пары ({stats.get("manual", 0)}) — из name_map_overrides.json')
+    L += ['  ' + x for x in report.get('manual', [])] or ['  —']
+    L.append('')
     L.append(f'## Спорные ({stats["fuzzy"]}) — совпало не буквально: сайт ← файл')
     L += ['  ' + x for x in report['fuzzy']] or ['  —']
     L.append('')
@@ -214,6 +218,34 @@ def report_text(report, stats, source):
     L.append(f'## Файлы без пары ({stats["unused"]}) — не похожи ни на одну позицию сайта')
     L += ['  ' + x for x in report['unused']] or ['  —']
     return '\n'.join(L) + '\n'
+
+
+def apply_overrides(result, report, stats, overrides_path, photos_dir=None, listing_names=None):
+    """menu/name_map_overrides.json {сайт: путь|null} поверх автоматики; путь проверяется по папке (или листингу)"""
+    if not overrides_path or not os.path.isfile(overrides_path):
+        return
+    with open(overrides_path, encoding='utf-8') as f:
+        over = {k: v for k, v in json.load(f).items() if not k.startswith('_')}
+    manual = []
+    for name, path in over.items():
+        if path is None:
+            if name in result:
+                del result[name]
+                manual.append(f'{name}  ⇒ фото снято')
+            continue
+        exists = (os.path.isfile(os.path.join(photos_dir, path)) if photos_dir else (path in (listing_names or set())))
+        if not exists:
+            manual.append(f'{name}  ←  {path}  — НЕТ ТАКОГО ФАЙЛА, пропущено')
+            continue
+        was = result.get(name)
+        result[name] = path
+        manual.append(f'{name}  ←  {path}' + (f'  (было: {was})' if was and was != path else ''))
+    report['manual'] = manual
+    stats['manual'] = sum(1 for m in manual if 'пропущено' not in m)
+    stats['mapped'] = len(result)
+    report['missing'] = [m for m in report['missing'] if m.split('  [')[0] not in result]
+    report['unused'] = [u for u in report['unused'] if u not in set(result.values())]
+    stats['missing'], stats['unused'] = len(report['missing']), len(report['unused'])
 
 
 def load_map(path):
@@ -232,6 +264,7 @@ def main(argv=None):
     ap.add_argument('--listing', help='сухой прогон по листингу Диска (json с files[].title) вместо папки')
     ap.add_argument('--map', default=os.path.join(HERE, 'name_map.json'))
     ap.add_argument('--report', default=os.path.join(HERE, 'photo_map_report.md'))
+    ap.add_argument('--overrides', default=os.path.join(HERE, 'name_map_overrides.json'), help='ручные пары поверх автоматики')
     ap.add_argument('--dry-run', action='store_true', help='только отчёт, name_map.json не писать')
     ap.add_argument('--cutoff', type=float, default=0.88)
     a = ap.parse_args(argv)
@@ -243,6 +276,8 @@ def main(argv=None):
             return 2
         files, source = scan_folder(a.photos), f'папка {os.path.relpath(a.photos, ROOT)}'
     result, report, stats = match(mn.site_names(a.menu), files, a.cutoff)
+    apply_overrides(result, report, stats, a.overrides, photos_dir=None if a.listing else a.photos,
+                    listing_names={f['path'] for f in files})
     txt = report_text(report, stats, source)
     if not a.dry_run:
         m = load_map(a.map)
