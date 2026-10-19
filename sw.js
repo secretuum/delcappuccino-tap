@@ -14,7 +14,7 @@
  * tests/test_perf.py предупреждает, если забыли). Новый SW ставится сразу (skipWaiting), при активации
  * удаляет старые dc-shell-* и dc-rt-*; кэш картинок между версиями страницы переживает.
  */
-var VERSION = 'd367ca465a';
+var VERSION = '8cdaa98ce3';
 var SHELL = 'dc-shell-' + VERSION;
 var RT = 'dc-rt-v1';
 var PRECACHE = [
