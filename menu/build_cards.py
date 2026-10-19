@@ -7,6 +7,8 @@
   menu/nutrition_ref.json — справочник КБЖУ на 100 г + переводы kk/en + синонимы (aliases) + piece_g
   menu/name_map.json     — {название сайта: key iiko} от menu/match_names.py; с картой берём только
                            сопоставленные записи iiko и переименовываем их в названия сайта
+  menu/descriptions.json — описания для гостя {название: {ru, kk, en}}; приоритетнее описаний iiko,
+                           отдельный файл, чтобы состав из ТТК не затирал тексты
   menu/recipes_est.json  — оценочные составы с нетто-граммовками и порцией (пока нет ТТК): запасной
                            источник состава и КБЖУ после ТТК; такие КБЖУ помечаются "est": true;
                            бутылочные напитки — label_per_100 (этикетка), без состава
@@ -139,6 +141,17 @@ def load_recipes(path, rep):
         r = {k: v for k, v in json.load(f).items() if not k.startswith('_')}
     rep.add(f'{os.path.relpath(path, ROOT)}: {len(r)} оценочных составов')
     return r
+
+
+def load_descriptions(path, rep):
+    """menu/descriptions.json {название: {ru, kk, en}}"""
+    if not path or not os.path.isfile(path):
+        rep.add(f'нет {path} — описания только из iiko')
+        return {}
+    with open(path, encoding='utf-8') as f:
+        d = {k: v for k, v in json.load(f).items() if not k.startswith('_') and isinstance(v, dict)}
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(d)} описаний')
+    return d
 
 
 def load_name_map(path, rep):
@@ -458,13 +471,14 @@ def menu_names(index_html):
 
 # ── сборка ──────────────────────────────────────────────────────────────────
 def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None,
-          name_map=None, photos_dir=None, recipes=None, recipes_report=None):
+          name_map=None, photos_dir=None, recipes=None, recipes_report=None, descriptions=None, descriptions_report=None):
     rep = rep or Report()
     with open(ref_path, encoding='utf-8') as f:
         ref = Ref(json.load(f))
     rep.add(f'справочник: {len(ref.items)} ингредиентов')
     rev, drive = load_name_map(name_map, rep) if name_map else ({}, {})
     recipes = load_recipes(recipes, rep) if recipes else {}
+    descriptions = load_descriptions(descriptions, rep) if descriptions else {}
     photos_dir = photos_dir or os.path.join(HERE, 'menu_photos')
     items = merge_exports(apply_name_map(load_export(iiko_path, rep), rev, 'iiko', rep),
                           apply_name_map(load_export(ttk_path, rep), rev, 'ttk', rep))
@@ -476,6 +490,10 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
     for site in recipes:                            # позиция только с оценочным составом — карточка с составом и КБЖУ
         if site not in have:
             items.append({'src': ['est'], 'name': site})
+            have.add(site)
+    for site in descriptions:
+        if site not in have:
+            items.append({'src': ['desc'], 'name': site})
     sources_path = os.path.join(img_dir, 'sources.json')
     sources = {}
     if os.path.isfile(sources_path):
@@ -488,7 +506,7 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         with open(out_path, encoding='utf-8') as f:
             old = json.load(f)
 
-    cards, stats, rrows = {}, {}, []
+    cards, stats, rrows, drows = {}, {}, [], []
     for it in items:
         name = str(it['name']).strip()
         missing = list(it.get('missing') or [])
@@ -511,9 +529,14 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
             card['kbju'] = {k: int(round(v)) for k, v in kbju.items()}
             if est:
                 card['est'] = True
-        desc = clean_description(it.get('description'), name, rep)
-        if desc:
-            card['d'] = {'ru': desc}
+        own = descriptions.get(name)
+        if own and own.get('ru'):
+            card['d'] = {l: own[l].strip() for l in LANGS if own.get(l) and own[l].strip()}
+            drows.append((name, card['d']))
+        else:
+            desc = clean_description(it.get('description'), name, rep)
+            if desc:
+                card['d'] = {'ru': desc}
         ing = ingredients_text(it, ref)
         if not ing and recipe and recipe.get('items') and not recipe.get('no_ing'):
             ing = ingredients_text({'composition': [{'name': x['name']} for x in recipe['items']]}, ref)
@@ -552,9 +575,12 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
     order = {n: i for i, n in enumerate(names)}
     ordered = dict(sorted(cards.items(), key=lambda kv: (order.get(kv[0], len(order)), kv[0])))
 
+    order = {n: i for i, n in enumerate(names)}
     if recipes_report:
-        order = {n: i for i, n in enumerate(names)}
         write_recipes_report(recipes_report, sorted(rrows, key=lambda r: (order.get(r[0], len(order)), r[0])), ref)
+    if descriptions_report:
+        write_descriptions_report(descriptions_report, sorted(drows, key=lambda r: (order.get(r[0], len(order)), r[0])))
+    stats['описаний своих'] = len(drows)
     rep.add('')
     rep.add('итого: ' + ', '.join(f'{k}: {v}' for k, v in stats.items() if v) + f'; заглушек сохранено: {kept}' +
             (f'; удалено старых: {", ".join(dropped)}' if dropped else ''))
@@ -585,6 +611,20 @@ def write_recipes_report(path, rows, ref):
         f.write('\n'.join(L) + '\n')
 
 
+def write_descriptions_report(path, rows):
+    """menu/descriptions_report.md — блюдо → ru / kk / en; для вычитки владельцем и носителем"""
+    L = ['# Описания блюд для вычитки', '',
+         'Собрано `menu/build_cards.py` из `menu/descriptions.json` (ключ — название на сайте). Правки — в descriptions.json.', '',
+         f'Всего: {len(rows)}.', '']
+    for name, d in rows:
+        L.append(f"- **{name}**")
+        for l in LANGS:
+            if d.get(l):
+                L.append(f"  - {l}: {d[l]}")
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(L) + '\n')
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description='Собрать menu/cards.json из выгрузок iiko и ТТК')
     ap.add_argument('--iiko', default=os.path.join(HERE, 'iiko-export.json'))
@@ -597,13 +637,16 @@ def main(argv=None):
     ap.add_argument('--photos-dir', default=os.path.join(HERE, 'menu_photos'), help='папка исходников фото (drive_file относительно неё)')
     ap.add_argument('--recipes', default=os.path.join(HERE, 'recipes_est.json'), help='оценочные составы (fallback после ТТК)')
     ap.add_argument('--recipes-report', default=os.path.join(HERE, 'recipes_report.md'), help='отчёт по составам для вычитки')
+    ap.add_argument('--descriptions', default=os.path.join(HERE, 'descriptions.json'), help='описания ru/kk/en (приоритетнее iiko)')
+    ap.add_argument('--descriptions-report', default=os.path.join(HERE, 'descriptions_report.md'), help='отчёт по описаниям для вычитки')
     ap.add_argument('--no-photos', action='store_true', help='не качать и не конвертировать фото')
     ap.add_argument('--refresh-photos', action='store_true', help='перекачать фото, даже если webp уже есть')
     ap.add_argument('--report', help='куда дописать отчёт (текст)')
     ap.add_argument('--dry-run', action='store_true', help='только отчёт, cards.json не писать')
     a = ap.parse_args(argv)
     cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos, name_map=a.name_map,
-                       photos_dir=a.photos_dir, recipes=a.recipes, recipes_report=None if a.dry_run else a.recipes_report)
+                       photos_dir=a.photos_dir, recipes=a.recipes, recipes_report=None if a.dry_run else a.recipes_report,
+                       descriptions=a.descriptions, descriptions_report=None if a.dry_run else a.descriptions_report)
     if not a.dry_run:
         with open(a.out, 'w', encoding='utf-8') as f:
             json.dump(cards, f, ensure_ascii=False, indent=2)
