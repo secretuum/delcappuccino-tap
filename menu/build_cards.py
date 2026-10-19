@@ -17,8 +17,9 @@
     (неполная сумма — ложная цифра); иначе per_100g × выход / 100;
   • описание — только ru (кладём d.ru; T()/cardLang на сайте падают на ru сами);
   • состав ru — из ТТК, kk/en — по справочнику; если переведены не все ингредиенты, язык опускаем;
-  • фото: photo (url или локальный путь) → img/menu/<slug>.webp через PIL, ≤100 КБ, ≤960 px;
-    без PIL/без ссылки — без фото; уже скачанное не перекачиваем без --refresh-photos;
+  • фото: drive_file из name_map.json (папка menu/menu_photos/, приоритет) или photo из iiko (url)
+    → img/menu/<slug>.webp через PIL, ≤100 КБ, ≤960 px; img/menu/sources.json помнит источник
+    каждого webp — перекодируем, когда источник сменился или по --refresh-photos; без PIL — без фото;
   • записи старого cards.json с "_stub": true сохраняются, пока выгрузка не даст такое же название;
     у собранных записей _stub нет.
 
@@ -124,17 +125,22 @@ def load_export(path, rep):
 
 
 def load_name_map(path, rep):
-    """menu/name_map.json {название_сайта: key_iiko} → {key: название_сайта}"""
+    """menu/name_map.json: {сайт: key_iiko} (старый формат) или {сайт: {"iiko": key|null, "drive_file": путь|null}}
+    → ({key: сайт}, {сайт: drive_file})"""
     if not path or not os.path.isfile(path):
         rep.add(f'нет {path} — имена iiko берём как есть')
-        return {}
+        return {}, {}
     with open(path, encoding='utf-8') as f:
         m = json.load(f)
-    rev = {}
-    for site, key in m.items():
-        rev.setdefault(str(key), site)
-    rep.add(f'{os.path.relpath(path, ROOT)}: {len(m)} названий сайта → {len(rev)} позиций iiko')
-    return rev
+    rev, photos = {}, {}
+    for site, v in m.items():
+        key = v.get('iiko') if isinstance(v, dict) else v
+        if key:
+            rev.setdefault(str(key), site)
+        if isinstance(v, dict) and v.get('drive_file'):
+            photos[site] = v['drive_file']
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(m)} названий сайта → {len(rev)} позиций iiko, фото из папки: {len(photos)}')
+    return rev, photos
 
 
 def apply_name_map(items, rev, src, rep):
@@ -345,13 +351,32 @@ def save_webp(data, dst, max_px=960, max_bytes=100 * 1024):
     return buf.tell()
 
 
-def handle_photo(item, img_dir, rep, no_photos, refresh):
+def photo_source(item, photos_dir, drive_file):
+    """(источник, подпись) — файл из папки Диска приоритетнее ссылки iiko (новее, актуальное меню)"""
+    if drive_file:
+        p = os.path.join(photos_dir, drive_file)
+        if os.path.isfile(p):
+            return p, f'drive:{drive_file}:{os.path.getsize(p)}'
     url = item.get('photo')
-    if not url:
+    if url:
+        return url, f'iiko:{url}'
+    return None, None
+
+
+def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_file=None, sources=None):
+    """→ путь webp для карточки или None. sources — манифест {slug: подпись источника}:
+    перекодируем, когда источник сменился (напр. пришло фото с Диска вместо iiko) или webp нет."""
+    src, sign = photo_source(item, photos_dir or '', drive_file)
+    if drive_file and not (sign or '').startswith('drive:'):
+        rep.add(f'  нет файла {drive_file} в папке фото: {item["name"]}', error=True)
+    if not src:
         return None
-    rel = f'{os.path.relpath(img_dir, ROOT)}/{slug(item["name"])}.webp'.replace(os.sep, '/')
-    dst = os.path.join(img_dir, f'{slug(item["name"])}.webp')
-    if os.path.isfile(dst) and not refresh:
+    sl = slug(item['name'])
+    rel = f'{os.path.relpath(img_dir, ROOT)}/{sl}.webp'.replace(os.sep, '/')
+    dst = os.path.join(img_dir, f'{sl}.webp')
+    sources = sources if sources is not None else {}
+    if os.path.isfile(dst) and not refresh and sources.get(sl, sign) == sign:
+        sources[sl] = sign
         return rel
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
@@ -360,14 +385,15 @@ def handle_photo(item, img_dir, rep, no_photos, refresh):
         import PIL  # noqa: F401
     except ImportError:
         rep.add(f'  нет PIL — фото не обработано: {item["name"]}', error=True)
-        return None
+        return rel if os.path.isfile(dst) else None
     try:
-        size = save_webp(fetch_bytes(url), dst)
-        rep.add(f'  фото: {rel} ({size // 1024} КБ)')
+        size = save_webp(fetch_bytes(src), dst)
+        sources[sl] = sign
+        rep.add(f'  фото: {rel} ({size // 1024} КБ) ← {sign.split(":", 1)[0]}')
         return rel
     except Exception as e:  # сеть/формат — не валим сборку
         rep.add(f'  фото не удалось ({type(e).__name__}: {e}): {item["name"]}', error=True)
-        return None
+        return rel if os.path.isfile(dst) else None
 
 
 # ── меню на сайте ───────────────────────────────────────────────────────────
@@ -387,14 +413,25 @@ def menu_names(index_html):
 
 
 # ── сборка ──────────────────────────────────────────────────────────────────
-def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None, name_map=None):
+def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None,
+          name_map=None, photos_dir=None):
     rep = rep or Report()
     with open(ref_path, encoding='utf-8') as f:
         ref = Ref(json.load(f))
     rep.add(f'справочник: {len(ref.items)} ингредиентов')
-    rev = load_name_map(name_map, rep) if name_map else {}
+    rev, drive = load_name_map(name_map, rep) if name_map else ({}, {})
+    photos_dir = photos_dir or os.path.join(HERE, 'menu_photos')
     items = merge_exports(apply_name_map(load_export(iiko_path, rep), rev, 'iiko', rep),
                           apply_name_map(load_export(ttk_path, rep), rev, 'ttk', rep))
+    have = {str(it['name']).strip() for it in items}
+    for site in drive:                              # позиция только с фото из папки — карточка с одним фото
+        if site not in have:
+            items.append({'src': ['drive'], 'name': site})
+    sources_path = os.path.join(img_dir, 'sources.json')
+    sources = {}
+    if os.path.isfile(sources_path):
+        with open(sources_path, encoding='utf-8') as f:
+            sources = json.load(f)
     names = menu_names(index_html)
     name_set = set(names)
     old = {}
@@ -407,7 +444,7 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         name = str(it['name']).strip()
         missing = list(it.get('missing') or [])
         card = {}
-        img = handle_photo(it, img_dir, rep, no_photos, refresh)
+        img = handle_photo(it, img_dir, rep, no_photos, refresh, photos_dir, drive.get(name), sources)
         if img:
             card['img'] = img
         g, unit = portion_g(it)
@@ -440,6 +477,11 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         rep.add(line)
         cards[name] = card
 
+    if not no_photos:
+        os.makedirs(img_dir, exist_ok=True)
+        with open(sources_path, 'w', encoding='utf-8') as f:
+            json.dump(dict(sorted(sources.items())), f, ensure_ascii=False, indent=1)
+            f.write('\n')
     kept = 0
     for name, v in old.items():
         if isinstance(v, dict) and v.get('_stub') and name not in cards:
@@ -464,13 +506,14 @@ def main(argv=None):
     ap.add_argument('--out', default=os.path.join(HERE, 'cards.json'))
     ap.add_argument('--img-dir', default=os.path.join(ROOT, 'img', 'menu'))
     ap.add_argument('--menu', default=os.path.join(ROOT, 'index.html'), help='index.html для порядка и проверки названий')
-    ap.add_argument('--name-map', default=os.path.join(HERE, 'name_map.json'), help='сайт → key iiko (menu/match_names.py)')
+    ap.add_argument('--name-map', default=os.path.join(HERE, 'name_map.json'), help='сайт → key iiko / drive_file (match_names.py, match_photos.py)')
+    ap.add_argument('--photos-dir', default=os.path.join(HERE, 'menu_photos'), help='папка исходников фото (drive_file относительно неё)')
     ap.add_argument('--no-photos', action='store_true', help='не качать и не конвертировать фото')
     ap.add_argument('--refresh-photos', action='store_true', help='перекачать фото, даже если webp уже есть')
     ap.add_argument('--report', help='куда дописать отчёт (текст)')
     ap.add_argument('--dry-run', action='store_true', help='только отчёт, cards.json не писать')
     a = ap.parse_args(argv)
-    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos, name_map=a.name_map)
+    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos, name_map=a.name_map, photos_dir=a.photos_dir)
     if not a.dry_run:
         with open(a.out, 'w', encoding='utf-8') as f:
             json.dump(cards, f, ensure_ascii=False, indent=2)
