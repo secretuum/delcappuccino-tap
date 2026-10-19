@@ -5,6 +5,8 @@
   menu/iiko-export.json  — от опер-бота: name, group, description, portion, per_portion, per_100g, photo
   menu/ttk-export.json   — от ТТК: composition [{name, qty, unit}] и выход блюда (portion)
   menu/nutrition_ref.json — справочник КБЖУ на 100 г + переводы kk/en + синонимы (aliases) + piece_g
+  menu/name_map.json     — {название сайта: key iiko} от menu/match_names.py; с картой берём только
+                           сопоставленные записи iiko и переименовываем их в названия сайта
 
 Правила:
   • ключ карточки — русское название блюда ровно как в index.html (n:'…'); между файлами
@@ -89,12 +91,12 @@ class Ref:
         key = norm(ing_name)
         if key in self.index:
             return self.index[key]
-        # «лук репчатый свежий» → пробуем убрать хвост, «филе куриное охл.» и т. п.
+        # «лук репчатый свежий» → без хвоста; «соус дзадзики» → без головы
         words = key.split(' ')
         for n in range(len(words) - 1, 0, -1):
-            cand = ' '.join(words[:n])
-            if cand in self.index:
-                return self.index[cand]
+            for cand in (' '.join(words[:n]), ' '.join(words[-n:])):
+                if cand in self.index:
+                    return self.index[cand]
         return None
 
     def grams(self, name, qty, unit):
@@ -119,6 +121,57 @@ def load_export(path, rep):
     items = data.get('items', []) if isinstance(data, dict) else data
     rep.add(f'{os.path.relpath(path, ROOT)}: {len(items)} позиций, generated_at={data.get("generated_at") if isinstance(data, dict) else "?"}')
     return [it for it in items if isinstance(it, dict) and it.get('name')]
+
+
+def load_name_map(path, rep):
+    """menu/name_map.json {название_сайта: key_iiko} → {key: название_сайта}"""
+    if not path or not os.path.isfile(path):
+        rep.add(f'нет {path} — имена iiko берём как есть')
+        return {}
+    with open(path, encoding='utf-8') as f:
+        m = json.load(f)
+    rev = {}
+    for site, key in m.items():
+        rev.setdefault(str(key), site)
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(m)} названий сайта → {len(rev)} позиций iiko')
+    return rev
+
+
+def apply_name_map(items, rev, src, rep):
+    """переименовать по карте; без карты — как есть; с картой — несопоставленные записи выбрасываем"""
+    if not rev:
+        return items
+    out, dropped = [], 0
+    for it in items:
+        site = rev.get(str(it.get('cloud_key') or it.get('key') or ''))
+        if site:
+            it = {**it, 'name': site, 'name_src': it.get('name')}
+            out.append(it)
+        elif src == 'ttk':
+            out.append(it)          # ТТК может прийти уже с названиями сайта — сшиваем по имени
+        else:
+            dropped += 1
+    if dropped:
+        rep.add(f'{src}: {dropped} записей без пары в name_map.json пропущено')
+    return out
+
+
+PHONE_RE = re.compile(r'\+?\d[\d\s()\-]{7,}\d')
+SERVICE_RE = re.compile(r'вынос|стафф|агрегатор|\|-->|iiko|whatsapp|instagram|https?://', re.I)
+
+
+def clean_description(text, name, rep):
+    """описание для сайта: схлопнуть пробелы, без звёздочек; с телефоном или служебными пометками — не публикуем"""
+    t = re.sub(r'\s+', ' ', str(text or '')).replace('*', '').strip()
+    if not t:
+        return None
+    if PHONE_RE.search(t):
+        rep.add(f'  описание с телефоном не опубликовано: {name}', error=True)
+        return None
+    if SERVICE_RE.search(t):
+        rep.add(f'  описание со служебной пометкой не опубликовано: {name}', error=True)
+        return None
+    return t[0].upper() + t[1:]
 
 
 def merge_exports(iiko, ttk):
@@ -334,12 +387,14 @@ def menu_names(index_html):
 
 
 # ── сборка ──────────────────────────────────────────────────────────────────
-def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None):
+def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None, name_map=None):
     rep = rep or Report()
     with open(ref_path, encoding='utf-8') as f:
         ref = Ref(json.load(f))
     rep.add(f'справочник: {len(ref.items)} ингредиентов')
-    items = merge_exports(load_export(iiko_path, rep), load_export(ttk_path, rep))
+    rev = load_name_map(name_map, rep) if name_map else {}
+    items = merge_exports(apply_name_map(load_export(iiko_path, rep), rev, 'iiko', rep),
+                          apply_name_map(load_export(ttk_path, rep), rev, 'ttk', rep))
     names = menu_names(index_html)
     name_set = set(names)
     old = {}
@@ -364,12 +419,13 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         stats[src] += 1
         if kbju:
             card['kbju'] = {k: int(round(v)) for k, v in kbju.items()}
-        if it.get('description'):
-            card['d'] = {'ru': str(it['description']).strip()}
+        desc = clean_description(it.get('description'), name, rep)
+        if desc:
+            card['d'] = {'ru': desc}
         ing = ingredients_text(it, ref)
         if ing:
             card['ing'] = ing
-        line = f'• {name} [{"+".join(it["src"])}] — КБЖУ: {src}'
+        line = f'• {name} [{"+".join(it["src"])}]' + (f' ← {it["name_src"].strip()}' if it.get('name_src') and it['name_src'].strip() != name else '') + f' — КБЖУ: {src}'
         if names and name not in name_set:
             line += ' — НЕТ В МЕНЮ index.html'
             rep.errors += 1
@@ -408,12 +464,13 @@ def main(argv=None):
     ap.add_argument('--out', default=os.path.join(HERE, 'cards.json'))
     ap.add_argument('--img-dir', default=os.path.join(ROOT, 'img', 'menu'))
     ap.add_argument('--menu', default=os.path.join(ROOT, 'index.html'), help='index.html для порядка и проверки названий')
+    ap.add_argument('--name-map', default=os.path.join(HERE, 'name_map.json'), help='сайт → key iiko (menu/match_names.py)')
     ap.add_argument('--no-photos', action='store_true', help='не качать и не конвертировать фото')
     ap.add_argument('--refresh-photos', action='store_true', help='перекачать фото, даже если webp уже есть')
     ap.add_argument('--report', help='куда дописать отчёт (текст)')
     ap.add_argument('--dry-run', action='store_true', help='только отчёт, cards.json не писать')
     a = ap.parse_args(argv)
-    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos)
+    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos, name_map=a.name_map)
     if not a.dry_run:
         with open(a.out, 'w', encoding='utf-8') as f:
             json.dump(cards, f, ensure_ascii=False, indent=2)
