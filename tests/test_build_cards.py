@@ -66,7 +66,7 @@ class TestCalc(Base):
         c = cards['Тест: курица с рисом']
         # 150 г курицы: 300/30/15/0; 100 г риса: 300/10/0/60; 10 г масла: 90/0/10/0
         self.assertEqual(c['kbju'], {'kcal': 690, 'p': 40, 'f': 25, 'c': 60})
-        self.assertEqual(c['w'], '230 г')
+        self.assertEqual(c['w'], '230 г')                                       # 230 г при сумме 260 г — в пределах усушки
         self.assertEqual(c['ing'], {'ru': 'тест-курица, тест-рис, тест-масло',
                                     'kk': 'тест-тауық, тест-күріш, тест-май',
                                     'en': 'test chicken, test rice, test oil'})
@@ -85,7 +85,7 @@ class TestCalc(Base):
         cards, rep = self.build(iiko=iiko, ttk=ttk)
         c = cards['Тест: курица с рисом']
         self.assertEqual(c['kbju'], {'kcal': 300, 'p': 10, 'f': 0, 'c': 60})    # состав ТТК важнее ручного per_portion iiko
-        self.assertEqual(c['w'], '250 г')                                       # выход — номенклатурный из iiko, не ТТК
+        self.assertEqual(c['w'], '85 г')                                        # iiko 250 г при составе 100 г не сходится → сумма × 0,85
         self.assertEqual(c['d'], {'ru': 'Описание из выгрузки.'})
         self.assertEqual(c['ing']['ru'], 'тест-рис')
         self.assertIn('[iiko+ttk]', rep)
@@ -111,7 +111,7 @@ class TestCalc(Base):
         self.assertEqual(c['ing']['ru'], 'тест-курица, тестовый соус, тест-рис')
         self.assertEqual(c['ing']['kk'], 'тест-тауық, тест тұздығы, тест-күріш')
         self.assertEqual(c['kbju'], {'kcal': 440, 'p': 25, 'f': 20, 'c': 30})   # 200+90+150; вода 0, стакан и нулевое яйцо не считаются
-        self.assertEqual(c['w'], '200 г')                                       # выхода нет — сумма граммов (100+10+1+50+39)
+        self.assertEqual(c['w'], '170 г')                                       # выхода нет — сумма граммов (100+10+1+50+39) × 0,85
         self.assertNotIn('est', c)
 
     def test_pf_without_name_is_flattened_and_reported(self):

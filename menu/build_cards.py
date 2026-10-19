@@ -651,7 +651,16 @@ def menu_info(index_html):
 
 TTK_MIN_SHARE = 0.3          # ТТК даёт < 30 % ккал от оценки (у Ice Капучино одни зёрна) → техкарта неполная, берём оценочный состав
 TTK_MAX_RATIO = 2.5          # сумма граммов состава больше выхода в 2,5+ раза → техкарта сломана, берём оценочный состав
-SITE_VOL_RE = re.compile(r'^\s*(\d+(?:[.,]\d+)?)\s*(мл|л|г|гр|кг)\s*$', re.I)
+SITE_VOL_RE = re.compile(r'^\s*(\d+(?:[.,]\d+)?)(?:\s*/\s*\d+(?:[.,]\d+)?)*\s*(мл|л|г|гр|кг)\b', re.I)   # «200/300/400 мл» → 200 мл
+VOL_LIKE = {'Декаф': 'Американо'}                           # объёма на сайте нет — как у соседа
+DRINK_ITEMS = {'Декаф'}                                     # напиток в «кухонном» разделе сайта (Дополнения)
+DRINK_FIT = (0.6, 1.6)                                      # напиток: состав описывает другой объём (капучино 300 ↔ 200 мл) — КБЖУ масштабируем
+FOOD_EXTRA = ('На компанию', 'Торты (целиком)', 'Полуфабрикаты', 'Мясо')
+DRINK_MIN_G = 30                                            # у напитка вес меньше 30 мл не показываем (18 г зёрен — не порция)
+WEIGHT_FIT = (0.6, 1.1)                                     # вес принимается, если он в этих долях от суммы состава (усушка/ужарка)
+EST_FIT = 1.6                                               # для оценочного состава: вес = сумма, если расходится сильнее
+SHRINK_SOUP = 0.8                                           # супы и тушёное — ×0,8, остальная еда и выпечка — ×0,85
+SHRINK_FOOD = 0.85
 # правдоподобный выход по разделу: iiko иногда отдаёт 1050 г у тоника и 138 г у целого торта
 SECTION_MIN_G = {'Торты (целиком)': 600, 'На компанию': 1000, 'Полуфабрикаты': 150, 'Мясо': 250}
 SECTION_MAX_G = {'На компанию': 15000, 'Торты (целиком)': 5000, 'Полуфабрикаты': 2000, 'Мясо': 2000}
@@ -660,12 +669,87 @@ KITCHEN_SECTIONS = ('Завтраки', 'Сладкие завтраки', 'Са
 
 
 def site_vol_g(vol):
-    """«375 мл» → (375, 'мл'); «500 гр» → (500, 'г'); «200/300/400 мл», «8 шт» → (None, None)"""
+    """«375 мл» → (375, 'мл'); «500 гр» → (500, 'г'); «200/300/400 мл» → (200, 'мл') — первое значение; «8 шт» → (None, None)"""
     m = SITE_VOL_RE.match(str(vol or ''))
     if not m:
         return None, None
     v, u = num(m.group(1)), m.group(2).lower()
     return v * UNIT_G[u], ('мл' if u in ('мл', 'л') else 'г')
+
+
+DRINK_SECTIONS = ('Классический кофе', 'Холодные кофейные напитки', 'Листовые чаи', 'Авторские чаи', 'Ice tea', 'Лимонады',
+                  'Милкшейки', 'Фреши', 'Раф', 'Спешл напитки', 'Глинтвейн б/а', 'Смузи', 'Напитки')
+
+
+def is_food(sec, name=''):
+    """еда — всё, что не раздел напитков сайта и не DRINK_ITEMS (неизвестный раздел считаем едой)"""
+    return display_name(name) not in DRINK_ITEMS and sec not in DRINK_SECTIONS
+
+
+def shrink(sec, name):
+    return SHRINK_SOUP if sec == 'Супы' or 'томлен' in norm(name) else SHRINK_FOOD
+
+
+def resolve_portion(it, recipe, sec, vol, ref, missing, name=''):
+    """→ (г, единица, источник, it, kscale): выход порции, согласованный с составом; kscale — множитель КБЖУ
+    (напиток, чей состав описывает другой объём).
+    Еда: сайт → выход двойника → iiko → ТТК → оценка, но только если он в WEIGHT_FIT от суммы состава ТТК
+    (иначе вес = сумма × усушка); для оценочного состава — сумма, если расхождение больше EST_FIT.
+    Напитки: объём сайта (первое значение) → iiko → ТТК → сумма → оценка, не меньше DRINK_MIN_G, в мл.
+    По дороге отбрасывается техкарта, которая не сходится с выходом или даёт < 30 % ккал от оценки."""
+    food = is_food(sec, name)
+    kscale = 1.0
+    chain = [('сайт', site_vol_g(vol)), ('двойник', portion_g({'portion': it.get('comp_portion')}) if it.get('comp_portion') else (None, None)),
+             ('iiko', portion_g(it)), ('ТТК', portion_g({'portion': it['ttk_portion']}) if it.get('ttk_portion') else (None, None)),
+             ('сумма ТТК', composition_grams(it, ref) if it.get('composition') and not food else (None, None)),   # еда: сумма × усушка ниже
+             ('оценка', (num(recipe.get('portion_g')), 'мл' if recipe.get('label_per_100') or recipe.get('unit') == 'мл' else 'г') if recipe and num(recipe.get('portion_g')) else (None, None))]
+    g, unit, wsrc, rejected = None, None, None, []
+    for src_w, (gv, uv) in chain:
+        if not gv:
+            continue
+        if src_w != 'сайт' and sec and not plausible(sec, gv):
+            rejected.append(f'{src_w} {gv:.0f} г')
+            continue
+        if not food and src_w != 'сайт' and gv < DRINK_MIN_G:
+            rejected.append(f'{src_w} {gv:.0f} г — меньше {DRINK_MIN_G} мл')
+            continue
+        g, unit, wsrc = gv, uv, src_w
+        break
+    if rejected:
+        missing.append('выход отвергнут: ' + ', '.join(rejected))
+    if g and wsrc != 'сумма ТТК' and it.get('composition'):
+        sg, _ = composition_grams(it, ref)
+        if sg and sg > TTK_MAX_RATIO * g:              # «Самса 63 г» из 162 г муки — техкарта не сходится с выходом
+            missing.append(f'ТТК не сходится с выходом: сумма {sg} г при выходе {g:.0f} г — взят оценочный состав')
+            it = {**it, 'composition': None}
+    if it.get('composition') and recipe and recipe.get('items'):   # в техкарте только зёрна/украшение — остального нет
+        tk_calc, _ = calc_from_composition(it, ref, [])
+        est_calc, _ = calc_from_composition({'composition': [{'name': x['name'], 'qty': x['qty_g'], 'unit': 'г'} for x in recipe['items']]}, ref, [])
+        if tk_calc and est_calc and est_calc['kcal'] >= 50 and tk_calc['kcal'] < TTK_MIN_SHARE * est_calc['kcal']:
+            missing.append(f'ТТК неполная: {tk_calc["kcal"]:.0f} ккал против {est_calc["kcal"]:.0f} по оценке — взят оценочный состав')
+            it = {**it, 'composition': None}
+    if food:                                           # вес и КБЖУ — от одного состава
+        if it.get('composition'):
+            sg, _ = composition_grams(it, ref)
+            if sg and (not g or not WEIGHT_FIT[0] * sg <= g <= WEIGHT_FIT[1] * sg):
+                k = shrink(sec, name)
+                if g:
+                    missing.append(f'вес {wsrc} {g:.0f} г не сходится с суммой состава {sg} г — вес = сумма × {k}')
+                g, unit, wsrc = round(sg * k), 'г', f'сумма ТТК × {k}'
+        elif recipe and recipe.get('items'):
+            es = round(sum(float(x['qty_g']) for x in recipe['items']))
+            if es and (not g or g > EST_FIT * es or es > EST_FIT * g):
+                if g:
+                    missing.append(f'вес {wsrc} {g:.0f} г расходится с оценочным составом {es} г — вес = сумма состава')
+                g, unit, wsrc = es, 'г', 'сумма оценки'
+    elif g:
+        unit = 'мл'
+        total = composition_grams(it, ref)[0] if it.get('composition') else \
+            (round(sum(float(x['qty_g']) for x in recipe['items'])) if recipe and recipe.get('items') else None)
+        if total and total != g and DRINK_FIT[0] <= g / total <= DRINK_FIT[1]:
+            kscale = g / total
+            missing.append(f'состав на {total} г, объём {g:.0f} мл — КБЖУ × {kscale:.2f}')
+    return g, unit, wsrc, it, kscale
 
 
 def plausible(sec, g):
@@ -712,6 +796,8 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
     names = menu_names(index_html)
     name_set = set(names)
     info = menu_info(index_html)
+    by_name = {str(it['name']).strip(): it for it in items}
+    mn_sep = ' @ '
     old = {}
     if os.path.isfile(out_path):
         with open(out_path, encoding='utf-8') as f:
@@ -734,34 +820,21 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
             missing.append('composition:только вода/упаковка')
             it = {**it, 'composition': None}
         sec, vol = info.get(name, (None, None))
-        chain = [('сайт', site_vol_g(vol)), ('двойник', portion_g({'portion': it.get('comp_portion')}) if it.get('comp_portion') else (None, None)),
-                 ('iiko', portion_g(it)), ('ТТК', portion_g({'portion': it['ttk_portion']}) if it.get('ttk_portion') else (None, None)),
-                 ('сумма ТТК', composition_grams(it, ref) if it.get('composition') else (None, None))]
-        g, unit, wsrc, rejected = None, None, None, []
-        for src_w, (gv, uv) in chain:
-            if not gv:
-                continue
-            if src_w != 'сайт' and sec and not plausible(sec, gv):
-                rejected.append(f'{src_w} {gv:.0f} г')
-                continue
-            g, unit, wsrc = gv, uv, src_w
-            break
-        if rejected:
-            missing.append('выход отвергнут: ' + ', '.join(rejected))
-        if g and wsrc != 'сумма ТТК' and it.get('composition'):
-            sg, _ = composition_grams(it, ref)
-            if sg and sg > TTK_MAX_RATIO * g:              # «Самса 63 г» из 162 г муки — техкарта не сходится с выходом
-                missing.append(f'ТТК не сходится с выходом: сумма {sg} г при выходе {g:.0f} г — взят оценочный состав')
-                it = {**it, 'composition': None}
-        if it.get('composition') and recipe and recipe.get('items'):   # в техкарте только зёрна/украшение — остального нет
-            tk_calc, _ = calc_from_composition(it, ref, [])
-            est_calc, _ = calc_from_composition({'composition': [{'name': x['name'], 'qty': x['qty_g'], 'unit': 'г'} for x in recipe['items']]}, ref, [])
-            if tk_calc and est_calc and est_calc['kcal'] >= 50 and tk_calc['kcal'] < TTK_MIN_SHARE * est_calc['kcal']:
-                missing.append(f'ТТК неполная: {tk_calc["kcal"]:.0f} ккал против {est_calc["kcal"]:.0f} по оценке — взят оценочный состав')
-                it = {**it, 'composition': None}
-        if not g and recipe and num(recipe.get('portion_g')):
-            g, unit = num(recipe['portion_g']), ('мл' if recipe.get('label_per_100') or recipe.get('unit') == 'мл' else 'г')
-            wsrc = 'оценка'
+        if not vol and VOL_LIKE.get(name):
+            vol = info.get(VOL_LIKE[name], (None, None))[1]
+        base = display_name(name)
+        whole = by_name.get(base + ' @ Торты (целиком)') if sec == 'Десерты' and mn_sep in name else None
+        if whole and whole.get('composition') and usable_composition(whole):
+            # кусок торта: КБЖУ целого торта на 100 г × вес куска; состав куска — состав торта в той же пропорции
+            wsec, wvol = info.get(base + ' @ Торты (целиком)', (None, None))
+            wg, _, _, whole_it, _ = resolve_portion(whole, recipes.get(base + ' @ Торты (целиком)'), wsec, wvol, ref, [], base)
+            sl_g, _, sl_src, _, _ = resolve_portion({**it, 'composition': None}, None, sec, vol, ref, [], name)
+            if wg and sl_g and whole_it.get('composition'):
+                k = sl_g / wg
+                it = {**it, 'composition': [{**row, 'qty': (num(row.get('qty')) or 0) * k} for row in whole_it['composition']],
+                      'portion': {'value': sl_g, 'unit': 'г'}, 'comp_portion': None, 'ttk_portion': None}
+                missing.append(f'кусок: состав и КБЖУ от целого торта ({wg:.0f} г) в доле {k:.3f}, вес куска {sl_src}')
+        g, unit, wsrc, it, kscale = resolve_portion(it, recipe, sec, vol, ref, missing, name)
         if g:
             it = {**it, 'portion': {'value': g, 'unit': unit}}
             card['w'] = f'{int(g) if float(g).is_integer() else g} {unit}'
@@ -770,7 +843,7 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         kbju, src, est = build_kbju(it, ref, missing, recipe)
         stats[src] = stats.get(src, 0) + 1
         if kbju:
-            card['kbju'] = {k: int(round(v)) for k, v in kbju.items()}
+            card['kbju'] = {k: int(round(v * kscale)) for k, v in kbju.items()}
             if est:
                 card['est'] = True
         own = descriptions.get(name)
