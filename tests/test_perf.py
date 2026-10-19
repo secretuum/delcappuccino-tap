@@ -2,7 +2,7 @@
 
 Запуск из корня репозитория:
     python3 -m unittest tests.test_perf -v          # проверки
-    python3 tests/test_perf.py [путь/к/index.html]   # отчёт о весе первого экрана
+    python3 tests/test_perf.py [путь/к/странице]     # отчёт о весе первого экрана (по умолчанию все PAGES)
 
 Что считаем «первым экраном»: HTML (в gzip, как отдаёт GitHub Pages) + файлы из <link rel=preload>
 + внешние render-blocking CSS/скрипты в <head> (чужой домен — вес неизвестен, считаем по справочнику ниже)
@@ -20,6 +20,7 @@ from html.parser import HTMLParser
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
+PAGES = ['index.html', '404.html', 'ugolok/index.html']   # все страницы сайта с одинаковым критическим путём
 FIRST_SCREEN_LIMIT = 300 * 1024          # цель: первый экран ≤ 300 КБ
 
 # Вес внешних render-blocking ресурсов, которые нельзя измерить локально (типичные значения, gzip).
@@ -246,30 +247,39 @@ def index_hash(path=INDEX):
 class TestFirstScreen(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.html, cls.page = parse()
+        cls.pages = {name: parse(os.path.join(ROOT, name)) for name in PAGES}
+        cls.html, cls.page = cls.pages['index.html']
+
+    def each(self):
+        for name, (html, page) in self.pages.items():
+            with self.subTest(page=name):
+                yield html, page
 
     def test_first_screen_under_limit(self):
-        for name, (vw, dpr) in SCENARIOS.items():
-            items = first_screen(self.html, self.page, vw, dpr)
-            total = sum(b for _, b in items)
-            self.assertLessEqual(total, FIRST_SCREEN_LIMIT,
-                                 f'{name}: {total // 1024} КБ > {FIRST_SCREEN_LIMIT // 1024} КБ\n' +
-                                 '\n'.join(f'  {b // 1024} КБ {d}' for d, b in items))
+        for html, page in self.each():
+            for name, (vw, dpr) in SCENARIOS.items():
+                items = first_screen(html, page, vw, dpr)
+                total = sum(b for _, b in items)
+                self.assertLessEqual(total, FIRST_SCREEN_LIMIT,
+                                     f'{name}: {total // 1024} КБ > {FIRST_SCREEN_LIMIT // 1024} КБ\n' +
+                                     '\n'.join(f'  {b // 1024} КБ {d}' for d, b in items))
 
     def test_img_have_dimensions(self):
-        bad = [f"строка {i['_line']}: {i.get('src')}" for i in self.page.imgs
-               if not (i.get('width') and i.get('height'))]
-        self.assertEqual(bad, [], 'у <img> нет width/height:\n' + '\n'.join(bad))
+        for _, page in self.each():
+            bad = [f"строка {i['_line']}: {i.get('src')}" for i in page.imgs
+                   if not (i.get('width') and i.get('height'))]
+            self.assertEqual(bad, [], 'у <img> нет width/height:\n' + '\n'.join(bad))
 
     def test_img_files_exist(self):
-        missing = []
-        for img in self.page.imgs:
-            urls = [img.get('src')] + [u for u, _ in parse_srcset(img.get('srcset', ''))]
-            for u in urls:
-                p = local(u)
-                if p and not os.path.isfile(p):
-                    missing.append(f"строка {img['_line']}: {u}")
-        self.assertEqual(missing, [], 'файлов нет:\n' + '\n'.join(missing))
+        for _, page in self.each():
+            missing = []
+            for img in page.imgs:
+                urls = [img.get('src')] + [u for u, _ in parse_srcset(img.get('srcset', ''))]
+                for u in urls:
+                    p = local(u)
+                    if p and not os.path.isfile(p):
+                        missing.append(f"строка {img['_line']}: {u}")
+            self.assertEqual(missing, [], 'файлов нет:\n' + '\n'.join(missing))
 
     def test_below_fold_imgs_lazy(self):
         # всё после героя — lazy + async; герой и шапка — без lazy
@@ -281,18 +291,22 @@ class TestFirstScreen(unittest.TestCase):
                         'у героя нет fetchpriority=high')
 
     def test_preloads_exist(self):
-        for l in self.page.links:
-            if (l.get('rel') or '').lower() == 'preload':
-                p = local(l.get('href'))
-                self.assertTrue(p and os.path.isfile(p), 'preload без файла: %s' % l.get('href'))
+        for _, page in self.each():
+            for l in page.links:
+                if (l.get('rel') or '').lower() == 'preload':
+                    p = local(l.get('href'))
+                    self.assertTrue(p and os.path.isfile(p), 'preload без файла: %s' % l.get('href'))
 
     def test_no_render_blocking_external(self):
-        for l in self.page.links:
-            if (l.get('rel') or '').lower() == 'stylesheet':
-                self.assertIsNotNone(local(l.get('href')), 'внешний render-blocking CSS: %s' % l.get('href'))
-        for s in self.page.scripts:
-            if s.get('src') and s.get('_head') and local(s['src']) is None:
-                self.fail('внешний скрипт в <head>: %s' % s['src'])
+        for html, page in self.each():
+            for l in page.links:
+                if (l.get('rel') or '').lower() == 'stylesheet':
+                    self.assertIsNotNone(local(l.get('href')), 'внешний render-blocking CSS: %s' % l.get('href'))
+            for s in page.scripts:
+                if s.get('src') and s.get('_head') and local(s['src']) is None:
+                    self.fail('внешний скрипт в <head>: %s' % s['src'])
+            self.assertNotIn('fonts.googleapis.com', html, 'остались Google Fonts')
+            self.assertIn('serviceWorker', html, 'нет регистрации service worker')
 
     def test_head_order(self):
         head = self.html.split('</head>')[0]
@@ -361,4 +375,5 @@ class TestServiceWorker(unittest.TestCase):
 
 
 if __name__ == '__main__':
-    report(sys.argv[1] if len(sys.argv) > 1 else INDEX)
+    for arg in (sys.argv[1:] or PAGES):
+        report(os.path.join(ROOT, arg) if not os.path.isabs(arg) else arg)
