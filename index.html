@@ -297,10 +297,12 @@ footer{border-top:1px solid var(--line);padding:24px 0}
   .contact h2{font-size:20px;margin-bottom:14px}
 
   /* Footer */
-  footer{padding:14px 0}
-  .f-row{justify-content:center;font-size:11px;gap:4px}
+  footer{padding:16px 0}
+  /* колонка по центру: кнопка «Уголок потребителя» своей строкой (по содержимому), под ней подпись и копирайт мелким */
+  .f-row{flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:11px;gap:10px}
   .f-row img{display:none}
-  .f-row a.f-ugolok{padding:12px 18px;font-size:12.5px}
+  .f-row a.f-ugolok{order:-1;padding:12px 18px;font-size:12.5px}
+  .f-row span+span{margin-top:-4px}
 
   /* Hide on mobile */
   .hide-mobile{display:none}
