@@ -7,6 +7,7 @@
  *   img/menu/*.webp                    — stale-while-revalidate (перекодируются на том же пути)
  *   assets/* без хэша в имени          — stale-while-revalidate
  *   файлы с хэшем в имени (*.1a2b3c4d.woff2 и т.п.) — cache-first навечно: имя меняется вместе с содержимым
+ *   видео (*.mp4, *.webm) и Range-запросы    — мимо service worker, кэширует сам браузер
  *   чужие домены (gtag, 2gis, wa.me, карты) и не-GET — мимо service worker
  *
  * Кэши: 'dc-shell-<VERSION>' — оболочка (HTML, cards.json, manifest), 'dc-rt-vN' — картинки и шрифты.
@@ -14,7 +15,7 @@
  * tests/test_perf.py предупреждает, если забыли). Новый SW ставится сразу (skipWaiting), при активации
  * удаляет старые dc-shell-* и dc-rt-*; кэш картинок между версиями страницы переживает.
  */
-var VERSION = 'd367ca465a';
+var VERSION = 'bc75c91965';
 var SHELL = 'dc-shell-' + VERSION;
 var RT = 'dc-rt-v1';
 var PRECACHE = [
@@ -73,6 +74,7 @@ self.addEventListener('fetch', function (e) {
   if (req.method !== 'GET') return;
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
+  if (/\.(mp4|webm|m4v)$/.test(url.pathname) || req.headers.get('range')) return;   // видео и Range-запросы — браузеру
 
   var key = cacheKey(req, url);
   var cacheName = (req.mode === 'navigate' || isShell(url)) ? SHELL : RT;   // навигации (/, /ugolok, 404) — оболочка

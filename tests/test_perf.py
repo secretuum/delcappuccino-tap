@@ -37,7 +37,7 @@ class Page(HTMLParser):
 
     def __init__(self):
         super().__init__(convert_charrefs=True)
-        self.imgs, self.links, self.scripts = [], [], []
+        self.imgs, self.links, self.scripts, self.videos, self.sources = [], [], [], [], []
         self.in_head = False
         self._skip = None
 
@@ -54,6 +54,11 @@ class Page(HTMLParser):
         elif tag == 'script':
             a['_head'] = self.in_head
             self.scripts.append(a)
+        elif tag == 'video':
+            a['_line'] = self.getpos()[0]
+            self.videos.append(a)
+        elif tag == 'source':
+            self.sources.append(a)
 
     def handle_endtag(self, tag):
         if tag == 'head':
@@ -316,6 +321,79 @@ class TestFirstScreen(unittest.TestCase):
         self.assertLess(pos('rel="preload"'), pos('<style>'))
         self.assertIn('theme-color', head)
         self.assertIn('rel="manifest"', head)
+
+
+def ring_coverage(d):
+    """Доля площади, которую закрывает SVG-кольцо «внешний контур − внутренний» (path из M/L/Z, evenodd).
+    Площадь каждого подконтура — формула шнурков; покрытие = |внешний − внутренний| / внешний."""
+    subs = []
+    for sub in re.split(r'\s*Z\s*', d.strip()):
+        if not sub.strip():
+            continue
+        nums = [float(x) for x in re.findall(r'-?\d+(?:\.\d+)?', sub)]
+        assert re.fullmatch(r'[ML\d\s.\-]+', sub.strip()), 'в path рамки только M/L/Z: ' + sub[:40]
+        pts = list(zip(nums[0::2], nums[1::2]))
+        subs.append(abs(sum(pts[i][0] * pts[(i + 1) % len(pts)][1] - pts[(i + 1) % len(pts)][0] * pts[i][1]
+                            for i in range(len(pts)))) / 2)
+    outer = max(subs)
+    return (outer - min(subs)) / outer
+
+
+class TestGrillPromo(unittest.TestCase):
+    """Акция «Курица гриль» в hero: видео не тяжелит первый экран, огненная рамка ≤ 20% площади."""
+    FIRE_MAX = 0.20
+
+    @classmethod
+    def setUpClass(cls):
+        cls.html, cls.page = parse()
+        cls.video = next((v for v in cls.page.videos if 'grill-video' in (v.get('class') or '')), None)
+
+    def test_video_not_on_first_screen(self):
+        v = self.video
+        self.assertIsNotNone(v, 'нет <video class="grill-video">')
+        self.assertIn(v.get('preload'), ('none', 'metadata'), 'видео должно быть preload=none|metadata')
+        self.assertNotIn('autoplay', v, 'autoplay заставит грузить видео сразу — запуск через IntersectionObserver')
+        for attr in ('muted', 'loop', 'playsinline', 'poster', 'width', 'height'):
+            self.assertIn(attr, v, 'у видео нет ' + attr)
+        poster = local(v['poster'])
+        self.assertTrue(poster and os.path.isfile(poster), 'постера нет')
+        self.assertLessEqual(os.path.getsize(poster), 40 * 1024, 'постер > 40 КБ')
+        srcs = [x['src'] for x in self.page.sources if (x.get('src') or '').endswith('.mp4')]
+        self.assertTrue(srcs, 'нет <source> mp4')
+        for u in srcs:
+            self.assertTrue(os.path.isfile(local(u)), 'видео нет: ' + u)
+            self.assertRegex(u, r'\.[0-9a-f]{8}\.mp4$', 'имя видео без хэша')
+        for l in self.page.links:
+            if (l.get('rel') or '').lower() == 'preload':
+                self.assertNotIn('.mp4', l.get('href', ''), 'видео в preload')
+        with open(os.path.join(ROOT, 'sw.js'), encoding='utf-8') as f:
+            sw = f.read()
+        m = re.search(r'PRECACHE\s*=\s*\[(.*?)\]', sw, re.S)
+        self.assertNotIn('.mp4', m.group(1), 'видео в PRECACHE sw.js')
+        self.assertIn('mp4', sw.split('addEventListener(\'fetch\'')[1], 'sw.js должен пропускать видео мимо кэша')
+        self.assertIn('IntersectionObserver', self.html)
+        self.assertIn('prefers-reduced-motion', self.html)
+
+    def test_fire_frame_coverage(self):
+        m = re.search(r'<svg class="grill-fire"[^>]*viewBox="0 0 (\d+) (\d+)"[^>]*>(.*?)</svg>', self.html, re.S)
+        self.assertIsNotNone(m, 'нет <svg class="grill-fire">')
+        paths = re.findall(r'<path[^>]*\sd="([^"]+)"', m.group(3))
+        self.assertTrue(paths, 'в рамке нет path')
+        covs = [ring_coverage(d) for d in paths]
+        for c in covs:
+            self.assertLessEqual(c, self.FIRE_MAX, f'рамка закрывает {c:.1%} видео > {self.FIRE_MAX:.0%}')
+        self.assertEqual(covs, sorted(covs, reverse=True), 'внутренние кольца должны быть не больше внешнего')
+        self.assertNotIn('<image', m.group(3), 'рамка — только CSS/SVG, без растров')
+
+    def test_ticker_seamless_and_static_on_reduced_motion(self):
+        spans = re.findall(r'<div class="grill-ticker"[^>]*>(.*?)</div>', self.html, re.S)
+        self.assertTrue(spans)
+        parts = re.findall(r'<span>(.*?)</span>', spans[0])
+        self.assertEqual(len(parts), 2, 'бесшовный повтор — два одинаковых span')
+        self.assertEqual(parts[0], parts[1])
+        self.assertIn('ВНИМАНИЕ', parts[0])
+        self.assertRegex(self.html, r'@keyframes grill-run\{to\{transform:translateX\(-100%\)\}\}')
+        self.assertRegex(self.html, r'prefers-reduced-motion:reduce\)\{\.grill-ticker span\{animation:none\}')
 
 
 class TestServiceWorker(unittest.TestCase):
