@@ -3,4 +3,4 @@ __pycache__/
 # выгрузки iiko/ТТК и исходники фото с Диска — не в репо (на сайт идут только menu/cards.json и img/menu/*.webp)
 menu/iiko-export.json
 menu/ttk-export.json
-menu/menu_photos/
+menu/menu_photos
