@@ -1,0 +1,430 @@
+#!/usr/bin/env python3
+"""Сборка menu/cards.json (карточки блюд на сайте) из выгрузок iiko и ТТК.
+
+Входы (один формат, см. README в шапке функции load_export):
+  menu/iiko-export.json  — от опер-бота: name, group, description, portion, per_portion, per_100g, photo
+  menu/ttk-export.json   — от ТТК: composition [{name, qty, unit}] и выход блюда (portion)
+  menu/nutrition_ref.json — справочник КБЖУ на 100 г + переводы kk/en + синонимы (aliases) + piece_g
+
+Правила:
+  • ключ карточки — русское название блюда ровно как в index.html (n:'…'); между файлами
+    записи сшиваются по cloud_key/key, иначе по названию;
+  • КБЖУ: если в iiko per_portion заполнено целиком — берём его; иначе считаем по составу:
+    сумма нетто-граммовок × справочник / 100, делим на число порций (portions, по умолчанию 1);
+    ингредиент без записи в справочнике → в missing и в отчёт, КБЖУ блюда тогда не публикуем
+    (неполная сумма — ложная цифра); иначе per_100g × выход / 100;
+  • описание — только ru (кладём d.ru; T()/cardLang на сайте падают на ru сами);
+  • состав ru — из ТТК, kk/en — по справочнику; если переведены не все ингредиенты, язык опускаем;
+  • фото: photo (url или локальный путь) → img/menu/<slug>.webp через PIL, ≤100 КБ, ≤960 px;
+    без PIL/без ссылки — без фото; уже скачанное не перекачиваем без --refresh-photos;
+  • записи старого cards.json с "_stub": true сохраняются, пока выгрузка не даст такое же название;
+    у собранных записей _stub нет.
+
+Только стандартная библиотека; PIL — опционально, для фото.
+"""
+import argparse, io, json, os, re, sys, urllib.request
+from datetime import datetime, timezone
+
+HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.dirname(HERE)
+LANGS = ('ru', 'kk', 'en')
+UNIT_G = {'г': 1, 'гр': 1, 'g': 1, 'грамм': 1, 'кг': 1000, 'kg': 1000, 'мл': 1, 'ml': 1, 'л': 1000, 'l': 1000}
+UNIT_PIECE = {'шт', 'шт.', 'pcs', 'pc', 'зубчик', 'ломтик', 'штука'}
+TRANSLIT = {
+    'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'e','ж':'zh','з':'z','и':'i','й':'j','к':'k','л':'l','м':'m',
+    'н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'h','ц':'c','ч':'ch','ш':'sh','щ':'sch','ъ':'',
+    'ы':'y','ь':'','э':'e','ю':'yu','я':'ya','ә':'a','ғ':'g','қ':'q','ң':'n','ө':'o','ұ':'u','ү':'u','һ':'h','і':'i',
+}
+
+
+def slug(name):
+    s = ''.join(TRANSLIT.get(ch, ch) for ch in name.lower())
+    s = re.sub(r'[^a-z0-9]+', '-', s).strip('-')
+    return s or 'item'
+
+
+def norm(s):
+    return re.sub(r'\s+', ' ', str(s or '').strip().lower().replace('ё', 'е'))
+
+
+def num(v):
+    if v is None or v == '':
+        return None
+    if isinstance(v, (int, float)):
+        return float(v)
+    try:
+        return float(str(v).replace(',', '.').strip())
+    except ValueError:
+        return None
+
+
+class Report:
+    def __init__(self):
+        self.lines = []
+        self.errors = 0
+
+    def add(self, line, error=False):
+        self.lines.append(line)
+        if error:
+            self.errors += 1
+
+    def text(self):
+        return '\n'.join(self.lines) + '\n'
+
+
+# ── справочник ──────────────────────────────────────────────────────────────
+class Ref:
+    def __init__(self, data):
+        self.items = {}
+        self.index = {}
+        for name, v in data.items():
+            if name.startswith('_'):
+                continue
+            self.items[name] = v
+            self.index[norm(name)] = name
+            for a in v.get('aliases', []):
+                self.index.setdefault(norm(a), name)
+
+    def find(self, ing_name):
+        key = norm(ing_name)
+        if key in self.index:
+            return self.index[key]
+        # «лук репчатый свежий» → пробуем убрать хвост, «филе куриное охл.» и т. п.
+        words = key.split(' ')
+        for n in range(len(words) - 1, 0, -1):
+            cand = ' '.join(words[:n])
+            if cand in self.index:
+                return self.index[cand]
+        return None
+
+    def grams(self, name, qty, unit):
+        """нетто в граммах или None, если единица непонятна / нет piece_g"""
+        u = norm(unit) or 'г'
+        if u in UNIT_G:
+            return qty * UNIT_G[u]
+        if u in UNIT_PIECE:
+            pg = self.items.get(name, {}).get('piece_g')
+            return qty * pg if pg else None
+        return None
+
+
+# ── выгрузки ────────────────────────────────────────────────────────────────
+def load_export(path, rep):
+    """{"version":1,"generated_at":…,"items":[{key,name,group,description,composition,portion,per_portion,per_100g,photo,missing}]}"""
+    if not path or not os.path.isfile(path):
+        rep.add(f'нет файла {path} — пропускаю')
+        return []
+    with open(path, encoding='utf-8') as f:
+        data = json.load(f)
+    items = data.get('items', []) if isinstance(data, dict) else data
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(items)} позиций, generated_at={data.get("generated_at") if isinstance(data, dict) else "?"}')
+    return [it for it in items if isinstance(it, dict) and it.get('name')]
+
+
+def merge_exports(iiko, ttk):
+    """Сшивка по cloud_key/key, иначе по названию. iiko — базовая запись, ТТК дополняет."""
+    merged, by_key, by_name = [], {}, {}
+
+    def ident(it):
+        return it.get('cloud_key') or it.get('key')
+
+    for it in iiko:
+        m = {'src': ['iiko'], **it}
+        merged.append(m)
+        if ident(it):
+            by_key[str(ident(it))] = m
+        by_name[norm(it['name'])] = m
+    for it in ttk:
+        m = by_key.get(str(ident(it))) if ident(it) else None
+        if m is None:
+            m = by_name.get(norm(it['name']))
+        if m is None:
+            m = {'src': ['ttk'], **it}
+            merged.append(m)
+            by_name[norm(it['name'])] = m
+            continue
+        m['src'].append('ttk')
+        for k, v in it.items():
+            if k in ('composition', 'portions'):          # состав и выход — зона ТТК
+                m[k] = v
+            elif k == 'portion' and v:
+                m[k] = v
+            elif k == 'missing':
+                m['missing'] = sorted(set(m.get('missing') or []) | set(v or []))
+            elif m.get(k) in (None, '', [], {}):
+                m[k] = v
+    return merged
+
+
+# ── расчёт ──────────────────────────────────────────────────────────────────
+def full_pp(pp):
+    if not isinstance(pp, dict):
+        return None
+    vals = {k: num(pp.get(k)) for k in ('kcal', 'protein', 'fat', 'carbs')}
+    if any(v is None for v in vals.values()):
+        return None
+    return {'kcal': vals['kcal'], 'p': vals['protein'], 'f': vals['fat'], 'c': vals['carbs']}
+
+
+def portion_g(item):
+    p = item.get('portion')
+    if not isinstance(p, dict):
+        return None, None
+    v = num(p.get('value'))
+    unit = norm(p.get('unit')) or 'г'
+    if v is None:
+        return None, None
+    if unit in UNIT_G:
+        return v * UNIT_G[unit], ('мл' if unit in ('мл', 'ml', 'л', 'l') else 'г')
+    return None, None
+
+
+def calc_from_composition(item, ref, missing):
+    comp = item.get('composition')
+    if not isinstance(comp, list) or not comp:
+        return None, []
+    total = {'kcal': 0.0, 'p': 0.0, 'f': 0.0, 'c': 0.0}
+    used, ok = [], True
+    for row in comp:
+        name = (row or {}).get('name')
+        if not name:
+            continue
+        qty = num(row.get('qty'))
+        rname = ref.find(name)
+        if rname is None:
+            missing.append(f'ref:{name}')
+            ok = False
+            continue
+        used.append(rname)
+        if qty is None:
+            missing.append(f'qty:{name}')
+            ok = False
+            continue
+        g = ref.grams(rname, qty, row.get('unit'))
+        if g is None:
+            missing.append(f'unit:{name} ({row.get("unit")})')
+            ok = False
+            continue
+        r = ref.items[rname]
+        for k in total:
+            total[k] += g * float(r[k]) / 100.0
+    if not ok:
+        return None, used
+    n = num(item.get('portions')) or 1.0
+    return {k: v / n for k, v in total.items()}, used
+
+
+def build_kbju(item, ref, missing):
+    """→ (kbju | None, источник)"""
+    pp = full_pp(item.get('per_portion'))
+    if pp:
+        return pp, 'iiko per_portion'
+    calc, _ = calc_from_composition(item, ref, missing)
+    if calc:
+        return calc, 'расчёт по составу'
+    p100 = full_pp(item.get('per_100g'))
+    g, _ = portion_g(item)
+    if p100 and g:
+        return {k: v * g / 100.0 for k, v in p100.items()}, 'per_100g × выход'
+    return None, 'нет данных'
+
+
+def ingredients_text(item, ref):
+    comp = item.get('composition')
+    if not isinstance(comp, list) or not comp:
+        return None
+    out, seen = {'ru': [], 'kk': [], 'en': []}, set()
+    kk_ok = en_ok = True
+    for row in comp:
+        name = (row or {}).get('name')
+        if not name:
+            continue
+        rname = ref.find(name)
+        ru = (rname or name).lower()
+        if ru in seen:
+            continue
+        seen.add(ru)
+        out['ru'].append(ru)
+        r = ref.items.get(rname) if rname else None
+        if r and r.get('kk'):
+            out['kk'].append(r['kk'])
+        else:
+            kk_ok = False
+        if r and r.get('en'):
+            out['en'].append(r['en'])
+        else:
+            en_ok = False
+    res = {'ru': ', '.join(out['ru'])}
+    if kk_ok and out['kk']:
+        res['kk'] = ', '.join(out['kk'])
+    if en_ok and out['en']:
+        res['en'] = ', '.join(out['en'])
+    return res if res['ru'] else None
+
+
+# ── фото ────────────────────────────────────────────────────────────────────
+def fetch_bytes(src, timeout=20):
+    if os.path.isfile(src):
+        with open(src, 'rb') as f:
+            return f.read()
+    req = urllib.request.Request(src, headers={'User-Agent': 'dc-cards-builder/1'})
+    with urllib.request.urlopen(req, timeout=timeout) as r:
+        return r.read()
+
+
+def save_webp(data, dst, max_px=960, max_bytes=100 * 1024):
+    from PIL import Image  # опционально
+    im = Image.open(io.BytesIO(data))
+    im = im.convert('RGB')
+    im.thumbnail((max_px, max_px))
+    for q in (82, 74, 66, 58, 50, 42, 34, 26):
+        buf = io.BytesIO()
+        im.save(buf, 'WEBP', quality=q, method=6)
+        if buf.tell() <= max_bytes:
+            break
+    else:
+        im.thumbnail((max_px * 2 // 3, max_px * 2 // 3))
+        buf = io.BytesIO()
+        im.save(buf, 'WEBP', quality=40, method=6)
+    os.makedirs(os.path.dirname(dst) or '.', exist_ok=True)
+    with open(dst, 'wb') as f:
+        f.write(buf.getvalue())
+    return buf.tell()
+
+
+def handle_photo(item, img_dir, rep, no_photos, refresh):
+    url = item.get('photo')
+    if not url:
+        return None
+    rel = f'{os.path.relpath(img_dir, ROOT)}/{slug(item["name"])}.webp'.replace(os.sep, '/')
+    dst = os.path.join(img_dir, f'{slug(item["name"])}.webp')
+    if os.path.isfile(dst) and not refresh:
+        return rel
+    if no_photos:
+        rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
+        return rel if os.path.isfile(dst) else None
+    try:
+        import PIL  # noqa: F401
+    except ImportError:
+        rep.add(f'  нет PIL — фото не обработано: {item["name"]}', error=True)
+        return None
+    try:
+        size = save_webp(fetch_bytes(url), dst)
+        rep.add(f'  фото: {rel} ({size // 1024} КБ)')
+        return rel
+    except Exception as e:  # сеть/формат — не валим сборку
+        rep.add(f'  фото не удалось ({type(e).__name__}: {e}): {item["name"]}', error=True)
+        return None
+
+
+# ── меню на сайте ───────────────────────────────────────────────────────────
+def menu_names(index_html):
+    """названия блюд из index.html в порядке появления (n:'…' в массивах меню)"""
+    if not index_html or not os.path.isfile(index_html):
+        return []
+    with open(index_html, encoding='utf-8') as f:
+        s = f.read()
+    names, seen = [], set()
+    for m in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'", s):
+        n = m.group(1).replace("\\'", "'")
+        if n not in seen:
+            seen.add(n)
+            names.append(n)
+    return names
+
+
+# ── сборка ──────────────────────────────────────────────────────────────────
+def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None):
+    rep = rep or Report()
+    with open(ref_path, encoding='utf-8') as f:
+        ref = Ref(json.load(f))
+    rep.add(f'справочник: {len(ref.items)} ингредиентов')
+    items = merge_exports(load_export(iiko_path, rep), load_export(ttk_path, rep))
+    names = menu_names(index_html)
+    name_set = set(names)
+    old = {}
+    if os.path.isfile(out_path):
+        with open(out_path, encoding='utf-8') as f:
+            old = json.load(f)
+
+    cards, stats = {}, {'iiko per_portion': 0, 'расчёт по составу': 0, 'per_100g × выход': 0, 'нет данных': 0}
+    for it in items:
+        name = str(it['name']).strip()
+        missing = list(it.get('missing') or [])
+        card = {}
+        img = handle_photo(it, img_dir, rep, no_photos, refresh)
+        if img:
+            card['img'] = img
+        g, unit = portion_g(it)
+        if g:
+            card['w'] = f'{int(g) if float(g).is_integer() else g} {unit}'
+        else:
+            missing.append('portion')
+        kbju, src = build_kbju(it, ref, missing)
+        stats[src] += 1
+        if kbju:
+            card['kbju'] = {k: int(round(v)) for k, v in kbju.items()}
+        if it.get('description'):
+            card['d'] = {'ru': str(it['description']).strip()}
+        ing = ingredients_text(it, ref)
+        if ing:
+            card['ing'] = ing
+        line = f'• {name} [{"+".join(it["src"])}] — КБЖУ: {src}'
+        if names and name not in name_set:
+            line += ' — НЕТ В МЕНЮ index.html'
+            rep.errors += 1
+        if missing:
+            line += ' — missing: ' + ', '.join(dict.fromkeys(missing))
+            if any(m.startswith(('ref:', 'qty:', 'unit:')) for m in missing):
+                rep.errors += 1
+        if not ing and 'ing' not in card and not kbju and 'd' not in card and 'img' not in card:
+            line += ' — ПУСТО, карточка не создана'
+            rep.add(line)
+            continue
+        rep.add(line)
+        cards[name] = card
+
+    kept = 0
+    for name, v in old.items():
+        if isinstance(v, dict) and v.get('_stub') and name not in cards:
+            cards[name] = v
+            kept += 1
+    dropped = [n for n in old if n not in cards]
+    order = {n: i for i, n in enumerate(names)}
+    ordered = dict(sorted(cards.items(), key=lambda kv: (order.get(kv[0], len(order)), kv[0])))
+
+    rep.add('')
+    rep.add('итого: ' + ', '.join(f'{k}: {v}' for k, v in stats.items() if v) + f'; заглушек сохранено: {kept}' +
+            (f'; удалено старых: {", ".join(dropped)}' if dropped else ''))
+    rep.add(f'карточек в {os.path.relpath(out_path, ROOT)}: {len(ordered)}; замечаний: {rep.errors}')
+    return ordered, rep
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description='Собрать menu/cards.json из выгрузок iiko и ТТК')
+    ap.add_argument('--iiko', default=os.path.join(HERE, 'iiko-export.json'))
+    ap.add_argument('--ttk', default=os.path.join(HERE, 'ttk-export.json'))
+    ap.add_argument('--ref', default=os.path.join(HERE, 'nutrition_ref.json'))
+    ap.add_argument('--out', default=os.path.join(HERE, 'cards.json'))
+    ap.add_argument('--img-dir', default=os.path.join(ROOT, 'img', 'menu'))
+    ap.add_argument('--menu', default=os.path.join(ROOT, 'index.html'), help='index.html для порядка и проверки названий')
+    ap.add_argument('--no-photos', action='store_true', help='не качать и не конвертировать фото')
+    ap.add_argument('--refresh-photos', action='store_true', help='перекачать фото, даже если webp уже есть')
+    ap.add_argument('--report', help='куда дописать отчёт (текст)')
+    ap.add_argument('--dry-run', action='store_true', help='только отчёт, cards.json не писать')
+    a = ap.parse_args(argv)
+    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos)
+    if not a.dry_run:
+        with open(a.out, 'w', encoding='utf-8') as f:
+            json.dump(cards, f, ensure_ascii=False, indent=2)
+            f.write('\n')
+    head = f'build_cards {datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")}{" (dry-run)" if a.dry_run else ""}\n'
+    sys.stdout.write(head + rep.text())
+    if a.report:
+        with open(a.report, 'a', encoding='utf-8') as f:
+            f.write(head + rep.text() + '\n')
+    return 0
+
+
+if __name__ == '__main__':
+    sys.exit(main())
