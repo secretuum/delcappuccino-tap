@@ -398,8 +398,8 @@
       "en": "waffles, honey, caramel sauce, berry compote, heavy cream"
     }
   },
-  "Сырники классические": {
-    "img": "img/menu/syrniki-klassicheskie.webp",
+  "Сырники классические @ Сладкие завтраки": {
+    "img": "img/menu/syrniki-klassicheskie-sladkie-zavtraki.webp",
     "w": "307 г",
     "kbju": {
       "kcal": 854,
@@ -1448,8 +1448,8 @@
       "en": "beef ribs, barbecue sauce, potato, sunflower oil, red onion"
     }
   },
-  "Самса с курицей": {
-    "img": "img/menu/samsa-s-kuricej.webp",
+  "Самса с курицей @ Домашние блюда": {
+    "img": "img/menu/samsa-s-kuricej-domashnie-blyuda.webp",
     "w": "130 г",
     "kbju": {
       "kcal": 363,
@@ -1469,8 +1469,8 @@
       "en": "wheat flour, butter, water, chicken thigh, onion, sesame seeds"
     }
   },
-  "Самса с говядиной": {
-    "img": "img/menu/samsa-s-govyadinoj.webp",
+  "Самса с говядиной @ Домашние блюда": {
+    "img": "img/menu/samsa-s-govyadinoj-domashnie-blyuda.webp",
     "w": "130 г",
     "kbju": {
       "kcal": 384,
@@ -1490,8 +1490,8 @@
       "en": "wheat flour, butter, water, ground beef, pumpkin, onion, sesame seeds"
     }
   },
-  "Вареники": {
-    "img": "img/menu/vareniki.webp",
+  "Вареники @ Домашние блюда": {
+    "img": "img/menu/vareniki-domashnie-blyuda.webp",
     "w": "210 г",
     "kbju": {
       "kcal": 431,
@@ -1532,6 +1532,7 @@
     }
   },
   "Мини-самса из пельменей": {
+    "img": "img/menu/mini-samsa-iz-pelmenej.webp",
     "w": "170 г",
     "kbju": {
       "kcal": 451,
@@ -2696,8 +2697,8 @@
       "en": "black tea, passion fruit, pineapple, orange, honey"
     }
   },
-  "Классический": {
-    "img": "img/menu/klassicheskij.webp",
+  "Классический @ Ice tea": {
+    "img": "img/menu/klassicheskij-ice-tea.webp",
     "w": "330 г",
     "kbju": {
       "kcal": 68,
@@ -2969,8 +2970,8 @@
       "en": "milk, ice cream, strawberry, syrup"
     }
   },
-  "Яблочный": {
-    "img": "img/menu/yablochnyj.webp",
+  "Яблочный @ Фреши": {
+    "img": "img/menu/yablochnyj-freshi.webp",
     "w": "300 г",
     "kbju": {
       "kcal": 138,
@@ -3030,6 +3031,27 @@
       "ru": "сок апельсиновый",
       "kk": "апельсин шырыны",
       "en": "orange juice"
+    }
+  },
+  "Классический @ Раф": {
+    "img": "img/menu/klassicheskij-raf.webp",
+    "w": "375 г",
+    "kbju": {
+      "kcal": 431,
+      "p": 9,
+      "f": 30,
+      "c": 32
+    },
+    "est": true,
+    "d": {
+      "ru": "Раф классический: эспрессо, взбитый со сливками и сиропом.",
+      "kk": "Классикалық раф: кілегей және сироппен көпіртілген эспрессо.",
+      "en": "Classic raf coffee: espresso whipped with cream and syrup."
+    },
+    "ing": {
+      "ru": "эспрессо, сливки 10%, сироп",
+      "kk": "эспрессо, кілегей 10%, сироп",
+      "en": "espresso, light cream, syrup"
     }
   },
   "Медовый": {
@@ -3279,6 +3301,27 @@
       "ru": "молоко, шоколад тёмный, сливки 33%",
       "kk": "сүт, қара шоколад, кілегей 33%",
       "en": "milk, dark chocolate, heavy cream"
+    }
+  },
+  "Яблочный @ Глинтвейн б/а": {
+    "img": "img/menu/yablochnyj-glintvejn-b-a.webp",
+    "w": "375 г",
+    "kbju": {
+      "kcal": 224,
+      "p": 1,
+      "f": 1,
+      "c": 56
+    },
+    "est": true,
+    "d": {
+      "ru": "Безалкогольный горячий глинтвейн на яблочном соке с яблоком, мёдом, корицей и гвоздикой.",
+      "kk": "Алма, бал, даршын және қалампыр қосылған алма шырынындағы алкогольсіз ыстық глинтвейн.",
+      "en": "Alcohol-free hot mulled apple juice with apple, honey, cinnamon and cloves."
+    },
+    "ing": {
+      "ru": "сок яблочный, яблоко, мёд, корица, гвоздика, вода",
+      "kk": "алма шырыны, алма, бал, даршын, қалампыр, су",
+      "en": "apple juice, apple, honey, cinnamon, cloves, water"
     }
   },
   "Вишнёвый": {
@@ -3782,8 +3825,8 @@
       "en": "wheat flour, butter, condensed milk, banana, heavy cream"
     }
   },
-  "Медовик": {
-    "img": "img/menu/medovik.webp",
+  "Медовик @ Десерты": {
+    "img": "img/menu/medovik-deserty.webp",
     "w": "104 г",
     "kbju": {
       "kcal": 353,
@@ -3802,8 +3845,8 @@
       "en": "wheat flour, honey, egg, sugar, sour cream, butter"
     }
   },
-  "Молочная девочка": {
-    "img": "img/menu/molochnaya-devochka.webp",
+  "Молочная девочка @ Десерты": {
+    "img": "img/menu/molochnaya-devochka-deserty.webp",
     "w": "101 г",
     "kbju": {
       "kcal": 315,
@@ -3885,27 +3928,6 @@
       "en": "wheat flour, milk, butter, sugar, egg, cinnamon, cream cheese"
     }
   },
-  "Синнабон черника": {
-    "img": "img/menu/sinnabon-chernika.webp",
-    "w": "120 г",
-    "kbju": {
-      "kcal": 388,
-      "p": 7,
-      "f": 17,
-      "c": 51
-    },
-    "est": true,
-    "d": {
-      "ru": "Булочка синнабон с черникой, покрытая глазурью из сливочного сыра.",
-      "kk": "Қаражидек қосылған, кілегейлі ірімшік глазурімен жабылған синнабон тоқашы.",
-      "en": "Blueberry cinnamon roll, topped with cream cheese icing."
-    },
-    "ing": {
-      "ru": "мука пшеничная, молоко, масло сливочное, сахар, яйцо куриное, черника, сливочный сыр",
-      "kk": "бидай ұны, сүт, сары май, қант, жұмыртқа, қаражидек, кілегейлі ірімшік",
-      "en": "wheat flour, milk, butter, sugar, egg, blueberries, cream cheese"
-    }
-  },
   "Испанский чизкейк": {
     "img": "img/menu/ispanskij-chizkejk.webp",
     "w": "162 г",
@@ -3926,8 +3948,8 @@
       "en": "cream cheese, heavy cream, sugar, egg, wheat flour"
     }
   },
-  "Чизкейк по-казахски": {
-    "img": "img/menu/chizkejk-po-kazahski.webp",
+  "Чизкейк по-казахски @ Десерты": {
+    "img": "img/menu/chizkejk-po-kazahski-deserty.webp",
     "w": "138 г",
     "kbju": {
       "kcal": 379,
@@ -3946,8 +3968,8 @@
       "en": "cream cheese, heavy cream, sugar, egg, millet, irimshik (dried curd)"
     }
   },
-  "Вупи-пай": {
-    "img": "img/menu/vupi-paj.webp",
+  "Вупи-пай @ Десерты": {
+    "img": "img/menu/vupi-paj-deserty.webp",
     "w": "125 г",
     "kbju": {
       "kcal": 457,
@@ -3967,8 +3989,8 @@
       "en": "wheat flour, cocoa powder, sugar, egg, butter, cream cheese"
     }
   },
-  "Сникерс": {
-    "img": "img/menu/snikers.webp",
+  "Сникерс @ Десерты": {
+    "img": "img/menu/snikers-deserty.webp",
     "w": "127 г",
     "kbju": {
       "kcal": 575,
@@ -3988,8 +4010,8 @@
       "en": "peanuts, sugar, heavy cream, milk chocolate, wheat flour, egg, butter"
     }
   },
-  "Наполеон": {
-    "img": "img/menu/napoleon.webp",
+  "Наполеон @ Десерты": {
+    "img": "img/menu/napoleon-deserty.webp",
     "w": "168 г",
     "kbju": {
       "kcal": 665,
@@ -4009,8 +4031,8 @@
       "en": "puff pastry, milk, sugar, egg yolk, butter"
     }
   },
-  "Меренговый рулет": {
-    "img": "img/menu/merengovyj-rulet.webp",
+  "Меренговый рулет @ Десерты": {
+    "img": "img/menu/merengovyj-rulet-deserty.webp",
     "w": "156 г",
     "kbju": {
       "kcal": 354,
@@ -4030,8 +4052,8 @@
       "en": "egg white, sugar, heavy cream, frozen berries"
     }
   },
-  "Фисташковый рулет": {
-    "img": "img/menu/fistashkovyj-rulet.webp",
+  "Фисташковый рулет @ Десерты": {
+    "img": "img/menu/fistashkovyj-rulet-deserty.webp",
     "w": "163 г",
     "kbju": {
       "kcal": 537,
@@ -4051,8 +4073,8 @@
       "en": "wheat flour, egg, sugar, pistachio paste, heavy cream, cream cheese"
     }
   },
-  "Фисташка-малина": {
-    "img": "img/menu/fistashka-malina.webp",
+  "Фисташка-малина @ Десерты": {
+    "img": "img/menu/fistashka-malina-deserty.webp",
     "w": "125 г",
     "kbju": {
       "kcal": 360,
@@ -4072,8 +4094,8 @@
       "en": "wheat flour, egg, sugar, pistachio paste, heavy cream, raspberries"
     }
   },
-  "Дубайский": {
-    "img": "img/menu/dubajskij.webp",
+  "Дубайский @ Десерты": {
+    "img": "img/menu/dubajskij-deserty.webp",
     "w": "130 г",
     "kbju": {
       "kcal": 698,
@@ -4091,6 +4113,111 @@
       "ru": "шоколад молочный, фисташковая паста, тесто кадаиф, масло сливочное",
       "kk": "сүтті шоколад, пісте пастасы, кадаиф қамыры, сары май",
       "en": "milk chocolate, pistachio paste, kadaif pastry, butter"
+    }
+  },
+  "Меренговый рулет @ Торты (целиком)": {
+    "img": "img/menu/merengovyj-rulet-torty-celikom.webp",
+    "w": "900 г",
+    "kbju": {
+      "kcal": 2043,
+      "p": 38,
+      "f": 87,
+      "c": 278
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый рулет из меренги с взбитыми сливками и ягодами, около 900 г.",
+      "kk": "Көпіртілген кілегей мен жидектер салынған тұтас меренга рулеті, шамамен 900 г.",
+      "en": "Whole meringue roll with whipped cream and berries, about 900 g."
+    },
+    "ing": {
+      "ru": "яичный белок, сахар, сливки 33%, ягоды замороженные",
+      "kk": "жұмыртқа ағы, қант, кілегей 33%, мұздатылған жидек",
+      "en": "egg white, sugar, heavy cream, frozen berries"
+    }
+  },
+  "Медовик @ Торты (целиком)": {
+    "img": "img/menu/medovik-torty-celikom.webp",
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 3260,
+      "p": 51,
+      "f": 151,
+      "c": 416
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый медовый торт из тонких коржей с кремом на сметане, около 1 кг.",
+      "kk": "Қаймақ кремі жағылған жұқа қабаттардан жасалған тұтас бал торты, шамамен 1 кг.",
+      "en": "Whole honey cake of thin layers with sour cream frosting, about 1 kg."
+    },
+    "ing": {
+      "ru": "мука пшеничная, мёд, яйцо куриное, сахар, сметана, масло сливочное",
+      "kk": "бидай ұны, бал, жұмыртқа, қант, қаймақ, сары май",
+      "en": "wheat flour, honey, egg, sugar, sour cream, butter"
+    }
+  },
+  "Молочная девочка @ Торты (целиком)": {
+    "img": "img/menu/molochnaya-devochka-torty-celikom.webp",
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 3119,
+      "p": 73,
+      "f": 179,
+      "c": 303
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый торт «Молочная девочка» из коржей на сгущённом молоке с кремом из сливок и сливочного сыра, около 1 кг.",
+      "kk": "Қоюландырылған сүтке пісірілген қабаттар мен кілегей және кілегейлі ірімшік кремінен жасалған тұтас «Молочная девочка» торты, шамамен 1 кг.",
+      "en": "Whole “Milk Girl” cake of condensed-milk layers with cream and cream cheese frosting, about 1 kg."
+    },
+    "ing": {
+      "ru": "мука пшеничная, сгущённое молоко, яйцо куриное, сливки 33%, сливочный сыр",
+      "kk": "бидай ұны, қоюландырылған сүт, жұмыртқа, кілегей 33%, кілегейлі ірімшік",
+      "en": "wheat flour, condensed milk, egg, heavy cream, cream cheese"
+    }
+  },
+  "Наполеон @ Торты (целиком)": {
+    "img": "img/menu/napoleon-torty-celikom.webp",
+    "w": "1250 г",
+    "kbju": {
+      "kcal": 4952,
+      "p": 60,
+      "f": 351,
+      "c": 388
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый торт «Наполеон» из слоёных коржей с заварным кремом, около 1,25 кг.",
+      "kk": "Қайнатпа крем жағылған қабатты қамыр қабаттарынан тұтас «Наполеон» торты, шамамен 1,25 кг.",
+      "en": "Whole “Napoleon” cake of puff pastry layers with custard, about 1.25 kg."
+    },
+    "ing": {
+      "ru": "тесто слоёное, молоко, сахар, желток, масло сливочное",
+      "kk": "қабатты қамыр, сүт, қант, жұмыртқа сарысы, сары май",
+      "en": "puff pastry, milk, sugar, egg yolk, butter"
+    }
+  },
+  "Чизкейк по-казахски @ Торты (целиком)": {
+    "img": "img/menu/chizkejk-po-kazahski-torty-celikom.webp",
+    "w": "1100 г",
+    "kbju": {
+      "kcal": 3829,
+      "p": 84,
+      "f": 272,
+      "c": 263
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый чизкейк из сливочного сыра и сливок с пшеном и иримшиком, с карамельной корочкой, около 1,1 кг.",
+      "kk": "Тары мен ірімшік (құрт) қосылған кілегейлі ірімшік пен кілегейден жасалған карамель қабықты тұтас чизкейк, шамамен 1,1 кг.",
+      "en": "Whole cheesecake of cream cheese and cream with millet and irimshik, caramelised top, about 1.1 kg."
+    },
+    "ing": {
+      "ru": "сливочный сыр, сливки 33%, сахар, яйцо куриное, пшено, иримшик",
+      "kk": "кілегейлі ірімшік, кілегей 33%, қант, жұмыртқа, тары, ірімшік",
+      "en": "cream cheese, heavy cream, sugar, egg, millet, irimshik (dried curd)"
     }
   },
   "Чизкейк испанский": {
@@ -4112,6 +4239,195 @@
       "ru": "сливочный сыр, сливки 33%, сахар, яйцо куриное, мука пшеничная",
       "kk": "кілегейлі ірімшік, кілегей 33%, қант, жұмыртқа, бидай ұны",
       "en": "cream cheese, heavy cream, sugar, egg, wheat flour"
+    }
+  },
+  "Сникерс @ Торты (целиком)": {
+    "img": "img/menu/snikers-torty-celikom.webp",
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 5894,
+      "p": 120,
+      "f": 385,
+      "c": 511
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый торт «Сникерс»: бисквит, карамель на сливках, арахис и молочный шоколад, около 1,3 кг.",
+      "kk": "Тұтас «Сникерс» торты: бисквит, кілегейдегі карамель, жержаңғақ және сүтті шоколад, шамамен 1,3 кг.",
+      "en": "Whole “Snickers” cake: sponge, creamy caramel, peanuts and milk chocolate, about 1.3 kg."
+    },
+    "ing": {
+      "ru": "арахис, сахар, сливки 33%, шоколад молочный, мука пшеничная, яйцо куриное, масло сливочное",
+      "kk": "жержаңғақ, қант, кілегей 33%, сүтті шоколад, бидай ұны, жұмыртқа, сары май",
+      "en": "peanuts, sugar, heavy cream, milk chocolate, wheat flour, egg, butter"
+    }
+  },
+  "Фисташка-малина @ Торты (целиком)": {
+    "img": "img/menu/fistashka-malina-torty-celikom.webp",
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 2877,
+      "p": 78,
+      "f": 146,
+      "c": 315
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый торт с фисташковой пастой, сливочным кремом и малиной, около 1 кг.",
+      "kk": "Пісте пастасы, кілегей кремі және таңқурай қосылған тұтас торт, шамамен 1 кг.",
+      "en": "Whole cake with pistachio paste, cream filling and raspberries, about 1 kg."
+    },
+    "ing": {
+      "ru": "мука пшеничная, яйцо куриное, сахар, фисташковая паста, сливки 33%, малина",
+      "kk": "бидай ұны, жұмыртқа, қант, пісте пастасы, кілегей 33%, таңқурай",
+      "en": "wheat flour, egg, sugar, pistachio paste, heavy cream, raspberries"
+    }
+  },
+  "Вупи-пай @ Торты (целиком)": {
+    "img": "img/menu/vupi-paj-torty-celikom.webp",
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 3654,
+      "p": 68,
+      "f": 204,
+      "c": 408
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый торт вупи-пай из шоколадных бисквитов с прослойкой из сливочного сыра, около 1 кг.",
+      "kk": "Шоколад бисквиттері мен кілегейлі ірімшік қабатынан жасалған тұтас вупи-пай торты, шамамен 1 кг.",
+      "en": "Whole whoopie pie cake of chocolate sponge layers with cream cheese filling, about 1 kg."
+    },
+    "ing": {
+      "ru": "мука пшеничная, какао-порошок, сахар, яйцо куриное, масло сливочное, сливочный сыр",
+      "kk": "бидай ұны, какао ұнтағы, қант, жұмыртқа, сары май, кілегейлі ірімшік",
+      "en": "wheat flour, cocoa powder, sugar, egg, butter, cream cheese"
+    }
+  },
+  "Фисташковый рулет @ Торты (целиком)": {
+    "img": "img/menu/fistashkovyj-rulet-torty-celikom.webp",
+    "w": "900 г",
+    "kbju": {
+      "kcal": 2963,
+      "p": 77,
+      "f": 168,
+      "c": 286
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый бисквитный рулет с фисташковой пастой и кремом из сливок и сливочного сыра, около 900 г.",
+      "kk": "Пісте пастасы мен кілегей және кілегейлі ірімшік кремі салынған тұтас бисквит рулеті, шамамен 900 г.",
+      "en": "Whole sponge roll with pistachio paste and a cream and cream cheese filling, about 900 g."
+    },
+    "ing": {
+      "ru": "мука пшеничная, яйцо куриное, сахар, фисташковая паста, сливки 33%, сливочный сыр",
+      "kk": "бидай ұны, жұмыртқа, қант, пісте пастасы, кілегей 33%, кілегейлі ірімшік",
+      "en": "wheat flour, egg, sugar, pistachio paste, heavy cream, cream cheese"
+    }
+  },
+  "Дубайский @ Торты (целиком)": {
+    "img": "img/menu/dubajskij-torty-celikom.webp",
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 5373,
+      "p": 111,
+      "f": 350,
+      "c": 458
+    },
+    "est": true,
+    "d": {
+      "ru": "Целый торт «Дубайский шоколад»: молочный шоколад с фисташковой пастой и хрустящим тестом кадаиф, около 1 кг.",
+      "kk": "Тұтас «Дубай шоколады» торты: пісте пастасы және қытырлақ кадаиф қамыры қосылған сүтті шоколад, шамамен 1 кг.",
+      "en": "Whole “Dubai chocolate” cake: milk chocolate with pistachio paste and crispy kadaif pastry, about 1 kg."
+    },
+    "ing": {
+      "ru": "шоколад молочный, фисташковая паста, тесто кадаиф, масло сливочное",
+      "kk": "сүтті шоколад, пісте пастасы, кадаиф қамыры, сары май",
+      "en": "milk chocolate, pistachio paste, kadaif pastry, butter"
+    }
+  },
+  "Вареники @ Полуфабрикаты": {
+    "img": "img/menu/vareniki-polufabrikaty.webp",
+    "w": "500 г",
+    "kbju": {
+      "kcal": 774,
+      "p": 25,
+      "f": 6,
+      "c": 152
+    },
+    "est": true,
+    "d": {
+      "ru": "Замороженный полуфабрикат: вареники с картофелем и луком, 500 г, для приготовления дома.",
+      "kk": "Мұздатылған жартылай фабрикат: картоп пен пияз салынған вареники, 500 г, үйде пісіруге арналған.",
+      "en": "Frozen ready-to-cook: potato and onion dumplings, 500 g, to cook at home."
+    },
+    "ing": {
+      "ru": "мука пшеничная, яйцо куриное, вода, картофель, лук репчатый",
+      "kk": "бидай ұны, жұмыртқа, су, картоп, пияз",
+      "en": "wheat flour, egg, water, potato, onion"
+    }
+  },
+  "Самса с курицей @ Полуфабрикаты": {
+    "img": "img/menu/samsa-s-kuricej-polufabrikaty.webp",
+    "w": "1040 г",
+    "kbju": {
+      "kcal": 2907,
+      "p": 103,
+      "f": 158,
+      "c": 263
+    },
+    "est": true,
+    "d": {
+      "ru": "Замороженный полуфабрикат: самса из слоёного теста с куриным бедром и луком, 8 штук, для приготовления дома.",
+      "kk": "Мұздатылған жартылай фабрикат: тауық саны мен пияз салынған қабатты қамырдан самса, 8 дана, үйде пісіруге арналған.",
+      "en": "Frozen ready-to-cook: flaky pastry samsa with chicken thigh and onion, 8 pieces, to cook at home."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, вода, куриное бедро, лук репчатый, кунжут",
+      "kk": "бидай ұны, сары май, су, тауық саны, пияз, күнжіт",
+      "en": "wheat flour, butter, water, chicken thigh, onion, sesame seeds"
+    }
+  },
+  "Самса с говядиной @ Полуфабрикаты": {
+    "img": "img/menu/samsa-s-govyadinoj-polufabrikaty.webp",
+    "w": "1040 г",
+    "kbju": {
+      "kcal": 3075,
+      "p": 98,
+      "f": 175,
+      "c": 268
+    },
+    "est": true,
+    "d": {
+      "ru": "Замороженный полуфабрикат: самса из слоёного теста с говяжьим фаршем, тыквой и луком, 8 штук, для приготовления дома.",
+      "kk": "Мұздатылған жартылай фабрикат: тартылған сиыр еті, асқабақ және пияз салынған қабатты қамырдан самса, 8 дана, үйде пісіруге арналған.",
+      "en": "Frozen ready-to-cook: flaky pastry samsa with ground beef, pumpkin and onion, 8 pieces, to cook at home."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, вода, фарш говяжий, тыква, лук репчатый, кунжут",
+      "kk": "бидай ұны, сары май, су, тартылған сиыр еті, асқабақ, пияз, күнжіт",
+      "en": "wheat flour, butter, water, ground beef, pumpkin, onion, sesame seeds"
+    }
+  },
+  "Сырники классические @ Полуфабрикаты": {
+    "img": "img/menu/syrniki-klassicheskie-polufabrikaty.webp",
+    "w": "307 г",
+    "kbju": {
+      "kcal": 674,
+      "p": 49,
+      "f": 26,
+      "c": 58
+    },
+    "est": true,
+    "d": {
+      "ru": "Замороженный полуфабрикат: творожные сырники, 6 штук, для приготовления дома.",
+      "kk": "Мұздатылған жартылай фабрикат: сүзбе сырниктері, 6 дана, үйде пісіруге арналған.",
+      "en": "Frozen ready-to-cook: cottage cheese fritters, 6 pieces, to cook at home."
+    },
+    "ing": {
+      "ru": "творог, мука пшеничная, яйцо куриное, сахар",
+      "kk": "сүзбе, бидай ұны, жұмыртқа, қант",
+      "en": "cottage cheese, wheat flour, egg, sugar"
     }
   },
   "Котлеты куриные": {
@@ -4199,6 +4515,7 @@
     }
   },
   "Мякоть": {
+    "img": "img/menu/myakot.webp",
     "w": "500 г",
     "kbju": {
       "kcal": 935,
@@ -4219,6 +4536,7 @@
     }
   },
   "Фарш": {
+    "img": "img/menu/farsh.webp",
     "w": "500 г",
     "kbju": {
       "kcal": 1270,

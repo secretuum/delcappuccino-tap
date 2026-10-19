@@ -418,7 +418,6 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-card-k div{background:var(--cream-2);border-radius:10px;padding:8px 6px;text-align:center}
 .mm-card-k b{display:block;font-size:15px;color:var(--forest-dk);font-variant-numeric:tabular-nums}
 .mm-card-k span{font-size:10.5px;color:var(--ink-2)}
-.mm-card-stub{font-size:10.5px;font-style:italic;color:var(--ink-2);margin-top:8px}
 @media(min-width:681px){.mm-card{align-items:center;padding:24px}.mm-card-box{border-radius:22px;max-height:min(88vh,760px)}.mm-card-box::before{display:none}}
 .mk{font-style:normal;font-size:10.5px;color:var(--forest)}
 .mk-new{color:var(--olive);font-weight:800;font-size:9px;letter-spacing:.04em;vertical-align:1px}
@@ -961,7 +960,6 @@ const MENU_DESSERT = [
   {n:'Шу ягодный', p:900},
   {n:'Шу абрикосовый', p:900},
   {n:'Синнабон классический', p:1000},
-  {n:'Синнабон черника', p:1000},
   {n:'Испанский чизкейк', p:1000},
   {n:'Чизкейк по-казахски', p:1000},
   {n:'Вупи-пай', p:1000},
@@ -1198,17 +1196,17 @@ const MENU_MODES = {
 const MENU_UI = {
   ru:{to_togo:'Меню Жандосова', to_cafe:'Меню кофеен', only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
-      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы', card_stub:'Данные уточняются', card_est:'КБЖУ ориентировочно, по составу',
+      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
-      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу', card_stub:'Деректер нақтыланады', card_est:'КБЖУ шамамен, құрамы бойынша',
+      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
-      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs', card_stub:'Data to be confirmed', card_est:'Nutrition is approximate, based on ingredients',
+      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.'},
 };
@@ -1339,7 +1337,6 @@ const MENU_TR = {
   'Маракуйя-ананас-апельсин':'Маракуйя-ананас-апельсин',
   'Шу абрикосовый':'Өрікті шу',
   'Синнабон классический':'Классикалық синнабон',
-  'Синнабон черника':'Қаражидекті синнабон',
   'Полуфабрикаты':'Жартылай фабрикаттар',
   'Котлеты куриные':'Тауық котлеттері',
   'Котлеты говяжьи':'Сиыр етінен котлеттер',
@@ -1486,7 +1483,6 @@ const MENU_TR = {
   'Маракуйя-ананас-апельсин':'Passion fruit, pineapple & orange',
   'Шу абрикосовый':'Apricot choux',
   'Синнабон классический':'Classic cinnamon roll',
-  'Синнабон черника':'Blueberry cinnamon roll',
   'Полуфабрикаты':'Frozen, ready to cook',
   'Котлеты куриные':'Chicken patties',
   'Котлеты говяжьи':'Beef patties',
@@ -1554,11 +1550,17 @@ let menuTab='kitchen';
 function curTabs(){return MENU_MODES[menuMode].tabs}
 let menuCat=0;   /* активная категория текущей вкладки (подсветка, scroll-spy) */
 
-/* карточки блюд: menu/cards.json, ключ — русское название как в n:; null — ещё не грузили */
+/* карточки блюд: menu/cards.json, ключ — русское название как в n:; у названий из нескольких разделов —
+   «Название @ Раздел» (t секции), поэтому ищем сначала с разделом, потом без; null — ещё не грузили */
 let CARDS=null;
 function escA(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;')}
-function nameHTML(it){
-  if(CARDS && CARDS[it.n]) return `<span class="nm-t has-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="${escA(T(it.n))} — ${MENU_UI[menuLang].card_aria}" data-n="${escA(it.n)}">${T(it.n)}</span>`;
+function cardKey(name, sec){
+  if(!CARDS) return null;
+  if(sec && CARDS[name+' @ '+sec]) return name+' @ '+sec;
+  return CARDS[name] ? name : null;
+}
+function nameHTML(it, sec){
+  if(cardKey(it.n, sec)) return `<span class="nm-t has-card" role="button" tabindex="0" aria-haspopup="dialog" aria-label="${escA(T(it.n))} — ${MENU_UI[menuLang].card_aria}" data-n="${escA(it.n)}" data-sec="${escA(sec||'')}">${T(it.n)}</span>`;
   return `<span class="nm-t">${T(it.n)}</span>`;
 }
 
@@ -1574,7 +1576,7 @@ function secHTML(s, tab, i){
       ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
       ${s.items.map(it=>`
         <div class="mm-it">
-          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it)}${onlyBtn(it)}${it.vol?` <span class="vol${it.vol.length>18?' vol-long':''}">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
+          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it, s.t)}${onlyBtn(it)}${it.vol?` <span class="vol${it.vol.length>18?' vol-long':''}">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
           <span class="sp"></span>
           ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> `:''}${fmtP(it.p)}</span>`:''}
         </div>`).join('')}
@@ -1769,8 +1771,8 @@ function cardW(w){
   if(menuLang==='kk') return w.replace(/(\d)\s*гр(?![а-яё])/g,'$1 г');
   return w;
 }
-function cardHTML(name){
-  const c=CARDS[name], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);
+function cardHTML(key){
+  const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);
   return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
     (c.img ? `<img class="mm-card-img" src="${escA(c.img)}" alt="" loading="lazy" decoding="async">` : '') +
     `<h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` +
@@ -1778,19 +1780,19 @@ function cardHTML(name){
     (d ? `<p class="mm-card-d">${escA(d)}</p>` : '') +
     (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
     (k ? `<div class="mm-card-h">${ui.card_kbju}</div><div class="mm-card-k">` +
-         [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '') +
-    (c._stub ? `<p class="mm-card-stub">${ui.card_stub}</p>` : c.est && k ? `<p class="mm-card-stub">${ui.card_est}</p>` : '');
+         [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '');
 }
-function openCard(name, opener){
-  if(!CARDS || !CARDS[name]) return false;
+function openCard(name, opener, sec){
+  const key=cardKey(name, sec);
+  if(!key) return false;
   hidePop(); closeLangMenu();
   const wrap=document.getElementById('mm-card'), box=document.getElementById('mm-card-box');
-  cardName=name; cardOpener=opener||document.activeElement;
-  box.innerHTML=cardHTML(name);
+  cardName=key; cardOpener=opener||document.activeElement;
+  box.innerHTML=cardHTML(key);
   wrap.hidden=false;
   document.getElementById('menu-modal').style.overflow='hidden';
   box.scrollTop=0; box.focus();
-  track('menu_card',{name});
+  track('menu_card',{name:key});
   return true;
 }
 function closeCard(){
@@ -1839,7 +1841,7 @@ function setTopH(){
   const modal=document.getElementById('menu-modal'), head=modal.querySelector('.mm-head'), cols=document.getElementById('mm-cols');
   cols.addEventListener('click', e=>{
     const nb=e.target.closest('.nm-t.has-card');
-    if(nb){ openCard(nb.dataset.n, nb); return; }
+    if(nb){ openCard(nb.dataset.n, nb, nb.dataset.sec); return; }
     const b=e.target.closest('.mm-only'); if(!b) return;
     if(popBtn===b && popPinned) hidePop(); else showPop(b, true);
   });
@@ -1854,7 +1856,7 @@ function setTopH(){
   cols.addEventListener('keydown', e=>{
     if(e.key!=='Enter' && e.key!==' ') return;
     const nb=e.target.closest('.nm-t.has-card'); if(!nb) return;
-    e.preventDefault(); openCard(nb.dataset.n, nb);
+    e.preventDefault(); openCard(nb.dataset.n, nb, nb.dataset.sec);
   });
   /* карточка блюда: крестик, фон; Tab не уходит из карточки */
   const card=document.getElementById('mm-card'), cardBox=document.getElementById('mm-card-box');

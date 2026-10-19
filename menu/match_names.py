@@ -6,7 +6,8 @@
 («Маргарита» в разделе «Пицца» = «Пицца Маргарита»). Служебные группы iiko исключаем.
 У напитков с несколькими объёмами берём первую запись с описанием и фото.
 
-Вывод: name_map.json {название_сайта: {"iiko": key, "iiko_also": [ключи двойников], "drive_file": …}}
+Ключ карточки: название сайта; если название стоит в нескольких разделах — «Название @ Раздел» (site_keys).
+Вывод: name_map.json {ключ: {"iiko": key, "iiko_also": [ключи двойников], "drive_file": …}}
 (drive_file из существующей карты сохраняется; его ставит match_photos.py) и отчёт (stdout / --report):
 буквальные, спорные (совпало не буквально — показать владельцу), неоднозначные и не найденные.
 Только стандартная библиотека.
@@ -77,6 +78,24 @@ def site_names(index_html):
                 seen.add((sec, n))
                 out.append((sec, n))
     return out
+
+
+SEP = ' @ '
+
+
+def site_keys(index_html):
+    """[(ключ, раздел, название)] в порядке меню: уникальное название — ключ = название;
+    название в нескольких разделах — свой ключ на раздел: «Название @ Раздел» (ровно t секции)"""
+    pairs = site_names(index_html)
+    secs = {}
+    for sec, n in pairs:
+        secs.setdefault(n, []).append(sec)
+    return [((n + SEP + sec) if len(set(secs[n])) > 1 else n, sec, n) for sec, n in pairs]
+
+
+def key_name(key):
+    """«Медовик @ Торты (целиком)» → «Медовик»"""
+    return key.split(SEP, 1)[0]
 
 
 def excluded(group):
@@ -154,42 +173,29 @@ def match(index_html, export_path, cutoff=0.9):
         f = norm(it['name'])
         return [o for o in forms.get(f, []) if o['key'] != it['key'] and (o.get('per_100g') or o.get('per_portion'))]
 
-    # одно название сайта может стоять в нескольких разделах («Яблочный» — фреш и глинтвейн):
-    # ключ карточки один, поэтому пара возможна, только если все разделы ведут к одной записи
-    by_name = {}
-    for sec, name in site_names(index_html):
-        by_name.setdefault(name, []).append(sec)
-
+    # ключ карточки — с разделом для названий из нескольких разделов («Классический @ Раф»), поэтому
+    # каждая пара ищется в своём разделе; неоднозначности по разделам больше нет
     result, report = {}, {'literal': [], 'fuzzy': [], 'missing': [], 'ambiguous': []}
-    for name, secs in by_name.items():
-        hits = [(sec,) + find(sec, name) for sec in secs]
-        found = [(sec, it, how) for sec, it, how in hits if it]
-        keys = {it['key'] for _, it, _ in found}
-        if len(keys) > 1:
-            rich = [(sec, it, how) for sec, it, how in found if it.get('description') or it.get('photo')]
-            line = f'{name}  ' + '  /  '.join(f'[{sec}] ← {it["name"].strip()}' for sec, it, _ in found)
-            if len({it['key'] for _, it, _ in rich}) == 1:        # ровно одна запись с описанием/фото — берём её
-                found = rich[:1]
-                line += f'  ⇒ взята «{rich[0][1]["name"].strip()}» (есть описание/фото)'
-            else:
-                report['ambiguous'].append(line + '  ⇒ пара не дана')
-                continue
-            report['ambiguous'].append(line)
-        if not found:
-            report['missing'].append(f'{name}  [{" / ".join(secs)}]')
+    seen = set()
+    for key, sec, name in site_keys(index_html):
+        if key in seen:
             continue
-        sec, hit, how = found[0]
+        seen.add(key)
+        hit, how = find(sec, name)
+        if not hit:
+            report['missing'].append(f'{key}  [{sec}]')
+            continue
         also = twins(hit)
-        result[name] = {'iiko': hit['key'], 'iiko_also': [t['key'] for t in also]} if also else hit['key']
+        result[key] = {'iiko': hit['key'], 'iiko_also': [t['key'] for t in also]} if also else hit['key']
         if how == 'form' and literal(hit['name']) == literal(name):
-            report['literal'].append(name)
+            report['literal'].append(key)
         else:
             tag = {'form': '', 'loose': '', 'bag': '  (те же слова)', 'similar': '  (похоже)'}[how]
             org = f' org={hit["org"]}' if hit.get('org') and hit['org'] != 'cafe' else ''
             tag += f'  +двойник: {", ".join(t["name"].strip() for t in also)}' if also else ''
-            report['fuzzy'].append(f'{name}  [{sec}]  ←  {hit["name"].strip()}  [{hit.get("group")}{org}]{tag}')
-    stats = {'site': len(by_name), 'mapped': len(result), 'literal': len(report['literal']),
-             'fuzzy': len(report['fuzzy']), 'missing': len(report['missing']), 'ambiguous': len(report['ambiguous']),
+            report['fuzzy'].append(f'{key}  [{sec}]  ←  {hit["name"].strip()}  [{hit.get("group")}{org}]{tag}')
+    stats = {'site': len(seen), 'mapped': len(result), 'literal': len(report['literal']),
+             'fuzzy': len(report['fuzzy']), 'missing': len(report['missing']), 'ambiguous': 0,
              'iiko_total': len(items), 'iiko_usable': len(usable), 'iiko_excluded': len(items) - len(usable),
              'iiko_other': sum(1 for it in items if it.get('org') == 'other'), 'revision': revision,
              'twins': sum(1 for v in result.values() if isinstance(v, dict))}
@@ -198,14 +204,11 @@ def match(index_html, export_path, cutoff=0.9):
 
 def report_text(report, stats):
     L = [f'сопоставление: позиций сайта {stats["site"]}, сопоставлено {stats["mapped"]} '
-         f'(буквально {stats["literal"]}, спорных {stats["fuzzy"]}), неоднозначных {stats["ambiguous"]}, не нашлось {stats["missing"]}; '
+         f'(буквально {stats["literal"]}, спорных {stats["fuzzy"]}), не нашлось {stats["missing"]}; '
          f'iiko: всего {stats["iiko_total"]} (org other: {stats.get("iiko_other", 0)}), после исключения служебных групп {stats["iiko_usable"]}; '
          f'позиций с двойниками (iiko_also): {stats.get("twins", 0)}; menu_revision: {json.dumps(stats.get("revision"), ensure_ascii=False)}', '']
     L.append(f'## Спорные ({stats["fuzzy"]}) — совпало не буквально, показать владельцу: сайт ← iiko')
     L += ['  ' + x for x in report['fuzzy']] or ['  —']
-    L.append('')
-    L.append(f'## Неоднозначные ({stats["ambiguous"]}) — одно название сайта в разных разделах ведёт к разным позициям iiko; карточка на сайте одна на имя')
-    L += ['  ' + x for x in report['ambiguous']] or ['  —']
     L.append('')
     L.append(f'## Не нашлось ({stats["missing"]})')
     L += ['  ' + x for x in report['missing']] or ['  —']
@@ -226,7 +229,8 @@ def main(argv=None):
         with open(a.out, encoding='utf-8') as f:
             old = json.load(f)
     out = {}
-    for name in sorted(set(old) | set(result), key=lambda n: (n not in result, n)):
+    live = {k for k, _, _ in site_keys(a.menu)}          # ключи снятых/переименованных позиций из старой карты не тащим
+    for name in sorted((set(old) & live) | set(result), key=lambda n: (n not in result, n)):
         v = result.get(name)
         rec = dict(v) if isinstance(v, dict) else {'iiko': v}
         prev = old.get(name)

@@ -99,27 +99,26 @@ class TestMatch(unittest.TestCase):
         self.assertNotIn('Микс гриль на 5–6 персон', r)    # 5–6 ≠ 6-8: «похоже» с другими цифрами не засчитываем
         self.assertNotIn('Болоньезе', r)                   # только в «Категория без имени»
 
-    def test_ambiguous(self):
+    def test_section_keys(self):
         r = self.res
-        self.assertEqual(r['Медовик'], 'k6')               # десерт с описанием/фото, торт без — взят десерт
-        self.assertNotIn('Сникерс', r)                     # у обоих есть описание/фото → пара не дана
-        self.assertNotIn('Яблочный', r)                    # фреш с фото, глинтвейн с описанием → не дана
-        self.assertNotIn('Чизкейк испанский', r)           # раздел целых тортов: только «Торт …»
-        amb = '\n'.join(self.rep['ambiguous'])
-        self.assertIn('Медовик', amb); self.assertIn('взята «Десерт Медовик»', amb)
-        self.assertIn('Сникерс', amb); self.assertIn('пара не дана', amb)
+        self.assertEqual(r['Медовик @ Десерты'], 'k6')                       # кусок — с описанием/фото
+        self.assertEqual(r['Медовик @ Торты (целиком)'], 'k7')               # целый торт — только «Торт …»
+        self.assertEqual(r['Сникерс @ Десерты'], 'k9')
+        self.assertEqual(r['Сникерс @ Торты (целиком)'], 'k10')
+        self.assertNotIn('Медовик', r)                                     # без раздела ключа больше нет
+        self.assertNotIn('Чизкейк испанский', r)                           # раздел целых тортов: только «Торт …»
+        self.assertIn('Чизкейк испанский  [Торты (целиком)]', '\n'.join(self.rep['missing']))
 
     def test_report_classes(self):
         self.assertIn('Кетчуп', self.rep['literal']) if False else None
         fuzzy = '\n'.join(self.rep['fuzzy'])
         self.assertIn('Маргарита  [Пицца]  ←  Пицца Маргарита*', fuzzy)
         self.assertIn('Испанский чизкейк', fuzzy); self.assertIn('(те же слова)', fuzzy)
-        self.assertIn('Чизкейк испанский  [Торты (целиком)]', '\n'.join(self.rep['missing']))
         self.assertEqual(self.st['iiko_excluded'], 3)
-        self.assertEqual(self.st['site'], 15)
-        self.assertEqual(self.st['mapped'] + self.st['missing'] + sum(1 for a in self.rep['ambiguous'] if 'не дана' in a), 15)
+        self.assertEqual(self.st['site'], 18)                              # 15 названий, 3 из них в двух разделах
+        self.assertEqual(self.st['mapped'] + self.st['missing'], 18)
         txt = mn.report_text(self.rep, self.st)
-        self.assertIn('## Спорные', txt); self.assertIn('## Неоднозначные', txt); self.assertIn('## Не нашлось', txt)
+        self.assertIn('## Спорные', txt); self.assertIn('## Не нашлось', txt)
 
 
 if __name__ == '__main__':

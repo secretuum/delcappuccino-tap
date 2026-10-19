@@ -14,8 +14,8 @@ class TestDescriptions(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.site = {}
-        for sec, name in mn.site_names(os.path.join(ROOT, 'index.html')):
-            cls.site.setdefault(name, []).append(sec)
+        for key, sec, name in mn.site_keys(os.path.join(ROOT, 'index.html')):
+            cls.site.setdefault(key, []).append(sec)
         with open(os.path.join(ROOT, 'menu', 'descriptions.json'), encoding='utf-8') as f:
             cls.desc = {k: v for k, v in json.load(f).items() if not k.startswith('_')}
         with open(os.path.join(ROOT, 'menu', 'recipes_est.json'), encoding='utf-8') as f:
