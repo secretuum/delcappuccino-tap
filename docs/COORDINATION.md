@@ -12,6 +12,7 @@
 |---|---|---|
 | `menu-i18n` — меню на ҚАЗ/ENG | `worktree-menu-i18n` | оверлей меню: разметка `#menu-modal`, массивы `MENU_KITCHEN` / `MENU_BAR` / `MENU_DESSERT`, `MK`, `LEGEND`, `MENU_TABS` и функции отрисовки меню; стили `.mm-*`. Переключатель языка — только внутри оверлея меню. |
 | `to-go` — 5-я точка bakery to go | `worktree-to-go` | `BRANCHES`, `renderLocations`, модалка выбора филиала (`#modal`), секции hero / strip / about / features / locations / contacts, `<head>` (title, description, og/twitter) — тексты про «4 кофейни» и «24/7». |
+| `perf` — оптимизация загрузки | `worktree-perf` | `<head>` (preload, шрифты, иконки, manifest), картинки и ресурсы главной, `assets/`, `sw.js`, `manifest.webmanifest`, `tools/`, `tests/test_perf.py`. После любой правки `index.html` — `python3 tools/sw_version.py`. |
 
 Общие стили (`:root`, базовые классы) — предупредить второго исполнителя перед правкой.
 
@@ -32,3 +33,4 @@
 | 2026-10-19 | `menu-i18n` — карточки блюд по тапу: фото, описание, состав, КБЖУ, данные в `menu/cards.json` (заявка 90016) | `worktree-menu-i18n` | #11 | принято, слит 19.10 с 4 заглушками по решению владельца; КБЖУ считать по составу, Капучино — заглушка |
 | 2026-10-19 | `menu-i18n` — build_cards.py: сборка cards.json из выгрузок iiko и ТТК, расчёт КБЖУ по справочнику (заявка 91145) | `worktree-menu-i18n` | #12 | принято, слит 19.10; сайт не меняет, ждёт выгрузок |
 | 2026-10-19 | `menu-i18n` — сопоставление названий с iiko, первая сборка: 58 карточек с фото и описанием (заявка 93094) | `worktree-menu-i18n` | #13 | принято, слит 19.10 |
+| 2026-10-19 | `perf` — первый экран 1240 → 104 КБ: webp/srcset, self-host шрифты, gtag после load, sw.js (заявка 95840) | `worktree-perf` | #14 | принято, слит 19.10 |
