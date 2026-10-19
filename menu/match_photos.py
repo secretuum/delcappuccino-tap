@@ -25,7 +25,7 @@ import match_names as mn  # noqa: E402
 IMG_EXT = {'.png', '.jpg', '.jpeg', '.jfif', '.webp'}
 SKIP_RE = re.compile(r'chatgpt image|\b1\s*кг\b|\bбокс\b|\bмякоть\b|\bфарш\b', re.I)
 NOISE_WORDS = ('фото', 'готовые', 'готовый', 'готовая', 'новое', 'новый', 'итог', 'копия', 'кусок', 'кусочек')
-WHOLE_RE = re.compile(r'целы[ей]|целая|\b1\s*кг\b', re.I)   # целый торт: только для раздела «Торты (целиком)»
+WHOLE_RE = re.compile(r'целы[ей]|цельн|целая|\b1\s*кг\b|\bторт\b', re.I)   # целый торт: только для раздела «Торты (целиком)»
 WHOLE_SECTION = 'торты (целиком)'
 EXT_RANK = {'.png': 0, '.jpg': 0, '.jpeg': 0, '.webp': 1, '.jfif': 2}
 STRICT_SECTIONS = {'полуфабрикаты', 'мясо'}   # сырьё: только точное совпадение (котлеты-полуфабрикат ≠ котлеты с пюре)
@@ -93,16 +93,20 @@ def rank(rec, how):
 
 
 def match(site, files, cutoff=0.88):
-    """site: [(раздел, имя)]; files: записи scan_*; → ({имя: path}, report, stats)"""
+    """site: [(раздел, имя)]; files: записи scan_*; → ({ключ: path}, report, stats); ключ — mn.site_keys (с разделом у дублей)"""
     for f in files:
         f['form'] = norm_file(f['path'])
         f['whole'] = bool(WHOLE_RE.search(f['path']))
     files = [f for f in files if f['form'] and not SKIP_RE.search(os.path.basename(f['path'])) and not SKIP_RE.search(f['form'])]
 
-    by_name = {}
+    secs_of = {}
     for sec, name in site:
-        by_name.setdefault(name, []).append(sec)
-    site_forms = {name: norm_site(name) for name in by_name}
+        secs_of.setdefault(name, []).append(sec)
+    by_key = {}                                   # ключ → (раздел, название)
+    for sec, name in site:
+        key = (name + mn.SEP + sec) if len(set(secs_of[name])) > 1 else name
+        by_key.setdefault(key, (sec, name))
+    site_forms = {name: norm_site(name) for name in secs_of}
 
     def index(whole):
         """индексы по файлам: целые торты отдельно от остальных"""
@@ -170,31 +174,22 @@ def match(site, files, cutoff=0.88):
 
     result, report = {}, {'literal': [], 'fuzzy': [], 'missing': [], 'ambiguous': []}
     used = set()
-    for name, secs in by_name.items():
-        # имя в нескольких разделах («Классический» — айс ти и раф): карточка одна, пара — только если разделы согласны
-        per_sec = [(sec,) + find(name, [sec]) for sec in secs] if len(secs) > 1 else []
-        found = [(sec, recs, how, form) for sec, recs, how, form in per_sec if recs]
-        if len(found) > 1 and any(sec.lower() != WHOLE_SECTION for sec, *_ in found):
-            found = [x for x in found if x[0].lower() != WHOLE_SECTION]     # кусок важнее целого торта: карточка одна
-            secs = [sec for sec in secs if sec.lower() != WHOLE_SECTION]
-        if len({f for _, _, _, f in found}) > 1:
-            report['ambiguous'].append(f'{name}  ' + '  /  '.join(f'[{sec}] ← {recs[0]["path"]}' for sec, recs, _, _ in found) + '  ⇒ пара не дана')
-            continue
-        recs, how, form = find(name, secs)
+    for key, (sec, name) in by_key.items():
+        recs, how, form = find(name, [sec])
         if not recs:
-            report['missing'].append(f'{name}  [{" / ".join(secs)}]')
+            report['missing'].append(f'{key}  [{sec}]')
             continue
         best = sorted(recs, key=lambda r: rank(r, how))[0]
-        result[name] = best['path']
+        result[key] = best['path']
         used.add(best['path'])
         alts = len(recs) - 1
         tag = {'form': '', 'bag': '  (те же слова)', 'head': '  (по началу названия)', 'similar': '  (похоже)'}[how]
         if how == 'form' and norm_file(best['path']) == norm_site(name) and mn.literal(os.path.splitext(os.path.basename(best['path']))[0]) == mn.literal(name):
-            report['literal'].append(name)
+            report['literal'].append(key)
         else:
-            report['fuzzy'].append(f'{name}  ←  {best["path"]}{tag}' + (f'  (+{alts} дубл.)' if alts else ''))
+            report['fuzzy'].append(f'{key}  ←  {best["path"]}{tag}' + (f'  (+{alts} дубл.)' if alts else ''))
     unused = sorted(f['path'] for f in files if f['path'] not in used and f['form'] not in {norm_file(p) for p in used})
-    stats = {'site': len(by_name), 'mapped': len(result), 'literal': len(report['literal']), 'fuzzy': len(report['fuzzy']),
+    stats = {'site': len(by_key), 'mapped': len(result), 'literal': len(report['literal']), 'fuzzy': len(report['fuzzy']),
              'missing': len(report['missing']), 'ambiguous': len(report['ambiguous']), 'files': len(files), 'unused': len(unused)}
     report['unused'] = unused
     return result, report, stats

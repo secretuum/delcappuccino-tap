@@ -13,8 +13,8 @@ RANGES = {
     'Супы': (100, 450), 'Паназия': (100, 1200), 'Сэндвичи / Закуски': (300, 1500), 'Сэндвичи': (300, 1200),
     'Пицца': (300, 1200), 'Паста фреш': (300, 1200), 'Горячие блюда': (300, 1200), 'Домашние блюда': (300, 1200),
     'Блюда на гриле': (300, 1200), 'Хлеба': (100, 700), 'Гарниры': (100, 600), 'Соусы': (10, 350),
-    'На компанию': (1500, 9000), 'Дополнения': (0, 200), 'Десерты': (150, 700), 'Торты (целиком)': (150, 5000),
-    'Полуфабрикаты': (200, 1500), 'Мясо': (500, 1600),
+    'На компанию': (1500, 9000), 'Дополнения': (0, 200), 'Десерты': (150, 700), 'Торты (целиком)': (1500, 7000),
+    'Полуфабрикаты': (200, 3200), 'Мясо': (500, 1600),     # полуфабрикаты — на упаковку (самса 8 шт ≈ 1 кг)
 }
 DRINK = (0, 600)
 EXCEPTIONS = {'Мясной сет': (300, 1800)}     # сет на компанию в разделе домашних блюд
@@ -24,8 +24,8 @@ class TestRecipes(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.site = {}
-        for sec, name in mn.site_names(os.path.join(ROOT, 'index.html')):
-            cls.site.setdefault(name, []).append(sec)
+        for key, sec, name in mn.site_keys(os.path.join(ROOT, 'index.html')):
+            cls.site.setdefault(key, []).append(sec)
         with open(os.path.join(ROOT, 'menu', 'recipes_est.json'), encoding='utf-8') as f:
             cls.rec = {k: v for k, v in json.load(f).items() if not k.startswith('_')}
         with open(os.path.join(ROOT, 'menu', 'nutrition_ref.json'), encoding='utf-8') as f:
@@ -85,6 +85,22 @@ class TestRecipes(unittest.TestCase):
             if abs(k['kcal'] - est) > max(0.2 * est, 12):
                 bad.append(f'{name}: {k["kcal"]} ккал ≠ 4·{k["p"]}+9·{k["f"]}+4·{k["c"]}={est:.0f}')
         self.assertEqual(bad, [])
+
+    def test_duplicate_names_have_distinct_cards(self):
+        """«Название @ Раздел»: у каждой пары дублей свои КБЖУ и вес"""
+        groups = {}
+        for key in self.site:
+            if mn.SEP in key:
+                groups.setdefault(mn.key_name(key), []).append(key)
+        self.assertGreaterEqual(len(groups), 16)
+        for name, keys in groups.items():
+            self.assertGreaterEqual(len(keys), 2, name)
+            seen = set()
+            for k in keys:
+                c = self.cards[k]
+                sig = (json.dumps(c['kbju'], sort_keys=True), c['w'])
+                self.assertNotIn(sig, seen, f'{name}: карточки {keys} совпадают по kbju и w')
+                seen.add(sig)
 
     def test_report_mentions_sources(self):
         self.assertIn('расчёт по оценочному составу', self.report)

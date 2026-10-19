@@ -455,18 +455,22 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
 
 # ── меню на сайте ───────────────────────────────────────────────────────────
 def menu_names(index_html):
-    """названия блюд из index.html в порядке появления (n:'…' в массивах меню)"""
+    """ключи карточек из index.html в порядке меню: название, а для названий из нескольких разделов —
+    «Название @ Раздел» (match_names.site_keys)"""
     if not index_html or not os.path.isfile(index_html):
         return []
-    with open(index_html, encoding='utf-8') as f:
-        s = f.read()
-    names, seen = [], set()
-    for m in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'", s):
-        n = m.group(1).replace("\\'", "'")
-        if n not in seen:
-            seen.add(n)
-            names.append(n)
-    return names
+    sys.path.insert(0, HERE)
+    import match_names as mn
+    keys, seen = [], set()
+    for key, sec, name in mn.site_keys(index_html):
+        if key not in seen:
+            seen.add(key)
+            keys.append(key)
+    return keys
+
+
+def display_name(key):
+    return key.split(' @ ', 1)[0]
 
 
 # ── сборка ──────────────────────────────────────────────────────────────────
@@ -563,6 +567,13 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
 
     if not no_photos:
         os.makedirs(img_dir, exist_ok=True)
+        live = {slug(k) for k in cards} | {slug(k) for k, v in old.items() if isinstance(v, dict) and v.get('_stub') and k not in cards}
+        for sl in sorted(set(sources) - live):          # webp, сделанный сборкой, но больше никому не нужный
+            for fn in (f'{sl}.webp', f'{sl}-480.webp', f'{sl}-960.webp'):      # только свои файлы: «medovik-» ≠ «medovik-deserty»
+                if os.path.isfile(os.path.join(img_dir, fn)):
+                    os.remove(os.path.join(img_dir, fn))
+            sources.pop(sl, None)
+            rep.add(f'  сирота удалён: {sl}.webp')
         with open(sources_path, 'w', encoding='utf-8') as f:
             json.dump(dict(sorted(sources.items())), f, ensure_ascii=False, indent=1)
             f.write('\n')

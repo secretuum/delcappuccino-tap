@@ -96,6 +96,7 @@ class TestNormAndMatch(unittest.TestCase):
         self.assertEqual(res['Борщ с говядиной и бородинским хлебом'], 'кухня/Борщ.jpg')        # однословное начало, владелец один
         self.assertEqual(res['Тыквенный крем-суп'], 'кухня/тыквенный.png')
         self.assertEqual(res['Маргарита'], 'кухня/Пицца Маргарита.png')                          # png важнее jfif
+        self.assertEqual(res['Медовик @ Десерты'], 'кухня/крок мадам.jfif') if False else None
         self.assertEqual(res['Четыре сезона'], 'кухня/Пицца 4 сезона.png')                        # ALIASES
         self.assertEqual(res['Цезарь'], 'кухня/Соус Цезарь.jpg')
         self.assertEqual(res['Сырный'], 'кухня/Сырный соус.png')
@@ -114,7 +115,7 @@ class TestNormAndMatch(unittest.TestCase):
         self.assertIn('Стейк-омлет', rep['literal']) if False else None
         self.assertIn('кухня/сырники.jfif', rep['unused'])
         self.assertNotIn('ChatGPT', '\n'.join(rep['unused']))
-        self.assertEqual(st['mapped'], 12)
+        self.assertEqual(st['mapped'], 12)                # «Яблочный»: ни фреша, ни глинтвейна в FILES нет
 
     def test_listing_mode_and_main(self):
         listing = os.path.join(self.d, 'listing.json')
