@@ -6,8 +6,9 @@
 («Маргарита» в разделе «Пицца» = «Пицца Маргарита»). Служебные группы iiko исключаем.
 У напитков с несколькими объёмами берём первую запись с описанием и фото.
 
-Вывод: name_map.json {название_сайта: key_iiko} и отчёт (stdout / --report): буквальные,
-спорные (совпало не буквально — показать владельцу) и не найденные.
+Вывод: name_map.json {название_сайта: {"iiko": key, "iiko_also": [ключи двойников], "drive_file": …}}
+(drive_file из существующей карты сохраняется; его ставит match_photos.py) и отчёт (stdout / --report):
+буквальные, спорные (совпало не буквально — показать владельцу), неоднозначные и не найденные.
 Только стандартная библиотека.
 """
 import argparse, difflib, json, os, re, sys
@@ -49,6 +50,7 @@ def norm(s):
     s = re.sub(r'[-–—/+]', ' ', s)           # Груша-мята = Груша мята
     s = re.sub(r'[^\w\s]', ' ', s)
     s = ' '.join(w for w in s.split() if w not in STOP_WORDS)   # «доп», «чашка», «чайник», одиночное «н»
+    s = re.sub(r'^к ', '', s)                 # «К Десерт Медовик» — кондитерский цех (org other)
     s = re.sub(r'\bбаклажана\b', 'баклажан', s)
     s = re.sub(r'\bпо\s+казахски\b', 'по казахски', s)
     return re.sub(r'\s+', ' ', s).strip()
@@ -82,11 +84,12 @@ def excluded(group):
     return any(x in g for x in EXCLUDE_GROUPS)
 
 
-def rank(it):
-    """лучшая запись среди дублей: с описанием и фото → с фото → с описанием → остальные; без «|-->ВЫНОС» раньше"""
+def rank(it, level=0):
+    """лучшая запись среди дублей: с описанием и фото → с фото → с описанием → остальные; потом org cafe,
+    уровень совпадения (точная форма → без слова-префикса → те же слова), без «|-->ВЫНОС», не чайник"""
     n = it['name'].lower()
     return (0 if it.get('description') and it.get('photo') else 1 if it.get('photo') else 2 if it.get('description') else 3,
-            1 if '|' in n else 0, 1 if 'чайник' in n else 0)
+            0 if (it.get('org') or 'cafe') == 'cafe' else 1, level, 1 if '|' in n else 0, 1 if 'чайник' in n else 0)
 
 
 def strip_prefix(form):
@@ -105,7 +108,9 @@ def digits(s):
 
 def match(index_html, export_path, cutoff=0.9):
     with open(export_path, encoding='utf-8') as f:
-        items = [it for it in json.load(f)['items'] if it.get('name') and it.get('key')]
+        data = json.load(f)
+    items = [it for it in data['items'] if it.get('name') and it.get('key')]
+    revision = data.get('menu_revision')
     usable = [it for it in items if not excluded(it.get('group'))]
     forms, loose, bag = {}, {}, {}        # точная форма / без слова-префикса / набор слов
     for it in usable:
@@ -115,9 +120,7 @@ def match(index_html, export_path, cutoff=0.9):
         if sp:
             loose.setdefault(sp, []).append(it)
         bag.setdefault(frozenset(f.split()), []).append(it)
-    for d in (forms, loose, bag):
-        for lst in d.values():
-            lst.sort(key=rank)
+    LEVEL = {'form': 0, 'loose': 1, 'bag': 2}
 
     def find(sec, name):
         """→ (запись iiko | None, как нашли)"""
@@ -134,19 +137,22 @@ def match(index_html, export_path, cutoff=0.9):
         if name in ALIASES:
             cands.insert(0, ALIASES[name])
         for c in cands:
-            if c in forms:
-                return forms[c][0], 'form'
-        for c in cands:
-            if c in loose:
-                return loose[c][0], 'loose'
-        for c in cands:
-            if frozenset(c.split()) in bag:
-                return bag[frozenset(c.split())][0], 'bag'
+            pool = [(it, 'form') for it in forms.get(c, [])] + [(it, 'loose') for it in loose.get(c, [])] + \
+                   [(it, 'bag') for it in bag.get(frozenset(c.split()), [])]
+            if pool:
+                it, how = min(pool, key=lambda p: rank(p[0], LEVEL[p[1]]))
+                return it, how
         for c in cands:
             close = difflib.get_close_matches(c, list(forms), n=1, cutoff=cutoff)
             if close and digits(close[0]) == digits(c):      # «5–6 персон» ≠ «6-8 персон»
-                return forms[close[0]][0], 'similar'
+                return min(forms[close[0]], key=rank), 'similar'
         return None, None
+
+    def twins(it):
+        """записи-двойники того же блюда с КБЖУ (та же форма, другой ключ): у кондитерской «К Десерт Медовик»
+        есть per_100g, у кофейной «Десерт Медовик» — описание и фото; сборка дополняет пустые поля из двойников"""
+        f = norm(it['name'])
+        return [o for o in forms.get(f, []) if o['key'] != it['key'] and (o.get('per_100g') or o.get('per_portion'))]
 
     # одно название сайта может стоять в нескольких разделах («Яблочный» — фреш и глинтвейн):
     # ключ карточки один, поэтому пара возможна, только если все разделы ведут к одной записи
@@ -173,22 +179,28 @@ def match(index_html, export_path, cutoff=0.9):
             report['missing'].append(f'{name}  [{" / ".join(secs)}]')
             continue
         sec, hit, how = found[0]
-        result[name] = hit['key']
+        also = twins(hit)
+        result[name] = {'iiko': hit['key'], 'iiko_also': [t['key'] for t in also]} if also else hit['key']
         if how == 'form' and literal(hit['name']) == literal(name):
             report['literal'].append(name)
         else:
             tag = {'form': '', 'loose': '', 'bag': '  (те же слова)', 'similar': '  (похоже)'}[how]
-            report['fuzzy'].append(f'{name}  [{sec}]  ←  {hit["name"].strip()}  [{hit.get("group")}]{tag}')
+            org = f' org={hit["org"]}' if hit.get('org') and hit['org'] != 'cafe' else ''
+            tag += f'  +двойник: {", ".join(t["name"].strip() for t in also)}' if also else ''
+            report['fuzzy'].append(f'{name}  [{sec}]  ←  {hit["name"].strip()}  [{hit.get("group")}{org}]{tag}')
     stats = {'site': len(by_name), 'mapped': len(result), 'literal': len(report['literal']),
              'fuzzy': len(report['fuzzy']), 'missing': len(report['missing']), 'ambiguous': len(report['ambiguous']),
-             'iiko_total': len(items), 'iiko_usable': len(usable), 'iiko_excluded': len(items) - len(usable)}
+             'iiko_total': len(items), 'iiko_usable': len(usable), 'iiko_excluded': len(items) - len(usable),
+             'iiko_other': sum(1 for it in items if it.get('org') == 'other'), 'revision': revision,
+             'twins': sum(1 for v in result.values() if isinstance(v, dict))}
     return result, report, stats
 
 
 def report_text(report, stats):
     L = [f'сопоставление: позиций сайта {stats["site"]}, сопоставлено {stats["mapped"]} '
          f'(буквально {stats["literal"]}, спорных {stats["fuzzy"]}), неоднозначных {stats["ambiguous"]}, не нашлось {stats["missing"]}; '
-         f'iiko: всего {stats["iiko_total"]}, после исключения служебных групп {stats["iiko_usable"]}', '']
+         f'iiko: всего {stats["iiko_total"]} (org other: {stats.get("iiko_other", 0)}), после исключения служебных групп {stats["iiko_usable"]}; '
+         f'позиций с двойниками (iiko_also): {stats.get("twins", 0)}; menu_revision: {json.dumps(stats.get("revision"), ensure_ascii=False)}', '']
     L.append(f'## Спорные ({stats["fuzzy"]}) — совпало не буквально, показать владельцу: сайт ← iiko')
     L += ['  ' + x for x in report['fuzzy']] or ['  —']
     L.append('')
@@ -209,8 +221,20 @@ def main(argv=None):
     ap.add_argument('--cutoff', type=float, default=0.9, help='порог похожести difflib для «похоже»')
     a = ap.parse_args(argv)
     result, report, stats = match(a.menu, a.iiko, a.cutoff)
+    old = {}
+    if os.path.isfile(a.out):
+        with open(a.out, encoding='utf-8') as f:
+            old = json.load(f)
+    out = {}
+    for name in sorted(set(old) | set(result), key=lambda n: (n not in result, n)):
+        v = result.get(name)
+        rec = dict(v) if isinstance(v, dict) else {'iiko': v}
+        prev = old.get(name)
+        drive = prev.get('drive_file') if isinstance(prev, dict) else None
+        if rec.get('iiko') or drive:
+            out[name] = {'iiko': rec.get('iiko'), **({'iiko_also': rec['iiko_also']} if rec.get('iiko_also') else {}), 'drive_file': drive}
     with open(a.out, 'w', encoding='utf-8') as f:
-        json.dump(result, f, ensure_ascii=False, indent=1)
+        json.dump(out, f, ensure_ascii=False, indent=1)
         f.write('\n')
     txt = report_text(report, stats)
     if a.report:

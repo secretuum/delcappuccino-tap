@@ -120,7 +120,10 @@ def load_export(path, rep):
     with open(path, encoding='utf-8') as f:
         data = json.load(f)
     items = data.get('items', []) if isinstance(data, dict) else data
-    rep.add(f'{os.path.relpath(path, ROOT)}: {len(items)} позиций, generated_at={data.get("generated_at") if isinstance(data, dict) else "?"}')
+    head = data if isinstance(data, dict) else {}
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(items)} позиций, generated_at={head.get("generated_at", "?")}' +
+            (f', menu_revision={json.dumps(head["menu_revision"], ensure_ascii=False)}' if head.get('menu_revision') else '') +
+            (f', org other: {sum(1 for it in items if isinstance(it, dict) and it.get("org") == "other")}' if any(isinstance(it, dict) and it.get('org') for it in items) else ''))
     return [it for it in items if isinstance(it, dict) and it.get('name')]
 
 
@@ -132,14 +135,18 @@ def load_name_map(path, rep):
         return {}, {}
     with open(path, encoding='utf-8') as f:
         m = json.load(f)
-    rev, photos = {}, {}
+    rev, photos, also = {}, {}, 0
     for site, v in m.items():
         key = v.get('iiko') if isinstance(v, dict) else v
         if key:
-            rev.setdefault(str(key), site)
-        if isinstance(v, dict) and v.get('drive_file'):
-            photos[site] = v['drive_file']
-    rep.add(f'{os.path.relpath(path, ROOT)}: {len(m)} названий сайта → {len(rev)} позиций iiko, фото из папки: {len(photos)}')
+            rev.setdefault(str(key), (site, True))
+        if isinstance(v, dict):
+            for k in v.get('iiko_also') or []:          # двойники: дополняют пустые поля основной записи
+                rev.setdefault(str(k), (site, False))
+                also += 1
+            if v.get('drive_file'):
+                photos[site] = v['drive_file']
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(m)} названий сайта → {len(rev)} позиций iiko (двойников {also}), фото из папки: {len(photos)}')
     return rev, photos
 
 
@@ -149,17 +156,17 @@ def apply_name_map(items, rev, src, rep):
         return items
     out, dropped = [], 0
     for it in items:
-        site = rev.get(str(it.get('cloud_key') or it.get('key') or ''))
-        if site:
-            it = {**it, 'name': site, 'name_src': it.get('name')}
-            out.append(it)
+        hit = rev.get(str(it.get('cloud_key') or it.get('key') or ''))
+        if hit:
+            site, primary = hit
+            out.append({**it, 'name': site, 'name_src': it.get('name'), 'primary': primary})
         elif src == 'ttk':
             out.append(it)          # ТТК может прийти уже с названиями сайта — сшиваем по имени
         else:
             dropped += 1
     if dropped:
         rep.add(f'{src}: {dropped} записей без пары в name_map.json пропущено')
-    return out
+    return sorted(out, key=lambda it: not it.get('primary', True))   # основные записи раньше двойников
 
 
 PHONE_RE = re.compile(r'\+?\d[\d\s()\-]{7,}\d')
@@ -189,6 +196,19 @@ def merge_exports(iiko, ttk):
 
     for it in iiko:
         m = {'src': ['iiko'], **it}
+        prev = by_name.get(norm(it['name']))
+        if prev is not None:                            # одноимённые записи iiko (двойник): заполняем пустое
+            for k, v in it.items():
+                if k in ('key', 'name', 'name_src', 'primary', 'src'):
+                    continue
+                if k == 'missing':
+                    prev['missing'] = sorted(set(prev.get('missing') or []) & set(v or []))
+                elif prev.get(k) in (None, '', [], {}) and v not in (None, '', [], {}):
+                    prev[k] = v
+                    prev.setdefault('filled_from', []).append(f'{k} ← {str(it.get("name_src") or it.get("name")).strip()}')
+            if ident(it):
+                by_key[str(ident(it))] = prev
+            continue
         merged.append(m)
         if ident(it):
             by_key[str(ident(it))] = m
@@ -375,8 +395,7 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
     rel = f'{os.path.relpath(img_dir, ROOT)}/{sl}.webp'.replace(os.sep, '/')
     dst = os.path.join(img_dir, f'{sl}.webp')
     sources = sources if sources is not None else {}
-    if os.path.isfile(dst) and not refresh and sources.get(sl, sign) == sign:
-        sources[sl] = sign
+    if os.path.isfile(dst) and not refresh and sources.get(sl) == sign:   # нет записи в манифесте — источник неизвестен, перекодируем
         return rel
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
@@ -462,7 +481,9 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         ing = ingredients_text(it, ref)
         if ing:
             card['ing'] = ing
-        line = f'• {name} [{"+".join(it["src"])}]' + (f' ← {it["name_src"].strip()}' if it.get('name_src') and it['name_src'].strip() != name else '') + f' — КБЖУ: {src}'
+        line = f'• {name} [{"+".join(it["src"])}' + (f' org={it["org"]}' if it.get('org') and it['org'] != 'cafe' else '') + ']' + \
+            (f' ← {it["name_src"].strip()}' if it.get('name_src') and it['name_src'].strip() != name else '') + f' — КБЖУ: {src}' + \
+            (f' — дополнено: {"; ".join(it["filled_from"])}' if it.get('filled_from') else '')
         if names and name not in name_set:
             line += ' — НЕТ В МЕНЮ index.html'
             rep.errors += 1

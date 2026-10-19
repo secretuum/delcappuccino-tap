@@ -203,6 +203,10 @@ class TestBuildWithFolderPhotos(unittest.TestCase):
         # без изменений — не перекодируется
         cards, rep = self.build()
         self.assertNotIn('фото: ', rep)
+        # webp есть, но записи в манифесте нет (старая сборка) — источник неизвестен, перекодируется
+        os.remove(os.path.join(self.img, 'sources.json'))
+        cards, rep = self.build()
+        self.assertIn('stejk-omlet.webp', rep)
 
 
 if __name__ == '__main__':

@@ -1,10 +1,25 @@
 {
+  "Каша овсяная с гранолой и персиком": {
+    "img": "img/menu/kasha-ovsyanaya-s-granoloj-i-persikom.webp"
+  },
+  "Каша рисовая с гранолой и бананом": {
+    "img": "img/menu/kasha-risovaya-s-granoloj-i-bananom.webp"
+  },
+  "Датский завтрак": {
+    "img": "img/menu/datskij-zavtrak.webp"
+  },
   "Деревенский завтрак": {
     "img": "img/menu/derevenskij-zavtrak.webp",
     "w": "312 г",
     "d": {
       "ru": "Колбаски охотничьи, яйцо куриное, картофель отварной в мундире, соус дзадзыги, микс салата, тартин"
     }
+  },
+  "Яичница-глазунья с сосисками и соусом релиш": {
+    "img": "img/menu/yaichnica-glazunya-s-sosiskami-i-sousom-relish.webp"
+  },
+  "Крок Мадам с копчёной индейкой": {
+    "img": "img/menu/krok-madam-s-kopchenoj-indejkoj.webp"
   },
   "Алматинский завтрак": {
     "img": "img/menu/almatinskij-zavtrak.webp",
@@ -20,6 +35,21 @@
       "ru": "Английский завтрак — сытное и ароматное утро на тарелке: обжаренное куриное яйцо, румяные охотничьи колбаски, шампиньоны, картофель хашбраун и два хрустящих кусочка хлеба тартин. Классика в стильной подаче."
     }
   },
+  "Бургер бриошь с куриной котлетой и омлетом": {
+    "img": "img/menu/burger-briosh-s-kurinoj-kotletoj-i-omletom.webp"
+  },
+  "Шакшука с тартином": {
+    "img": "img/menu/shakshuka-s-tartinom.webp"
+  },
+  "Вафли из цукини с малосольным лососем": {
+    "img": "img/menu/vafli-iz-cukini-s-malosolnym-lososem.webp"
+  },
+  "Стейк-омлет": {
+    "img": "img/menu/stejk-omlet.webp"
+  },
+  "Завтрак с лососем": {
+    "img": "img/menu/zavtrak-s-lososem.webp"
+  },
   "Блины со сметаной и мёдом": {
     "img": "img/menu/bliny-so-smetanoj-i-medom.webp",
     "w": "270 г",
@@ -33,6 +63,9 @@
     "d": {
       "ru": "Нежные блины с сочными ломтиками банана и тёплым шоколадным соусом. Идеальное сладкое удовольствие для яркого утра."
     }
+  },
+  "Мини-панкейки": {
+    "img": "img/menu/mini-pankejki.webp"
   },
   "Бельгийские вафли": {
     "img": "img/menu/belgijskie-vafli.webp",
@@ -55,12 +88,21 @@
       "ru": "Свежие огурцы, помидоры, сладкий перец, красный лук, маслины и фета, заправленные оливковым маслом и лимонным соком. Лёгкий и яркий вкус Средиземноморья."
     }
   },
+  "Салат с цыплёнком гриль": {
+    "img": "img/menu/salat-s-cyplenkom-gril.webp"
+  },
   "Тёплый салат из баклажана с соусом Ассай": {
     "img": "img/menu/teplyj-salat-iz-baklazhana-s-sousom-assaj.webp",
     "w": "335 г",
     "d": {
       "ru": "Ароматные запечённые баклажаны с нежным соусом Ассай, свежими травами и нотками пряностей. Вкусное и согревающее блюдо с ярким акцентом."
     }
+  },
+  "Салат с запечённой сёмгой в соусе терияки": {
+    "img": "img/menu/salat-s-zapechennoj-semgoj-v-souse-teriyaki.webp"
+  },
+  "Салат со стейком": {
+    "img": "img/menu/salat-so-stejkom.webp"
   },
   "Боул с курицей": {
     "img": "img/menu/boul-s-kuricej.webp",
@@ -97,12 +139,24 @@
       "ru": "Сытный и ароматный суп из красной чечевицы с овощами и специями. Полезное и согревающее блюдо для любого времени года."
     }
   },
+  "Тыквенный крем-суп": {
+    "img": "img/menu/tykvennyj-krem-sup.webp"
+  },
   "Суп с фрикадельками": {
     "img": "img/menu/sup-s-frikadelkami.webp",
     "w": "341 г",
     "d": {
       "ru": "Ароматный бульон с нежными мясными фрикадельками, картофелем и луком. Лёгкий, сытный и по-домашнему вкусный."
     }
+  },
+  "Борщ с говядиной и бородинским хлебом": {
+    "img": "img/menu/borsch-s-govyadinoj-i-borodinskim-hlebom.webp"
+  },
+  "Чучвара (пельмени с говядиной)": {
+    "img": "img/menu/chuchvara-pelmeni-s-govyadinoj.webp"
+  },
+  "Лепёшка с пюре и сыром": {
+    "img": "img/menu/lepeshka-s-pyure-i-syrom.webp"
   },
   "Наггетсы": {
     "img": "img/menu/naggetsy.webp",
@@ -111,12 +165,22 @@
       "ru": "Хрустящие кусочки куриного филе в золотистой панировке. Идеальная закуска или дополнение к основному блюду."
     }
   },
+  "Чебуреки с фаршем": {
+    "img": "img/menu/chebureki-s-farshem.webp",
+    "w": "500 г"
+  },
+  "Сэндвич с куриным шницелем": {
+    "img": "img/menu/sendvich-s-kurinym-shnicelem.webp"
+  },
   "Кесадилья с курицей": {
     "img": "img/menu/kesadilya-s-kuricej.webp",
     "w": "424 г",
     "d": {
       "ru": "Мягкая тортилья с сочным куриным филе, сладким перцем, луком и грибами, щедро посыпанная моцареллой и политая томатным соусом и сметаной. Вкусное и ароматное блюдо с мексиканским акцентом."
     }
+  },
+  "Бургер с томлёной говядиной": {
+    "img": "img/menu/burger-s-tomlenoj-govyadinoj.webp"
   },
   "Клаб сэндвич с курицей и картофелем фри": {
     "img": "img/menu/klab-sendvich-s-kuricej-i-kartofelem-fri.webp",
@@ -153,6 +217,9 @@
       "ru": "Тонкое тесто с нежным куриным филе, шампиньонами, томатным соусом и сыром моцарелла. Вкусное и сытное сочетание."
     }
   },
+  "Болоньезе": {
+    "img": "img/menu/boloneze.webp"
+  },
   "Четыре сезона": {
     "img": "img/menu/chetyre-sezona.webp",
     "w": "400 г",
@@ -160,12 +227,21 @@
       "ru": "Тонкое тесто с соусом Пилати, нежной курицей сувид, колбасками, шампиньонами, болгарским перцем, свежими томатами и моцареллой, украшенная оливковым маслом и хрустящим панко. Яркое и сбалансированное вкусовое сочетание."
     }
   },
+  "Курица по-тайски с рисом": {
+    "img": "img/menu/kurica-po-tajski-s-risom.webp"
+  },
   "Жареный рис с хрустящей курочкой": {
     "img": "img/menu/zharenyj-ris-s-hrustyaschej-kurochkoj.webp",
     "w": "302 г",
     "d": {
       "ru": "Золотистая, хрустящая куриная грудка на подушке из ароматного жареного риса с овощами, украшенная свежей зеленью и легким пикантным соусом. Вкусно, сытно и с изюминкой!"
     }
+  },
+  "Курица терияки с рисом": {
+    "img": "img/menu/kurica-teriyaki-s-risom.webp"
+  },
+  "Говядина с овощами": {
+    "img": "img/menu/govyadina-s-ovoschami.webp"
   },
   "Том Ям с курицей": {
     "img": "img/menu/tom-yam-s-kuricej.webp",
@@ -202,6 +278,21 @@
       "ru": "Ароматная паста с сочными креветками в сливочном соусе с чесноком и травами. Лёгкое, изысканное и насыщенное блюдо для ценителей морепродуктов."
     }
   },
+  "Фарфалле с томлёной говядиной": {
+    "img": "img/menu/farfalle-s-tomlenoj-govyadinoj.webp"
+  },
+  "Фарфалле с лососем": {
+    "img": "img/menu/farfalle-s-lososem.webp"
+  },
+  "Курочка в сливочном соусе с грибами и рисом": {
+    "img": "img/menu/kurochka-v-slivochnom-souse-s-gribami-i-risom.webp"
+  },
+  "Цезарь с куриным шницелем": {
+    "img": "img/menu/cezar-s-kurinym-shnicelem.webp"
+  },
+  "Курица карри с рисом и лепёшкой": {
+    "img": "img/menu/kurica-karri-s-risom-i-lepeshkoj.webp"
+  },
   "Котлеты пожарские": {
     "img": "img/menu/kotlety-pozharskie.webp",
     "w": "300 г",
@@ -209,12 +300,48 @@
       "ru": "Сочная рубленая куриная котлета в хрустящей панировке, подается с мягким картофельным пюре и ароматным грибным соусом. Классика русской кухни с домашним уютом."
     }
   },
+  "Котлеты говяжьи по-домашнему с пюре": {
+    "img": "img/menu/kotlety-govyazhi-po-domashnemu-s-pyure.webp"
+  },
   "Куриный рулет с моцареллой и рисом в соусе терияки": {
     "img": "img/menu/kurinyj-rulet-s-mocarelloj-i-risom-v-souse-teriyaki.webp",
     "w": "354 г",
     "d": {
       "ru": "Нежный куриный рулет с расплавленной моцареллой внутри, подаётся с ароматным рисом в соусе терияки. Сытно, вкусно и с азиатским акцентом."
     }
+  },
+  "Куриное филе со шпинатом в сливочном соусе": {
+    "img": "img/menu/kurinoe-file-so-shpinatom-v-slivochnom-souse.webp"
+  },
+  "Томлёная говядина с картофельным пюре": {
+    "img": "img/menu/tomlenaya-govyadina-s-kartofelnym-pyure.webp"
+  },
+  "Говяжий шницель": {
+    "img": "img/menu/govyazhij-shnicel.webp"
+  },
+  "Томлёные рёбра": {
+    "img": "img/menu/tomlenye-rebra.webp"
+  },
+  "Самса с курицей": {
+    "img": "img/menu/samsa-s-kuricej.webp"
+  },
+  "Самса с говядиной": {
+    "img": "img/menu/samsa-s-govyadinoj.webp"
+  },
+  "Вареники": {
+    "img": "img/menu/vareniki.webp"
+  },
+  "Манты с рублёной говядиной и тыквой": {
+    "img": "img/menu/manty-s-rublenoj-govyadinoj-i-tykvoj.webp"
+  },
+  "Мясной сет": {
+    "img": "img/menu/myasnoj-set.webp"
+  },
+  "Люля из говядины с салатом и питой": {
+    "img": "img/menu/lyulya-iz-govyadiny-s-salatom-i-pitoj.webp"
+  },
+  "Шашлычки из говядины с питой": {
+    "img": "img/menu/shashlychki-iz-govyadiny-s-pitoj.webp"
   },
   "Курица гриль": {
     "_stub": true,
@@ -238,25 +365,72 @@
     }
   },
   "Рибай на кости": {
-    "_stub": true,
     "img": "img/menu/ribaj-na-kosti.webp",
-    "w": "300 г",
-    "kbju": {
-      "kcal": 780,
-      "p": 62,
-      "f": 58,
-      "c": 1
-    },
-    "d": {
-      "ru": "Стейк рибай на кости средней прожарки, с розмарином и морской солью.",
-      "kk": "Орташа қуырылған сүйектегі рибай стейгі, розмарин мен теңіз тұзымен.",
-      "en": "Bone-in ribeye steak cooked medium, with rosemary and sea salt."
-    },
-    "ing": {
-      "ru": "говядина (рибай), сливочное масло, розмарин, чеснок, морская соль, перец",
-      "kk": "сиыр еті (рибай), сары май, розмарин, сарымсақ, теңіз тұзы, бұрыш",
-      "en": "beef ribeye, butter, rosemary, garlic, sea salt, pepper"
-    }
+    "w": "492 г"
+  },
+  "Ти-бон стейк с молодым картофелем": {
+    "img": "img/menu/ti-bon-stejk-s-molodym-kartofelem.webp"
+  },
+  "Стейк лосося с молодым картофелем": {
+    "img": "img/menu/stejk-lososya-s-molodym-kartofelem.webp"
+  },
+  "Чесночный хлеб": {
+    "img": "img/menu/chesnochnyj-hleb.webp",
+    "w": "127 г"
+  },
+  "Хлебная корзина": {
+    "img": "img/menu/hlebnaya-korzina.webp"
+  },
+  "Рис": {
+    "img": "img/menu/ris.webp",
+    "w": "150 г"
+  },
+  "Картофельное пюре": {
+    "img": "img/menu/kartofelnoe-pyure.webp",
+    "w": "150 г"
+  },
+  "Картофель фри": {
+    "img": "img/menu/kartofel-fri.webp",
+    "w": "160 г"
+  },
+  "Картофельные дольки": {
+    "img": "img/menu/kartofelnye-dolki.webp",
+    "w": "170 г"
+  },
+  "Хашбраун со сметаной": {
+    "img": "img/menu/hashbraun-so-smetanoj.webp",
+    "w": "261 г"
+  },
+  "Овощи на гриле": {
+    "img": "img/menu/ovoschi-na-grile.webp",
+    "w": "274 г"
+  },
+  "Кетчуп": {
+    "img": "img/menu/ketchup.webp",
+    "w": "50 г"
+  },
+  "Дзадзики": {
+    "img": "img/menu/dzadziki.webp",
+    "w": "40 г"
+  },
+  "Цезарь": {
+    "img": "img/menu/cezar.webp",
+    "w": "40 г"
+  },
+  "Сырный": {
+    "img": "img/menu/syrnyj.webp",
+    "w": "25 г"
+  },
+  "Горчичный": {
+    "img": "img/menu/gorchichnyj.webp"
+  },
+  "Шрирача": {
+    "img": "img/menu/shriracha.webp",
+    "w": "40 г"
+  },
+  "Sweet chili": {
+    "img": "img/menu/sweet-chili.webp",
+    "w": "40 г"
   },
   "Эспрессо / Доппио": {
     "img": "img/menu/espresso-doppio.webp",
@@ -293,12 +467,74 @@
       "ru": "Нежный флэт уайт с бархатистой молочной пенкой и насыщенным кофейным вкусом, создающий гармоничное сочетание мягкости и бодрящей горчинки. Идеальный напиток для уютного утра или перерыва"
     }
   },
+  "Ice Латте": {
+    "img": "img/menu/ice-latte.webp",
+    "w": "330 г"
+  },
+  "Ice Капучино": {
+    "img": "img/menu/ice-kapuchino.webp",
+    "w": "330 г"
+  },
+  "Колд-брю: цитрус, вишня-лайм": {
+    "img": "img/menu/kold-bryu-citrus-vishnya-lajm.webp"
+  },
+  "Эспрессо-тоник": {
+    "img": "img/menu/espresso-tonik.webp",
+    "w": "330 г"
+  },
   "Фраппучино: карамель, шоколад": {
     "img": "img/menu/frappuchino-karamel-shokolad.webp",
     "w": "330 г",
     "d": {
       "ru": "Освежающий фраппучино с нежной сливочной текстурой, ароматным кофе и лёгкой сладостью. Идеальный напиток для летнего дня или сладкого перекуса"
     }
+  },
+  "Ассам": {
+    "img": "img/menu/assam.webp",
+    "w": "400 г"
+  },
+  "Жасмин": {
+    "img": "img/menu/zhasmin.webp",
+    "w": "400 г"
+  },
+  "Молочный улун": {
+    "img": "img/menu/molochnyj-ulun.webp",
+    "w": "1008 г"
+  },
+  "Чай по-казахски (нават, иримшик)": {
+    "img": "img/menu/chaj-po-kazahski-navat-irimshik.webp",
+    "w": "460 г"
+  },
+  "Ташкентский": {
+    "img": "img/menu/tashkentskij.webp",
+    "w": "427 г"
+  },
+  "Марокканский": {
+    "img": "img/menu/marokkanskij.webp",
+    "w": "362 г"
+  },
+  "Груша-мята": {
+    "img": "img/menu/grusha-myata.webp",
+    "w": "424 г"
+  },
+  "Имбирь-цитрус-мёд": {
+    "img": "img/menu/imbir-citrus-med.webp"
+  },
+  "Малина-розмарин-лимон": {
+    "img": "img/menu/malina-rozmarin-limon.webp"
+  },
+  "Персиковый": {
+    "img": "img/menu/persikovyj.webp",
+    "w": "330 г"
+  },
+  "Жасмин-яблоко": {
+    "img": "img/menu/zhasmin-yabloko.webp"
+  },
+  "Клубничный улун": {
+    "img": "img/menu/klubnichnyj-ulun.webp"
+  },
+  "Щавель-лайм": {
+    "img": "img/menu/schavel-lajm.webp"
   },
   "Манго-маракуйя": {
     "img": "img/menu/mango-marakujya.webp",
@@ -313,6 +549,9 @@
     "d": {
       "ru": "Освежающий мохито с яркими нотками мяты, лайма и лёгкой сладостью, идеально бодрит и создаёт летнее настроение в каждом глотке"
     }
+  },
+  "Клубничный мохито": {
+    "img": "img/menu/klubnichnyj-mohito.webp"
   },
   "Киви-яблоко": {
     "img": "img/menu/kivi-yabloko.webp",
@@ -349,12 +588,42 @@
       "ru": "Сливочный клубничный милкшейк с ярким ягодным вкусом, нежной текстурой и лёгкой сладкой ноткой. Идеальный напиток для освежающего и вкусного перекуса"
     }
   },
+  "Яблочный": {
+    "img": "img/menu/yablochnyj.webp"
+  },
   "Апельсиновый": {
     "img": "img/menu/apelsinovyj.webp",
     "w": "300 г",
     "d": {
       "ru": "Свежевыжатый апельсиновый фреш с ярким цитрусовым вкусом и естественной сладкой ноткой. Идеальный напиток для бодрого утра и свежести в течение дня"
     }
+  },
+  "Медовый": {
+    "img": "img/menu/medovyj.webp",
+    "w": "375 г"
+  },
+  "С солёной карамелью": {
+    "img": "img/menu/s-solenoj-karamelyu.webp",
+    "w": "375 г"
+  },
+  "Латте печенье": {
+    "img": "img/menu/latte-pechene.webp"
+  },
+  "Матча-пломбир": {
+    "img": "img/menu/matcha-plombir.webp"
+  },
+  "Моккачино": {
+    "img": "img/menu/mokkachino.webp",
+    "w": "375 г"
+  },
+  "Киви-тоник": {
+    "img": "img/menu/kivi-tonik.webp"
+  },
+  "Ginger-тоник": {
+    "img": "img/menu/ginger-tonik.webp"
+  },
+  "Ice cream-Cola": {
+    "img": "img/menu/ice-cream-cola.webp"
   },
   "Вишнёвый": {
     "img": "img/menu/vishnevyj.webp",
@@ -370,9 +639,63 @@
       "ru": "Тёплый глинтвейн с ярким вкусом апельсина и полезной облепихой, ароматными специями и лёгкой сладкой ноткой. Идеальный напиток для уюта и зимнего настроения"
     }
   },
+  "Зелёный": {
+    "img": "img/menu/zelenyj.webp",
+    "w": "375 г"
+  },
+  "Манго-чиа": {
+    "img": "img/menu/mango-chia.webp",
+    "w": "375 г"
+  },
+  "Малина-банан": {
+    "img": "img/menu/malina-banan.webp",
+    "w": "375 г"
+  },
+  "Черника-банан": {
+    "img": "img/menu/chernika-banan.webp",
+    "w": "375 г"
+  },
+  "Морс клюквенный": {
+    "img": "img/menu/mors-klyukvennyj.webp",
+    "w": "300 г"
+  },
+  "Вода Del Cappuccino без газа": {
+    "img": "img/menu/voda-del-cappuccino-bez-gaza.webp",
+    "w": "500 г"
+  },
+  "Borjomi glass": {
+    "img": "img/menu/borjomi-glass.webp",
+    "w": "500 г"
+  },
+  "Лимон": {
+    "img": "img/menu/limon.webp",
+    "w": "50 г"
+  },
+  "Мёд": {
+    "img": "img/menu/med.webp",
+    "w": "30 г"
+  },
+  "Нават": {
+    "img": "img/menu/navat.webp",
+    "w": "30 г"
+  },
+  "Молоко": {
+    "img": "img/menu/moloko.webp",
+    "w": "80 г"
+  },
+  "Сироп в ассортименте": {
+    "img": "img/menu/sirop-v-assortimente.webp",
+    "w": "30 г"
+  },
   "Кукис": {
     "img": "img/menu/kukis.webp",
     "w": "64 г",
+    "kbju": {
+      "kcal": 263,
+      "p": 3,
+      "f": 12,
+      "c": 35
+    },
     "d": {
       "ru": "Нежное печенье кукис с хрустящей корочкой, мягкой серединкой и кусочками шоколада. Идеальный сладкий перекус для любителей классических десертов"
     }
@@ -380,13 +703,44 @@
   "Картошка": {
     "img": "img/menu/kartoshka.webp",
     "w": "104 г",
+    "kbju": {
+      "kcal": 146,
+      "p": 1,
+      "f": 9,
+      "c": 16
+    },
     "d": {
       "ru": "Нежный десерт «Картошка» из сладкого бисквита с какао, сливочным кремом и ароматными нотками шоколада. Идеальный сладкий перекус для настоящих гурманов"
+    }
+  },
+  "Маффин": {
+    "img": "img/menu/maffin.webp",
+    "w": "74 г",
+    "kbju": {
+      "kcal": 261,
+      "p": 4,
+      "f": 13,
+      "c": 32
+    }
+  },
+  "Тарталетка Банофи пай": {
+    "w": "120 г",
+    "kbju": {
+      "kcal": 376,
+      "p": 6,
+      "f": 20,
+      "c": 42
     }
   },
   "Медовик": {
     "img": "img/menu/medovik.webp",
     "w": "104 г",
+    "kbju": {
+      "kcal": 353,
+      "p": 4,
+      "f": 18,
+      "c": 43
+    },
     "d": {
       "ru": "Слоёный торт медовик с нежными коржами, пропитанными ароматным мёдом, и мягким кремом. Идеальный десерт для сладких моментов и уютного чаепития"
     }
@@ -401,6 +755,12 @@
   "Синнабон классический": {
     "img": "img/menu/sinnabon-klassicheskij.webp",
     "w": "104 г",
+    "kbju": {
+      "kcal": 297,
+      "p": 5,
+      "f": 13,
+      "c": 40
+    },
     "d": {
       "ru": "Нежный синнабон на закваске с ароматной корицей, мягким тестом и сладкой глазурью, тающей во рту. Идеальный десерт для уютного утра или сладкого перекуса"
     }
@@ -408,6 +768,12 @@
   "Испанский чизкейк": {
     "img": "img/menu/ispanskij-chizkejk.webp",
     "w": "162 г",
+    "kbju": {
+      "kcal": 415,
+      "p": 7,
+      "f": 31,
+      "c": 27
+    },
     "d": {
       "ru": "Нежный испанский чизкейк с бархатистой кремовой текстурой и лёгкой карамельной корочкой. Идеальный десерт для сладкого перекуса и уютного чаепития"
     }
@@ -415,9 +781,19 @@
   "Чизкейк по-казахски": {
     "img": "img/menu/chizkejk-po-kazahski.webp",
     "w": "138 г",
+    "kbju": {
+      "kcal": 379,
+      "p": 7,
+      "f": 25,
+      "c": 32
+    },
     "d": {
       "ru": "«Нежный казахский чизкейк с пшеном, бархатистой кремовой текстурой и лёгкой карамельной корочкой. Идеальный десерт для сладкого перекуса и уютного чаепития"
     }
+  },
+  "Вупи-пай": {
+    "img": "img/menu/vupi-paj.webp",
+    "w": "125 г"
   },
   "Сникерс": {
     "img": "img/menu/snikers.webp",
@@ -432,5 +808,54 @@
     "d": {
       "ru": "Слоёный торт «Наполеон» с хрустящими золотистыми коржами и нежным кремом, тающим во рту. Классический десерт для уютного чаепития и сладких мгновений"
     }
+  },
+  "Меренговый рулет": {
+    "img": "img/menu/merengovyj-rulet.webp",
+    "w": "156 г"
+  },
+  "Фисташка-малина": {
+    "img": "img/menu/fistashka-malina.webp",
+    "w": "125 г"
+  },
+  "Дубайский": {
+    "img": "img/menu/dubajskij.webp"
+  },
+  "Чизкейк испанский": {
+    "img": "img/menu/chizkejk-ispanskij.webp"
+  },
+  "Котлеты куриные": {
+    "img": "img/menu/kotlety-kurinye.webp"
+  },
+  "Котлеты говяжьи": {
+    "img": "img/menu/kotlety-govyazhi.webp"
+  },
+  "Пельмени с говядиной": {
+    "img": "img/menu/pelmeni-s-govyadinoj.webp"
+  },
+  "Манты с говядиной": {
+    "img": "img/menu/manty-s-govyadinoj.webp"
+  },
+  "Рибай": {
+    "img": "img/menu/ribaj.webp"
+  },
+  "Ти-бон": {
+    "img": "img/menu/ti-bon.webp"
+  },
+  "Дениш с клубникой": {
+    "img": "img/menu/denish-s-klubnikoj.webp",
+    "w": "105 г"
+  },
+  "Дениш с персиком": {
+    "img": "img/menu/denish-s-persikom.webp",
+    "w": "136 г"
+  },
+  "Малина-лимон": {
+    "img": "img/menu/malina-limon.webp"
+  },
+  "Маракуйя-апельсин-мёд": {
+    "img": "img/menu/marakujya-apelsin-med.webp"
+  },
+  "Гуава-гуарана": {
+    "img": "img/menu/guava-guarana.webp"
   }
 }

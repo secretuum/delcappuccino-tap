@@ -23,7 +23,9 @@ import match_names as mn  # noqa: E402
 
 IMG_EXT = {'.png', '.jpg', '.jpeg', '.jfif', '.webp'}
 SKIP_RE = re.compile(r'chatgpt image|\b1\s*кг\b|\bбокс\b|\bмякоть\b|\bфарш\b', re.I)
-NOISE_WORDS = ('фото', 'готовые', 'готовый', 'готовая', 'новое', 'новый', 'итог', 'копия')
+NOISE_WORDS = ('фото', 'готовые', 'готовый', 'готовая', 'новое', 'новый', 'итог', 'копия', 'кусок', 'кусочек')
+WHOLE_RE = re.compile(r'целы[ей]|целая|\b1\s*кг\b', re.I)   # целый торт: только для раздела «Торты (целиком)»
+WHOLE_SECTION = 'торты (целиком)'
 EXT_RANK = {'.png': 0, '.jpg': 0, '.jpeg': 0, '.webp': 1, '.jfif': 2}
 STRICT_SECTIONS = {'полуфабрикаты', 'мясо'}   # сырьё: только точное совпадение (котлеты-полуфабрикат ≠ котлеты с пюре)
 
@@ -32,10 +34,12 @@ def norm_file(title):
     """имя файла → форма для сравнения"""
     stem = os.path.splitext(os.path.basename(title))[0]
     s = re.sub(r'\([^)]*\)', ' ', stem)                       # скобки с пояснениями
-    s = re.sub(r'\b\d+\s*(?:гр|г|шт|мл|л|кг)\b\.?', ' ', s, flags=re.I)   # 350 гр, 5 шт, 1шт
+    s = re.sub(r'\b\d+(?:[.,]\d+)?\s*(?:гр|г|шт|мл|л|кг)\b\.?', ' ', s, flags=re.I)   # 350 гр, 5 шт, 1шт, 0,2л
     s = re.sub(r'(?<=[а-яёa-z])\d+\b', ' ', s, flags=re.I)    # «цукини2»
     s = mn.norm(s)
     words = [w for w in s.split() if w not in NOISE_WORDS]
+    while words and words[-1].isdigit():          # «0,33» → «0» на конце; «4 сезона» остаётся
+        words.pop()
     return ' '.join('с' if w == 'со' else w for w in words)
 
 
@@ -84,24 +88,32 @@ def scan_listing(path):
 
 
 def rank(rec, how):
-    return (EXT_RANK.get(rec['ext'], 3), 0 if how == 'form' else 1, -(rec['w'] * rec['h']), -rec['size'])
+    return (EXT_RANK.get(rec['ext'], 3), 0 if how == 'form' else 1, 1 if '~' in rec['path'] else 0, -(rec['w'] * rec['h']), -rec['size'])
 
 
 def match(site, files, cutoff=0.88):
     """site: [(раздел, имя)]; files: записи scan_*; → ({имя: path}, report, stats)"""
-    files = [f for f in files if not SKIP_RE.search(os.path.basename(f['path']))]
-    skipped = len([1 for _ in files])
-    forms = {}
     for f in files:
         f['form'] = norm_file(f['path'])
-        if f['form']:
-            forms.setdefault(f['form'], []).append(f)
-    form_list = list(forms)
+        f['whole'] = bool(WHOLE_RE.search(f['path']))
+    files = [f for f in files if f['form'] and not SKIP_RE.search(os.path.basename(f['path'])) and not SKIP_RE.search(f['form'])]
 
     by_name = {}
     for sec, name in site:
         by_name.setdefault(name, []).append(sec)
     site_forms = {name: norm_site(name) for name in by_name}
+
+    def index(whole):
+        """индексы по файлам: целые торты отдельно от остальных"""
+        forms, squash, bag = {}, {}, {}
+        for f in files:
+            if f['whole'] != whole:
+                continue
+            forms.setdefault(f['form'], []).append(f)
+            squash.setdefault(f['form'].replace(' ', ''), []).append(f)
+            bag.setdefault(frozenset(f['form'].split()), []).append(f)
+        return forms, squash, bag, list(forms)
+    IDX = {True: index(True), False: index(False)}
 
     def candidates(name, secs):
         plain = site_forms[name]
@@ -120,11 +132,18 @@ def match(site, files, cutoff=0.88):
 
     def find(name, secs):
         cands = candidates(name, secs)
+        whole = all(sec.lower() == WHOLE_SECTION for sec in secs)
+        forms, squash, bag, form_list = IDX[whole]
         for c in cands:
             if c in forms:
                 return forms[c], 'form', c
+            if c.replace(' ', '') in squash:                 # «ти бон» = «тибон»
+                return squash[c.replace(' ', '')], 'form', c
         if all(sec.lower() in STRICT_SECTIONS for sec in secs):
             return None, None, None
+        for c in cands:
+            if frozenset(c.split()) in bag:                  # те же слова в другом порядке
+                return bag[frozenset(c.split())], 'bag', c
         # «похоже» (опечатки, «и с» / «и»), цифры должны совпадать
         for c in cands:
             close = difflib.get_close_matches(c, form_list, n=1, cutoff=cutoff)
@@ -139,16 +158,27 @@ def match(site, files, cutoff=0.88):
                 if len(owners) == 1:
                     return forms[f], 'head', f
         # название сайта — начало имени файла («бургер классический» ⊂ «бургер классический с картофелем фри» наоборот),
-        # если такой файл один
+        # если такой файл один и в названии хотя бы два слова (иначе «эспрессо» ловит «эспрессо тоник»)
         for c in cands:
+            if len(c.split()) < 2:
+                continue
             hits = [f for f in form_list if f.startswith(c + ' ')]
             if len(hits) == 1:
                 return forms[hits[0]], 'head', hits[0]
         return None, None, None
 
-    result, report = {}, {'literal': [], 'fuzzy': [], 'missing': []}
+    result, report = {}, {'literal': [], 'fuzzy': [], 'missing': [], 'ambiguous': []}
     used = set()
     for name, secs in by_name.items():
+        # имя в нескольких разделах («Классический» — айс ти и раф): карточка одна, пара — только если разделы согласны
+        per_sec = [(sec,) + find(name, [sec]) for sec in secs] if len(secs) > 1 else []
+        found = [(sec, recs, how, form) for sec, recs, how, form in per_sec if recs]
+        if len(found) > 1 and any(sec.lower() != WHOLE_SECTION for sec, *_ in found):
+            found = [x for x in found if x[0].lower() != WHOLE_SECTION]     # кусок важнее целого торта: карточка одна
+            secs = [sec for sec in secs if sec.lower() != WHOLE_SECTION]
+        if len({f for _, _, _, f in found}) > 1:
+            report['ambiguous'].append(f'{name}  ' + '  /  '.join(f'[{sec}] ← {recs[0]["path"]}' for sec, recs, _, _ in found) + '  ⇒ пара не дана')
+            continue
         recs, how, form = find(name, secs)
         if not recs:
             report['missing'].append(f'{name}  [{" / ".join(secs)}]')
@@ -157,14 +187,14 @@ def match(site, files, cutoff=0.88):
         result[name] = best['path']
         used.add(best['path'])
         alts = len(recs) - 1
-        tag = {'form': '', 'head': '  (по началу названия)', 'similar': '  (похоже)'}[how]
+        tag = {'form': '', 'bag': '  (те же слова)', 'head': '  (по началу названия)', 'similar': '  (похоже)'}[how]
         if how == 'form' and norm_file(best['path']) == norm_site(name) and mn.literal(os.path.splitext(os.path.basename(best['path']))[0]) == mn.literal(name):
             report['literal'].append(name)
         else:
             report['fuzzy'].append(f'{name}  ←  {best["path"]}{tag}' + (f'  (+{alts} дубл.)' if alts else ''))
     unused = sorted(f['path'] for f in files if f['path'] not in used and f['form'] not in {norm_file(p) for p in used})
     stats = {'site': len(by_name), 'mapped': len(result), 'literal': len(report['literal']), 'fuzzy': len(report['fuzzy']),
-             'missing': len(report['missing']), 'files': len(files), 'unused': len(unused)}
+             'missing': len(report['missing']), 'ambiguous': len(report['ambiguous']), 'files': len(files), 'unused': len(unused)}
     report['unused'] = unused
     return result, report, stats
 
@@ -174,6 +204,9 @@ def report_text(report, stats, source):
          f'(буквально {stats["literal"]}, спорных {stats["fuzzy"]}), без фото {stats["missing"]}, файлов без пары {stats["unused"]}', '']
     L.append(f'## Спорные ({stats["fuzzy"]}) — совпало не буквально: сайт ← файл')
     L += ['  ' + x for x in report['fuzzy']] or ['  —']
+    L.append('')
+    L.append(f'## Неоднозначные ({stats.get("ambiguous", 0)}) — одно название в разных разделах ведёт к разным файлам')
+    L += ['  ' + x for x in report.get('ambiguous', [])] or ['  —']
     L.append('')
     L.append(f'## Без фото ({stats["missing"]})')
     L += ['  ' + x for x in report['missing']] or ['  —']
