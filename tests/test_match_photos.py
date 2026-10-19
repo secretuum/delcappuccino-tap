@@ -23,8 +23,8 @@ FILES = {  # путь → (ширина, высота)
     'кухня/крок мадам.jfif': (800, 600),
     'кухня/Блины с бананом и шоколадом.jpg': (640, 480),
     'кухня/блины с бананом.jfif': (640, 480),
-    'кухня/стейк омлет.png': (300, 200),
-    'кухня/Борщ.jpg': (300, 200),
+    'кухня/стейк омлет.png': (450, 300),
+    'кухня/Борщ.jpg': (400, 300),
     'кухня/тыквенный.png': (300, 200),
     'кухня/Пицца Маргарита.png': (400, 300),
     'кухня/Пицца Маргарита.jfif': (1600, 1200),      # jfif проигрывает png даже при большем разрешении
@@ -229,7 +229,7 @@ class TestBuildWithFolderPhotos(unittest.TestCase):
             json.dump({'Стейк-омлет': {'iiko': 'k3', 'drive_file': 'кухня/стейк омлет.png'}}, f, ensure_ascii=False)
         cards, rep = self.build()
         with Image.open(os.path.join(self.img, 'stejk-omlet.webp')) as im:
-            self.assertEqual(im.size, (300, 200))
+            self.assertEqual(im.size, (450, 300))
         self.assertIn('stejk-omlet.webp', rep)
         # без изменений — не перекодируется
         cards, rep = self.build()

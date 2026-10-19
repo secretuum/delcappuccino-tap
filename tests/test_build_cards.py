@@ -15,6 +15,7 @@ REF = {
     "тест-масло": {"kcal": 900, "p": 0, "f": 100, "c": 0, "kk": "тест-май", "en": "test oil"},
     "тест-яйцо": {"kcal": 150, "p": 12, "f": 10, "c": 1, "kk": "тест-жұмыртқа", "en": "test egg", "piece_g": 50},
     "тест-соль": {"kcal": 0, "p": 0, "f": 0, "c": 0, "kk": "тұз"},  # без en — язык en должен выпасть
+    "вода": {"kcal": 0, "p": 0, "f": 0, "c": 0, "kk": "су", "en": "water", "aliases": ["вода вспомогательное"]},
 }
 
 def export(items, version=1):
@@ -65,7 +66,7 @@ class TestCalc(Base):
         c = cards['Тест: курица с рисом']
         # 150 г курицы: 300/30/15/0; 100 г риса: 300/10/0/60; 10 г масла: 90/0/10/0
         self.assertEqual(c['kbju'], {'kcal': 690, 'p': 40, 'f': 25, 'c': 60})
-        self.assertEqual(c['w'], '230 г')
+        self.assertEqual(c['w'], '230 г')                                       # 230 г при сумме 260 г — в пределах усушки
         self.assertEqual(c['ing'], {'ru': 'тест-курица, тест-рис, тест-масло',
                                     'kk': 'тест-тауық, тест-күріш, тест-май',
                                     'en': 'test chicken, test rice, test oil'})
@@ -73,7 +74,7 @@ class TestCalc(Base):
         self.assertNotIn('d', c)
         self.assertIn('расчёт по составу', rep)
 
-    def test_iiko_per_portion_has_priority(self):
+    def test_ttk_composition_beats_iiko_per_portion(self):
         iiko = self.w('iiko.json', export([{
             "key": "t1", "name": "Тест: курица с рисом", "group": "Горячее", "description": "Описание из выгрузки.",
             "composition": None, "portion": {"value": 250, "unit": "г"},
@@ -83,11 +84,63 @@ class TestCalc(Base):
             "portion": {"value": 230, "unit": "г"}}]))
         cards, rep = self.build(iiko=iiko, ttk=ttk)
         c = cards['Тест: курица с рисом']
-        self.assertEqual(c['kbju'], {'kcal': 500, 'p': 30, 'f': 20, 'c': 40})   # не 300/10/0/60 из состава
-        self.assertEqual(c['w'], '230 г')                                       # выход — из ТТК
+        self.assertEqual(c['kbju'], {'kcal': 300, 'p': 10, 'f': 0, 'c': 60})    # состав ТТК важнее ручного per_portion iiko
+        self.assertEqual(c['w'], '85 г')                                        # iiko 250 г при составе 100 г не сходится → сумма × 0,85
         self.assertEqual(c['d'], {'ru': 'Описание из выгрузки.'})
         self.assertEqual(c['ing']['ru'], 'тест-рис')
         self.assertIn('[iiko+ttk]', rep)
+        # без состава и без оценочного рецепта — per_portion iiko всё же используется
+        ttk2 = self.w('ttk2.json', export([{"key": "t1", "name": "Тест: курица с рисом", "composition": [], "portion": None}]))
+        cards, rep = self.build(iiko=iiko, ttk=ttk2)
+        self.assertEqual(cards['Тест: курица с рисом']['kbju'], {'kcal': 500, 'p': 30, 'f': 20, 'c': 40})
+
+    def test_via_packaging_and_pf_names(self):
+        """полуфабрикат — одним пунктом по pf_names, упаковка и вода — не состав; КБЖУ по раскрытым строкам"""
+        pf = self.w('pf_names.json', {"соус тестовый": {"ru": "тестовый соус", "kk": "тест тұздығы", "en": "test sauce"}})
+        ttk = self.w('ttk.json', export([{
+            "key": "t1", "name": "Тест: курица с рисом", "portion": None,
+            "composition": [{"name": "Тестовая курица", "qty": 100, "unit": "г", "via": None},
+                            {"name": "тест-масло", "qty": 10, "unit": "мл", "via": "*ПФ Соус тестовый 1"},
+                            {"name": "тест-соль", "qty": 1, "unit": "г", "via": "*ПФ Соус тестовый 1"},
+                            {"name": "тест-рис", "qty": 50, "unit": "г", "via": "*ПФ Рис отварной 1"},     # один продукт — сам продукт
+                            {"name": "вода вспомогательное", "qty": 39, "unit": "мл", "via": None},
+                            {"name": "Стакан 0,375 пэт", "qty": 1, "unit": "шт", "via": None},
+                            {"name": "тест-яйцо", "qty": 0, "unit": "шт", "via": None}]}]))
+        cards, rep = self.build(ttk=ttk, pf_names=pf)
+        c = cards['Тест: курица с рисом']
+        self.assertEqual(c['ing']['ru'], 'тест-курица, тестовый соус, тест-рис')
+        self.assertEqual(c['ing']['kk'], 'тест-тауық, тест тұздығы, тест-күріш')
+        self.assertEqual(c['kbju'], {'kcal': 440, 'p': 25, 'f': 20, 'c': 30})   # 200+90+150; вода 0, стакан и нулевое яйцо не считаются
+        self.assertEqual(c['w'], '170 г')                                       # выхода нет — сумма граммов (100+10+1+50+39) × 0,85
+        self.assertNotIn('est', c)
+
+    def test_pf_without_name_is_flattened_and_reported(self):
+        ttk = self.w('ttk.json', export([{
+            "key": "t1", "name": "Тест: омлет", "portion": {"value": 100, "unit": "г"},
+            "composition": [{"name": "тест-яйцо", "qty": 1, "unit": "шт", "via": "ПФ Омлетная смесь КГ ЦЕХ"},
+                            {"name": "тест-масло", "qty": 5, "unit": "г", "via": "ПФ Омлетная смесь КГ ЦЕХ"},
+                            {"name": "тест-рис", "qty": 20, "unit": "г", "via": "ПФ Омлет КГ ЦЕХ"}]}]))     # имя самого блюда — раскрыть
+        cards, rep = self.build(ttk=ttk)
+        self.assertEqual(cards['Тест: омлет']['ing']['ru'], 'тест-яйцо, тест-масло, тест-рис')
+        self.assertIn('pf:омлетная смесь', rep)
+        self.assertEqual(bc.clean_pf('*ПФ Соус Цезарь 1'), 'соус цезарь')
+        self.assertEqual(bc.clean_pf('ПФ Сырники классические КГ ЦЕХ'), 'сырники классические')
+        self.assertEqual(bc.clean_pf('Бургер с томлёной говядиной  |--> ВЫНОС*'), 'бургер с томленой говядиной')
+
+    def test_broken_or_partial_ttk_falls_back_to_estimate(self):
+        rec = self.w('recipes.json', {"Тест: омлет": {"portion_g": 100, "src": "est", "items": [{"name": "тест-яйцо", "qty_g": 100}]}})
+        iiko = self.w('iiko.json', export([{"key": "t1", "name": "Тест: омлет", "portion": {"value": 100, "unit": "г"}}]))
+        ttk = self.w('ttk.json', export([{"key": "t1", "name": "Тест: омлет",
+                                          "composition": [{"name": "тест-рис", "qty": 400, "unit": "г", "via": None}]}]))   # 400 г в 100 г блюда
+        cards, rep = self.build(iiko=iiko, ttk=ttk, recipes=rec)
+        self.assertEqual(cards['Тест: омлет']['kbju'], {'kcal': 150, 'p': 12, 'f': 10, 'c': 1})
+        self.assertTrue(cards['Тест: омлет']['est'])
+        self.assertIn('ТТК не сходится с выходом', rep)
+        ttk = self.w('ttk.json', export([{"key": "t1", "name": "Тест: омлет",
+                                          "composition": [{"name": "тест-соль", "qty": 2, "unit": "г", "via": None}]}]))      # только соль
+        cards, rep = self.build(iiko=iiko, ttk=ttk, recipes=rec)
+        self.assertEqual(cards['Тест: омлет']['kbju']['kcal'], 150)
+        self.assertIn('ТТК неполная', rep)
 
     def test_pieces_and_partial_translation(self):
         ttk = self.w('ttk.json', export([{
