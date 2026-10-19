@@ -27,6 +27,8 @@ FAMILIES = [
      ['latin', 'cyrillic', 'cyrillic-ext']),
     ('Cormorant Garamond', 'cormorant', [('normal', 500), ('normal', 600), ('italic', 500)],
      ['latin', 'cyrillic', 'cyrillic-ext']),
+    ('Montserrat', 'montserrat', [('normal', 400), ('normal', 600), ('normal', 700)],
+     ['latin', 'cyrillic', 'cyrillic-ext']),                       # только /ugolok (казахский → cyrillic-ext)
 ]
 # Google отдаёт woff2 только «современному» браузеру
 UA = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0 Safari/537.36'

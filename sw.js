@@ -2,6 +2,7 @@
  *
  * ПРАВИЛА ПО ПУТЯМ (важно для всех терминалов — menu/ и img/menu/ обновляются без смены имён файлов):
  *   ./  *.html  manifest.webmanifest   — stale-while-revalidate: отдать из кэша, в фоне скачать свежее
+ *   любая навигация (/, /ugolok/, 404)  — то же, в кэш оболочки; ответы не 2xx (404) не кэшируются
  *   menu/cards.json                    — stale-while-revalidate (пересобирается скриптом на том же пути)
  *   img/menu/*.webp                    — stale-while-revalidate (перекодируются на том же пути)
  *   assets/* без хэша в имени          — stale-while-revalidate
@@ -74,7 +75,7 @@ self.addEventListener('fetch', function (e) {
   if (url.origin !== self.location.origin) return;
 
   var key = cacheKey(req, url);
-  var cacheName = isShell(url) ? SHELL : RT;
+  var cacheName = (req.mode === 'navigate' || isShell(url)) ? SHELL : RT;   // навигации (/, /ugolok, 404) — оболочка
 
   e.respondWith(caches.open(cacheName).then(function (c) {
     return c.match(key).then(function (cached) {
