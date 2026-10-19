@@ -139,7 +139,7 @@ class TestCalc(Base):
         self.assertEqual(cards['Капучино'], {"_stub": True, "d": {"ru": "x"}})          # заглушка сохранена
         self.assertNotIn('_stub', cards['Тест: омлет'])                                   # заглушка заменена сборкой
         self.assertNotIn('Старое блюдо', cards)                                           # не-заглушка без выгрузки — удалена
-        self.assertIn('Нет такого в меню [ttk] — КБЖУ: расчёт по составу — НЕТ В МЕНЮ index.html', rep)
+        self.assertIn('Нет такого в меню [ttk] — КБЖУ: расчёт по составу ТТК — НЕТ В МЕНЮ index.html', rep)
         self.assertIn('удалено старых: Старое блюдо', rep)
 
     def test_no_exports_keeps_site_as_is(self):
