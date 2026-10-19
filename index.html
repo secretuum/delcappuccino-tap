@@ -1014,8 +1014,6 @@ const TOGO_DESSERT = [
   {n:'Кукис', p:300},
   {n:'Картошка', p:350},
   {n:'Маффин', p:400},
-  {n:'Дениш с клубникой', p:600},
-  {n:'Дениш с персиком', p:600},
   {n:'Шу абрикосовый', p:700},
   {n:'Шу ягодный', p:700},
   {n:'Тарталетка Банофи пай', p:750},
@@ -1317,8 +1315,7 @@ const MENU_TR = {
   'Лимон':'Лимон', 'Мёд':'Бал', 'Нават':'Нават', 'Молоко':'Сүт', 'Сироп в ассортименте':'Сироп (түрлі дәмде)', 'Декаф':'Декаф (кофеинсіз)',
   'Альтернативное молоко':'Өсімдік сүті', 'Безлактозное молоко':'Лактозасыз сүт',
   /* десерты */
-  'Кукис':'Кукис', 'Картошка':'«Картошка» десерті', 'Маффин':'Маффин', 'Дениш с персиком':'Шабдалы қосылған дениш',
-  'Дениш с клубникой':'Құлпынай қосылған дениш', 'Шу ягодный':'Жидекті шу',
+  'Кукис':'Кукис', 'Картошка':'«Картошка» десерті', 'Маффин':'Маффин', 'Шу ягодный':'Жидекті шу',
   'Тарталетка Банофи пай':'Банофи пай тарталеткасы','Медовик':'«Медовик» бал торты', 'Молочная девочка':'«Сүтті қыз» торты',
   'Наполеон':'Наполеон', 'Сникерс':'Сникерс', 'Испанский чизкейк':'Испан чизкейгі', 'Чизкейк испанский':'Испан чизкейгі',
   'Чизкейк по-казахски':'Қазақша чизкейк', 'Меренговый рулет':'Меренга рулеті', 'Вупи-пай':'Вупи-пай',
@@ -1466,8 +1463,7 @@ const MENU_TR = {
   'Морс клюквенный':'Cranberry mors (traditional berry drink)', 'Морс ягодный':'Mixed berry mors', 'Вода Del Cappuccino без газа':'Del Cappuccino still water',
   'Лимон':'Lemon', 'Мёд':'Honey', 'Нават':'Navat (rock sugar)', 'Молоко':'Milk', 'Сироп в ассортименте':'Syrup (various flavors)', 'Декаф':'Decaf',
   'Альтернативное молоко':'Plant-based milk', 'Безлактозное молоко':'Lactose-free milk',
-  'Кукис':'Cookie', 'Картошка':'Kartoshka (chocolate truffle cake)', 'Маффин':'Muffin', 'Дениш с персиком':'Peach Danish',
-  'Дениш с клубникой':'Strawberry Danish', 'Шу ягодный':'Berry choux',
+  'Кукис':'Cookie', 'Картошка':'Kartoshka (chocolate truffle cake)', 'Маффин':'Muffin', 'Шу ягодный':'Berry choux',
   'Тарталетка Банофи пай':'Banoffee pie tartlet','Медовик':'Medovik (honey cake)', 'Молочная девочка':'Milk Girl cake',
   'Наполеон':'Napoleon (mille-feuille)', 'Сникерс':'Snickers cake', 'Испанский чизкейк':'Spanish cheesecake', 'Чизкейк испанский':'Spanish cheesecake',
   'Чизкейк по-казахски':'Kazakh-style cheesecake', 'Меренговый рулет':'Meringue roll', 'Вупи-пай':'Whoopie pie',
@@ -1571,9 +1567,12 @@ function nameHTML(it){
 function fmtP(p){return String(p).split('/').map(x=>(+String(x).trim()).toLocaleString('ru-RU')).join(' / ')}
 
 function secHTML(s, tab, i){
+  /* заголовок секции не печатаем, если он тот же, что заголовок вкладки (h3 выше): «Полуфабрикаты» → «Полуфабрикаты»;
+     сравниваем русские ключи, чтобы скрывать одинаково на всех языках */
+  const dupT = s.t === MENU_UI.ru['tab_'+tab] && s.badge==null && s.p==null;
   return `
-    <section class="mm-sec" id="mm-sec-${tab}-${i}" data-i="${i}">
-      <h4>${T(s.t)}${s.badge?` <span class="mm-badge">${T(s.badge)}</span>`:''}${s.p!=null?`<span class="mm-secp">${fmtP(s.p)}</span>`:''}</h4>
+    <section class="mm-sec${dupT?' mm-sec-notitle':''}" id="mm-sec-${tab}-${i}" data-i="${i}">
+      ${dupT?'':`<h4>${T(s.t)}${s.badge?` <span class="mm-badge">${T(s.badge)}</span>`:''}${s.p!=null?`<span class="mm-secp">${fmtP(s.p)}</span>`:''}</h4>`}
       ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
       ${s.items.map(it=>`
         <div class="mm-it">
