@@ -1197,17 +1197,17 @@ const MENU_MODES = {
 const MENU_UI = {
   ru:{to_togo:'Меню Жандосова', to_cafe:'Меню кофеен', only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
-      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы', card_stub:'Данные уточняются',
+      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы', card_stub:'Данные уточняются', card_est:'КБЖУ ориентировочно, по составу',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       fee:'Сервисный сбор 10% добавляется к счёту.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
-      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу', card_stub:'Деректер нақтыланады',
+      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу', card_stub:'Деректер нақтыланады', card_est:'КБЖУ шамамен, құрамы бойынша',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       fee:'Шотқа 10% қызмет ақысы қосылады.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
-      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs', card_stub:'Data to be confirmed',
+      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs', card_stub:'Data to be confirmed', card_est:'Nutrition is approximate, based on ingredients',
       allergy:'Please tell your server<br>about any food allergies',
       fee:'A 10% service charge is added to the bill.'},
 };
@@ -1778,7 +1778,7 @@ function cardHTML(name){
     (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
     (k ? `<div class="mm-card-h">${ui.card_kbju}</div><div class="mm-card-k">` +
          [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '') +
-    (c._stub ? `<p class="mm-card-stub">${ui.card_stub}</p>` : '');
+    (c._stub ? `<p class="mm-card-stub">${ui.card_stub}</p>` : c.est && k ? `<p class="mm-card-stub">${ui.card_est}</p>` : '');
 }
 function openCard(name, opener){
   if(!CARDS || !CARDS[name]) return false;

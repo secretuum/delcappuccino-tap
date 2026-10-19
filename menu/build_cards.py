@@ -7,6 +7,9 @@
   menu/nutrition_ref.json — справочник КБЖУ на 100 г + переводы kk/en + синонимы (aliases) + piece_g
   menu/name_map.json     — {название сайта: key iiko} от menu/match_names.py; с картой берём только
                            сопоставленные записи iiko и переименовываем их в названия сайта
+  menu/recipes_est.json  — оценочные составы с нетто-граммовками и порцией (пока нет ТТК): запасной
+                           источник состава и КБЖУ после ТТК; такие КБЖУ помечаются "est": true;
+                           бутылочные напитки — label_per_100 (этикетка), без состава
 
 Правила:
   • ключ карточки — русское название блюда ровно как в index.html (n:'…'); между файлами
@@ -125,6 +128,17 @@ def load_export(path, rep):
             (f', menu_revision={json.dumps(head["menu_revision"], ensure_ascii=False)}' if head.get('menu_revision') else '') +
             (f', org other: {sum(1 for it in items if isinstance(it, dict) and it.get("org") == "other")}' if any(isinstance(it, dict) and it.get('org') for it in items) else ''))
     return [it for it in items if isinstance(it, dict) and it.get('name')]
+
+
+def load_recipes(path, rep):
+    """menu/recipes_est.json {блюдо: {portion_g, src, items:[{name, qty_g}] | label_per_100, no_ing}}"""
+    if not path or not os.path.isfile(path):
+        rep.add(f'нет {path} — без оценочных составов')
+        return {}
+    with open(path, encoding='utf-8') as f:
+        r = {k: v for k, v in json.load(f).items() if not k.startswith('_')}
+    rep.add(f'{os.path.relpath(path, ROOT)}: {len(r)} оценочных составов')
+    return r
 
 
 def load_name_map(path, rep):
@@ -293,19 +307,30 @@ def calc_from_composition(item, ref, missing):
     return {k: v / n for k, v in total.items()}, used
 
 
-def build_kbju(item, ref, missing):
-    """→ (kbju | None, источник)"""
+def build_kbju(item, ref, missing, recipe=None):
+    """→ (kbju | None, источник, оценочно?)"""
     pp = full_pp(item.get('per_portion'))
     if pp:
-        return pp, 'iiko per_portion'
-    calc, _ = calc_from_composition(item, ref, missing)
-    if calc:
-        return calc, 'расчёт по составу'
+        return pp, 'iiko per_portion', False
     p100 = full_pp(item.get('per_100g'))
     g, _ = portion_g(item)
     if p100 and g:
-        return {k: v * g / 100.0 for k, v in p100.items()}, 'per_100g × выход'
-    return None, 'нет данных'
+        return {k: v * g / 100.0 for k, v in p100.items()}, 'per_100g × выход', False
+    if item.get('composition'):
+        calc, _ = calc_from_composition(item, ref, missing)
+        if calc:
+            return calc, 'расчёт по составу ТТК', False
+    if recipe:
+        if recipe.get('label_per_100'):
+            l = recipe['label_per_100']
+            g = g or num(recipe.get('portion_g')) or 0
+            return {'kcal': l['kcal'] * g / 100, 'p': l['p'] * g / 100, 'f': l['f'] * g / 100, 'c': l['c'] * g / 100}, 'этикетка', False
+        if recipe.get('items'):
+            fake = {'composition': [{'name': it['name'], 'qty': it['qty_g'], 'unit': 'г'} for it in recipe['items']], 'portions': 1}
+            calc, _ = calc_from_composition(fake, ref, missing)
+            if calc:
+                return calc, 'расчёт по оценочному составу', True
+    return None, 'нет данных', False
 
 
 def ingredients_text(item, ref):
@@ -433,12 +458,13 @@ def menu_names(index_html):
 
 # ── сборка ──────────────────────────────────────────────────────────────────
 def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_photos=False, refresh=False, rep=None,
-          name_map=None, photos_dir=None):
+          name_map=None, photos_dir=None, recipes=None, recipes_report=None):
     rep = rep or Report()
     with open(ref_path, encoding='utf-8') as f:
         ref = Ref(json.load(f))
     rep.add(f'справочник: {len(ref.items)} ингредиентов')
     rev, drive = load_name_map(name_map, rep) if name_map else ({}, {})
+    recipes = load_recipes(recipes, rep) if recipes else {}
     photos_dir = photos_dir or os.path.join(HERE, 'menu_photos')
     items = merge_exports(apply_name_map(load_export(iiko_path, rep), rev, 'iiko', rep),
                           apply_name_map(load_export(ttk_path, rep), rev, 'ttk', rep))
@@ -446,6 +472,10 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
     for site in drive:                              # позиция только с фото из папки — карточка с одним фото
         if site not in have:
             items.append({'src': ['drive'], 'name': site})
+            have.add(site)
+    for site in recipes:                            # позиция только с оценочным составом — карточка с составом и КБЖУ
+        if site not in have:
+            items.append({'src': ['est'], 'name': site})
     sources_path = os.path.join(img_dir, 'sources.json')
     sources = {}
     if os.path.isfile(sources_path):
@@ -458,29 +488,39 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         with open(out_path, encoding='utf-8') as f:
             old = json.load(f)
 
-    cards, stats = {}, {'iiko per_portion': 0, 'расчёт по составу': 0, 'per_100g × выход': 0, 'нет данных': 0}
+    cards, stats, rrows = {}, {}, []
     for it in items:
         name = str(it['name']).strip()
         missing = list(it.get('missing') or [])
         card = {}
+        recipe = recipes.get(name)
         img = handle_photo(it, img_dir, rep, no_photos, refresh, photos_dir, drive.get(name), sources)
         if img:
             card['img'] = img
         g, unit = portion_g(it)
+        if not g and recipe and num(recipe.get('portion_g')):
+            g, unit = num(recipe['portion_g']), ('мл' if recipe.get('label_per_100') or recipe.get('unit') == 'мл' else 'г')
+            it = {**it, 'portion': {'value': g, 'unit': unit}}
         if g:
             card['w'] = f'{int(g) if float(g).is_integer() else g} {unit}'
         else:
             missing.append('portion')
-        kbju, src = build_kbju(it, ref, missing)
-        stats[src] += 1
+        kbju, src, est = build_kbju(it, ref, missing, recipe)
+        stats[src] = stats.get(src, 0) + 1
         if kbju:
             card['kbju'] = {k: int(round(v)) for k, v in kbju.items()}
+            if est:
+                card['est'] = True
         desc = clean_description(it.get('description'), name, rep)
         if desc:
             card['d'] = {'ru': desc}
         ing = ingredients_text(it, ref)
+        if not ing and recipe and recipe.get('items') and not recipe.get('no_ing'):
+            ing = ingredients_text({'composition': [{'name': x['name']} for x in recipe['items']]}, ref)
         if ing:
             card['ing'] = ing
+        if recipe:
+            rrows.append((name, recipe, card, src))
         line = f'• {name} [{"+".join(it["src"])}' + (f' org={it["org"]}' if it.get('org') and it['org'] != 'cafe' else '') + ']' + \
             (f' ← {it["name_src"].strip()}' if it.get('name_src') and it['name_src'].strip() != name else '') + f' — КБЖУ: {src}' + \
             (f' — дополнено: {"; ".join(it["filled_from"])}' if it.get('filled_from') else '')
@@ -512,11 +552,37 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
     order = {n: i for i, n in enumerate(names)}
     ordered = dict(sorted(cards.items(), key=lambda kv: (order.get(kv[0], len(order)), kv[0])))
 
+    if recipes_report:
+        order = {n: i for i, n in enumerate(names)}
+        write_recipes_report(recipes_report, sorted(rrows, key=lambda r: (order.get(r[0], len(order)), r[0])), ref)
     rep.add('')
     rep.add('итого: ' + ', '.join(f'{k}: {v}' for k, v in stats.items() if v) + f'; заглушек сохранено: {kept}' +
             (f'; удалено старых: {", ".join(dropped)}' if dropped else ''))
     rep.add(f'карточек в {os.path.relpath(out_path, ROOT)}: {len(ordered)}; замечаний: {rep.errors}')
     return ordered, rep
+
+
+def write_recipes_report(path, rows, ref):
+    """menu/recipes_report.md — блюдо → состав с граммовками → порция → КБЖУ → источник; для вычитки владельцем"""
+    SRC = {'iiko': 'по перечню iiko', 'est': 'состав оценочный', 'label': 'этикетка'}
+    L = ['# Составы и КБЖУ для вычитки', '',
+         'Собрано `menu/build_cards.py` из `menu/recipes_est.json` (оценочные нетто-граммовки на порцию) и справочника',
+         '`menu/nutrition_ref.json`. Правки — в recipes_est.json (ключ — название на сайте); придёт ТТК — его состав важнее.', '']
+    cnt = {}
+    for name, r, card, src in rows:
+        cnt[r.get('src', '?')] = cnt.get(r.get('src', '?'), 0) + 1
+    L.append('Итого: ' + ', '.join(f'{SRC.get(k, k)} — {v}' for k, v in cnt.items()) + '.')
+    L.append('')
+    for name, r, card, src in rows:
+        k = card.get('kbju') or {}
+        kb = f"{k.get('kcal', '—')} ккал · б {k.get('p', '—')} · ж {k.get('f', '—')} · у {k.get('c', '—')}" if k else 'КБЖУ нет'
+        if r.get('label_per_100'):
+            comp = 'состав не указываем (бутылочный напиток), КБЖУ по этикетке на 100 мл: ' + json.dumps(r['label_per_100'], ensure_ascii=False)
+        else:
+            comp = ', '.join(f"{x['name']} {x['qty_g']} г" for x in r.get('items', []))
+        L.append(f"- **{name}** — {card.get('w', '')} — {comp} → {kb} [{SRC.get(r.get('src'), r.get('src'))}; КБЖУ: {src}]")
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(L) + '\n')
 
 
 def main(argv=None):
@@ -529,12 +595,15 @@ def main(argv=None):
     ap.add_argument('--menu', default=os.path.join(ROOT, 'index.html'), help='index.html для порядка и проверки названий')
     ap.add_argument('--name-map', default=os.path.join(HERE, 'name_map.json'), help='сайт → key iiko / drive_file (match_names.py, match_photos.py)')
     ap.add_argument('--photos-dir', default=os.path.join(HERE, 'menu_photos'), help='папка исходников фото (drive_file относительно неё)')
+    ap.add_argument('--recipes', default=os.path.join(HERE, 'recipes_est.json'), help='оценочные составы (fallback после ТТК)')
+    ap.add_argument('--recipes-report', default=os.path.join(HERE, 'recipes_report.md'), help='отчёт по составам для вычитки')
     ap.add_argument('--no-photos', action='store_true', help='не качать и не конвертировать фото')
     ap.add_argument('--refresh-photos', action='store_true', help='перекачать фото, даже если webp уже есть')
     ap.add_argument('--report', help='куда дописать отчёт (текст)')
     ap.add_argument('--dry-run', action='store_true', help='только отчёт, cards.json не писать')
     a = ap.parse_args(argv)
-    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos, name_map=a.name_map, photos_dir=a.photos_dir)
+    cards, rep = build(a.iiko, a.ttk, a.ref, a.out, a.img_dir, a.menu, a.no_photos, a.refresh_photos, name_map=a.name_map,
+                       photos_dir=a.photos_dir, recipes=a.recipes, recipes_report=None if a.dry_run else a.recipes_report)
     if not a.dry_run:
         with open(a.out, 'w', encoding='utf-8') as f:
             json.dump(cards, f, ensure_ascii=False, indent=2)
