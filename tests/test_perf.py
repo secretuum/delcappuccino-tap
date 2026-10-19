@@ -332,8 +332,8 @@ def polygon_area_pct(clip):
 
 
 class TestGrillPromo(unittest.TestCase):
-    """Акция «Курица гриль» в hero: видео не тяжелит первый экран, в окне огня его видно ≥ 50% бокса."""
-    VIDEO_MIN = 0.50
+    """Акция «Курица гриль» в hero: видео не тяжелит первый экран, в окне огня его видно ≥ 75% бокса (владелец, 19.10)."""
+    VIDEO_MIN = 0.75
 
     @classmethod
     def setUpClass(cls):
