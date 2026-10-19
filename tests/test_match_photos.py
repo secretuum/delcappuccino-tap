@@ -137,6 +137,28 @@ class TestNormAndMatch(unittest.TestCase):
         with contextlib.redirect_stderr(io.StringIO()):
             self.assertEqual(mp.main(['--photos', os.path.join(self.d, 'нет')]), 2)
 
+    def test_overrides(self):
+        over = os.path.join(self.d, 'over.json')
+        with open(over, 'w', encoding='utf-8') as f:
+            json.dump({'_meta': 'x', 'Рамен сливочный': 'кухня/рамен сливочный с курицей.png',     # автоматика не угадывала
+                       'Маргарита': 'кухня/Пицца Маргарита.jfif',                                  # замена автоматической пары
+                       'Борщ с говядиной и бородинским хлебом': None,                             # снять фото
+                       'Стейк-омлет': 'кухня/нет такого.png'}, f, ensure_ascii=False)             # нет файла → пропуск
+        mapp = os.path.join(self.d, 'name_map.json')
+        with contextlib.redirect_stdout(io.StringIO()):
+            mp.main(['--menu', self.index, '--photos', self.photos, '--map', mapp, '--report', os.path.join(self.d, 'r.md'), '--overrides', over])
+        m = json.load(open(mapp, encoding='utf-8'))
+        self.assertEqual(m['Рамен сливочный']['drive_file'], 'кухня/рамен сливочный с курицей.png')
+        self.assertEqual(m['Маргарита']['drive_file'], 'кухня/Пицца Маргарита.jfif')
+        self.assertNotIn('Борщ с говядиной и бородинским хлебом', m)
+        self.assertEqual(m['Стейк-омлет']['drive_file'], 'кухня/стейк омлет.png')                # автоматика осталась
+        rep = open(os.path.join(self.d, 'r.md'), encoding='utf-8').read()
+        self.assertIn('## Ручные пары (3)', rep)
+        self.assertIn('Маргарита  ←  кухня/Пицца Маргарита.jfif  (было: кухня/Пицца Маргарита.png)', rep)
+        self.assertIn('НЕТ ТАКОГО ФАЙЛА', rep)
+        self.assertIn('фото снято', rep)
+        self.assertNotIn('Рамен сливочный  [', rep.split('## Без фото')[1])
+
 
 class TestBuildWithFolderPhotos(unittest.TestCase):
     def setUp(self):
