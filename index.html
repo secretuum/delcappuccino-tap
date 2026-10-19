@@ -408,7 +408,9 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .sheet .x::before,.mm-x::before,.mm-card-x::before{transform:rotate(45deg)}
 .sheet .x::after,.mm-x::after,.mm-card-x::after{transform:rotate(-45deg)}
 .mm-card-x:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
-.mm-card-img{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:14px;margin:8px 0 14px;background:var(--cream-2)}
+/* фото карточки: контейнер по натуральной пропорции (ar из cards.json, не выше 52vh, не уже 4/5), фото целиком (contain) на белом */
+.mm-card-pic{display:flex;align-items:center;justify-content:center;width:100%;max-height:52vh;aspect-ratio:4/3;overflow:hidden;border-radius:14px;margin:8px 0 14px;background:#fff}
+.mm-card-img{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
 .mm-card-t{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:22px;line-height:1.2;color:var(--forest-dk);margin:4px 44px 4px 0;overflow-wrap:anywhere}
 .mm-card-w{font-size:12px;color:var(--ink-2);margin-bottom:10px}
 .mm-card-d{font-size:13.5px;line-height:1.5;margin-bottom:12px}
@@ -1684,7 +1686,7 @@ function openMenu(mode){
   setMenuMode(mode);
   document.getElementById('menu-modal').classList.add('open');
   renderMenuStart();
-  loadCards();
+  loadCards(); scheduleIdlePrefetch();
   document.body.style.overflow='hidden';
   document.querySelector('#menu-modal .mm-head').classList.remove('compact');
   setTopH(); syncLangAria();
@@ -1760,12 +1762,44 @@ function loadCards(){
   if(cardsReq) return cardsReq;
   cardsReq = fetch(CARDS_URL).then(r=>r.ok?r.json():{}).catch(()=>({})).then(j=>{
     CARDS = (j && typeof j==='object' && !Array.isArray(j)) ? j : {};
-    if(Object.keys(CARDS).length && document.getElementById('menu-modal').classList.contains('open')) renderFeed();
+    if(Object.keys(CARDS).length && document.getElementById('menu-modal').classList.contains('open')){ renderFeed(); scheduleIdlePrefetch(); }
     return CARDS;
   });
   return cardsReq;
 }
 function cardLang(o){ return o ? (o[menuLang] || o.ru || '') : ''; }
+/* пропорция контейнера фото: натуральная w/h, но не уже 4/5 (совсем высокие — с полями по бокам) */
+function picRatio(ar){
+  const r = ar && ar[1] ? ar[0]/ar[1] : 4/3;
+  return Math.max(r, 0.8).toFixed(3);
+}
+/* ── Префетч фото карточек: в простое — видимые и следующие ~10, при касании названия — сразу ── */
+const prefetched = new Set();
+function cardImgSrc(c){ return (mmMobile.matches && c.img480) ? c.img480 : c.img; }
+function prefetchCard(key){
+  const c = CARDS && CARDS[key]; if(!c || !c.img) return;
+  const src = cardImgSrc(c); if(prefetched.has(src)) return;
+  prefetched.add(src);
+  const im = new Image(); im.decoding = 'async'; im.src = src;
+}
+let idleHandle = 0;
+function scheduleIdlePrefetch(){
+  if(!CARDS || idleHandle) return;
+  const run = () => { idleHandle = 0; prefetchVisible(); };
+  idleHandle = window.requestIdleCallback ? requestIdleCallback(run, {timeout: 1500}) : setTimeout(run, 300);
+}
+function prefetchVisible(){
+  const modal = document.getElementById('menu-modal');
+  if(!modal.classList.contains('open')) return;
+  const els = [...document.querySelectorAll('#mm-cols .nm-t.has-card')];
+  const vh = window.innerHeight; let after = 0;
+  for(const el of els){
+    const r = el.getBoundingClientRect();
+    const visible = r.bottom > 0 && r.top < vh;
+    if(visible || (r.top >= vh && after < 10)){ prefetchCard(cardKey(el.dataset.n, el.dataset.sec)); if(!visible) after++; }
+    if(after >= 10) break;
+  }
+}
 function cardW(w){
   if(menuLang==='en') return w.replace(/(\d)\s*гр?(?![а-яё])/g,'$1 g').replace(/мл/g,'ml');
   if(menuLang==='kk') return w.replace(/(\d)\s*гр(?![а-яё])/g,'$1 г');
@@ -1774,7 +1808,7 @@ function cardW(w){
 function cardHTML(key){
   const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);
   return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
-    (c.img ? `<img class="mm-card-img" src="${escA(c.img)}" alt="" loading="lazy" decoding="async">` : '') +
+    (c.img ? `<div class="mm-card-pic" style="aspect-ratio:${picRatio(c.ar)}"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(c.img480)} 480w, ${escA(c.img)} 960w" sizes="(max-width:680px) calc(100vw - 44px), 476px"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async"></div>` : '') +
     `<h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` +
     (c.w ? `<div class="mm-card-w">${ui.card_w}: ${escA(cardW(String(c.w)))}</div>` : '') +
     (d ? `<p class="mm-card-d">${escA(d)}</p>` : '') +
@@ -1853,6 +1887,10 @@ function setTopH(){
     const b=e.target.closest('.mm-only');
     if(b && mmHover.matches && !popPinned && !b.contains(e.relatedTarget)) hidePop();
   });
+  /* касание/нажатие на название — фото карточки запрашиваем ещё до клика */
+  const touchPrefetch = e=>{ const nb=e.target.closest('.nm-t.has-card'); if(nb) prefetchCard(cardKey(nb.dataset.n, nb.dataset.sec)); };
+  cols.addEventListener('pointerdown', touchPrefetch, {passive:true});
+  cols.addEventListener('touchstart', touchPrefetch, {passive:true});
   cols.addEventListener('keydown', e=>{
     if(e.key!=='Enter' && e.key!==' ') return;
     const nb=e.target.closest('.nm-t.has-card'); if(!nb) return;
@@ -1891,6 +1929,7 @@ function setTopH(){
     lastY=y;
     if(spyLock){ clearTimeout(spyTimer); spyTimer=setTimeout(()=>{ spyLock=false; menuSpy(); }, 150); }
     else if(!spyRaf) spyRaf=requestAnimationFrame(()=>{ spyRaf=0; menuSpy(); });
+    scheduleIdlePrefetch();
   }, {passive:true});
   window.addEventListener('resize', ()=>{
     hidePop();

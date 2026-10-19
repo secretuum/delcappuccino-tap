@@ -389,24 +389,38 @@ def fetch_bytes(src, timeout=20):
         return r.read()
 
 
-def save_webp(data, dst, max_px=960, max_bytes=100 * 1024):
-    from PIL import Image  # опционально
-    im = Image.open(io.BytesIO(data))
-    im = im.convert('RGB')
+SIZES = ((960, 90 * 1024, ''), (480, 35 * 1024, '-480'))   # (сторона, лимит байт, суффикс): 960 для десктопа, 480 для телефона
+PHOTO_FMT = 'v3'                                           # менять при смене набора размеров/лимитов — всё перекодируется
+
+
+def encode_webp(im, max_px, max_bytes):
+    im = im.copy()
     im.thumbnail((max_px, max_px))
-    for q in (82, 74, 66, 58, 50, 42, 34, 26):
+    for q in ((78, 72, 66, 60, 54, 48, 42, 36, 30) if max_px >= 900 else (82, 76, 70, 64, 58, 52, 46, 40, 34)):
         buf = io.BytesIO()
         im.save(buf, 'WEBP', quality=q, method=6)
         if buf.tell() <= max_bytes:
-            break
-    else:
-        im.thumbnail((max_px * 2 // 3, max_px * 2 // 3))
-        buf = io.BytesIO()
-        im.save(buf, 'WEBP', quality=40, method=6)
+            return buf.getvalue(), q
+    im.thumbnail((max_px * 2 // 3, max_px * 2 // 3))
+    buf = io.BytesIO()
+    im.save(buf, 'WEBP', quality=40, method=6)
+    return buf.getvalue(), 40
+
+
+def save_webp(data, dst, max_px=960, max_bytes=90 * 1024):
+    """→ (байт 960-версии, (w, h) исходника). Пишет dst (960) и dst-480.webp; для карточки нужны оба."""
+    from PIL import Image  # опционально
+    im = Image.open(io.BytesIO(data)).convert('RGB')
+    ar = im.size
     os.makedirs(os.path.dirname(dst) or '.', exist_ok=True)
-    with open(dst, 'wb') as f:
-        f.write(buf.getvalue())
-    return buf.tell()
+    first = None
+    for px, limit, suf in SIZES:
+        out = dst[:-5] + suf + '.webp' if suf else dst
+        buf, _ = encode_webp(im, px, limit)
+        with open(out, 'wb') as f:
+            f.write(buf)
+        first = first if first is not None else len(buf)
+    return first, ar
 
 
 def photo_source(item, photos_dir, drive_file):
@@ -422,35 +436,39 @@ def photo_source(item, photos_dir, drive_file):
 
 
 def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_file=None, sources=None):
-    """→ путь webp для карточки или None. sources — манифест {slug: подпись источника}:
-    перекодируем, когда источник сменился (напр. пришло фото с Диска вместо iiko) или webp нет."""
+    """→ (путь 960-webp, путь 480-webp, [w, h] исходника) или (None, None, None). sources — манифест
+    {slug: подпись источника + ' ' + [w,h]}: перекодируем, когда источник или формат сменился или webp нет."""
     src, sign = photo_source(item, photos_dir or '', drive_file)
+    sign = f'{sign}:{PHOTO_FMT}' if sign else sign
     if drive_file and not (sign or '').startswith('drive:'):
         rep.add(f'  нет файла {drive_file} в папке фото: {item["name"]}', error=True)
     if not src:
-        return None
+        return None, None, None
     sl = slug(item['name'])
     rel = f'{os.path.relpath(img_dir, ROOT)}/{sl}.webp'.replace(os.sep, '/')
-    dst = os.path.join(img_dir, f'{sl}.webp')
+    rel480 = rel[:-5] + '-480.webp'
+    dst, dst480 = os.path.join(img_dir, f'{sl}.webp'), os.path.join(img_dir, f'{sl}-480.webp')
     sources = sources if sources is not None else {}
-    if os.path.isfile(dst) and not refresh and sources.get(sl) == sign:   # нет записи в манифесте — источник неизвестен, перекодируем
-        return rel
+    have = os.path.isfile(dst) and os.path.isfile(dst480)
+    cur = sources.get(sl) or ''
+    if have and not refresh and cur.startswith(sign + ' '):   # манифест: «<источник>:<формат> [w, h]»
+        return rel, rel480, json.loads(cur[len(sign) + 1:])
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
-        return rel if os.path.isfile(dst) else None
+        return (rel, rel480, json.loads(cur.split(' ', 1)[1]) if have and ' ' in cur else None) if have else (None, None, None)
     try:
         import PIL  # noqa: F401
     except ImportError:
         rep.add(f'  нет PIL — фото не обработано: {item["name"]}', error=True)
-        return rel if os.path.isfile(dst) else None
+        return (rel, rel480, None) if have else (None, None, None)
     try:
-        size = save_webp(fetch_bytes(src), dst)
-        sources[sl] = sign
-        rep.add(f'  фото: {rel} ({size // 1024} КБ) ← {sign.split(":", 1)[0]}')
-        return rel
+        size, ar = save_webp(fetch_bytes(src), dst)
+        sources[sl] = f'{sign} {json.dumps(list(ar))}'
+        rep.add(f'  фото: {rel} ({size // 1024} КБ, {os.path.getsize(dst480) // 1024} КБ@480) ← {sign.split(":", 1)[0]}')
+        return rel, rel480, list(ar)
     except Exception as e:  # сеть/формат — не валим сборку
         rep.add(f'  фото не удалось ({type(e).__name__}: {e}): {item["name"]}', error=True)
-        return rel if os.path.isfile(dst) else None
+        return (rel, rel480, None) if have else (None, None, None)
 
 
 # ── меню на сайте ───────────────────────────────────────────────────────────
@@ -516,9 +534,13 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
         missing = list(it.get('missing') or [])
         card = {}
         recipe = recipes.get(name)
-        img = handle_photo(it, img_dir, rep, no_photos, refresh, photos_dir, drive.get(name), sources)
+        img, img480, ar = handle_photo(it, img_dir, rep, no_photos, refresh, photos_dir, drive.get(name), sources)
         if img:
             card['img'] = img
+            if img480:
+                card['img480'] = img480
+            if ar:
+                card['ar'] = ar
         g, unit = portion_g(it)
         if not g and recipe and num(recipe.get('portion_g')):
             g, unit = num(recipe['portion_g']), ('мл' if recipe.get('label_per_100') or recipe.get('unit') == 'мл' else 'г')

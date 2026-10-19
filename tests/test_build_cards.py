@@ -166,6 +166,9 @@ class TestCalc(Base):
         cards, rep = self.build(iiko=iiko, no_photos=False)
         rel = cards['Тест: омлет']['img']
         self.assertTrue(rel.endswith('/test-omlet.webp'), rel)
+        self.assertEqual(cards['Тест: омлет']['ar'], [2000, 1500])
+        with Image.open(os.path.join(self.img, 'test-omlet-480.webp')) as im480:
+            self.assertLessEqual(max(im480.size), 480)
         dst = os.path.join(self.img, 'test-omlet.webp')
         self.assertTrue(os.path.isfile(dst))
         self.assertLessEqual(os.path.getsize(dst), 100 * 1024)

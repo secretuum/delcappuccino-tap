@@ -1,6 +1,11 @@
 {
   "Каша овсяная с гранолой и персиком": {
     "img": "img/menu/kasha-ovsyanaya-s-granoloj-i-persikom.webp",
+    "img480": "img/menu/kasha-ovsyanaya-s-granoloj-i-persikom-480.webp",
+    "ar": [
+      1920,
+      1920
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 547,
@@ -22,6 +27,11 @@
   },
   "Каша рисовая с гранолой и бананом": {
     "img": "img/menu/kasha-risovaya-s-granoloj-i-bananom.webp",
+    "img480": "img/menu/kasha-risovaya-s-granoloj-i-bananom-480.webp",
+    "ar": [
+      1920,
+      1920
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 557,
@@ -43,6 +53,11 @@
   },
   "Датский завтрак": {
     "img": "img/menu/datskij-zavtrak.webp",
+    "img480": "img/menu/datskij-zavtrak-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 716,
@@ -64,6 +79,11 @@
   },
   "Деревенский завтрак": {
     "img": "img/menu/derevenskij-zavtrak.webp",
+    "img480": "img/menu/derevenskij-zavtrak-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "312 г",
     "kbju": {
       "kcal": 559,
@@ -85,6 +105,11 @@
   },
   "Яичница-глазунья с сосисками и соусом релиш": {
     "img": "img/menu/yaichnica-glazunya-s-sosiskami-i-sousom-relish.webp",
+    "img480": "img/menu/yaichnica-glazunya-s-sosiskami-i-sousom-relish-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 664,
@@ -106,6 +131,11 @@
   },
   "Крок Мадам с копчёной индейкой": {
     "img": "img/menu/krok-madam-s-kopchenoj-indejkoj.webp",
+    "img480": "img/menu/krok-madam-s-kopchenoj-indejkoj-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "320 г",
     "kbju": {
       "kcal": 682,
@@ -127,6 +157,11 @@
   },
   "Алматинский завтрак": {
     "img": "img/menu/almatinskij-zavtrak.webp",
+    "img480": "img/menu/almatinskij-zavtrak-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "435 г",
     "kbju": {
       "kcal": 819,
@@ -148,6 +183,11 @@
   },
   "Английский завтрак": {
     "img": "img/menu/anglijskij-zavtrak.webp",
+    "img480": "img/menu/anglijskij-zavtrak-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "307 г",
     "kbju": {
       "kcal": 614,
@@ -169,6 +209,11 @@
   },
   "Бургер бриошь с куриной котлетой и омлетом": {
     "img": "img/menu/burger-briosh-s-kurinoj-kotletoj-i-omletom.webp",
+    "img480": "img/menu/burger-briosh-s-kurinoj-kotletoj-i-omletom-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 721,
@@ -190,6 +235,11 @@
   },
   "Картофельные драники с лососем и соусом голландез": {
     "img": "img/menu/kartofelnye-draniki-s-lososem-i-sousom-gollandez.webp",
+    "img480": "img/menu/kartofelnye-draniki-s-lososem-i-sousom-gollandez-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "320 г",
     "kbju": {
       "kcal": 711,
@@ -211,6 +261,11 @@
   },
   "Шакшука с тартином": {
     "img": "img/menu/shakshuka-s-tartinom.webp",
+    "img480": "img/menu/shakshuka-s-tartinom-480.webp",
+    "ar": [
+      1920,
+      1920
+    ],
     "w": "380 г",
     "kbju": {
       "kcal": 481,
@@ -232,6 +287,11 @@
   },
   "Вафли из цукини с малосольным лососем": {
     "img": "img/menu/vafli-iz-cukini-s-malosolnym-lososem.webp",
+    "img480": "img/menu/vafli-iz-cukini-s-malosolnym-lososem-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 577,
@@ -253,6 +313,11 @@
   },
   "Круассан спайси с креветками и скрэмблом": {
     "img": "img/menu/kruassan-spajsi-s-krevetkami-i-skremblom.webp",
+    "img480": "img/menu/kruassan-spajsi-s-krevetkami-i-skremblom-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 692,
@@ -274,6 +339,11 @@
   },
   "Стейк-омлет": {
     "img": "img/menu/stejk-omlet.webp",
+    "img480": "img/menu/stejk-omlet-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 601,
@@ -295,6 +365,11 @@
   },
   "Завтрак с лососем": {
     "img": "img/menu/zavtrak-s-lososem.webp",
+    "img480": "img/menu/zavtrak-s-lososem-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 618,
@@ -316,6 +391,11 @@
   },
   "Блины со сметаной и мёдом": {
     "img": "img/menu/bliny-so-smetanoj-i-medom.webp",
+    "img480": "img/menu/bliny-so-smetanoj-i-medom-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "270 г",
     "kbju": {
       "kcal": 720,
@@ -337,6 +417,11 @@
   },
   "Блины с бананом и с шоколадом": {
     "img": "img/menu/bliny-s-bananom-i-s-shokoladom.webp",
+    "img480": "img/menu/bliny-s-bananom-i-s-shokoladom-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "260 г",
     "kbju": {
       "kcal": 707,
@@ -358,6 +443,11 @@
   },
   "Мини-панкейки": {
     "img": "img/menu/mini-pankejki.webp",
+    "img480": "img/menu/mini-pankejki-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "280 г",
     "kbju": {
       "kcal": 701,
@@ -379,6 +469,11 @@
   },
   "Бельгийские вафли": {
     "img": "img/menu/belgijskie-vafli.webp",
+    "img480": "img/menu/belgijskie-vafli-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "335 г",
     "kbju": {
       "kcal": 796,
@@ -400,6 +495,11 @@
   },
   "Сырники классические @ Сладкие завтраки": {
     "img": "img/menu/syrniki-klassicheskie-sladkie-zavtraki.webp",
+    "img480": "img/menu/syrniki-klassicheskie-sladkie-zavtraki-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "307 г",
     "kbju": {
       "kcal": 854,
@@ -421,6 +521,11 @@
   },
   "Греческий салат": {
     "img": "img/menu/grecheskij-salat.webp",
+    "img480": "img/menu/grecheskij-salat-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "272 г",
     "kbju": {
       "kcal": 341,
@@ -442,6 +547,11 @@
   },
   "Салат с цыплёнком гриль": {
     "img": "img/menu/salat-s-cyplenkom-gril.webp",
+    "img480": "img/menu/salat-s-cyplenkom-gril-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "280 г",
     "kbju": {
       "kcal": 389,
@@ -463,6 +573,11 @@
   },
   "Тёплый салат из баклажана с соусом Ассай": {
     "img": "img/menu/teplyj-salat-iz-baklazhana-s-sousom-assaj.webp",
+    "img480": "img/menu/teplyj-salat-iz-baklazhana-s-sousom-assaj-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "335 г",
     "kbju": {
       "kcal": 417,
@@ -484,6 +599,11 @@
   },
   "Салат с запечённой сёмгой в соусе терияки": {
     "img": "img/menu/salat-s-zapechennoj-semgoj-v-souse-teriyaki.webp",
+    "img480": "img/menu/salat-s-zapechennoj-semgoj-v-souse-teriyaki-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "280 г",
     "kbju": {
       "kcal": 357,
@@ -505,6 +625,11 @@
   },
   "Салат со стейком": {
     "img": "img/menu/salat-so-stejkom.webp",
+    "img480": "img/menu/salat-so-stejkom-480.webp",
+    "ar": [
+      1122,
+      1402
+    ],
     "w": "280 г",
     "kbju": {
       "kcal": 404,
@@ -526,6 +651,11 @@
   },
   "Боул с курицей": {
     "img": "img/menu/boul-s-kuricej.webp",
+    "img480": "img/menu/boul-s-kuricej-480.webp",
+    "ar": [
+      1500,
+      1900
+    ],
     "w": "425 г",
     "kbju": {
       "kcal": 607,
@@ -547,6 +677,11 @@
   },
   "Боул с креветками": {
     "img": "img/menu/boul-s-krevetkami.webp",
+    "img480": "img/menu/boul-s-krevetkami-480.webp",
+    "ar": [
+      1500,
+      1900
+    ],
     "w": "368 г",
     "kbju": {
       "kcal": 435,
@@ -568,6 +703,11 @@
   },
   "Боул с сёмгой": {
     "img": "img/menu/boul-s-semgoj.webp",
+    "img480": "img/menu/boul-s-semgoj-480.webp",
+    "ar": [
+      1500,
+      1900
+    ],
     "w": "450 г",
     "kbju": {
       "kcal": 687,
@@ -589,6 +729,11 @@
   },
   "Суп лапша куриная": {
     "img": "img/menu/sup-lapsha-kurinaya.webp",
+    "img480": "img/menu/sup-lapsha-kurinaya-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "402 г",
     "kbju": {
       "kcal": 266,
@@ -610,6 +755,11 @@
   },
   "Чечевичный крем-суп": {
     "img": "img/menu/chechevichnyj-krem-sup.webp",
+    "img480": "img/menu/chechevichnyj-krem-sup-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "403 г",
     "kbju": {
       "kcal": 391,
@@ -631,6 +781,11 @@
   },
   "Тыквенный крем-суп": {
     "img": "img/menu/tykvennyj-krem-sup.webp",
+    "img480": "img/menu/tykvennyj-krem-sup-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 227,
@@ -652,6 +807,11 @@
   },
   "Суп с фрикадельками": {
     "img": "img/menu/sup-s-frikadelkami.webp",
+    "img480": "img/menu/sup-s-frikadelkami-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "341 г",
     "kbju": {
       "kcal": 265,
@@ -673,6 +833,11 @@
   },
   "Борщ с говядиной и бородинским хлебом": {
     "img": "img/menu/borsch-s-govyadinoj-i-borodinskim-hlebom.webp",
+    "img480": "img/menu/borsch-s-govyadinoj-i-borodinskim-hlebom-480.webp",
+    "ar": [
+      1281,
+      1920
+    ],
     "w": "380 г",
     "kbju": {
       "kcal": 383,
@@ -694,6 +859,11 @@
   },
   "Чучвара (пельмени с говядиной)": {
     "img": "img/menu/chuchvara-pelmeni-s-govyadinoj.webp",
+    "img480": "img/menu/chuchvara-pelmeni-s-govyadinoj-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "380 г",
     "kbju": {
       "kcal": 411,
@@ -715,6 +885,11 @@
   },
   "Лепёшка с пюре и сыром": {
     "img": "img/menu/lepeshka-s-pyure-i-syrom.webp",
+    "img480": "img/menu/lepeshka-s-pyure-i-syrom-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 599,
@@ -736,6 +911,11 @@
   },
   "Наггетсы": {
     "img": "img/menu/naggetsy.webp",
+    "img480": "img/menu/naggetsy-480.webp",
+    "ar": [
+      1500,
+      1900
+    ],
     "w": "189 г",
     "kbju": {
       "kcal": 450,
@@ -757,6 +937,11 @@
   },
   "Чебуреки с фаршем": {
     "img": "img/menu/chebureki-s-farshem.webp",
+    "img480": "img/menu/chebureki-s-farshem-480.webp",
+    "ar": [
+      1500,
+      1900
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 1429,
@@ -778,6 +963,11 @@
   },
   "Сэндвич с куриным шницелем": {
     "img": "img/menu/sendvich-s-kurinym-shnicelem.webp",
+    "img480": "img/menu/sendvich-s-kurinym-shnicelem-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "320 г",
     "kbju": {
       "kcal": 747,
@@ -799,6 +989,11 @@
   },
   "Кесадилья с курицей": {
     "img": "img/menu/kesadilya-s-kuricej.webp",
+    "img480": "img/menu/kesadilya-s-kuricej-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "424 г",
     "kbju": {
       "kcal": 714,
@@ -820,6 +1015,11 @@
   },
   "Бургер с томлёной говядиной": {
     "img": "img/menu/burger-s-tomlenoj-govyadinoj.webp",
+    "img480": "img/menu/burger-s-tomlenoj-govyadinoj-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 692,
@@ -841,6 +1041,11 @@
   },
   "Клаб сэндвич с курицей и картофелем фри": {
     "img": "img/menu/klab-sendvich-s-kuricej-i-kartofelem-fri.webp",
+    "img480": "img/menu/klab-sendvich-s-kuricej-i-kartofelem-fri-480.webp",
+    "ar": [
+      1920,
+      1312
+    ],
     "w": "492 г",
     "kbju": {
       "kcal": 1002,
@@ -862,6 +1067,11 @@
   },
   "Бургер классический с картофелем фри": {
     "img": "img/menu/burger-klassicheskij-s-kartofelem-fri.webp",
+    "img480": "img/menu/burger-klassicheskij-s-kartofelem-fri-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "379 г",
     "kbju": {
       "kcal": 932,
@@ -883,6 +1093,11 @@
   },
   "Маргарита": {
     "img": "img/menu/margarita.webp",
+    "img480": "img/menu/margarita-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "307 г",
     "kbju": {
       "kcal": 724,
@@ -904,6 +1119,11 @@
   },
   "Пепперони": {
     "img": "img/menu/pepperoni.webp",
+    "img480": "img/menu/pepperoni-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "273 г",
     "kbju": {
       "kcal": 729,
@@ -925,6 +1145,11 @@
   },
   "С курицей и грибами": {
     "img": "img/menu/s-kuricej-i-gribami.webp",
+    "img480": "img/menu/s-kuricej-i-gribami-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "324 г",
     "kbju": {
       "kcal": 648,
@@ -946,6 +1171,11 @@
   },
   "Болоньезе": {
     "img": "img/menu/boloneze.webp",
+    "img480": "img/menu/boloneze-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 744,
@@ -967,6 +1197,11 @@
   },
   "Четыре сезона": {
     "img": "img/menu/chetyre-sezona.webp",
+    "img480": "img/menu/chetyre-sezona-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 859,
@@ -988,6 +1223,11 @@
   },
   "Курица по-тайски с рисом": {
     "img": "img/menu/kurica-po-tajski-s-risom.webp",
+    "img480": "img/menu/kurica-po-tajski-s-risom-480.webp",
+    "ar": [
+      1900,
+      1267
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 559,
@@ -1009,6 +1249,11 @@
   },
   "Жареный рис с хрустящей курочкой": {
     "img": "img/menu/zharenyj-ris-s-hrustyaschej-kurochkoj.webp",
+    "img480": "img/menu/zharenyj-ris-s-hrustyaschej-kurochkoj-480.webp",
+    "ar": [
+      914,
+      914
+    ],
     "w": "302 г",
     "kbju": {
       "kcal": 669,
@@ -1030,6 +1275,11 @@
   },
   "Курица терияки с рисом": {
     "img": "img/menu/kurica-teriyaki-s-risom.webp",
+    "img480": "img/menu/kurica-teriyaki-s-risom-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 495,
@@ -1051,6 +1301,11 @@
   },
   "Рамен сливочный": {
     "img": "img/menu/ramen-slivochnyj.webp",
+    "img480": "img/menu/ramen-slivochnyj-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "450 г",
     "kbju": {
       "kcal": 493,
@@ -1072,6 +1327,11 @@
   },
   "Говядина с овощами": {
     "img": "img/menu/govyadina-s-ovoschami.webp",
+    "img480": "img/menu/govyadina-s-ovoschami-480.webp",
+    "ar": [
+      1242,
+      828
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 583,
@@ -1093,6 +1353,11 @@
   },
   "Том Ям с курицей": {
     "img": "img/menu/tom-yam-s-kuricej.webp",
+    "img480": "img/menu/tom-yam-s-kuricej-480.webp",
+    "ar": [
+      1920,
+      1300
+    ],
     "w": "439 г",
     "kbju": {
       "kcal": 233,
@@ -1114,6 +1379,11 @@
   },
   "Том Ям с креветками": {
     "img": "img/menu/tom-yam-s-krevetkami.webp",
+    "img480": "img/menu/tom-yam-s-krevetkami-480.webp",
+    "ar": [
+      1920,
+      1300
+    ],
     "w": "436 г",
     "kbju": {
       "kcal": 223,
@@ -1135,6 +1405,11 @@
   },
   "Альфредо с курицей и грибами": {
     "img": "img/menu/alfredo-s-kuricej-i-gribami.webp",
+    "img480": "img/menu/alfredo-s-kuricej-i-gribami-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "252 г",
     "kbju": {
       "kcal": 629,
@@ -1156,6 +1431,11 @@
   },
   "Спагетти болоньезе": {
     "img": "img/menu/spagetti-boloneze.webp",
+    "img480": "img/menu/spagetti-boloneze-480.webp",
+    "ar": [
+      1242,
+      828
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 649,
@@ -1177,6 +1457,11 @@
   },
   "Паста с креветками": {
     "img": "img/menu/pasta-s-krevetkami.webp",
+    "img480": "img/menu/pasta-s-krevetkami-480.webp",
+    "ar": [
+      1179,
+      864
+    ],
     "w": "242 г",
     "kbju": {
       "kcal": 612,
@@ -1198,6 +1483,11 @@
   },
   "Фарфалле с томлёной говядиной": {
     "img": "img/menu/farfalle-s-tomlenoj-govyadinoj.webp",
+    "img480": "img/menu/farfalle-s-tomlenoj-govyadinoj-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 709,
@@ -1219,6 +1509,11 @@
   },
   "Фарфалле с лососем": {
     "img": "img/menu/farfalle-s-lososem.webp",
+    "img480": "img/menu/farfalle-s-lososem-480.webp",
+    "ar": [
+      1025,
+      1535
+    ],
     "w": "320 г",
     "kbju": {
       "kcal": 781,
@@ -1240,6 +1535,11 @@
   },
   "Курочка в сливочном соусе с грибами и рисом": {
     "img": "img/menu/kurochka-v-slivochnom-souse-s-gribami-i-risom.webp",
+    "img480": "img/menu/kurochka-v-slivochnom-souse-s-gribami-i-risom-480.webp",
+    "ar": [
+      1900,
+      1900
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 604,
@@ -1261,6 +1561,11 @@
   },
   "Цезарь с куриным шницелем": {
     "img": "img/menu/cezar-s-kurinym-shnicelem.webp",
+    "img480": "img/menu/cezar-s-kurinym-shnicelem-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 648,
@@ -1282,6 +1587,11 @@
   },
   "Курица карри с рисом и лепёшкой": {
     "img": "img/menu/kurica-karri-s-risom-i-lepeshkoj.webp",
+    "img480": "img/menu/kurica-karri-s-risom-i-lepeshkoj-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "420 г",
     "kbju": {
       "kcal": 691,
@@ -1303,6 +1613,11 @@
   },
   "Котлеты пожарские": {
     "img": "img/menu/kotlety-pozharskie.webp",
+    "img480": "img/menu/kotlety-pozharskie-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 546,
@@ -1324,6 +1639,11 @@
   },
   "Котлеты говяжьи по-домашнему с пюре": {
     "img": "img/menu/kotlety-govyazhi-po-domashnemu-s-pyure.webp",
+    "img480": "img/menu/kotlety-govyazhi-po-domashnemu-s-pyure-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 720,
@@ -1345,6 +1665,11 @@
   },
   "Куриный рулет с моцареллой и рисом в соусе терияки": {
     "img": "img/menu/kurinyj-rulet-s-mocarelloj-i-risom-v-souse-teriyaki.webp",
+    "img480": "img/menu/kurinyj-rulet-s-mocarelloj-i-risom-v-souse-teriyaki-480.webp",
+    "ar": [
+      1242,
+      828
+    ],
     "w": "354 г",
     "kbju": {
       "kcal": 661,
@@ -1366,6 +1691,11 @@
   },
   "Куриное филе со шпинатом в сливочном соусе": {
     "img": "img/menu/kurinoe-file-so-shpinatom-v-slivochnom-souse.webp",
+    "img480": "img/menu/kurinoe-file-so-shpinatom-v-slivochnom-souse-480.webp",
+    "ar": [
+      1023,
+      1537
+    ],
     "w": "350 г",
     "kbju": {
       "kcal": 647,
@@ -1387,6 +1717,11 @@
   },
   "Томлёная говядина с картофельным пюре": {
     "img": "img/menu/tomlenaya-govyadina-s-kartofelnym-pyure.webp",
+    "img480": "img/menu/tomlenaya-govyadina-s-kartofelnym-pyure-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "370 г",
     "kbju": {
       "kcal": 507,
@@ -1408,6 +1743,11 @@
   },
   "Говяжий шницель": {
     "img": "img/menu/govyazhij-shnicel.webp",
+    "img480": "img/menu/govyazhij-shnicel-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 642,
@@ -1429,6 +1769,11 @@
   },
   "Томлёные рёбра": {
     "img": "img/menu/tomlenye-rebra.webp",
+    "img480": "img/menu/tomlenye-rebra-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 940,
@@ -1450,6 +1795,11 @@
   },
   "Самса с курицей @ Домашние блюда": {
     "img": "img/menu/samsa-s-kuricej-domashnie-blyuda.webp",
+    "img480": "img/menu/samsa-s-kuricej-domashnie-blyuda-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "130 г",
     "kbju": {
       "kcal": 363,
@@ -1471,6 +1821,11 @@
   },
   "Самса с говядиной @ Домашние блюда": {
     "img": "img/menu/samsa-s-govyadinoj-domashnie-blyuda.webp",
+    "img480": "img/menu/samsa-s-govyadinoj-domashnie-blyuda-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "130 г",
     "kbju": {
       "kcal": 384,
@@ -1492,6 +1847,11 @@
   },
   "Вареники @ Домашние блюда": {
     "img": "img/menu/vareniki-domashnie-blyuda.webp",
+    "img480": "img/menu/vareniki-domashnie-blyuda-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "210 г",
     "kbju": {
       "kcal": 431,
@@ -1533,6 +1893,11 @@
   },
   "Мини-самса из пельменей": {
     "img": "img/menu/mini-samsa-iz-pelmenej.webp",
+    "img480": "img/menu/mini-samsa-iz-pelmenej-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "170 г",
     "kbju": {
       "kcal": 451,
@@ -1554,6 +1919,11 @@
   },
   "Манты с рубленой говядиной и тыквой": {
     "img": "img/menu/manty-s-rublenoj-govyadinoj-i-tykvoj.webp",
+    "img480": "img/menu/manty-s-rublenoj-govyadinoj-i-tykvoj-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "380 г",
     "kbju": {
       "kcal": 837,
@@ -1575,6 +1945,11 @@
   },
   "Мясной сет": {
     "img": "img/menu/myasnoj-set.webp",
+    "img480": "img/menu/myasnoj-set-480.webp",
+    "ar": [
+      1071,
+      1469
+    ],
     "w": "700 г",
     "kbju": {
       "kcal": 1562,
@@ -1596,6 +1971,11 @@
   },
   "Люля из говядины с салатом и питой": {
     "img": "img/menu/lyulya-iz-govyadiny-s-salatom-i-pitoj.webp",
+    "img480": "img/menu/lyulya-iz-govyadiny-s-salatom-i-pitoj-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 582,
@@ -1617,6 +1997,11 @@
   },
   "Шашлычки из говядины с питой": {
     "img": "img/menu/shashlychki-iz-govyadiny-s-pitoj.webp",
+    "img480": "img/menu/shashlychki-iz-govyadiny-s-pitoj-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 547,
@@ -1658,6 +2043,11 @@
   },
   "Рибай на кости": {
     "img": "img/menu/ribaj-na-kosti.webp",
+    "img480": "img/menu/ribaj-na-kosti-480.webp",
+    "ar": [
+      1454,
+      1082
+    ],
     "w": "492 г",
     "kbju": {
       "kcal": 1065,
@@ -1679,6 +2069,11 @@
   },
   "Ти-бон стейк с молодым картофелем": {
     "img": "img/menu/ti-bon-stejk-s-molodym-kartofelem.webp",
+    "img480": "img/menu/ti-bon-stejk-s-molodym-kartofelem-480.webp",
+    "ar": [
+      479,
+      717
+    ],
     "w": "450 г",
     "kbju": {
       "kcal": 942,
@@ -1700,6 +2095,11 @@
   },
   "Стейк лосося с молодым картофелем": {
     "img": "img/menu/stejk-lososya-s-molodym-kartofelem.webp",
+    "img480": "img/menu/stejk-lososya-s-molodym-kartofelem-480.webp",
+    "ar": [
+      1920,
+      1920
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 711,
@@ -1721,6 +2121,11 @@
   },
   "Багет": {
     "img": "img/menu/baget.webp",
+    "img480": "img/menu/baget-480.webp",
+    "ar": [
+      1448,
+      1086
+    ],
     "w": "120 г",
     "kbju": {
       "kcal": 305,
@@ -1742,6 +2147,11 @@
   },
   "Чесночный хлеб": {
     "img": "img/menu/chesnochnyj-hleb.webp",
+    "img480": "img/menu/chesnochnyj-hleb-480.webp",
+    "ar": [
+      1448,
+      1086
+    ],
     "w": "127 г",
     "kbju": {
       "kcal": 397,
@@ -1763,6 +2173,11 @@
   },
   "Хлебная корзина": {
     "img": "img/menu/hlebnaya-korzina.webp",
+    "img480": "img/menu/hlebnaya-korzina-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "180 г",
     "kbju": {
       "kcal": 559,
@@ -1784,6 +2199,11 @@
   },
   "Рис": {
     "img": "img/menu/ris.webp",
+    "img480": "img/menu/ris-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "150 г",
     "kbju": {
       "kcal": 209,
@@ -1805,6 +2225,11 @@
   },
   "Картофельное пюре": {
     "img": "img/menu/kartofelnoe-pyure.webp",
+    "img480": "img/menu/kartofelnoe-pyure-480.webp",
+    "ar": [
+      610,
+      763
+    ],
     "w": "150 г",
     "kbju": {
       "kcal": 192,
@@ -1826,6 +2251,11 @@
   },
   "Картофель фри": {
     "img": "img/menu/kartofel-fri.webp",
+    "img480": "img/menu/kartofel-fri-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "160 г",
     "kbju": {
       "kcal": 333,
@@ -1847,6 +2277,11 @@
   },
   "Картофельные дольки": {
     "img": "img/menu/kartofelnye-dolki.webp",
+    "img480": "img/menu/kartofelnye-dolki-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "170 г",
     "kbju": {
       "kcal": 234,
@@ -1868,6 +2303,11 @@
   },
   "Хашбраун со сметаной": {
     "img": "img/menu/hashbraun-so-smetanoj.webp",
+    "img480": "img/menu/hashbraun-so-smetanoj-480.webp",
+    "ar": [
+      603,
+      450
+    ],
     "w": "261 г",
     "kbju": {
       "kcal": 408,
@@ -1889,6 +2329,11 @@
   },
   "Овощи на гриле": {
     "img": "img/menu/ovoschi-na-grile.webp",
+    "img480": "img/menu/ovoschi-na-grile-480.webp",
+    "ar": [
+      1242,
+      828
+    ],
     "w": "274 г",
     "kbju": {
       "kcal": 166,
@@ -1910,6 +2355,11 @@
   },
   "Кетчуп": {
     "img": "img/menu/ketchup.webp",
+    "img480": "img/menu/ketchup-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "50 г",
     "kbju": {
       "kcal": 50,
@@ -1931,6 +2381,11 @@
   },
   "Дзадзики": {
     "img": "img/menu/dzadziki.webp",
+    "img480": "img/menu/dzadziki-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "40 г",
     "kbju": {
       "kcal": 38,
@@ -1952,6 +2407,11 @@
   },
   "Цезарь": {
     "img": "img/menu/cezar.webp",
+    "img480": "img/menu/cezar-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "40 г",
     "kbju": {
       "kcal": 180,
@@ -1973,6 +2433,11 @@
   },
   "Сырный": {
     "img": "img/menu/syrnyj.webp",
+    "img480": "img/menu/syrnyj-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "25 г",
     "kbju": {
       "kcal": 70,
@@ -1994,6 +2459,11 @@
   },
   "Горчичный": {
     "img": "img/menu/gorchichnyj.webp",
+    "img480": "img/menu/gorchichnyj-480.webp",
+    "ar": [
+      1536,
+      1024
+    ],
     "w": "40 г",
     "kbju": {
       "kcal": 166,
@@ -2015,6 +2485,11 @@
   },
   "Шрирача": {
     "img": "img/menu/shriracha.webp",
+    "img480": "img/menu/shriracha-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "40 г",
     "kbju": {
       "kcal": 37,
@@ -2036,6 +2511,11 @@
   },
   "Sweet chili": {
     "img": "img/menu/sweet-chili.webp",
+    "img480": "img/menu/sweet-chili-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "40 г",
     "kbju": {
       "kcal": 92,
@@ -2157,6 +2637,11 @@
   },
   "Эспрессо / Доппио": {
     "img": "img/menu/espresso-doppio.webp",
+    "img480": "img/menu/espresso-doppio-480.webp",
+    "ar": [
+      5568,
+      3712
+    ],
     "w": "25 г",
     "kbju": {
       "kcal": 2,
@@ -2178,6 +2663,11 @@
   },
   "Капучино": {
     "img": "img/menu/kapuchino.webp",
+    "img480": "img/menu/kapuchino-480.webp",
+    "ar": [
+      1281,
+      1920
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 150,
@@ -2199,6 +2689,11 @@
   },
   "Американо": {
     "img": "img/menu/amerikano.webp",
+    "img480": "img/menu/amerikano-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "200 г",
     "kbju": {
       "kcal": 4,
@@ -2220,6 +2715,11 @@
   },
   "Латте": {
     "img": "img/menu/latte.webp",
+    "img480": "img/menu/latte-480.webp",
+    "ar": [
+      1281,
+      1920
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 150,
@@ -2241,6 +2741,11 @@
   },
   "Флэт уайт": {
     "img": "img/menu/flet-uajt.webp",
+    "img480": "img/menu/flet-uajt-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "200 г",
     "kbju": {
       "kcal": 92,
@@ -2262,6 +2767,11 @@
   },
   "Пуровер V60": {
     "img": "img/menu/purover-v60.webp",
+    "img480": "img/menu/purover-v60-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 6,
@@ -2283,6 +2793,11 @@
   },
   "Батч Брю": {
     "img": "img/menu/batch-bryu.webp",
+    "img480": "img/menu/batch-bryu-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "200 г",
     "kbju": {
       "kcal": 4,
@@ -2344,6 +2859,11 @@
   },
   "Ice Латте": {
     "img": "img/menu/ice-latte.webp",
+    "img480": "img/menu/ice-latte-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 132,
@@ -2365,6 +2885,11 @@
   },
   "Ice Капучино": {
     "img": "img/menu/ice-kapuchino.webp",
+    "img480": "img/menu/ice-kapuchino-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 132,
@@ -2386,6 +2911,11 @@
   },
   "Колд-брю: цитрус, вишня-лайм": {
     "img": "img/menu/kold-bryu-citrus-vishnya-lajm.webp",
+    "img480": "img/menu/kold-bryu-citrus-vishnya-lajm-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 74,
@@ -2407,6 +2937,11 @@
   },
   "Эспрессо-тоник": {
     "img": "img/menu/espresso-tonik.webp",
+    "img480": "img/menu/espresso-tonik-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 94,
@@ -2448,6 +2983,11 @@
   },
   "Фраппучино: карамель, шоколад": {
     "img": "img/menu/frappuchino-karamel-shokolad.webp",
+    "img480": "img/menu/frappuchino-karamel-shokolad-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 306,
@@ -2469,6 +3009,11 @@
   },
   "Ассам": {
     "img": "img/menu/assam.webp",
+    "img480": "img/menu/assam-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 4,
@@ -2490,6 +3035,11 @@
   },
   "Жасмин": {
     "img": "img/menu/zhasmin.webp",
+    "img480": "img/menu/zhasmin-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 0,
@@ -2511,6 +3061,11 @@
   },
   "Молочный улун": {
     "img": "img/menu/molochnyj-ulun.webp",
+    "img480": "img/menu/molochnyj-ulun-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "1008 г",
     "kbju": {
       "kcal": 0,
@@ -2532,6 +3087,11 @@
   },
   "Чай по-казахски (нават, иримшик)": {
     "img": "img/menu/chaj-po-kazahski-navat-irimshik.webp",
+    "img480": "img/menu/chaj-po-kazahski-navat-irimshik-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "460 г",
     "kbju": {
       "kcal": 199,
@@ -2553,6 +3113,11 @@
   },
   "Ташкентский": {
     "img": "img/menu/tashkentskij.webp",
+    "img480": "img/menu/tashkentskij-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "427 г",
     "kbju": {
       "kcal": 133,
@@ -2574,6 +3139,11 @@
   },
   "Марокканский": {
     "img": "img/menu/marokkanskij.webp",
+    "img480": "img/menu/marokkanskij-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "362 г",
     "kbju": {
       "kcal": 132,
@@ -2595,6 +3165,11 @@
   },
   "Груша-мята": {
     "img": "img/menu/grusha-myata.webp",
+    "img480": "img/menu/grusha-myata-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "424 г",
     "kbju": {
       "kcal": 149,
@@ -2616,6 +3191,11 @@
   },
   "Имбирь-цитрус-мёд": {
     "img": "img/menu/imbir-citrus-med.webp",
+    "img480": "img/menu/imbir-citrus-med-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 144,
@@ -2637,6 +3217,11 @@
   },
   "Облепиха-мёд-апельсин": {
     "img": "img/menu/oblepiha-med-apelsin.webp",
+    "img480": "img/menu/oblepiha-med-apelsin-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 174,
@@ -2658,6 +3243,11 @@
   },
   "Малина-розмарин-лимон": {
     "img": "img/menu/malina-rozmarin-limon.webp",
+    "img480": "img/menu/malina-rozmarin-limon-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 143,
@@ -2699,6 +3289,11 @@
   },
   "Классический @ Ice tea": {
     "img": "img/menu/klassicheskij-ice-tea.webp",
+    "img480": "img/menu/klassicheskij-ice-tea-480.webp",
+    "ar": [
+      612,
+      560
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 68,
@@ -2720,6 +3315,11 @@
   },
   "Персиковый": {
     "img": "img/menu/persikovyj.webp",
+    "img480": "img/menu/persikovyj-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 95,
@@ -2741,6 +3341,11 @@
   },
   "Жасмин-яблоко": {
     "img": "img/menu/zhasmin-yabloko.webp",
+    "img480": "img/menu/zhasmin-yabloko-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 78,
@@ -2762,6 +3367,11 @@
   },
   "Клубничный улун": {
     "img": "img/menu/klubnichnyj-ulun.webp",
+    "img480": "img/menu/klubnichnyj-ulun-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 68,
@@ -2783,6 +3393,11 @@
   },
   "Щавель-лайм": {
     "img": "img/menu/schavel-lajm.webp",
+    "img480": "img/menu/schavel-lajm-480.webp",
+    "ar": [
+      2000,
+      3000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 137,
@@ -2804,6 +3419,11 @@
   },
   "Манго-маракуйя": {
     "img": "img/menu/mango-marakujya.webp",
+    "img480": "img/menu/mango-marakujya-480.webp",
+    "ar": [
+      2000,
+      3000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 174,
@@ -2825,6 +3445,11 @@
   },
   "Мохито": {
     "img": "img/menu/mohito.webp",
+    "img480": "img/menu/mohito-480.webp",
+    "ar": [
+      2000,
+      3000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 137,
@@ -2846,6 +3471,11 @@
   },
   "Клубничный мохито": {
     "img": "img/menu/klubnichnyj-mohito.webp",
+    "img480": "img/menu/klubnichnyj-mohito-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 151,
@@ -2867,6 +3497,11 @@
   },
   "Киви-яблоко": {
     "img": "img/menu/kivi-yabloko.webp",
+    "img480": "img/menu/kivi-yabloko-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 162,
@@ -2888,6 +3523,11 @@
   },
   "Ананас-черника": {
     "img": "img/menu/ananas-chernika.webp",
+    "img480": "img/menu/ananas-chernika-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 153,
@@ -2909,6 +3549,11 @@
   },
   "Ванильный": {
     "img": "img/menu/vanilnyj.webp",
+    "img480": "img/menu/vanilnyj-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 492,
@@ -2930,6 +3575,11 @@
   },
   "Oreo": {
     "img": "img/menu/oreo.webp",
+    "img480": "img/menu/oreo-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 580,
@@ -2951,6 +3601,11 @@
   },
   "Клубничный": {
     "img": "img/menu/klubnichnyj.webp",
+    "img480": "img/menu/klubnichnyj-480.webp",
+    "ar": [
+      1281,
+      1920
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 428,
@@ -2972,6 +3627,11 @@
   },
   "Яблочный @ Фреши": {
     "img": "img/menu/yablochnyj-freshi.webp",
+    "img480": "img/menu/yablochnyj-freshi-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 138,
@@ -2993,6 +3653,11 @@
   },
   "Грейпфрутовый": {
     "img": "img/menu/grejpfrutovyj.webp",
+    "img480": "img/menu/grejpfrutovyj-480.webp",
+    "ar": [
+      828,
+      1242
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 117,
@@ -3014,6 +3679,11 @@
   },
   "Апельсиновый": {
     "img": "img/menu/apelsinovyj.webp",
+    "img480": "img/menu/apelsinovyj-480.webp",
+    "ar": [
+      477,
+      329
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 135,
@@ -3035,6 +3705,11 @@
   },
   "Классический @ Раф": {
     "img": "img/menu/klassicheskij-raf.webp",
+    "img480": "img/menu/klassicheskij-raf-480.webp",
+    "ar": [
+      370,
+      640
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 431,
@@ -3056,6 +3731,11 @@
   },
   "Медовый": {
     "img": "img/menu/medovyj.webp",
+    "img480": "img/menu/medovyj-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 462,
@@ -3077,6 +3757,11 @@
   },
   "С солёной карамелью": {
     "img": "img/menu/s-solenoj-karamelyu.webp",
+    "img480": "img/menu/s-solenoj-karamelyu-480.webp",
+    "ar": [
+      1254,
+      1254
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 461,
@@ -3098,6 +3783,11 @@
   },
   "Латте печенье": {
     "img": "img/menu/latte-pechene.webp",
+    "img480": "img/menu/latte-pechene-480.webp",
+    "ar": [
+      1400,
+      1900
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 294,
@@ -3119,6 +3809,11 @@
   },
   "Матча-пломбир": {
     "img": "img/menu/matcha-plombir.webp",
+    "img480": "img/menu/matcha-plombir-480.webp",
+    "ar": [
+      1300,
+      1900
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 335,
@@ -3160,6 +3855,11 @@
   },
   "Моккачино": {
     "img": "img/menu/mokkachino.webp",
+    "img480": "img/menu/mokkachino-480.webp",
+    "ar": [
+      1448,
+      1086
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 354,
@@ -3181,6 +3881,11 @@
   },
   "Киви-тоник": {
     "img": "img/menu/kivi-tonik.webp",
+    "img480": "img/menu/kivi-tonik-480.webp",
+    "ar": [
+      1300,
+      1900
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 162,
@@ -3202,6 +3907,11 @@
   },
   "Ginger-тоник": {
     "img": "img/menu/ginger-tonik.webp",
+    "img480": "img/menu/ginger-tonik-480.webp",
+    "ar": [
+      1280,
+      1900
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 168,
@@ -3243,6 +3953,11 @@
   },
   "Ice клубничный капучино": {
     "img": "img/menu/ice-klubnichnyj-kapuchino.webp",
+    "img480": "img/menu/ice-klubnichnyj-kapuchino-480.webp",
+    "ar": [
+      2000,
+      3000
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 183,
@@ -3264,6 +3979,11 @@
   },
   "Ice cream-Cola": {
     "img": "img/menu/ice-cream-cola.webp",
+    "img480": "img/menu/ice-cream-cola-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "330 г",
     "kbju": {
       "kcal": 271,
@@ -3305,6 +4025,11 @@
   },
   "Яблочный @ Глинтвейн б/а": {
     "img": "img/menu/yablochnyj-glintvejn-b-a.webp",
+    "img480": "img/menu/yablochnyj-glintvejn-b-a-480.webp",
+    "ar": [
+      1200,
+      1800
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 224,
@@ -3326,6 +4051,11 @@
   },
   "Вишнёвый": {
     "img": "img/menu/vishnevyj.webp",
+    "img480": "img/menu/vishnevyj-480.webp",
+    "ar": [
+      1200,
+      1800
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 238,
@@ -3347,6 +4077,11 @@
   },
   "Апельсин-облепиха": {
     "img": "img/menu/apelsin-oblepiha.webp",
+    "img480": "img/menu/apelsin-oblepiha-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 245,
@@ -3368,6 +4103,11 @@
   },
   "Зелёный": {
     "img": "img/menu/zelenyj.webp",
+    "img480": "img/menu/zelenyj-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 196,
@@ -3389,6 +4129,11 @@
   },
   "Манго-чиа": {
     "img": "img/menu/mango-chia.webp",
+    "img480": "img/menu/mango-chia-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 305,
@@ -3410,6 +4155,11 @@
   },
   "Малина-банан": {
     "img": "img/menu/malina-banan.webp",
+    "img480": "img/menu/malina-banan-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 252,
@@ -3431,6 +4181,11 @@
   },
   "Черника-банан": {
     "img": "img/menu/chernika-banan.webp",
+    "img480": "img/menu/chernika-banan-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 257,
@@ -3452,6 +4207,11 @@
   },
   "Морс клюквенный": {
     "img": "img/menu/mors-klyukvennyj.webp",
+    "img480": "img/menu/mors-klyukvennyj-480.webp",
+    "ar": [
+      225,
+      225
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 127,
@@ -3493,6 +4253,11 @@
   },
   "Вода Del Cappuccino без газа": {
     "img": "img/menu/voda-del-cappuccino-bez-gaza.webp",
+    "img480": "img/menu/voda-del-cappuccino-bez-gaza-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 0,
@@ -3512,6 +4277,11 @@
   },
   "Borjomi glass": {
     "img": "img/menu/borjomi-glass.webp",
+    "img480": "img/menu/borjomi-glass-480.webp",
+    "ar": [
+      341,
+      341
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 0,
@@ -3522,6 +4292,11 @@
   },
   "Coca-Cola": {
     "img": "img/menu/coca-cola.webp",
+    "img480": "img/menu/coca-cola-480.webp",
+    "ar": [
+      800,
+      800
+    ],
     "w": "250 мл",
     "kbju": {
       "kcal": 105,
@@ -3532,6 +4307,11 @@
   },
   "Coca-Cola Zero": {
     "img": "img/menu/coca-cola-zero.webp",
+    "img480": "img/menu/coca-cola-zero-480.webp",
+    "ar": [
+      1024,
+      1024
+    ],
     "w": "250 мл",
     "kbju": {
       "kcal": 1,
@@ -3542,6 +4322,11 @@
   },
   "Fanta": {
     "img": "img/menu/fanta.webp",
+    "img480": "img/menu/fanta-480.webp",
+    "ar": [
+      1080,
+      1080
+    ],
     "w": "250 мл",
     "kbju": {
       "kcal": 98,
@@ -3552,6 +4337,11 @@
   },
   "Sprite": {
     "img": "img/menu/sprite.webp",
+    "img480": "img/menu/sprite-480.webp",
+    "ar": [
+      500,
+      500
+    ],
     "w": "250 мл",
     "kbju": {
       "kcal": 90,
@@ -3562,6 +4352,11 @@
   },
   "Piko mini": {
     "img": "img/menu/piko-mini.webp",
+    "img480": "img/menu/piko-mini-480.webp",
+    "ar": [
+      1200,
+      1200
+    ],
     "w": "200 мл",
     "kbju": {
       "kcal": 96,
@@ -3572,6 +4367,11 @@
   },
   "Schweppes": {
     "img": "img/menu/schweppes.webp",
+    "img480": "img/menu/schweppes-480.webp",
+    "ar": [
+      1000,
+      1000
+    ],
     "w": "450 мл",
     "kbju": {
       "kcal": 180,
@@ -3582,6 +4382,11 @@
   },
   "Лимон": {
     "img": "img/menu/limon.webp",
+    "img480": "img/menu/limon-480.webp",
+    "ar": [
+      1017,
+      980
+    ],
     "w": "50 г",
     "kbju": {
       "kcal": 14,
@@ -3603,6 +4408,11 @@
   },
   "Мёд": {
     "img": "img/menu/med.webp",
+    "img480": "img/menu/med-480.webp",
+    "ar": [
+      1920,
+      1920
+    ],
     "w": "30 г",
     "kbju": {
       "kcal": 98,
@@ -3624,6 +4434,11 @@
   },
   "Нават": {
     "img": "img/menu/navat.webp",
+    "img480": "img/menu/navat-480.webp",
+    "ar": [
+      225,
+      225
+    ],
     "w": "30 г",
     "kbju": {
       "kcal": 120,
@@ -3645,6 +4460,11 @@
   },
   "Молоко": {
     "img": "img/menu/moloko.webp",
+    "img480": "img/menu/moloko-480.webp",
+    "ar": [
+      500,
+      514
+    ],
     "w": "80 г",
     "kbju": {
       "kcal": 46,
@@ -3666,6 +4486,11 @@
   },
   "Сироп в ассортименте": {
     "img": "img/menu/sirop-v-assortimente.webp",
+    "img480": "img/menu/sirop-v-assortimente-480.webp",
+    "ar": [
+      225,
+      225
+    ],
     "w": "30 г",
     "kbju": {
       "kcal": 78,
@@ -3747,6 +4572,11 @@
   },
   "Кукис": {
     "img": "img/menu/kukis.webp",
+    "img480": "img/menu/kukis-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "64 г",
     "kbju": {
       "kcal": 263,
@@ -3767,6 +4597,11 @@
   },
   "Картошка": {
     "img": "img/menu/kartoshka.webp",
+    "img480": "img/menu/kartoshka-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "104 г",
     "kbju": {
       "kcal": 146,
@@ -3787,6 +4622,11 @@
   },
   "Маффин": {
     "img": "img/menu/maffin.webp",
+    "img480": "img/menu/maffin-480.webp",
+    "ar": [
+      1281,
+      1920
+    ],
     "w": "74 г",
     "kbju": {
       "kcal": 261,
@@ -3807,6 +4647,11 @@
   },
   "Тарталетка Банофи пай": {
     "img": "img/menu/tartaletka-banofi-paj.webp",
+    "img480": "img/menu/tartaletka-banofi-paj-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "120 г",
     "kbju": {
       "kcal": 376,
@@ -3827,6 +4672,11 @@
   },
   "Медовик @ Десерты": {
     "img": "img/menu/medovik-deserty.webp",
+    "img480": "img/menu/medovik-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "104 г",
     "kbju": {
       "kcal": 353,
@@ -3847,6 +4697,11 @@
   },
   "Молочная девочка @ Десерты": {
     "img": "img/menu/molochnaya-devochka-deserty.webp",
+    "img480": "img/menu/molochnaya-devochka-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "101 г",
     "kbju": {
       "kcal": 315,
@@ -3868,6 +4723,11 @@
   },
   "Шу ягодный": {
     "img": "img/menu/shu-yagodnyj.webp",
+    "img480": "img/menu/shu-yagodnyj-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "136 г",
     "kbju": {
       "kcal": 435,
@@ -3889,6 +4749,11 @@
   },
   "Шу абрикосовый": {
     "img": "img/menu/shu-abrikosovyj.webp",
+    "img480": "img/menu/shu-abrikosovyj-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "136 г",
     "kbju": {
       "kcal": 435,
@@ -3910,6 +4775,11 @@
   },
   "Синнабон классический": {
     "img": "img/menu/sinnabon-klassicheskij.webp",
+    "img480": "img/menu/sinnabon-klassicheskij-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "104 г",
     "kbju": {
       "kcal": 297,
@@ -3930,6 +4800,11 @@
   },
   "Испанский чизкейк": {
     "img": "img/menu/ispanskij-chizkejk.webp",
+    "img480": "img/menu/ispanskij-chizkejk-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "162 г",
     "kbju": {
       "kcal": 415,
@@ -3950,6 +4825,11 @@
   },
   "Чизкейк по-казахски @ Десерты": {
     "img": "img/menu/chizkejk-po-kazahski-deserty.webp",
+    "img480": "img/menu/chizkejk-po-kazahski-deserty-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "138 г",
     "kbju": {
       "kcal": 379,
@@ -3970,6 +4850,11 @@
   },
   "Вупи-пай @ Десерты": {
     "img": "img/menu/vupi-paj-deserty.webp",
+    "img480": "img/menu/vupi-paj-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "125 г",
     "kbju": {
       "kcal": 457,
@@ -3991,6 +4876,11 @@
   },
   "Сникерс @ Десерты": {
     "img": "img/menu/snikers-deserty.webp",
+    "img480": "img/menu/snikers-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "127 г",
     "kbju": {
       "kcal": 575,
@@ -4012,6 +4902,11 @@
   },
   "Наполеон @ Десерты": {
     "img": "img/menu/napoleon-deserty.webp",
+    "img480": "img/menu/napoleon-deserty-480.webp",
+    "ar": [
+      1281,
+      1920
+    ],
     "w": "168 г",
     "kbju": {
       "kcal": 665,
@@ -4033,6 +4928,11 @@
   },
   "Меренговый рулет @ Десерты": {
     "img": "img/menu/merengovyj-rulet-deserty.webp",
+    "img480": "img/menu/merengovyj-rulet-deserty-480.webp",
+    "ar": [
+      1280,
+      853
+    ],
     "w": "156 г",
     "kbju": {
       "kcal": 354,
@@ -4054,6 +4954,11 @@
   },
   "Фисташковый рулет @ Десерты": {
     "img": "img/menu/fistashkovyj-rulet-deserty.webp",
+    "img480": "img/menu/fistashkovyj-rulet-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "163 г",
     "kbju": {
       "kcal": 537,
@@ -4075,6 +4980,11 @@
   },
   "Фисташка-малина @ Десерты": {
     "img": "img/menu/fistashka-malina-deserty.webp",
+    "img480": "img/menu/fistashka-malina-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "125 г",
     "kbju": {
       "kcal": 360,
@@ -4096,6 +5006,11 @@
   },
   "Дубайский @ Десерты": {
     "img": "img/menu/dubajskij-deserty.webp",
+    "img480": "img/menu/dubajskij-deserty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "130 г",
     "kbju": {
       "kcal": 698,
@@ -4117,6 +5032,11 @@
   },
   "Меренговый рулет @ Торты (целиком)": {
     "img": "img/menu/merengovyj-rulet-torty-celikom.webp",
+    "img480": "img/menu/merengovyj-rulet-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "900 г",
     "kbju": {
       "kcal": 2043,
@@ -4138,6 +5058,11 @@
   },
   "Медовик @ Торты (целиком)": {
     "img": "img/menu/medovik-torty-celikom.webp",
+    "img480": "img/menu/medovik-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1000 г",
     "kbju": {
       "kcal": 3260,
@@ -4159,6 +5084,11 @@
   },
   "Молочная девочка @ Торты (целиком)": {
     "img": "img/menu/molochnaya-devochka-torty-celikom.webp",
+    "img480": "img/menu/molochnaya-devochka-torty-celikom-480.webp",
+    "ar": [
+      1920,
+      1280
+    ],
     "w": "1000 г",
     "kbju": {
       "kcal": 3119,
@@ -4180,6 +5110,11 @@
   },
   "Наполеон @ Торты (целиком)": {
     "img": "img/menu/napoleon-torty-celikom.webp",
+    "img480": "img/menu/napoleon-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1250 г",
     "kbju": {
       "kcal": 4952,
@@ -4201,6 +5136,11 @@
   },
   "Чизкейк по-казахски @ Торты (целиком)": {
     "img": "img/menu/chizkejk-po-kazahski-torty-celikom.webp",
+    "img480": "img/menu/chizkejk-po-kazahski-torty-celikom-480.webp",
+    "ar": [
+      3000,
+      2000
+    ],
     "w": "1100 г",
     "kbju": {
       "kcal": 3829,
@@ -4222,6 +5162,11 @@
   },
   "Чизкейк испанский": {
     "img": "img/menu/chizkejk-ispanskij.webp",
+    "img480": "img/menu/chizkejk-ispanskij-480.webp",
+    "ar": [
+      3000,
+      2000
+    ],
     "w": "1200 г",
     "kbju": {
       "kcal": 4184,
@@ -4243,6 +5188,11 @@
   },
   "Сникерс @ Торты (целиком)": {
     "img": "img/menu/snikers-torty-celikom.webp",
+    "img480": "img/menu/snikers-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1000 г",
     "kbju": {
       "kcal": 5894,
@@ -4264,6 +5214,11 @@
   },
   "Фисташка-малина @ Торты (целиком)": {
     "img": "img/menu/fistashka-malina-torty-celikom.webp",
+    "img480": "img/menu/fistashka-malina-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1000 г",
     "kbju": {
       "kcal": 2877,
@@ -4285,6 +5240,11 @@
   },
   "Вупи-пай @ Торты (целиком)": {
     "img": "img/menu/vupi-paj-torty-celikom.webp",
+    "img480": "img/menu/vupi-paj-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1000 г",
     "kbju": {
       "kcal": 3654,
@@ -4306,6 +5266,11 @@
   },
   "Фисташковый рулет @ Торты (целиком)": {
     "img": "img/menu/fistashkovyj-rulet-torty-celikom.webp",
+    "img480": "img/menu/fistashkovyj-rulet-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "900 г",
     "kbju": {
       "kcal": 2963,
@@ -4327,6 +5292,11 @@
   },
   "Дубайский @ Торты (целиком)": {
     "img": "img/menu/dubajskij-torty-celikom.webp",
+    "img480": "img/menu/dubajskij-torty-celikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1000 г",
     "kbju": {
       "kcal": 5373,
@@ -4348,6 +5318,11 @@
   },
   "Вареники @ Полуфабрикаты": {
     "img": "img/menu/vareniki-polufabrikaty.webp",
+    "img480": "img/menu/vareniki-polufabrikaty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 774,
@@ -4369,6 +5344,11 @@
   },
   "Самса с курицей @ Полуфабрикаты": {
     "img": "img/menu/samsa-s-kuricej-polufabrikaty.webp",
+    "img480": "img/menu/samsa-s-kuricej-polufabrikaty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1040 г",
     "kbju": {
       "kcal": 2907,
@@ -4390,6 +5370,11 @@
   },
   "Самса с говядиной @ Полуфабрикаты": {
     "img": "img/menu/samsa-s-govyadinoj-polufabrikaty.webp",
+    "img480": "img/menu/samsa-s-govyadinoj-polufabrikaty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "1040 г",
     "kbju": {
       "kcal": 3075,
@@ -4411,6 +5396,11 @@
   },
   "Сырники классические @ Полуфабрикаты": {
     "img": "img/menu/syrniki-klassicheskie-polufabrikaty.webp",
+    "img480": "img/menu/syrniki-klassicheskie-polufabrikaty-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "307 г",
     "kbju": {
       "kcal": 674,
@@ -4432,6 +5422,11 @@
   },
   "Котлеты куриные": {
     "img": "img/menu/kotlety-kurinye.webp",
+    "img480": "img/menu/kotlety-kurinye-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 561,
@@ -4453,6 +5448,11 @@
   },
   "Котлеты говяжьи": {
     "img": "img/menu/kotlety-govyazhi.webp",
+    "img480": "img/menu/kotlety-govyazhi-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 916,
@@ -4474,6 +5474,11 @@
   },
   "Пельмени с говядиной": {
     "img": "img/menu/pelmeni-s-govyadinoj.webp",
+    "img480": "img/menu/pelmeni-s-govyadinoj-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 1177,
@@ -4495,6 +5500,11 @@
   },
   "Манты с говядиной": {
     "img": "img/menu/manty-s-govyadinoj.webp",
+    "img480": "img/menu/manty-s-govyadinoj-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "600 г",
     "kbju": {
       "kcal": 1288,
@@ -4516,6 +5526,11 @@
   },
   "Мякоть": {
     "img": "img/menu/myakot.webp",
+    "img480": "img/menu/myakot-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 935,
@@ -4537,6 +5552,11 @@
   },
   "Фарш": {
     "img": "img/menu/farsh.webp",
+    "img480": "img/menu/farsh-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "500 г",
     "kbju": {
       "kcal": 1270,
@@ -4558,6 +5578,11 @@
   },
   "Рибай": {
     "img": "img/menu/ribaj.webp",
+    "img480": "img/menu/ribaj-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 873,
@@ -4579,6 +5604,11 @@
   },
   "Ти-бон": {
     "img": "img/menu/ti-bon.webp",
+    "img480": "img/menu/ti-bon-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "300 г",
     "kbju": {
       "kcal": 750,
@@ -4620,6 +5650,11 @@
   },
   "Сырники с иримшиком": {
     "img": "img/menu/syrniki-s-irimshikom.webp",
+    "img480": "img/menu/syrniki-s-irimshikom-480.webp",
+    "ar": [
+      1280,
+      1280
+    ],
     "w": "360 г",
     "kbju": {
       "kcal": 742,
@@ -4641,6 +5676,11 @@
   },
   "Малина-лимон": {
     "img": "img/menu/malina-limon.webp",
+    "img480": "img/menu/malina-limon-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 141,
@@ -4662,6 +5702,11 @@
   },
   "Маракуйя-апельсин-мёд": {
     "img": "img/menu/marakujya-apelsin-med.webp",
+    "img480": "img/menu/marakujya-apelsin-med-480.webp",
+    "ar": [
+      1024,
+      1536
+    ],
     "w": "400 г",
     "kbju": {
       "kcal": 178,
@@ -4683,6 +5728,11 @@
   },
   "Гуава-гуарана": {
     "img": "img/menu/guava-guarana.webp",
+    "img480": "img/menu/guava-guarana-480.webp",
+    "ar": [
+      2000,
+      3000
+    ],
     "w": "375 г",
     "kbju": {
       "kcal": 160,
@@ -4704,6 +5754,11 @@
   },
   "Salam Premium Cola glass": {
     "img": "img/menu/salam-premium-cola-glass.webp",
+    "img480": "img/menu/salam-premium-cola-glass-480.webp",
+    "ar": [
+      1066,
+      1600
+    ],
     "w": "250 г",
     "kbju": {
       "kcal": 105,
