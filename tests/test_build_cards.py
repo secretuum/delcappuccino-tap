@@ -75,7 +75,7 @@ class TestCalc(Base):
 
     def test_iiko_per_portion_has_priority(self):
         iiko = self.w('iiko.json', export([{
-            "key": "t1", "name": "Тест: курица с рисом", "group": "Горячее", "description": "Описание из iiko.",
+            "key": "t1", "name": "Тест: курица с рисом", "group": "Горячее", "description": "Описание из выгрузки.",
             "composition": None, "portion": {"value": 250, "unit": "г"},
             "per_portion": {"kcal": 500, "protein": 30, "fat": 20, "carbs": 40}, "per_100g": None, "photo": None, "missing": []}]))
         ttk = self.w('ttk.json', export([{
@@ -85,7 +85,7 @@ class TestCalc(Base):
         c = cards['Тест: курица с рисом']
         self.assertEqual(c['kbju'], {'kcal': 500, 'p': 30, 'f': 20, 'c': 40})   # не 300/10/0/60 из состава
         self.assertEqual(c['w'], '230 г')                                       # выход — из ТТК
-        self.assertEqual(c['d'], {'ru': 'Описание из iiko.'})
+        self.assertEqual(c['d'], {'ru': 'Описание из выгрузки.'})
         self.assertEqual(c['ing']['ru'], 'тест-рис')
         self.assertIn('[iiko+ttk]', rep)
 
