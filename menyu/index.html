@@ -13,6 +13,7 @@
 <meta property="og:url" content="https://tap.delcappuccino.kz/menyu">
 <meta property="og:title" content="Меню и цены — Del Cappuccino">
 <meta property="og:description" content="Всё меню кофеен Del Cappuccino и bakery to go с ценами в тенге.">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');</script>
 <!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 @font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic-ext.70cf502d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
@@ -568,5 +569,13 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 </ul>
 </main>
 <footer class="wrap"><a href="/">Главная</a> · <a href="/#faq">Частые вопросы</a> · <a href="https://delcappuccino.kz/">Заказать в приложении</a> · <a href="https://instagram.com/del.cappuccino">Instagram</a> · © 2026 Del Cappuccino</footer>
+<script>
+/* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
+(function(){
+  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=G-D50YPM8RMK';s.async=true;document.head.appendChild(s)}
+  function idle(){('requestIdleCallback'in window)?requestIdleCallback(loadGtag,{timeout:4000}):setTimeout(loadGtag,1500)}
+  if(document.readyState==='complete')idle();else addEventListener('load',idle);
+})();
+</script>
 </body>
 </html>

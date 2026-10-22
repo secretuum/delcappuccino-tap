@@ -220,9 +220,20 @@ class TestFaq(unittest.TestCase):
             self.assertIn(addr, text)
         for hours in re.findall(r"hours:'([^']*)'", self.html):
             self.assertIn(re.sub(r'^ежедневно ', '', hours), text)
-        for fact in ('КМДБ', 'весь день', 'детские комнаты', 'VIP-залы', 'намазхана',
+        for fact in ('КМДБ', 'весь день', 'Детские комнаты', 'VIP-залы', 'намазхана',
                      'https://delcappuccino.kz/', 'ҚАЗ'):
             self.assertIn(fact, text)
+
+    def test_kids_rooms_where_site_says(self):
+        # на сайте: «Детские комнаты — Игровые пространства в ЖК Вавилон и ЖК Комфорт Сити» — в FAQ и llms.txt так же
+        places = re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', self.html).group(1)
+        answer = next(a for q, a in self.shown if 'детская комната' in q)
+        self.assertIn('игровые пространства в %s' % places, answer)
+        llms = read('llms.txt')
+        en = dict(re.findall(r"'([^']*)':'([^']*)'", self.html[self.html.index('\n en:{'):]))
+        for p in re.split(r',\s*|\s+и\s+', places):
+            self.assertIn(p, llms.split('## English')[0])
+            self.assertIn(en[p], llms.split('## English')[1])
 
     def test_visible_link_to_menu_page(self):
         head = re.search(r'<div class="faq-head">(.*?)</div>\s*<div class="faq-list">', self.body, re.S).group(1)
@@ -243,7 +254,14 @@ class TestMenuPage(unittest.TestCase):
         head = self.page.split('</head>')[0]
         for tag in ('<meta charset="UTF-8">', 'name="viewport"', '<title>', 'name="description"'):
             self.assertIn(tag, head)
-        self.assertNotIn('<script', self.page, 'страница меню — без JS')
+        # JS только аналитика (как на /ugolok, тот же ID, что на главной); меню — текстом, без скриптов
+        scripts = re.findall(r'<script>(.*?)</script>', self.page, re.S)
+        self.assertEqual(len(scripts), 2)
+        self.assertEqual(len(re.findall(r'<script\b', self.page)), 2, 'других скриптов на /menyu нет')
+        ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", self.html.split('</head>')[0]).group(1)
+        self.assertIn("gtag('config','%s')" % ga, scripts[0])
+        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[1])
+        self.assertIn("addEventListener('load'", scripts[1])
         self.assertNotRegex(self.page, r'(src|href)="(?!/|https://|#)', 'пути только от корня: /menyu отдаётся без слэша')
 
     def test_all_items_with_prices(self):

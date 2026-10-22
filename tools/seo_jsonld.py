@@ -15,10 +15,12 @@
   кофейнях) — availableAtOrFrom на эти точки. В sameAs точки — только ссылка 2GIS на карточку фирмы (…/firm/<id>);
   поисковые ссылки 2GIS (…/search/…) — не карточки, их не кладём (главный, 22.10.2026). FAQPage — из tools/faq.json.
 - «Частые вопросы» (#faq): <details> без JS, тот же текст, что в FAQPage. В ответах можно {часы}, {адреса}, {точек} —
-  подставляются из BRANCHES, чтобы ответ не разошёлся с точками. Допустимый HTML в ответах: <a href>, <ul>, <li>.
+  подставляются из BRANCHES, {детские} — из карточки «Детские комнаты» раздела «Формат», чтобы ответ не разошёлся
+  с сайтом. Допустимый HTML в ответах: <a href>, <ul>, <li>.
 - /menyu (menyu/index.html): всё меню текстом — кофейни (вкладки MENU_TABS) и Bakery to go (вкладки режима togo),
   разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
+- На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — из <head> главной): видно переходы из ИИ.
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -169,11 +171,24 @@ def hours_text(bs):
     return first, ['%s — %s' % (place(b), b['hours']) for b in bs if b['hours'] != '24/7']
 
 
+def kids_places(html):
+    """где детские комнаты — из карточки «Детские комнаты» раздела «Формат»: «Игровые пространства в ЖК Вавилон и …»"""
+    m = re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', html)
+    if not m:
+        sys.exit('seo_jsonld: не нашёл на главной «Детские комнаты … Игровые пространства в …» — допишите разбор')
+    return re.split(r',\s*|\s+и\s+', m.group(1))
+
+
+def and_join(xs, conj='и'):
+    return xs[0] if len(xs) == 1 else '%s %s %s' % (', '.join(xs[:-1]), conj, xs[-1])
+
+
 def faq_vars(html):
     e = lambda s: H.escape(s, quote=False)
     bs = branches(html)
     first, rest = hours_text(bs)
     return {'часы': ' '.join(e(x) + '.' for x in [first] + rest),
+            'детские': e(and_join(kids_places(html))),
             'адреса': '<ul>' + ''.join('<li>%s — %s</li>' % (e(place(b)), e(hours_ru(b['hours']))) for b in bs) + '</ul>',
             'точек': '%d %s' % (len(bs), plural(len(bs), 'точка', 'точки', 'точек'))}
 
@@ -362,6 +377,7 @@ def menu_page(html):
         '<p class="note">%s</p>' % e(allergy),
     ] + [tab_html('togo', t, arr) for t, arr in tabs['togo']]
     insta = instagram(html)
+    ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", html.split('</head>')[0]).group(1)
     return '''<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -377,6 +393,7 @@ def menu_page(html):
 <meta property="og:url" content="%(url)s">
 <meta property="og:title" content="Меню и цены — Del Cappuccino">
 <meta property="og:description" content="Всё меню кофеен Del Cappuccino и bakery to go с ценами в тенге.">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','%(ga)s');</script>
 <!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 %(fonts)s
@@ -412,10 +429,18 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 %(body)s
 </main>
 <footer class="wrap"><a href="/">Главная</a> · <a href="/#faq">Частые вопросы</a> · <a href="%(order)s">Заказать в приложении</a>%(insta)s · © 2026 Del Cappuccino</footer>
+<script>
+/* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
+(function(){
+  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=%(ga)s';s.async=true;document.head.appendChild(s)}
+  function idle(){('requestIdleCallback'in window)?requestIdleCallback(loadGtag,{timeout:4000}):setTimeout(loadGtag,1500)}
+  if(document.readyState==='complete')idle();else addEventListener('load',idle);
+})();
+</script>
 </body>
 </html>
 ''' % {'url': MENU_URL, 'fonts': fonts, 'toc': toc, 'body': '\n'.join(x for x in body if x), 'order': ORDER_URL,
-       'insta': ''.join(' · <a href="%s">Instagram</a>' % u for u in insta)}
+       'insta': ''.join(' · <a href="%s">Instagram</a>' % u for u in insta), 'ga': ga}
 
 
 # ── /llms.txt ──
@@ -427,7 +452,8 @@ def llms(html):
     cafes = [b for b in bs if b['hours'] == '24/7']
     rest = [b for b in bs if b['hours'] != '24/7']
     ru_points = '\n'.join('- %s — %s, Алматы — %s' % (short(b), b['addr'], hours_ru(b['hours'])) for b in bs)
-    missing = [x for b in bs for x in (short(b), b['addr']) if x not in en]
+    kids = kids_places(html)
+    missing = [x for x in [y for b in bs for y in (short(b), b['addr'])] + kids if x not in en]
     if missing:
         sys.exit('seo_jsonld: нет английского перевода в MENU_TR.en для %s — допишите словарь' % ', '.join(missing))
     en_points = '\n'.join('- %s — %s, Almaty — %s' % (en[short(b)], en[b['addr']], hours_en(b['hours']))
@@ -447,7 +473,7 @@ def llms(html):
 
 > Кофейни Del Cappuccino в Алматы: %(cafes)s круглосуточно (24/7)%(rest_ru)s. Завтраки весь день, продукция сертифицирована КМДБ Halal (halaldamu.kz).
 
-Для семейных визитов есть детские комнаты, для спокойных встреч — VIP-залы, для молитвы — намазхана. Банкеты — для компании до 40 человек. Меню на сайте — на казахском, русском и английском.
+Детские комнаты (игровые пространства) — в %(kids_ru)s. Для спокойных встреч — VIP-залы, для молитвы — намазхана. Банкеты — для компании до 40 человек. Меню на сайте — на казахском, русском и английском.
 
 ## Точки
 
@@ -461,7 +487,7 @@ def llms(html):
 
 > Del Cappuccino cafés in Almaty: %(cafes_en)d open 24/7%(rest_en)s. Breakfast all day; products certified halal by KMDB (halaldamu.kz).
 
-Kids' rooms for family visits, VIP rooms for quiet meetings, a prayer room (namazkhana). Banquets for groups of up to 40 guests. The menu on the website is available in Kazakh, Russian and English.
+Kids' rooms (play areas) at %(kids_en)s. VIP rooms for quiet meetings, a prayer room (namazkhana). Banquets for groups of up to 40 guests. The menu on the website is available in Kazakh, Russian and English.
 
 ### Locations
 
@@ -472,7 +498,8 @@ Kids' rooms for family visits, VIP rooms for quiet meetings, a prayer room (nama
 %(links_en)s
 ''' % {'cafes': '%d %s' % (len(cafes), plural(len(cafes), 'кофейня', 'кофейни', 'кофеен')), 'rest_ru': rest_ru,
        'ru_points': ru_points, 'links_ru': links_ru, 'cafes_en': len(cafes), 'rest_en': rest_en,
-       'en_points': en_points, 'links_en': links_en}
+       'en_points': en_points, 'links_en': links_en,
+       'kids_ru': and_join(kids), 'kids_en': and_join([en[k] for k in kids], 'and')}
 
 
 # ── запись ──
