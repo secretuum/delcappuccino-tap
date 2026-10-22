@@ -41,6 +41,7 @@
   --olive:#849E29; --sage:#738E5B; --moss:#B4B86C;
   --ink:#241C15; --ink-2:#5C5245; --line:rgba(66,99,73,.18);
   --surface:#FFFFFF; --r:14px;
+  --sale:#C2140F;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
@@ -109,6 +110,7 @@ nav a:hover{color:var(--forest)}
 @keyframes grill-run{to{transform:translateX(-100%)}}
 .grill-cap{margin-top:8px;font-size:13.5px;line-height:1.5;color:var(--ink-2)}
 .grill-cap b{color:var(--forest-dk)}
+.grill-cap .sale{color:var(--ink);font-weight:600;white-space:nowrap}
 .grill-cap a{color:var(--forest);font-weight:600;text-decoration:none;white-space:nowrap}
 @media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}
 @media(max-width:680px){.grill-promo{margin-top:20px;max-width:none}.grill-cap{font-size:12.5px}}
@@ -407,6 +409,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 .mm-it .sp{flex:1;min-width:12px}
 .mm-it .pr{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
 .mm-it .pr .old{font-weight:400;color:var(--ink-2);text-decoration:line-through;margin-right:4px;font-size:11.5px}
+/* новая цена рядом со старой (поле old): красное подчёркивание тоном пламени акции; то же в подписи .grill-cap */
+.sale{text-decoration-line:underline;text-decoration-color:var(--sale);text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-skip-ink:none}
 .mm-only{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin:0 2px 0 5px;padding:0;border:1.3px solid var(--forest);border-radius:50%;background:transparent;color:var(--forest);font-family:'Golos Text';font-size:10px;font-weight:800;line-height:1;vertical-align:1px;cursor:pointer;transition:.15s}
 .mm-only::after{content:'';position:absolute;inset:-13px}
 .mm-only:hover,.mm-only[aria-expanded="true"]{background:var(--forest);color:var(--cream)}
@@ -535,7 +539,7 @@ footer{border-top:1px solid var(--line);padding:24px 0}
             <div class="grill-ticker" aria-hidden="true"><span>ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ ·</span><span>ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ · ВНИМАНИЕ ·</span></div>
           </div>
         </div>
-        <p class="grill-cap"><b>Курица гриль</b> · 6000 ₸ · Толе Би, 64 и Серкебаева, 146 · <a href="#" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль — открыть в меню">смотреть в меню →</a></p>
+        <p class="grill-cap"><b>Курица гриль</b> · <s>6000</s>&nbsp;<span class="sale">3990 ₸</span> · Толе Би, 64 и Серкебаева, 146 · <a href="#" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — открыть в меню">смотреть в меню →</a></p>
       </div>
     </div>
     <div class="hero-photo">
@@ -846,9 +850,9 @@ const MENU_KITCHEN = [
  {t:'Блюда на гриле', items:[
   {n:'Люля из говядины с салатом и питой', p:3200, m:['new']},
   {n:'Шашлычки из говядины с питой', p:4000, m:['new']},
-  {n:'Курица гриль', p:6000, only:['04','02'], m:['new']},
-  {n:'Рибай на кости', vol:'300 гр', p:7200, m:['hit','wait']},
-  {n:'Ти-бон стейк с молодым картофелем', vol:'300 гр', p:7200, m:['wait']},
+  {n:'Курица гриль', p:3990, old:6000, only:['04','02'], m:['new']},
+  {n:'Рибай на кости', vol:'300 гр', p:3990, old:7200, m:['hit','wait']},
+  {n:'Ти-бон стейк с молодым картофелем', vol:'300 гр', p:3990, old:7200, m:['wait']},
   {n:'Стейк лосося с молодым картофелем', vol:'250 гр', p:7200, m:['wait']},
  ]},
  {t:'Хлеба', items:[
@@ -1618,7 +1622,7 @@ function secHTML(s, tab, i){
         <div class="mm-it">
           <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it, s.t)}${onlyBtn(it)}${it.vol?` <span class="vol${it.vol.length>18?' vol-long':''}">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
           <span class="sp"></span>
-          ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> `:''}${fmtP(it.p)}</span>`:''}
+          ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>`:fmtP(it.p)}</span>`:''}
         </div>`).join('')}
     </section>`;
 }
