@@ -32,7 +32,7 @@ class TestJsonLd(unittest.TestCase):
         cls.branches = []
         for line in re.findall(r"\{n:'.*\}", arr):
             g = lambda k: (re.search(r"\b%s:'([^']*)'" % k, line) or [None, None])[1]
-            geo = re.search(r'geo:\[([-\d.]+),([-\d.]+)\]', line)
+            geo = re.search(r'geo:\[([-\d.]+),\s*([-\d.]+)\]', line)
             cls.branches.append({'n': g('n'), 'addr': g('addr'), 'phone': g('phone'), 'hours': g('hours'),
                                  'menu': g('menu'), 'route': g('route'), 'geo': [float(geo.group(1)), float(geo.group(2))]})
 
@@ -45,10 +45,13 @@ class TestJsonLd(unittest.TestCase):
                       'JSON-LD разошёлся с BRANCHES/меню — запустите python3 tools/seo_jsonld.py && python3 tools/sw_version.py')
 
     def test_price_change_is_caught(self):
-        changed = self.html.replace("{n:'Курица гриль', p:3990,", "{n:'Курица гриль', p:4990,", 1)
-        self.assertNotEqual(changed, self.html)
-        self.assertNotIn(seo.block(changed), changed)
-        self.assertIn('"name":"Курица гриль","offers":{"@type":"Offer","price":4990', seo.block(changed))
+        # первая позиция кухни с числовой ценой: +1000 ₸ в массиве → блок устарел, в пересобранном — новая цена
+        kitchen = self.html.index('const MENU_KITCHEN = [')
+        m = re.compile(r"\{n:'((?:[^'\\]|\\.)*)'[^{}]*?\bp:(\d+)").search(self.html, kitchen)
+        name, price = m.group(1), int(m.group(2))
+        changed = self.html[:m.start(2)] + str(price + 1000) + self.html[m.end(2):]
+        self.assertNotIn(seo.block(changed), changed, 'смена цены в массиве должна делать блок устаревшим')
+        self.assertIn('"name":"%s","offers":{"@type":"Offer","price":%d,' % (name, price + 1000), seo.block(changed))
 
     def test_five_branches_from_BRANCHES(self):
         self.assertEqual(len(self.branches), 5)
@@ -96,19 +99,29 @@ class TestJsonLd(unittest.TestCase):
             self.assertEqual(node['hasMenu'], SITE + '#menu-togo' if b['menu'] == 'togo' else {'@id': SITE + '#menu'})
 
     def test_menu_matches_arrays(self):
-        items = {it['name']: it for s in self.nodes[SITE + '#menu']['hasMenuSection'] for it in s['hasMenuItem']}
-        total = sum(len(s['hasMenuItem']) for s in self.nodes[SITE + '#menu']['hasMenuSection'])
-        want = 0
+        # своим разбором массивов: (название, цены, точки only) по порядку — против того, что в разметке
+        want = []
         for name in ('MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT'):
             arr = re.search(r'const %s = \[(.*?)\n\];' % name, self.html, re.S).group(1)
-            want += len(re.findall(r"\{n:'", arr))
-        self.assertEqual(total, want)
-        self.assertEqual(items['Курица гриль']['offers'], {'@type': 'Offer', 'price': 3990, 'priceCurrency': 'KZT'})
-        self.assertEqual([(o['name'], o['price']) for o in items['Капучино']['offers']],
-                         [('200 мл', 1400), ('300 мл', 1500), ('400 мл', 1700)])
-        for it in items.values():
-            for o in (it['offers'] if isinstance(it['offers'], list) else [it['offers']]):
-                self.assertEqual(o['priceCurrency'], 'KZT', it['name'])
+            for m in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'([^{}]*)\}", arr):
+                p = re.search(r"\bp:(?:'([^']*)'|(\d+))", m.group(2))
+                only = re.search(r"\bonly:\[([^\]]*)\]", m.group(2))
+                want.append((m.group(1).replace("\\'", "'"), sorted(int(x) for x in (p.group(1) or p.group(2)).split('/')),
+                             sorted(re.findall(r"'(\d+)'", only.group(1))) if only else []))
+        got = []
+        for s in self.nodes[SITE + '#menu']['hasMenuSection']:
+            for it in s['hasMenuItem']:
+                offs = it['offers'] if isinstance(it['offers'], list) else [it['offers']]
+                prices = sorted(x for o in offs for x in ((o['lowPrice'], o['highPrice']) if o['@type'] == 'AggregateOffer' else (o['price'],)))
+                at = sorted({a['@id'].rsplit('-', 1)[1] for o in offs for a in o.get('availableAtOrFrom', [])})
+                for o in offs:
+                    self.assertEqual(o['priceCurrency'], 'KZT', it['name'])
+                got.append((it['name'], prices, at))
+        self.assertEqual(len(got), len(want), 'число позиций в разметке и в массивах')
+        # у AggregateOffer в разметке только «от и до» — сверяем с крайними ценами массива
+        want = [(n, ps if len(ps) <= 2 or len(ps) == len(g[1]) else [ps[0], ps[-1]], at) for (n, ps, at), g in zip(want, got)]
+        self.assertEqual(got, want)
+        self.assertTrue(any(at for _, _, at in got), 'нет ни одной позиции «только в …» — проверка availableAtOrFrom пустая')
 
 
 class TestPage(unittest.TestCase):
@@ -154,7 +167,8 @@ class TestPage(unittest.TestCase):
         for u in urls:
             d = re.search(r'<lastmod>(\d{4}-\d\d-\d\d)</lastmod>', u)
             self.assertIsNotNone(d, u)
-            self.assertLessEqual(datetime.date.fromisoformat(d.group(1)), datetime.date.today())
+            # +1 день: дата коммита в поясе Алматы (+05), машина может жить в UTC
+            self.assertLessEqual(datetime.date.fromisoformat(d.group(1)), datetime.date.today() + datetime.timedelta(days=1))
 
 
 if __name__ == '__main__':

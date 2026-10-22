@@ -9,7 +9,9 @@
 5 точек из BRANCHES — 01–04 CafeOrCoffeeShop, 05 Bakery; адрес, координаты, телефон и часы — только из BRANCHES
 (город и страна — «5 точек в Алматы» из текста сайта). Юрлиц, ИП и имён людей в разметке нет и быть не должно.
 Меню кофеен с ценами в тенге — по разделам; у позиции с несколькими ценами — Offer на каждый объём из vol,
-если объёмов столько же, сколько цен, иначе AggregateOffer (от и до). В sameAs точки — только ссылка 2GIS на карточку
+если объёмов столько же, сколько цен, иначе AggregateOffer (от и до); позиция с only:[…] (есть не во всех
+кофейнях) — availableAtOrFrom на эти точки. Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве) — выход
+с ошибкой, а не тихий пропуск. В sameAs точки — только ссылка 2GIS на карточку
 фирмы (…/firm/<id>); поисковые ссылки 2GIS (…/search/…) — не карточки, их не кладём (главный, 22.10.2026).
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -49,21 +51,24 @@ def field(obj, key):
 
 
 def branches(html):
-    out = []
-    for m in re.finditer(r"\{n:'(?:[^'\\]|\\.)*'[^\n]*\}", js_array(html, 'BRANCHES')):
+    out, src = [], js_array(html, 'BRANCHES')
+    for m in re.finditer(r"\{n:'(?:[^'\\]|\\.)*'[^\n]*\}", src):
         b = m.group(0)
         geo = re.search(r"geo:\[([-\d.]+),\s*([-\d.]+)\]", b)
         out.append({'n': field(b, 'n'), 'addr': field(b, 'addr'), 'phone': field(b, 'phone'), 'hours': field(b, 'hours'),
                     'menu': field(b, 'menu'), 'route': field(b, 'route'),
                     'geo': (float(geo.group(1)), float(geo.group(2))) if geo else None})
+    if len(out) != src.count("{n:'") or not all(b['geo'] and b['addr'] and b['phone'] for b in out):
+        sys.exit('seo_jsonld: BRANCHES разобран не целиком (точка в несколько строк или без geo/addr/phone) — допишите разбор')
     return out
 
 
 def menu_sections(html):
-    """[(раздел, [(название, p, vol)])] из MENU_KITCHEN / MENU_BAR / MENU_DESSERT; p — число или строка «1400/1500»"""
+    """[(раздел, [(название, p, vol, only)])] из MENU_KITCHEN / MENU_BAR / MENU_DESSERT; p — число или строка «1400/1500»,
+    only — номера точек, где позиция есть (['04', '02']), или []"""
     out = []
     for name in MENU_ARRAYS:
-        s = js_array(html, name)
+        s, found = js_array(html, name), 0
         for m in re.finditer(r"\{t:'((?:[^'\\]|\\.)*)'[^\[\]]*?items:\[", s):
             i, depth, j = m.end(), 1, m.end()
             while depth:
@@ -72,22 +77,30 @@ def menu_sections(html):
             items = []
             for im in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'([^{}]*)\}", s[i:j - 1]):
                 p = re.search(r"\bp:(?:'([^']*)'|(\d+))", im.group(2))
-                items.append((unq(im.group(1)), (p.group(1) or p.group(2)) if p else None, field(im.group(2), 'vol')))
+                only = re.search(r"\bonly:\[([^\]]*)\]", im.group(2))
+                items.append((unq(im.group(1)), (p.group(1) or p.group(2)) if p else None, field(im.group(2), 'vol'),
+                              re.findall(r"'(\d+)'", only.group(1)) if only else []))
+            found += len(items)
             out.append((unq(m.group(1)), items))
+        if found != s.count("{n:'"):
+            sys.exit('seo_jsonld: в %s разобрано %d позиций из %d — раздел или позиция не по шаблону, допишите разбор'
+                     % (name, found, s.count("{n:'")))
     return out
 
 
-def offers(p, vol):
+def offers(p, vol, only=()):
+    """only — позиция есть не во всех кофейнях: availableAtOrFrom со ссылками на эти точки"""
+    at = {'availableAtOrFrom': [{'@id': SITE + '#branch-' + n} for n in only]} if only else {}
     prices = [int(x.strip()) for x in str(p).split('/')]
     if len(prices) == 1:
-        return {'@type': 'Offer', 'price': prices[0], 'priceCurrency': 'KZT'}
+        return dict({'@type': 'Offer', 'price': prices[0], 'priceCurrency': 'KZT'}, **at)
     sizes = [x.strip() for x in (vol or '').split('/')]
     unit = re.match(r'[\d.,]+\s*(.*)$', sizes[-1]) if len(sizes) == len(prices) else None
     if unit and all(re.fullmatch(r'[\d.,]+', x) for x in sizes[:-1]):
         names = [x + (' ' + unit.group(1) if unit.group(1) else '') for x in sizes[:-1]] + [sizes[-1]]
-        return [{'@type': 'Offer', 'name': n, 'price': pr, 'priceCurrency': 'KZT'} for n, pr in zip(names, prices)]
-    return {'@type': 'AggregateOffer', 'lowPrice': min(prices), 'highPrice': max(prices), 'offerCount': len(prices),
-            'priceCurrency': 'KZT'}
+        return [dict({'@type': 'Offer', 'name': n, 'price': pr, 'priceCurrency': 'KZT'}, **at) for n, pr in zip(names, prices)]
+    return dict({'@type': 'AggregateOffer', 'lowPrice': min(prices), 'highPrice': max(prices), 'offerCount': len(prices),
+                 'priceCurrency': 'KZT'}, **at)
 
 
 def hours_spec(hours):
@@ -130,8 +143,9 @@ def graph(html):
     nodes.append({'@type': 'Menu', '@id': SITE + '#menu', 'url': SITE + '#menu', 'name': 'Меню кофеен Del Cappuccino',
                   'inLanguage': 'ru',
                   'hasMenuSection': [{'@type': 'MenuSection', 'name': t,
-                                      'hasMenuItem': [dict({'@type': 'MenuItem', 'name': n}, **({'offers': offers(p, vol)} if p else {}))
-                                                      for n, p, vol in items]}
+                                      'hasMenuItem': [dict({'@type': 'MenuItem', 'name': n},
+                                                           **({'offers': offers(p, vol, only)} if p else {}))
+                                                      for n, p, vol, only in items]}
                                      for t, items in menu_sections(html)]})
     return {'@context': 'https://schema.org', '@graph': nodes}
 
