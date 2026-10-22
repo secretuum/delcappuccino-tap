@@ -1,0 +1,154 @@
+"""Казахская и английская версии (А2, 22.10.2026): /kk/, /en/, /kk/menyu, /en/menu собирает tools/seo_jsonld.py
+из tools/pages_i18n.json и данных главной. Факты — те же, что на русской; hreflang и canonical на всех версиях;
+переключатель РУС / ҚАЗ / ENG; казахские строки — в menu/kk_review.md на вычитку.
+Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
+import html as H, json, os, re, unittest
+
+ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SITE = 'https://tap.delcappuccino.kz/'
+HOME = {'ru': ('index.html', SITE), 'kk': ('kk/index.html', SITE + 'kk/'), 'en': ('en/index.html', SITE + 'en/')}
+MENU = {'ru': ('menyu/index.html', SITE + 'menyu'), 'kk': ('kk/menyu/index.html', SITE + 'kk/menyu'),
+        'en': ('en/menu/index.html', SITE + 'en/menu')}
+
+
+def read(*p):
+    with open(os.path.join(ROOT, *p), encoding='utf-8') as f:
+        return f.read()
+
+
+def head(s):
+    return s.split('</head>')[0]
+
+
+def tr(html, lang):
+    i = html.index('\n %s:{' % lang)
+    return {a.replace("\\'", "'"): b.replace("\\'", "'")
+            for a, b in re.findall(r"'((?:[^'\\]|\\.)*)':'((?:[^'\\]|\\.)*)'", html[i:html.index('\n },', i)])}
+
+
+class TestVersions(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.main = read('index.html')
+        cls.pages = {(kind, l): read(f) for kind, d in (('home', HOME), ('menu', MENU)) for l, (f, _) in d.items()}
+        cls.data = json.loads(read('tools', 'pages_i18n.json'))
+        arr = re.search(r'const BRANCHES = \[(.*?)\n\];', cls.main, re.S).group(1)
+        cls.branches = [dict(re.findall(r"\b(n|addr|hours|phone|note|menu):'([^']*)'", line)) for line in re.findall(r"\{n:'.*\}", arr)]
+
+    def test_hreflang_and_canonical(self):
+        for kind, d in (('home', HOME), ('menu', MENU)):
+            want = sorted([(l, url) for l, (_, url) in d.items()] + [('x-default', d['ru'][1])])
+            for l, (f, url) in d.items():
+                h = head(self.pages[(kind, l)])
+                self.assertEqual(sorted(re.findall(r'<link rel="alternate" hreflang="([^"]+)" href="([^"]+)">', h)), want, f)
+                self.assertEqual(re.findall(r'<link rel="canonical" href="([^"]+)">', h), [url], f)
+                self.assertIn('<html lang="%s">' % l, self.pages[(kind, l)], f)
+
+    def test_titles_on_own_language(self):
+        for kind in ('home', 'menu'):
+            titles = {l: re.search(r'<title>(.*?)</title>', self.pages[(kind, l)]).group(1) for l in HOME}
+            descs = {l: re.search(r'<meta name="description" content="([^"]+)">', self.pages[(kind, l)]).group(1) for l in HOME}
+            self.assertEqual(len(set(titles.values())), 3, titles)
+            self.assertEqual(len(set(descs.values())), 3, descs)
+            self.assertRegex(titles['kk'], r'[әғқңөұүһі]', 'казахский title — на казахском')
+            self.assertNotRegex(titles['en'] + descs['en'], r'[А-Яа-яЁё]', 'английский title/description — без кириллицы')
+
+    def test_jsonld_faq_on_own_language(self):
+        faq_ru = json.loads(read('tools', 'faq.json'))
+        for l in ('kk', 'en'):
+            page = self.pages[('home', l)]
+            data = json.loads(re.search(r'<script type="application/ld\+json">\n(.*?)\n</script>', page, re.S).group(1))
+            nodes = {n['@type']: n for n in data['@graph']}
+            self.assertEqual(nodes['WebPage']['inLanguage'], l)
+            self.assertEqual(nodes['FAQPage']['inLanguage'], l)
+            shown = re.findall(r'<details><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', page)
+            self.assertEqual(len(shown), len(faq_ru), 'те же вопросы, что на русской')
+            self.assertEqual([(H.unescape(q), H.unescape(a)) for q, a in shown],
+                             [(e['name'], e['acceptedAnswer']['text']) for e in nodes['FAQPage']['mainEntity']])
+            self.assertNotRegex(page, r'\{\w+\}', 'неподставленная переменная')
+
+    def test_facts_same_as_russian(self):
+        kids = re.split(r',\s*|\s+и\s+', re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', self.main).group(1))
+        for l in ('kk', 'en'):
+            page, d = H.unescape(self.pages[('home', l)]), tr(self.main, l)
+            for b in self.branches:
+                self.assertIn(d[b['addr']], page, '%s: адрес %s' % (l, b['addr']))
+                self.assertIn(d[re.sub(r'^\d+\s*·\s*', '', b['n'])], page)
+                self.assertIn('href="tel:%s"' % b['phone'], page)
+                hours = re.search(r'\d\d:\d\d–\d\d:\d\d', b['hours'])
+                self.assertIn(hours.group(0) if hours else '24/7', page)
+            for k in kids:
+                self.assertIn(d[k], page, 'детские комнаты — там же, где на русской')
+            self.assertIn('40', page)
+            self.assertRegex(page, r'ҚМДБ|KMDB')
+            self.assertIn('halaldamu.kz', page)
+
+    def test_light_page_without_js(self):
+        for l in ('kk', 'en'):
+            page = self.pages[('home', l)]
+            scripts = re.findall(r'<script(?: type="application/ld\+json")?>(.*?)</script>', page, re.S)
+            self.assertEqual(len(re.findall(r'<script\b', page)), 3, 'аналитика (2) и JSON-LD — других скриптов нет')
+            self.assertTrue(all('gtag' in s or '"@context"' in s for s in scripts))
+            self.assertNotIn('onclick=', page)
+            self.assertNotRegex(page, r'(src|href|srcset)="(?!/|https://|#|tel:)', 'пути только от корня')
+            css = re.search(r'<style>(.*?)</style>', page, re.S).group(1)
+            self.assertNotRegex(css, r'\.(mm-|grill|modal|strip|showcase)', 'в стилях только нужное странице')
+            self.assertIn('.lang-sw', css)
+
+    def test_links_to_menu_and_order(self):
+        for l in ('kk', 'en'):
+            page = self.pages[('home', l)]
+            self.assertIn('href="/#menu-%s"' % l, page, 'меню главной на этом языке')
+            self.assertIn('href="/#menu-togo-%s"' % l, page, 'меню bakery to go на этом языке')
+            self.assertIn('href="https://delcappuccino.kz/"', page)
+            self.assertIn('href="/%s"' % MENU[l][1][len(SITE):], page, 'ссылка на текстовое меню')
+            for wa in re.findall(r'href="(https://wa\.me/[^"]+)"', page):
+                self.assertRegex(wa, r'^https://wa\.me/\d+\?text=[^\s"<>]+$')
+
+    def test_language_switcher(self):
+        for l, page in [('ru', self.main), ('kk', self.pages[('home', 'kk')]), ('en', self.pages[('home', 'en')])]:
+            sw = re.search(r'<nav class="lang-sw" aria-label="[^"]+">(.*?)</nav>', page.split('</header>')[0], re.S)
+            self.assertIsNotNone(sw, '%s: переключатель в шапке' % l)
+            links = re.findall(r'<a href="([^"]+)" lang="(\w+)"([^>]*)>([^<]+)</a>', sw.group(1))
+            self.assertEqual([(h, x, t) for h, x, _, t in links], [('/', 'ru', 'РУС'), ('/kk/', 'kk', 'ҚАЗ'), ('/en/', 'en', 'ENG')])
+            self.assertEqual([x for _, x, a, _ in links if 'aria-current="page"' in a], [l])
+        self.assertIn('<link rel="alternate" hreflang="kk" href="%skk/">' % SITE, head(self.main))
+
+    def test_text_menus(self):
+        ru_rows = re.findall(r'<li><span class="n">', self.pages[('menu', 'ru')])
+        for l in ('kk', 'en'):
+            page, d = self.pages[('menu', l)], tr(self.main, l)
+            rows = re.findall(r'<li><span class="n">(.*?)</span>(?:<b class="p">(.*?)</b>)?</li>', page)
+            self.assertEqual(len(rows), len(ru_rows), '%s: все позиции, как на /menyu' % l)
+            ru_prices = re.findall(r'<b class="p">([\d\u00a0 /]+) ₸', self.pages[('menu', 'ru')])
+            self.assertEqual(re.findall(r'<b class="p">([\d\u00a0 /]+) ₸', page), ru_prices, '%s: цены как на /menyu' % l)
+            self.assertIn('<html lang="%s">' % l, page)
+            translated = [H.unescape(c) for c, _ in rows]
+            for name in ('Курица гриль', 'Капучино'):
+                if name in d:
+                    self.assertTrue(any(t.startswith(d[name]) for t in translated), '%s: %s → %s' % (l, name, d[name]))
+
+    def test_kk_review_lists_all_kazakh_strings(self):
+        review = read('menu', 'kk_review.md')
+
+        def strings(x):
+            if isinstance(x, dict):
+                return [s for y in x.values() for s in strings(y)]
+            if isinstance(x, list):
+                return [s for y in x for s in strings(y)]
+            return [x]
+        for s in strings(self.data['kk']):
+            self.assertIn(s.replace('|', '\\|'), review)
+
+    def test_sitemap_and_llms(self):
+        sm = read('sitemap.xml')
+        for d in (HOME, MENU):
+            for _, url in d.values():
+                self.assertIn('<loc>%s</loc>' % url, sm)
+        llms = read('llms.txt')
+        for url in (SITE + 'kk/', SITE + 'en/', SITE + 'kk/menyu', SITE + 'en/menu'):
+            self.assertIn('](%s)' % url, llms)
+
+
+if __name__ == '__main__':
+    unittest.main()

@@ -47,7 +47,17 @@ BLOCK_RE = re.compile(re.escape(MARK) + r'\n<script type="application/ld\+json">
 FAQ_MARK = '<!-- Частые вопросы: данные tools/faq.json, собирает tools/seo_jsonld.py (тот же текст — FAQPage в JSON-LD), руками не править -->'
 FAQ_RE = re.compile(re.escape(FAQ_MARK) + r'\n.*?<!-- /faq -->\n', re.S)
 FAQ_BEFORE = '<section class="contact shell" id="contacts">'
-PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html', MENU_URL: 'menyu/index.html'}
+I18N_JSON = os.path.join(ROOT, 'tools', 'pages_i18n.json')
+KK_REVIEW = os.path.join(ROOT, 'menu', 'kk_review.md')
+LANGS = ('ru', 'kk', 'en')
+HOME = {'ru': SITE, 'kk': SITE + 'kk/', 'en': SITE + 'en/'}
+MENU = {'ru': MENU_URL, 'kk': SITE + 'kk/menyu', 'en': SITE + 'en/menu'}
+MENU_HASH = {'ru': '#menu', 'kk': '#menu-kk', 'en': '#menu-en'}      # глубокие ссылки: меню главной сразу на этом языке
+LOCALE = {'ru': 'ru_RU', 'kk': 'kk_KZ', 'en': 'en_US'}
+HREF_MARK = '<!-- hreflang: версии главной на ru/kk/en — tools/seo_jsonld.py -->'
+HREF_RE = re.compile(re.escape(HREF_MARK) + r'\n.*?<!-- /hreflang -->\n', re.S)
+PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html', MENU_URL: 'menyu/index.html',
+         HOME['kk']: 'kk/index.html', HOME['en']: 'en/index.html', MENU['kk']: 'kk/menyu/index.html', MENU['en']: 'en/menu/index.html'}
 
 
 def js_array(html, name):
@@ -128,14 +138,11 @@ def obj_block(html, start, stop):
 
 
 def ui_ru(html):
-    """MENU_UI.ru: подписи вкладок, сервисный сбор, аллергия"""
-    return {k: unq(v) for k, v in re.findall(r"(\w+):'((?:[^'\\]|\\.)*)'", obj_block(html, '  ru:{to_togo', '\n  kk:{'))}
+    return ui_dict(html, 'ru')
 
 
 def tr_en(html):
-    """MENU_TR.en: русская строка → английская (названия точек, адреса)"""
-    return {unq(a): unq(b) for a, b in re.findall(r"'((?:[^'\\]|\\.)*)':'((?:[^'\\]|\\.)*)'",
-                                                   obj_block(html, '\n en:{', '\n },'))}
+    return tr_dict(html, 'en')
 
 
 def mode_tabs(html):
@@ -145,10 +152,11 @@ def mode_tabs(html):
     return {'cafe': re.findall(r'(\w+):(\w+)', cafe), 'togo': re.findall(r'(\w+):(\w+)', togo)}
 
 
-def mark_names(html):
-    """пометка → слово из легенды: new → «новинка», hot → «острое блюдо» (MK + LEGEND); без легенды — не показываем"""
+def mark_names(html, c=None):
+    """пометка → слово из легенды: new → «новинка» / «жаңа» / «new item» (MK + LEGEND, переводы — MENU_TR)"""
     mk = dict(re.findall(r"(\w+):'<[^>]*>([^<]*)</[^>]*>'", obj_block(html, 'const MK = {', '};')))
-    legend = dict(re.findall(r"'(\S+) — ([^']*)'", obj_block(html, 'const LEGEND = {', '};')))
+    entries = re.findall(r"'(\S+ — [^']*)'", obj_block(html, 'const LEGEND = {', '};'))
+    legend = dict(T(c, x).split(' — ', 1) if c else x.split(' — ', 1) for x in entries)
     return {k: legend[sym] for k, sym in mk.items() if sym in legend}
 
 
@@ -188,41 +196,134 @@ def and_join(xs, conj='и'):
     return xs[0] if len(xs) == 1 else '%s %s %s' % (', '.join(xs[:-1]), conj, xs[-1])
 
 
-def faq_vars(html):
+def faq_vars(html, lang='ru'):
+    """подстановки в тексты: {часы} {адреса} {точек} {детские} {кофеен} {точек_n} {часы_togo} — из BRANCHES и главной"""
     e = lambda s: H.escape(s, quote=False)
     bs = branches(html)
-    first, rest = hours_text(bs)
-    return {'часы': ' '.join(e(x) + '.' for x in [first] + rest),
-            'детские': e(and_join(kids_places(html))),
-            'адреса': '<ul>' + ''.join('<li>%s — %s</li>' % (e(place(b)), e(hours_ru(b['hours']))) for b in bs) + '</ul>',
-            'точек': '%d %s' % (len(bs), plural(len(bs), 'точка', 'точки', 'точек'))}
+    cafes, rest = [b for b in bs if b['hours'] == '24/7'], [b for b in bs if b['hours'] != '24/7']
+    togo_h = [m.group(0) for m in (re.search(r'\d\d:\d\d\s*[–-]\s*\d\d:\d\d', b['hours']) for b in rest) if m]
+    v = {'кофеен': str(len(cafes)), 'точек_n': str(len(bs)), 'часы_togo': togo_h[0] if togo_h else ''}
+    if lang == 'ru':
+        first, rest_t = hours_text(bs)
+        v.update({'часы': ' '.join(e(x) + '.' for x in [first] + rest_t),
+                  'детские': e(and_join(kids_places(html))),
+                  'адреса': '<ul>' + ''.join('<li>%s — %s</li>' % (e(place(b)), e(hours_ru(b['hours']))) for b in bs) + '</ul>',
+                  'точек': '%d %s' % (len(bs), plural(len(bs), 'точка', 'точки', 'точек'))})
+        return v
+    c = lang_ctx(html, lang)
+    ph, kids = c['d']['phrases'], kids_places(html)
+    need(c, kids)
+    v.update({'часы': e(ph['cafes'].format(n=len(cafes), list=', '.join(place_l(c, b) for b in cafes)))
+                      + ''.join(' %s.' % e('%s — %s' % (place_l(c, b), hours_l(c, b['hours']))) for b in rest),
+              'детские': e(and_join([T(c, k) for k in kids], ph['and'])),
+              'адреса': '<ul>' + ''.join('<li>%s — %s</li>' % (e(place_l(c, b)), e(hours_l(c, b['hours']))) for b in bs) + '</ul>',
+              'точек': e(ph['points'].format(n=len(bs)))})
+    return v
 
 
-def faq(html):
-    """[(вопрос, ответ-HTML)] из tools/faq.json с подстановкой {часы} {адреса} {точек}"""
+def faq(html, lang='ru'):
+    """[(вопрос, ответ-HTML)] — русские из tools/faq.json, казахские и английские из tools/pages_i18n.json (те же вопросы)"""
     with open(FAQ_JSON, encoding='utf-8') as f:
         data = json.load(f)
-    v = faq_vars(html)
+    if lang != 'ru':
+        ru_n, data = len(data), i18n()[lang]['faq']
+        if len(data) != ru_n:
+            sys.exit('seo_jsonld: в pages_i18n.json %s.faq %d вопросов, а в tools/faq.json %d — переведите те же вопросы' % (lang, len(data), ru_n))
+    v = faq_vars(html, lang)
     out = []
     for e in data:
-        unknown = set(re.findall(r'\{(\w+)\}', e['a'])) - set(v)
-        if unknown:
-            sys.exit('seo_jsonld: в ответе FAQ «%s» неизвестная подстановка {%s} — есть: %s' % (e['q'], ', '.join(unknown), ', '.join(v)))
-        a = re.sub(r'\{(\w+)\}', lambda m: v[m.group(1)], e['a'])
+        a = fill(e['a'], v, 'FAQ %s: %s' % (lang, e['q']))
         bad = re.sub(r'</?(a|ul|li)\b[^>]*>', '', a)
-        if '<' in bad or '{' in a:
-            sys.exit('seo_jsonld: в ответе FAQ «%s» неизвестная подстановка или тег (можно <a href>, <ul>, <li>)' % e['q'])
+        if '<' in bad:
+            sys.exit('seo_jsonld: в ответе FAQ «%s» недопустимый тег (можно <a href>, <ul>, <li>)' % e['q'])
         out.append((e['q'], a))
     return out
 
 
-def faq_block(items):
+def faq_block(items, head=None):
+    """раздел «Частые вопросы»; head — (метка, заголовок, строка со ссылкой на меню) для /kk/ и /en/"""
+    tag, h2, p = head or ('вопросы и ответы', 'Частые <span>вопросы</span>.',
+                          'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
     rows = '\n'.join('      <details><summary>%s</summary><div class="faq-a">%s</div></details>' % (H.escape(q, quote=False), a)
                      for q, a in items)
-    return (FAQ_MARK + '\n<section class="faq" id="faq">\n  <div class="shell">\n    <div class="faq-head">\n'
-            '      <div><p class="tag">вопросы и ответы</p><h2>Частые <span>вопросы</span>.</h2></div>\n'
-            '      <p>Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.</p>\n    </div>\n'
-            '    <div class="faq-list">\n' + rows + '\n    </div>\n  </div>\n</section>\n<!-- /faq -->\n')
+    return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n    <div class="faq-head">\n'
+            '      <div><p class="tag">%s</p><h2>%s</h2></div>\n      <p>%s</p>\n    </div>\n' % (tag, h2, p) +
+            '    <div class="faq-list">\n' + rows + '\n    </div>\n  </div>\n</section>\n' + ('' if head else '<!-- /faq -->\n'))
+
+
+def ui_dict(html, lang):
+    """MENU_UI[lang]: подписи вкладок, сервисный сбор, аллергия, «Только:»"""
+    i = html.index('  %s:{to_togo' % lang)
+    ends = [j for j in (html.find(x, i + 1) for x in ('\n  ru:{', '\n  kk:{', '\n  en:{', '\n};')) if j > 0]
+    return {k: unq(v) for k, v in re.findall(r"(\w+):'((?:[^'\\]|\\.)*)'", html[i:min(ends)])}
+
+
+def tr_dict(html, lang):
+    """MENU_TR[lang]: русская строка → перевод (названия, адреса, разделы, позиции, легенда)"""
+    return {unq(a): unq(b) for a, b in re.findall(r"'((?:[^'\\]|\\.)*)':'((?:[^'\\]|\\.)*)'",
+                                                   obj_block(html, '\n %s:{' % lang, '\n },'))}
+
+
+def i18n():
+    with open(I18N_JSON, encoding='utf-8') as f:
+        return json.load(f)
+
+
+def lang_ctx(html, lang):
+    """всё, что нужно странице на языке lang: тексты из pages_i18n.json, словари MENU_TR и MENU_UI"""
+    return {'lang': lang, 'd': i18n()[lang], 'tr': {} if lang == 'ru' else tr_dict(html, lang), 'ui': ui_dict(html, lang)}
+
+
+def tr_units(s, lang):
+    """как trUnits на странице: единицы в объёмах, которых нет в словаре"""
+    if lang == 'en':
+        s = re.sub(r'(\d) шт', r'\1 pcs', re.sub(r'\b1 шт', '1 pc', re.sub(r'(\d) л(?![а-яё])', r'\1 L',
+                   re.sub(r'(\d) гр', r'\1 g', s.replace('мл', 'ml')))))
+    elif lang == 'kk':
+        s = re.sub(r'(\d) шт', r'\1 дана', re.sub(r'(\d) гр', r'\1 г', s))
+    return s
+
+
+def T(c, s):
+    """как T() на странице: перевод из MENU_TR, иначе — единицы; по-русски — как есть"""
+    if c['lang'] == 'ru' or not s:
+        return s
+    return c['tr'][s] if s in c['tr'] else tr_units(str(s), c['lang'])
+
+
+def need(c, words):
+    """факты (точки, адреса) без перевода не выводим по-русски молча — пусть допишут словарь"""
+    missing = [w for w in words if c['lang'] != 'ru' and w not in c['tr']]
+    if missing:
+        sys.exit('seo_jsonld: нет перевода в MENU_TR.%s для %s — допишите словарь' % (c['lang'], ', '.join(missing)))
+
+
+def short(b):
+    return re.sub(r'^\d+\s*·\s*', '', b['n'])
+
+
+def place_l(c, b):
+    need(c, [short(b), b['addr']])
+    return '%s (%s)' % (T(c, short(b)), T(c, b['addr']))
+
+
+def hours_l(c, h):
+    """часы в тексте: «круглосуточно (24/7)» / «тәулік бойы (24/7)» / «open 24/7»; «ежедневно» → «күн сайын» / «daily»"""
+    ph = c['d']['phrases']
+    return ph['hours_24'] if h == '24/7' else h.replace('ежедневно', ph['daily'])
+
+
+def hours_card(c, h):
+    """часы на карточке точки — как на русской: «24/7», «ежедневно 07:00–22:00» → «daily 07:00–22:00»"""
+    return h if h == '24/7' else h.replace('ежедневно', c['d']['phrases']['daily'])
+
+
+def fill(text, v, where):
+    """{подстановка} → значение; неизвестная — выход с ошибкой, а не текст с фигурными скобками на сайте"""
+    unknown = set(re.findall(r'\{(\w+)\}', text)) - set(v)
+    if unknown:
+        sys.exit('seo_jsonld: в «%s» неизвестная подстановка {%s} — есть: %s' % (where, ', '.join(sorted(unknown)), ', '.join(sorted(v))))
+    return re.sub(r'\{(\w+)\}', lambda m: v[m.group(1)], text)
 
 
 # ── JSON-LD ──
@@ -330,74 +431,82 @@ def fmt_p(p):
     return ' / '.join('{:,}'.format(int(x.strip())).replace(',', '\u00a0') for x in str(p).split('/'))
 
 
-def menu_page(html):
+def menu_page(html, lang='ru'):
+    """/menyu, /kk/menyu, /en/menu — всё меню текстом: кофейни (вкладки MENU_TABS) и Bakery to go (вкладки togo)"""
     e = lambda s: H.escape(s, quote=False)
-    ui, marks, bs = ui_ru(html), mark_names(html), branches(html)
+    c = lang_ctx(html, lang)
+    ui, ui0, marks, bs, mp = c['ui'], ui_ru(html), mark_names(html, c if lang != 'ru' else None), branches(html), c['d']['menu_page']
     by_num = {re.match(r'\d+', b['n']).group(0): b for b in bs}
     fonts = '\n'.join(l.replace('url(assets/', 'url(/assets/') for l in re.findall(r"@font-face\{font-family:'Golos Text'[^\n]*", html))
     allergy = re.sub(r'\s*<br>\s*', ' ', ui['allergy']).rstrip('.') + '.'
+    tt = lambda s: T(c, s)
+    home = '/' if lang == 'ru' else '/%s/' % lang
+    menu_link = '/' + MENU_HASH[lang]
 
     def items_html(items):
         rows = []
         for it in items:
-            extra = ''.join(' <small>%s</small>' % e(x) for x in [it['vol']] if x)
+            extra = ''.join(' <small>%s</small>' % e(tt(x)) for x in [it['vol']] if x)
             words = [marks[k] for k in it['m'] if k in marks]
             if words:
                 extra += ' <i>· %s</i>' % e(', '.join(words))
             if it['only']:
-                extra += ' <em>· %s %s</em>' % (e(ui['only'].lower()), e(', '.join(place(by_num[n]) for n in it['only'])))
+                extra += ' <em>· %s %s</em>' % (e(ui['only'].lower()), e(', '.join(place_l(c, by_num[n]) for n in it['only'])))
             if it['note']:
-                extra += ' <small>· %s</small>' % e(it['note'])
+                extra += ' <small>· %s</small>' % e(tt(it['note']))
             price = ''
             if it['p']:
                 # старая цена словами («вместо»), а не только <s>: бот, вырезающий теги, иначе прочтёт «6 000 3 990 ₸»
-                price = '<b class="p">%s ₸%s</b>' % (fmt_p(it['p']), ' <small>вместо <s>%s</s></small>' % fmt_p(it['old']) if it['old'] else '')
-            rows.append('<li><span class="n">%s%s</span>%s</li>' % (e(it['n']), extra, price))
+                price = '<b class="p">%s ₸%s</b>' % (fmt_p(it['p']), ' <small>%s</small>' % mp['instead'].format(old='<s>%s</s>' % fmt_p(it['old'])) if it['old'] else '')
+            rows.append('<li><span class="n">%s%s</span>%s</li>' % (e(tt(it['n'])), extra, price))
         return '<ul>\n' + '\n'.join(rows) + '\n</ul>'
 
     def tab_html(mode, tab, arr):
         out = ['<h3 id="%s">%s</h3>' % (tab if mode == 'cafe' else 'togo-' + tab, e(ui['tab_' + tab]))]
         for s in sections(html, arr):
-            head = e(s['t']) + (' <small>%s</small>' % e(s['badge']) if s['badge'] else '')
+            head = e(tt(s['t'])) + (' <small>%s</small>' % e(tt(s['badge'])) if s['badge'] else '')
             # раздел с тем же названием, что вкладка («Десерты» → «Десерты»), без своего заголовка — как dupT на главной
-            if not (s['t'] == ui['tab_' + tab] and not s['badge'] and not s['p']):
+            if not (s['t'] == ui0['tab_' + tab] and not s['badge'] and not s['p']):
                 out.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
             if s['note']:
-                out.append('<p class="note">%s</p>' % e(s['note']))
+                out.append('<p class="note">%s</p>' % e(tt(s['note'])))
             out.append(items_html(s['items']))
         return '\n'.join(out)
 
     tabs = mode_tabs(html)
-    cafes = [b for b in bs if b['menu'] != 'togo']
     togo = [b for b in bs if b['menu'] == 'togo']
     toc = ' · '.join('<a href="#%s">%s</a>' % (t, e(ui['tab_' + t])) for t, _ in tabs['cafe'])
     toc += ' · <a href="#togo">%s</a>' % e(ui['mode_togo'])
+    cafes_note = (e(hours_text(bs)[0]) + '.' if lang == 'ru' else
+                  e(c['d']['phrases']['cafes'].format(n=len([b for b in bs if b['hours'] == '24/7']),
+                                                     list=', '.join(place_l(c, b) for b in bs if b['hours'] == '24/7'))))
     body = [
-        '<h2 id="cafe">Меню кофеен</h2>',
-        '<p class="note">%s.</p>' % e(hours_text(bs)[0]),
+        '<h2 id="cafe">%s</h2>' % e(mp['cafe_h2']),
+        '<p class="note">%s</p>' % cafes_note,
         '<p class="note">%s %s</p>' % (e(ui['fee']), e(allergy)),
     ] + [tab_html('cafe', t, arr) for t, arr in tabs['cafe']] + [
-        '<h2 id="togo">%s</h2>' % e(re.sub(r'^\d+\s*·\s*', '', togo[0]['n'])) if togo else '',
-        ''.join('<p class="note">%s — %s</p>' % (e(b['addr']), e(b['hours'])) for b in togo),
+        '<h2 id="togo">%s</h2>' % e(tt(short(togo[0]))) if togo else '',
+        ''.join('<p class="note">%s — %s</p>' % (e(tt(b['addr'])), e(hours_card(c, b['hours']) if lang != 'ru' else b['hours'])) for b in togo),
         '<p class="note">%s</p>' % e(allergy),
     ] + [tab_html('togo', t, arr) for t, arr in tabs['togo']]
     insta = instagram(html)
-    ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", html.split('</head>')[0]).group(1)
     return '''<!DOCTYPE html>
-<html lang="ru">
+<html lang="%(lang)s">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Меню и цены — Del Cappuccino, кофейни 24/7 в Алматы</title>
-<meta name="description" content="Меню Del Cappuccino с ценами в тенге: кухня, бар, десерты, полуфабрикаты и bakery to go. Кофейни 24/7 в Алматы, завтраки весь день.">
+<title>%(title)s</title>
+<meta name="description" content="%(description)s">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="%(url)s">
+%(hreflang)s
 <meta name="theme-color" content="#426349">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
 <meta property="og:type" content="website">
 <meta property="og:url" content="%(url)s">
-<meta property="og:title" content="Меню и цены — Del Cappuccino">
-<meta property="og:description" content="Всё меню кофеен Del Cappuccino и bakery to go с ценами в тенге.">
+<meta property="og:title" content="%(og_title)s">
+<meta property="og:description" content="%(og_description)s">
+<meta property="og:locale" content="%(locale)s">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','%(ga)s');</script>
 <!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
@@ -426,26 +535,340 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 </style>
 </head>
 <body>
-<header class="wrap"><a href="/">← Del Cappuccino</a><a href="/#menu">Меню с фото</a></header>
+<header class="wrap"><a href="%(home)s">%(back)s</a><a href="%(menu_link)s">%(photo_menu)s</a></header>
 <main class="wrap">
-<h1>Меню Del Cappuccino</h1>
-<p class="lead">Цены в тенге (₸). Меню с фото и составом блюд — <a href="/#menu">на главной</a>, заказ онлайн — <a href="%(order)s">delcappuccino.kz</a>.</p>
+<h1>%(h1)s</h1>
+<p class="lead">%(lead)s</p>
 <nav class="toc">%(toc)s</nav>
 %(body)s
 </main>
-<footer class="wrap"><a href="/">Главная</a> · <a href="/#faq">Частые вопросы</a> · <a href="%(order)s">Заказать в приложении</a>%(insta)s · © 2026 Del Cappuccino</footer>
-<script>
+<footer class="wrap"><a href="%(home)s">%(f_home)s</a> · <a href="%(home)s#faq">%(f_faq)s</a> · <a href="%(order)s">%(f_order)s</a>%(insta)s · © 2026 Del Cappuccino</footer>
+%(ga_loader)s
+</body>
+</html>
+''' % {'lang': lang, 'url': MENU[lang], 'hreflang': hreflang(MENU), 'locale': LOCALE[lang], 'fonts': fonts, 'toc': toc,
+       'body': '\n'.join(x for x in body if x), 'order': ORDER_URL, 'home': home, 'menu_link': menu_link,
+       'title': e(mp['title']), 'description': H.escape(mp['description']), 'og_title': H.escape(mp['og_title']),
+       'og_description': H.escape(mp['og_description']), 'back': e(mp['back']), 'photo_menu': e(mp['photo_menu']),
+       'h1': e(mp['h1']), 'lead': mp['lead'].replace('{menu_link}', menu_link),
+       'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
+       'insta': ''.join(' · <a href="%s">Instagram</a>' % u for u in insta), 'ga': ga_id(html), 'ga_loader': GA_LOADER % ga_id(html)}
+
+
+# селекторы главной, которые нужны облегчённым /kk/ и /en/: шапка, hero, «О нас», «Формат», точки, вопросы, контакты, подвал
+CSS_KEEP = re.compile(r'^(?::root|\*|html|body|a|h1|header|nav|footer|\.(?:shell|hbar|hbar-m|logo-d|logo-m|btn|tag|lead|actions|'
+                      r'halal-badge|hero|hero-photo|hero-badge|story|story-grid|story-photo|stats|mini-stats|features|f-head|f-grid|'
+                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-links|faq|faq-head|faq-list|faq-a|contact|contact-actions|'
+                      r'f-row|lang-sw|hide-mobile))(?![\w-])')
+
+
+def hreflang(urls):
+    """<link rel=alternate hreflang> на все версии + x-default (русская)"""
+    return '\n'.join(['<link rel="alternate" hreflang="%s" href="%s">' % (l, urls[l]) for l in LANGS] +
+                     ['<link rel="alternate" hreflang="x-default" href="%s">' % urls['ru']])
+
+
+def ga_id(html):
+    return re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", html.split('</head>')[0]).group(1)
+
+
+GA_LOADER = '''<script>
 /* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
 (function(){
-  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=%(ga)s';s.async=true;document.head.appendChild(s)}
+  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=%s';s.async=true;document.head.appendChild(s)}
   function idle(){('requestIdleCallback'in window)?requestIdleCallback(loadGtag,{timeout:4000}):setTimeout(loadGtag,1500)}
   if(document.readyState==='complete')idle();else addEventListener('load',idle);
 })();
+</script>'''
+
+
+def css_rules(css):
+    out, depth, start = [], 0, 0
+    for i, ch in enumerate(css):
+        if ch == '{':
+            depth += 1
+        elif ch == '}':
+            depth -= 1
+            if not depth:
+                out.append(css[start:i + 1].strip())
+                start = i + 1
+    return out
+
+
+def keep_rule(rule):
+    pre, body = rule.split('{', 1)
+    pre = pre.strip()
+    if pre.startswith('@media'):
+        inner = [r for r in (keep_rule(x) for x in css_rules(body[:-1])) if r]
+        return pre + '{\n' + '\n'.join(inner) + '\n}' if inner else None
+    if pre.startswith('@'):
+        return None
+    return rule if any(CSS_KEEP.match(s.strip()) for s in pre.split(',')) else None
+
+
+def css_subset(html):
+    """стили облегчённых страниц — правила из <style> главной (один источник вида), без меню, модалок и акций"""
+    css = re.sub(r'/\*.*?\*/', '', html[html.index('<style>') + 7:html.index('</style>')], flags=re.S)
+    return '\n'.join(r for r in (keep_rule(x) for x in css_rules(css)) if r)
+
+
+def img_tag(html, pattern, alt, extra=''):
+    """<img> с главной (srcset, размеры) с путями от корня и подписью на языке страницы"""
+    tag = re.search(pattern, html).group(0)
+    tag = re.sub(r'(?<=["\s,])assets/', '/assets/', tag)
+    tag = re.sub(r'alt="[^"]*"', 'alt="%s"' % H.escape(alt), tag)
+    return tag.replace('<img ', '<img %s' % extra, 1) if extra else tag
+
+
+def lang_jsonld(html, lang, P, items):
+    data = {'@context': 'https://schema.org', '@graph': [
+        {'@type': 'WebPage', '@id': HOME[lang] + '#webpage', 'url': HOME[lang], 'name': P['title'], 'description': P['description'],
+         'inLanguage': lang, 'about': {'@id': SITE + '#org'},
+         'isPartOf': {'@type': 'WebSite', '@id': SITE + '#website', 'url': SITE, 'name': 'Del Cappuccino'}},
+        {'@type': 'Organization', '@id': SITE + '#org', 'name': 'Del Cappuccino', 'url': SITE, 'sameAs': instagram(html)},
+        {'@type': 'FAQPage', '@id': HOME[lang] + '#faq', 'inLanguage': lang,
+         'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in items]}]}
+    return dumps(data).replace('</', '<\\/')
+
+
+def lang_page(html, lang):
+    """/kk/ и /en/ — облегчённая главная на своём языке: текст в HTML без JS, вид — стили главной; меню — ссылкой на главную"""
+    c = lang_ctx(html, lang)
+    v = faq_vars(html, lang)
+    P = {k: (fill(x, v, '%s.page.%s' % (lang, k)) if isinstance(x, str) else x) for k, x in c['d']['page'].items()}
+    feats = [(fill(h, v, '%s.features' % lang), fill(p, v, '%s.features' % lang)) for h, p in P['features']]
+    items = faq(html, lang)
+    e = lambda s: H.escape(s, quote=False)
+    bs = branches(html)
+    home, menu_link = '/%s/' % lang, '/' + MENU_HASH[lang]
+    fonts = '\n'.join(l.replace('url(assets/', 'url(/assets/') for l in re.findall(r"@font-face\{font-family:'(?:Golos Text|Comfortaa)'[^\n]*", html))
+    kk_fix = ('\n/* казахские буквы (ә, ғ, қ, ң, ө, ү, һ) есть в Golos (cyrillic-ext), в Comfortaa — нет: заголовки на Golos */\n'
+              "html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.loc-card h3,.f-grid b)"
+              "{font-family:'Golos Text',sans-serif;letter-spacing:-.01em}") if lang == 'kk' else ''
+    sw = '\n'.join('      <a href="%s" lang="%s"%s>%s</a>' % ('/' if l == 'ru' else '/%s/' % l, l,
+                                                            ' aria-current="page"' if l == lang else ' hreflang="%s"' % l,
+                                                            {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
+    logo_d = img_tag(html, r'<img class="logo-d"[^>]*>', 'Del Cappuccino')
+    logo_m = img_tag(html, r'<img class="logo-m"[^>]*>', 'Del Cappuccino')
+    hero_img = img_tag(html, r'(?<=<div class="hero-photo">\n      )<img[^>]*>', P['hero_alt'])
+    story_img = img_tag(html, r'(?<=<div class="story-photo">)<img[^>]*>', P['story_alt'])
+    halal_img = img_tag(html, r'<img src="assets/halal-104\.webp"[^>]*>', P['halal_alt'])
+    mono = '<img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC">'
+
+    def card(b):
+        num = re.match(r'\d+', b['n']).group(0)
+        need(c, [short(b), b['addr']] + ([b['note']] if b['note'] and b['note'] not in c['d']['branch_note'] else []))
+        note = c['d']['branch_note'].get(b['note'], T(c, b['note'])) if b['note'] else ''
+        wa = 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']),
+                                           quote((c['d']['wa_togo'] if b['wa'] else c['d']['wa_book']) + T(c, b['addr']), safe="-_.!~*'()"))
+        links = ['<a href="tel:%s">%s</a>' % (b['phone'], e(P['call'])),
+                 '<a href="%s" target="_blank" rel="noopener">%s</a>' % (H.escape(b['route']), e(P['route']))]
+        if b['menu']:
+            links.append('<a href="/#menu-%s-%s">%s</a>' % (b['menu'], lang, e(P['card_menu'])))
+        links.append('<a class="wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>' % H.escape(wa, quote=False).replace('"', '&quot;'))
+        return ('    <div class="loc-card">\n      <small>%s · %s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
+                '      <div class="loc-links">\n        %s\n      </div>\n    </div>'
+                % (num, e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
+                   '\n        '.join(links)))
+
+    stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b>all day</b><span>%s</span></div>'
+             % (P['stat_cafes'], len(bs), P['stat_points'], P['stat_breakfast']))
+    faq_html = faq_block(items, (P['faq_tag'], P['faq_h2'], P['faq_p']))
+    insta = instagram(html)
+    return '''<!DOCTYPE html>
+<html lang="%(lang)s">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>%(title)s</title>
+<meta name="description" content="%(description)s">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="%(url)s">
+%(hreflang)s
+<meta name="theme-color" content="#426349">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="%(url)s">
+<meta property="og:title" content="%(title)s">
+<meta property="og:description" content="%(description)s">
+<meta property="og:locale" content="%(locale)s">
+<meta property="og:image" content="%(site)sassets/photo_01.jpg">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','%(ga)s');</script>
+<!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
+<style>
+%(fonts)s
+%(css)s%(kk_fix)s
+</style>
+<script type="application/ld+json">
+%(jsonld)s
 </script>
+</head>
+<body>
+<header>
+  <div class="hbar">
+    <a href="%(home)s" aria-label="%(home_label)s" style="display:inline-flex;align-items:center">
+      %(logo_d)s
+      %(logo_m)s
+    </a>
+    <nav>
+      <a href="%(menu_link)s">%(nav_menu)s</a>
+      <a href="#about">%(nav_about)s</a>
+      <a href="#features">%(nav_features)s</a>
+      <a href="#locations">%(nav_locations)s</a>
+      <a href="#faq">%(nav_faq)s</a>
+    </nav>
+    <div class="hbar-m">
+      <a href="%(menu_link)s">%(nav_menu)s</a>
+    </div>
+    <nav class="lang-sw" aria-label="%(lang_label)s">
+%(sw)s
+    </nav>
+  </div>
+</header>
+
+<main>
+  <section class="hero shell">
+    <div>
+      <p class="tag">%(hero_tag)s</p>
+      <h1>%(hero_h1)s</h1>
+      <p class="lead">%(hero_lead)s</p>
+      <div class="actions">
+        <a class="btn olive" href="#locations">%(book)s</a>
+        <a class="btn ghost" href="%(menu_link)s">%(menu)s</a>
+        <a class="btn" href="%(order_url)s" target="_blank" rel="noopener">%(order)s</a>
+      </div>
+      <div class="halal-badge">
+        %(halal_img)s
+        <span>%(halal)s</span>
+      </div>
+    </div>
+    <div class="hero-photo">
+      %(hero_img)s
+      <div class="hero-badge">
+        <b>24/7</b>
+        <div><span>%(badge_cafes)s</span><span>%(badge_days)s</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="story shell" id="about">
+    <div class="story-grid">
+      <div class="story-photo">%(story_img)s</div>
+      <div>
+        <h2>%(about_h2)s</h2>
+        <p>%(about_p)s</p>
+        <div class="stats">
+  %(stats)s
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="features" id="features">
+    <div class="shell">
+      <div class="f-head">
+        <p class="tag">%(features_tag)s</p>
+        <h2>%(features_h2)s</h2>
+      </div>
+      <div class="f-grid">
+%(features)s
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="mini-stats shell">
+  %(stats)s
+</div>
+
+<section class="locations" id="locations">
+  <div class="shell">
+    <div class="loc-head">
+      <div><p class="tag">%(loc_tag)s</p><h2>%(loc_h2)s</h2></div>
+      <p>%(loc_p)s</p>
+    </div>
+    <div class="loc-grid">
+%(cards)s
+    </div>
+  </div>
+</section>
+
+%(faq)s
+<section class="contact shell" id="contacts">
+  <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
+  <h2>%(contact_h2)s</h2>
+  <div class="contact-actions">
+    <a class="btn olive" href="#locations">WhatsApp</a>
+%(insta_btn)s
+  </div>
+</section>
+
+<footer class="shell">
+  <div class="f-row">
+    <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
+    <span>%(footer_tag)s</span>
+    <a href="%(menu_page)s">%(footer_menu)s</a>
+    <a class="f-ugolok" href="/ugolok/">%(footer_ugolok)s</a>
+    <span>© 2026 Del Cappuccino</span>
+  </div>
+</footer>
+%(ga_loader)s
 </body>
 </html>
-''' % {'url': MENU_URL, 'fonts': fonts, 'toc': toc, 'body': '\n'.join(x for x in body if x), 'order': ORDER_URL,
-       'insta': ''.join(' · <a href="%s">Instagram</a>' % u for u in insta), 'ga': ga}
+''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
+                               'about_h2', 'about_p', 'features_tag', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
+                               'footer_tag', 'footer_menu', 'footer_ugolok', 'nav_menu', 'nav_about', 'nav_features',
+                               'nav_locations', 'nav_faq')},
+           lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
+           locale=LOCALE[lang], site=SITE, ga=ga_id(html), ga_loader=GA_LOADER % ga_id(html), fonts=fonts, css=css_subset(html),
+           kk_fix=kk_fix, jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
+           lang_label=H.escape(P['lang_label']), logo_d=logo_d, logo_m=logo_m, menu_link=menu_link, sw=sw,
+           order_url=ORDER_URL, halal_img=halal_img, hero_img=hero_img, story_img=story_img, stats=stats,
+           features='\n'.join('        <article><b>%02d</b><h3>%s</h3><p>%s</p></article>' % (i + 1, h, p) for i, (h, p) in enumerate(feats)),
+           cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
+           insta_btn='\n'.join('    <a class="btn ghost" href="%s" target="_blank" rel="noopener">@%s</a>' % (u, u.rstrip('/').rsplit('/', 1)[1]) for u in insta))
+
+
+def kk_review(html):
+    """menu/kk_review.md — все казахские строки из pages_i18n.json со своим местом на сайте, для вычитки носителем"""
+    where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
+             'wa_book': 'текст сообщения WhatsApp из карточек кофеен /kk/', 'wa_togo': 'текст сообщения WhatsApp из карточки bakery to go /kk/',
+             'page': 'страница /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
+             'lang_name': 'переключатель языка'}
+    rows = []
+
+    def walk(x, path):
+        if isinstance(x, dict):
+            for k, y in x.items():
+                walk(y, path + [k])
+        elif isinstance(x, list):
+            for i, y in enumerate(x):
+                walk(y, path + [str(i + 1)])
+        else:
+            rows.append('| `%s` | %s | %s |' % ('.'.join(path), where.get(path[0], path[0]), str(x).replace('|', '\\|')))
+    walk(i18n()['kk'], [])
+    return ('# Казахские строки на вычитку носителем\n\n'
+            'Собрано `tools/seo_jsonld.py` из `tools/pages_i18n.json` (раздел `kk`). Правки вносить туда и пересобрать:\n'
+            '`python3 tools/seo_jsonld.py && python3 tools/sw_version.py`.\n\n'
+            '- `{…}` — подстановки из данных сайта, их не переводить: `{часы}` — часы точек, `{адреса}` — список адресов,\n'
+            '  `{точек}` / `{точек_n}` — число точек, `{кофеен}` — число кофеен 24/7, `{часы_togo}` — часы bakery to go,\n'
+            '  `{детские}` — где детские комнаты, `{n}` / `{list}` / `{old}` — число, список, старая цена.\n'
+            '- `<br>`, `<span>`, `<a href>` — разметка, её оставить.\n'
+            '- Названия блюд, разделов меню и адреса точек берутся из прежнего словаря меню (`MENU_TR.kk` в `index.html`), '
+            'в этот список не входят.\n\n'
+            '| Ключ | Где на сайте | Текст |\n|---|---|---|\n' + '\n'.join(rows) + '\n')
+
+
+def with_hreflang(html):
+    new = HREF_MARK + '\n' + hreflang(HOME) + '\n<!-- /hreflang -->\n'
+    m = HREF_RE.search(html)
+    if m:
+        return html[:m.start()] + new + html[m.end():]
+    anchor = '<link rel="canonical" href="%s">\n' % SITE
+    if anchor not in html:
+        sys.exit('seo_jsonld: нет <link rel="canonical"> главной — некуда поставить hreflang')
+    return html.replace(anchor, anchor + new, 1)
 
 
 # ── /llms.txt ──
@@ -467,10 +890,14 @@ def llms(html):
         '- [Сайт](%s): адреса точек, бронь столика в WhatsApp или по телефону, меню с фото и составом блюд' % SITE,
         '- [Меню и цены текстом](%s): кофейни и bakery to go, цены в тенге' % MENU_URL,
         '- [Частые вопросы](%s#faq)' % SITE,
+        '- [Сайт на казахском](%s) и [меню на казахском](%s)' % (HOME['kk'], MENU['kk']),
+        '- [Сайт на английском](%s) и [меню на английском](%s)' % (HOME['en'], MENU['en']),
         '- [Заказ онлайн и приложение](%s)' % ORDER_URL] + ['- [Instagram](%s)' % u for u in insta])
     links_en = '\n'.join([
-        '- [Website](%s): locations, table booking via WhatsApp or phone, menu with photos (Kazakh, Russian, English)' % SITE,
-        '- [Menu with prices, text](%s): cafés and bakery to go, prices in KZT (in Russian)' % MENU_URL,
+        '- [Website in English](%s): locations, table booking via WhatsApp or phone, FAQ' % HOME['en'],
+        '- [Menu with prices](%s): cafés and bakery to go, prices in KZT' % MENU['en'],
+        '- [Menu with photos](%s%s): interactive menu on the main site, in English' % (SITE, MENU_HASH['en']),
+        '- Also in [Kazakh](%s) and [Russian](%s)' % (HOME['kk'], SITE),
         '- [Order online / app](%s)' % ORDER_URL] + ['- [Instagram](%s)' % u for u in insta])
     rest_ru = ''.join(', %s — %s' % (short(b).split(' · ')[0], b['hours']) for b in rest)
     rest_en = ''.join(', %s — %s' % (short(b).split(' · ')[0], hours_en(b['hours'])) for b in rest)
@@ -564,8 +991,13 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_jsonld(with_loc(with_faq(html)))
-    return {INDEX: page, MENU_PAGE: menu_page(page), LLMS: llms(page)}
+    page = with_hreflang(with_jsonld(with_loc(with_faq(html))))
+    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page)}
+    for lang in LANGS:
+        out[os.path.join(ROOT, PAGES[MENU[lang]])] = menu_page(page, lang)
+        if lang != 'ru':
+            out[os.path.join(ROOT, PAGES[HOME[lang]])] = lang_page(page, lang)
+    return out
 
 
 def lastmod(path):

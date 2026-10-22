@@ -6,6 +6,12 @@
 <title>Del Cappuccino — кофейни 24/7 в Алматы и bakery to go</title>
 <meta name="description" content="Del Cappuccino в Алматы — 4 городские кофейни 24/7 и bakery to go (ежедневно 07:00–22:00). Кофе, завтраки весь день, доставка и бронирование столиков.">
 <link rel="canonical" href="https://tap.delcappuccino.kz/">
+<!-- hreflang: версии главной на ru/kk/en — tools/seo_jsonld.py -->
+<link rel="alternate" hreflang="ru" href="https://tap.delcappuccino.kz/">
+<link rel="alternate" hreflang="kk" href="https://tap.delcappuccino.kz/kk/">
+<link rel="alternate" hreflang="en" href="https://tap.delcappuccino.kz/en/">
+<link rel="alternate" hreflang="x-default" href="https://tap.delcappuccino.kz/">
+<!-- /hreflang -->
 <link rel="preload" href="assets/fonts/golos-400-800-cyrillic.17d048ca.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
@@ -73,6 +79,17 @@ header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--cream
 nav{display:flex;gap:22px;margin-left:8px}
 nav a{font-size:13.5px;text-decoration:none;color:var(--ink-2);font-weight:500}
 nav a:hover{color:var(--forest)}
+/* Переключатель языка сайта: РУС — главная, ҚАЗ — /kk/, ENG — /en/ (их собирает tools/seo_jsonld.py); на телефоне текущий язык скрыт */
+.lang-sw{display:flex;gap:2px;margin-left:auto}
+.lang-sw a{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-2);text-decoration:none;padding:6px 7px}
+.lang-sw a:hover{color:var(--forest)}
+.lang-sw a[aria-current]{color:var(--forest);box-shadow:inset 0 -2px 0 var(--olive)}
+@media(max-width:680px){
+  .lang-sw{margin-left:0;gap:0}
+  .lang-sw a{display:inline-flex;align-items:center;min-height:40px;padding:0 5px;font-size:12px}
+  .lang-sw a[aria-current]{display:none}
+}
+@media(max-width:359px){.hbar-m a,.hbar-m button{padding:0 10px}.lang-sw a{padding:0 3px}}
 .hspace{flex:1}
 .hbar-m{display:none}
 .btn{
@@ -792,6 +809,11 @@ footer{border-top:1px solid var(--line);padding:24px 0}
       <button onclick="track('cta_menu',{src:'hbar_m'});openMenu()">Меню</button>
       <a href="#locations" onclick="track('cta_locations',{src:'hbar_m'})">Адреса</a>
     </div>
+    <nav class="lang-sw" aria-label="Язык сайта">
+      <a href="/" lang="ru" aria-current="page">РУС</a>
+      <a href="/kk/" lang="kk" hreflang="kk">ҚАЗ</a>
+      <a href="/en/" lang="en" hreflang="en">ENG</a>
+    </nav>
   </div>
 </header>
 
@@ -2085,12 +2107,16 @@ function closeMenu(){
   closeCard(); hidePop(); closeLangMenu();
   document.getElementById('menu-modal').classList.remove('open');
   document.body.style.overflow='';
-  if(/^#menu(-togo)?$/.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
+  if(MENU_HASH.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
 }
 /* Глубокие ссылки (hasMenu в JSON-LD): /#menu — меню кофеен, /#menu-togo — меню точки 05 Bakery to go */
+/* …-kk / -en в конце (/#menu-kk, /#menu-togo-en) — меню сразу на этом языке, как кнопка языка в самом меню (ссылки с /kk/ и /en/) */
+const MENU_HASH=/^#menu(-togo)?(?:-(kk|ru|en))?$/;
 function menuFromHash(){
-  if(location.hash==='#menu')openMenu();
-  else if(location.hash==='#menu-togo')openMenu('togo');
+  const m=MENU_HASH.exec(location.hash);
+  if(!m)return;
+  if(m[2]){ menuLang=m[2]; try{ localStorage.setItem('dc_menu_lang', m[2]); }catch(e){} }
+  openMenu(m[1]?'togo':undefined);
 }
 
 /* ── Где действует меню: адреса из BRANCHES (точка с menu:'togo' — Bakery to go, остальные — кофейни) ── */
