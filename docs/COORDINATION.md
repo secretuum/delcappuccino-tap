@@ -11,7 +11,7 @@
 | Задача | Ветка | Зона |
 |---|---|---|
 | `menu-i18n` — меню на ҚАЗ/ENG | `worktree-menu-i18n` | оверлей меню: разметка `#menu-modal`, массивы `MENU_KITCHEN` / `MENU_BAR` / `MENU_DESSERT`, `MK`, `LEGEND`, `MENU_TABS` и функции отрисовки меню; стили `.mm-*`. Переключатель языка — только внутри оверлея меню. |
-| `to-go` — 5-я точка bakery to go | `worktree-to-go` | `BRANCHES`, `renderLocations`, модалка выбора филиала (`#modal`), секции hero / strip / about / features / locations / contacts, `<head>` (title, description, og/twitter) — тексты про «4 кофейни» и «24/7». |
+| `to-go` — 5-я точка bakery to go | `worktree-to-go` | `BRANCHES` (карточки точек `#loc-grid` из него собирает `tools/seo_jsonld.py` с 22.10.2026, `renderLocations` удалён), модалка выбора филиала (`#modal`), секции hero / strip / about / features / locations / contacts, `<head>` (title, description, og/twitter) — тексты про «4 кофейни» и «24/7». |
 | `perf` — оптимизация загрузки | `worktree-perf` | `<head>` (preload, шрифты, иконки, manifest), картинки и ресурсы главной, `assets/`, `sw.js`, `manifest.webmanifest`, `tools/`, `tests/test_perf.py`. После любой правки `index.html` — `python3 tools/sw_version.py`. |
 
 Общие стили (`:root`, базовые классы) — предупредить второго исполнителя перед правкой.

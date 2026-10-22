@@ -525,7 +525,10 @@ LOC_RE = re.compile(re.escape(LOC_MARK) + r'\n.*?<!-- /точки -->\n', re.S)
 
 def wa_link(html, b):
     """как branchWa/waLink на странице: wa.me/<цифры телефона>?text=<encodeURIComponent(b.wa || текст по умолчанию + адрес)>"""
-    default = unq(re.search(r"function branchWa\(b\)\{return waLink\(b\.phone,\(b\.wa\|\|'((?:[^'\\]|\\.)*)'\)\+b\.addr\)\}", html).group(1))
+    m = re.search(r"function branchWa\(b\)\{return waLink\(b\.phone,\(b\.wa\|\|'((?:[^'\\]|\\.)*)'\)\+b\.addr\)\}", html)
+    if not m:
+        sys.exit('seo_jsonld: branchWa на странице записан иначе — обновите wa_link, чтобы ссылки WhatsApp в карточках совпадали с модалкой')
+    default = unq(m.group(1))
     return 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']), quote((b['wa'] or default) + b['addr'], safe="-_.!~*'()"))
 
 
