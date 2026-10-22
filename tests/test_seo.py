@@ -41,8 +41,9 @@ class TestJsonLd(unittest.TestCase):
         self.assertEqual(self.data['@context'], 'https://schema.org')
 
     def test_up_to_date(self):
-        self.assertIn(seo.block(self.html), self.html,
-                      'JSON-LD разошёлся с BRANCHES/меню — запустите python3 tools/seo_jsonld.py && python3 tools/sw_version.py')
+        stale = [os.path.relpath(p, ROOT) for p, text in seo.outputs(self.html).items() if seo.read(p) != text]
+        self.assertEqual(stale, [], 'JSON-LD / FAQ / menyu / llms.txt разошлись с BRANCHES, меню или tools/faq.json — '
+                                    'запустите python3 tools/seo_jsonld.py && python3 tools/sw_version.py')
 
     def test_price_change_is_caught(self):
         # первая позиция кухни с числовой ценой: +1000 ₸ в массиве → блок устарел, в пересобранном — новая цена
@@ -52,6 +53,9 @@ class TestJsonLd(unittest.TestCase):
         changed = self.html[:m.start(2)] + str(price + 1000) + self.html[m.end(2):]
         self.assertNotIn(seo.block(changed), changed, 'смена цены в массиве должна делать блок устаревшим')
         self.assertIn('"name":"%s","offers":{"@type":"Offer","price":%d,' % (name, price + 1000), seo.block(changed))
+        page = seo.menu_page(changed)
+        self.assertNotEqual(page, read('menyu', 'index.html'), 'смена цены должна делать /menyu устаревшей')
+        self.assertIn('%s ₸' % seo.fmt_p(price + 1000), page)
 
     def test_five_branches_from_BRANCHES(self):
         self.assertEqual(len(self.branches), 5)
@@ -156,11 +160,11 @@ class TestPage(unittest.TestCase):
 
     def test_canonical_and_sitemap(self):
         canon = {}
-        for path in ('index.html', 'ugolok/index.html'):
+        for path in ('index.html', 'ugolok/index.html', 'menyu/index.html'):
             links = re.findall(r'<link rel="canonical" href="([^"]+)">', read(path).split('</head>')[0])
             self.assertEqual(len(links), 1, path)
             canon[path] = links[0]
-        self.assertEqual(canon, {'index.html': SITE, 'ugolok/index.html': SITE + 'ugolok'})
+        self.assertEqual(canon, {'index.html': SITE, 'ugolok/index.html': SITE + 'ugolok', 'menyu/index.html': SITE + 'menyu'})
         sm = read('sitemap.xml')
         urls = re.findall(r'<url>(.*?)</url>', sm, re.S)
         self.assertEqual(sorted(re.search(r'<loc>([^<]*)</loc>', u).group(1) for u in urls), sorted(canon.values()))
@@ -169,6 +173,135 @@ class TestPage(unittest.TestCase):
             self.assertIsNotNone(d, u)
             # +1 день: дата коммита в поясе Алматы (+05), машина может жить в UTC
             self.assertLessEqual(datetime.date.fromisoformat(d.group(1)), datetime.date.today() + datetime.timedelta(days=1))
+
+
+def menu_arrays(html):
+    """{массив: [(название, цена-строка|None, old|None)]} — своим разбором, для сверки со страницей /menyu"""
+    out = {}
+    for name in re.findall(r'const ((?:MENU|TOGO)_[A-Z]+) = \[\n \{t:', html):
+        arr = re.search(r'const %s = \[(.*?)\n\];' % name, html, re.S).group(1)
+        out[name] = []
+        for m in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'([^{}]*)\}", arr):
+            p = re.search(r"\bp:(?:'([^']*)'|(\d+))", m.group(2))
+            old = re.search(r"\bold:(\d+)", m.group(2))
+            out[name].append((m.group(1).replace("\\'", "'"), (p.group(1) or p.group(2)) if p else None, old.group(1) if old else None))
+    return out
+
+
+class TestFaq(unittest.TestCase):
+    """Видимый раздел «Частые вопросы» (<details> без JS) и FAQPage в JSON-LD — один и тот же текст из tools/faq.json"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.html = read('index.html')
+        cls.body = cls.html.split('</head>')[1]
+        cls.shown = re.findall(r'<details><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', cls.body)
+        data = json.loads(ld_text(cls.html))
+        cls.ld = next(n for n in data['@graph'] if n['@type'] == 'FAQPage')
+
+    def test_section_visible_without_js(self):
+        sec = re.search(r'<section class="faq" id="faq">(.*?)</section>', self.body, re.S)
+        self.assertIsNotNone(sec, 'нет <section id="faq"> в разметке страницы')
+        self.assertLess(self.body.index('id="faq"'), self.body.index('id="contacts"'))
+        self.assertEqual(len(self.shown), len(json.loads(read('tools', 'faq.json'))))
+        self.assertNotIn('<script', sec.group(1))
+
+    def test_faq_equals_jsonld(self):
+        import html as H
+        self.assertEqual([(H.unescape(q), H.unescape(a)) for q, a in self.shown],
+                         [(e['name'], e['acceptedAnswer']['text']) for e in self.ld['mainEntity']])
+
+    def test_answers_from_branches(self):
+        text = ' '.join(a for _, a in self.shown)
+        self.assertNotRegex(text, r'\{\w+\}', 'неподставленная переменная в ответе')
+        for addr in re.findall(r"addr:'([^']*)'", re.search(r'const BRANCHES = \[(.*?)\n\];', self.html, re.S).group(1)):
+            self.assertIn(addr, text)
+        for fact in ('24/7', '07:00–22:00', 'КМДБ', 'весь день', 'детские комнаты', 'VIP-залы', 'намазхана',
+                     'https://delcappuccino.kz/', 'ҚАЗ'):
+            self.assertIn(fact, text)
+
+    def test_visible_link_to_menu_page(self):
+        head = re.search(r'<div class="faq-head">(.*?)</div>\s*<div class="faq-list">', self.body, re.S).group(1)
+        self.assertIn('<a href="/menyu">', head, 'ссылка на /menyu должна быть видна без раскрытия вопросов')
+
+
+class TestMenuPage(unittest.TestCase):
+    """/menyu — всё меню текстом из массивов главной (кофейни + Bakery to go)"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.html = read('index.html')
+        cls.page = read('menyu', 'index.html')
+        cls.rows = re.findall(r'<li><span class="n">(.*?)</span>(?:<b class="p">(.*?) ₸</b>)?</li>', cls.page)
+
+    def test_head(self):
+        self.assertTrue(self.page.startswith('<!DOCTYPE html>\n<html lang="ru">'))
+        head = self.page.split('</head>')[0]
+        for tag in ('<meta charset="UTF-8">', 'name="viewport"', '<title>', 'name="description"'):
+            self.assertIn(tag, head)
+        self.assertNotIn('<script', self.page, 'страница меню — без JS')
+        self.assertNotRegex(self.page, r'(src|href)="(?!/|https://|#)', 'пути только от корня: /menyu отдаётся без слэша')
+
+    def test_all_items_with_prices(self):
+        import html as H
+        arrays = menu_arrays(self.html)
+        self.assertEqual(sorted(arrays), sorted(['MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT', 'MENU_FROZEN',
+                                                 'TOGO_DESSERT', 'TOGO_FROZEN', 'TOGO_BAR']))
+        want = [it for name in ('MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT', 'MENU_FROZEN', 'TOGO_DESSERT', 'TOGO_FROZEN', 'TOGO_BAR')
+                for it in arrays[name]]
+        self.assertEqual(len(self.rows), len(want), 'число позиций на /menyu и в массивах')
+        for (n, p, old), (cell, price) in zip(want, self.rows):
+            self.assertTrue(H.unescape(cell).startswith(n), n)
+            if p is None:
+                self.assertEqual(price, '', n)
+                continue
+            digits = lambda s: re.sub(r'\D', ' ', s).split()
+            want_p = ([old] if old else []) + p.split('/')
+            self.assertEqual(digits(price.replace(' ', '')), [x.strip() for x in want_p], n)
+            if old:
+                self.assertIn('<s>', price, n)
+
+    def test_only_and_sections(self):
+        row = next(c for c, _ in self.rows if c.startswith('Курица гриль'))
+        self.assertIn('только:', row)
+        self.assertIn('Толе Би, 64', row)
+        self.assertIn('<h2 id="togo">', self.page)
+        self.assertIn('Сервисный сбор 10%', self.page)
+
+
+class TestRootFiles(unittest.TestCase):
+    def test_llms_txt(self):
+        txt = read('llms.txt')
+        self.assertTrue(txt.startswith('# Del Cappuccino\n\n> '))
+        self.assertIn('\n## English\n', txt)
+        for addr in re.findall(r"addr:'([^']*)'", re.search(r'const BRANCHES = \[(.*?)\n\];', read('index.html'), re.S).group(1)):
+            self.assertIn(addr, txt)
+        for url in (SITE, SITE + 'menyu', 'https://delcappuccino.kz/', 'https://instagram.com/'):
+            self.assertIn('](' + url, txt)
+
+    def test_robots_allows_ai_bots(self):
+        robots = read('robots.txt')
+        self.assertNotIn('Disallow', robots)
+        groups = [g for g in re.split(r'\n\s*\n', robots) if 'User-agent' in g]
+        agents = {}
+        for g in groups:
+            allow = re.findall(r'^Allow: (\S+)', g, re.M)
+            for a in re.findall(r'^User-agent: (\S+)', g, re.M):
+                agents[a] = allow
+        for bot in ('*', 'GPTBot', 'OAI-SearchBot', 'ChatGPT-User', 'PerplexityBot', 'ClaudeBot', 'Claude-SearchBot',
+                    'Google-Extended', 'Applebot-Extended', 'YandexBot', 'Bingbot'):
+            self.assertEqual(agents.get(bot), ['/'], bot)
+        self.assertIn('Sitemap: %ssitemap.xml' % SITE, robots)
+
+    def test_indexnow_key_and_payload(self):
+        import indexnow  # без сети: только сборка запроса
+        keys = [f for f in os.listdir(ROOT) if re.fullmatch(r'[0-9a-f]{32}\.txt', f)]
+        self.assertEqual(len(keys), 1)
+        self.assertEqual(read(keys[0]).strip(), keys[0][:-4])
+        body = indexnow.payload()
+        self.assertEqual(body['host'], 'tap.delcappuccino.kz')
+        self.assertEqual(body['keyLocation'], SITE + keys[0])
+        self.assertEqual(body['urlList'], re.findall(r'<loc>([^<]+)</loc>', read('sitemap.xml')))
 
 
 if __name__ == '__main__':

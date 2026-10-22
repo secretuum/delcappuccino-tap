@@ -196,6 +196,30 @@ h1 span{color:var(--olive)}
 .loc-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
 .loc-head h2 span{color:var(--olive)}
 .loc-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
+
+/* ── FAQ — частые вопросы (#faq): разметку собирает tools/seo_jsonld.py из tools/faq.json; <details> без JS ── */
+.faq{padding:56px 0}
+.faq-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:26px;gap:20px}
+.faq-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
+.faq-head h2 span{color:var(--olive)}
+.faq-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
+.faq a{color:var(--forest);font-weight:600}
+.faq-list{max-width:780px}
+.faq details{border-top:1px solid var(--line)}
+.faq details:last-child{border-bottom:1px solid var(--line)}
+.faq summary{list-style:none;cursor:pointer;position:relative;padding:16px 40px 16px 0;font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink)}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:'+';position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;line-height:1;color:var(--forest);transition:transform .2s}
+.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq-a{padding:0 40px 18px 0;color:var(--ink-2);font-size:14.5px;line-height:1.65}
+.faq-a ul{margin:6px 0 0 18px}
+@media(max-width:680px){
+  .faq{padding:28px 0}
+  .faq-head{flex-direction:column;align-items:flex-start;margin-bottom:12px;gap:6px}
+  .faq-head h2{font-size:22px}
+  .faq summary{font-size:14.5px;padding:14px 34px 14px 0}
+  .faq-a{padding-right:0;font-size:14px}
+}
 .loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
 .loc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px}
 .loc-card small{font-family:Comfortaa;font-size:11px;color:var(--olive);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
@@ -743,7 +767,8 @@ footer{border-top:1px solid var(--line);padding:24px 0}
 {"@type":"MenuItem","name":"Фисташка-малина","offers":{"@type":"Offer","price":8700,"priceCurrency":"KZT"}},
 {"@type":"MenuItem","name":"Вупи-пай","offers":{"@type":"Offer","price":9000,"priceCurrency":"KZT"}},
 {"@type":"MenuItem","name":"Фисташковый рулет","offers":{"@type":"Offer","price":9000,"priceCurrency":"KZT"}},
-{"@type":"MenuItem","name":"Дубайский","offers":{"@type":"Offer","price":13000,"priceCurrency":"KZT"}}]}]}
+{"@type":"MenuItem","name":"Дубайский","offers":{"@type":"Offer","price":13000,"priceCurrency":"KZT"}}]}]},
+{"@type":"FAQPage","@id":"https://tap.delcappuccino.kz/#faq","inLanguage":"ru","mainEntity":[{"@type":"Question","name":"Когда работают кофейни Del Cappuccino?","acceptedAnswer":{"@type":"Answer","text":"4 кофейни работают круглосуточно, 24/7: ЖК Вавилон (Розыбакиева, 247/8), ЖК Комфорт Сити (Серкебаева, 146), БП Promenade (Абая, 44А), Del Cappuccino (Толе Би, 64). Bakery to go · ЖК City (Жандосова, 94/12) — ежедневно 07:00–22:00."}},{"@type":"Question","name":"Где находятся кофейни Del Cappuccino в Алматы?","acceptedAnswer":{"@type":"Answer","text":"5 точек в Алматы:<ul><li>ЖК Вавилон (Розыбакиева, 247/8) — круглосуточно (24/7)<\/li><li>ЖК Комфорт Сити (Серкебаева, 146) — круглосуточно (24/7)<\/li><li>БП Promenade (Абая, 44А) — круглосуточно (24/7)<\/li><li>Del Cappuccino (Толе Би, 64) — круглосуточно (24/7)<\/li><li>Bakery to go · ЖК City (Жандосова, 94/12) — ежедневно 07:00–22:00<\/li><\/ul>"}},{"@type":"Question","name":"Продукция Del Cappuccino халал?","acceptedAnswer":{"@type":"Answer","text":"Да, продукция сертифицирована КМДБ Halal (halaldamu.kz)."}},{"@type":"Question","name":"Завтраки подают только утром?","acceptedAnswer":{"@type":"Answer","text":"Нет, завтраки весь день — любимые завтраки без привязки ко времени на часах."}},{"@type":"Question","name":"Как забронировать столик?","acceptedAnswer":{"@type":"Answer","text":"Нажмите «Забронировать столик» на сайте и выберите филиал — забронировать можно в WhatsApp или по телефону."}},{"@type":"Question","name":"Как заказать еду домой?","acceptedAnswer":{"@type":"Answer","text":"Через кнопку «Заказать в приложении» на сайте — заказ онлайн на <a href=\"https://delcappuccino.kz/\">delcappuccino.kz<\/a>. Заказ навынос можно сделать и в WhatsApp филиала."}},{"@type":"Question","name":"Есть ли детская комната, VIP-зал и намазхана?","acceptedAnswer":{"@type":"Answer","text":"Да. Для семейных визитов у нас есть детские комнаты, для спокойных встреч — VIP-залы, а для молитвы — намазхана."}},{"@type":"Question","name":"Можно ли провести у вас банкет?","acceptedAnswer":{"@type":"Answer","text":"Да, проведём ваше событие для компании до 40 человек. VIP-залы подходят для деловых завтраков, камерных встреч и мастер-классов."}},{"@type":"Question","name":"Есть ли меню на казахском и английском?","acceptedAnswer":{"@type":"Answer","text":"Да, в меню на сайте язык переключается: ҚАЗ, РУС или ENG."}},{"@type":"Question","name":"Где посмотреть меню и цены?","acceptedAnswer":{"@type":"Answer","text":"Меню с фото и составом блюд — <a href=\"https://tap.delcappuccino.kz/#menu\">в меню на сайте<\/a>, всё меню с ценами текстом — <a href=\"https://tap.delcappuccino.kz/menyu\">tap.delcappuccino.kz/menyu<\/a>."}}]}
 ]}
 </script>
 </head>
@@ -871,6 +896,29 @@ footer{border-top:1px solid var(--line);padding:24px 0}
     <div class="loc-grid" id="loc-grid"></div>
   </div>
 </section>
+
+<!-- Частые вопросы: данные tools/faq.json, собирает tools/seo_jsonld.py (тот же текст — FAQPage в JSON-LD), руками не править -->
+<section class="faq" id="faq">
+  <div class="shell">
+    <div class="faq-head">
+      <div><p class="tag">вопросы и ответы</p><h2>Частые <span>вопросы</span>.</h2></div>
+      <p>Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.</p>
+    </div>
+    <div class="faq-list">
+      <details><summary>Когда работают кофейни Del Cappuccino?</summary><div class="faq-a">4 кофейни работают круглосуточно, 24/7: ЖК Вавилон (Розыбакиева, 247/8), ЖК Комфорт Сити (Серкебаева, 146), БП Promenade (Абая, 44А), Del Cappuccino (Толе Би, 64). Bakery to go · ЖК City (Жандосова, 94/12) — ежедневно 07:00–22:00.</div></details>
+      <details><summary>Где находятся кофейни Del Cappuccino в Алматы?</summary><div class="faq-a">5 точек в Алматы:<ul><li>ЖК Вавилон (Розыбакиева, 247/8) — круглосуточно (24/7)</li><li>ЖК Комфорт Сити (Серкебаева, 146) — круглосуточно (24/7)</li><li>БП Promenade (Абая, 44А) — круглосуточно (24/7)</li><li>Del Cappuccino (Толе Би, 64) — круглосуточно (24/7)</li><li>Bakery to go · ЖК City (Жандосова, 94/12) — ежедневно 07:00–22:00</li></ul></div></details>
+      <details><summary>Продукция Del Cappuccino халал?</summary><div class="faq-a">Да, продукция сертифицирована КМДБ Halal (halaldamu.kz).</div></details>
+      <details><summary>Завтраки подают только утром?</summary><div class="faq-a">Нет, завтраки весь день — любимые завтраки без привязки ко времени на часах.</div></details>
+      <details><summary>Как забронировать столик?</summary><div class="faq-a">Нажмите «Забронировать столик» на сайте и выберите филиал — забронировать можно в WhatsApp или по телефону.</div></details>
+      <details><summary>Как заказать еду домой?</summary><div class="faq-a">Через кнопку «Заказать в приложении» на сайте — заказ онлайн на <a href="https://delcappuccino.kz/">delcappuccino.kz</a>. Заказ навынос можно сделать и в WhatsApp филиала.</div></details>
+      <details><summary>Есть ли детская комната, VIP-зал и намазхана?</summary><div class="faq-a">Да. Для семейных визитов у нас есть детские комнаты, для спокойных встреч — VIP-залы, а для молитвы — намазхана.</div></details>
+      <details><summary>Можно ли провести у вас банкет?</summary><div class="faq-a">Да, проведём ваше событие для компании до 40 человек. VIP-залы подходят для деловых завтраков, камерных встреч и мастер-классов.</div></details>
+      <details><summary>Есть ли меню на казахском и английском?</summary><div class="faq-a">Да, в меню на сайте язык переключается: ҚАЗ, РУС или ENG.</div></details>
+      <details><summary>Где посмотреть меню и цены?</summary><div class="faq-a">Меню с фото и составом блюд — <a href="https://tap.delcappuccino.kz/#menu">в меню на сайте</a>, всё меню с ценами текстом — <a href="https://tap.delcappuccino.kz/menyu">tap.delcappuccino.kz/menyu</a>.</div></details>
+    </div>
+  </div>
+</section>
+<!-- /faq -->
 
 <section class="contact shell" id="contacts">
   <a href="#top" onclick="event.preventDefault();goHome()" aria-label="На главную"><img src="assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
