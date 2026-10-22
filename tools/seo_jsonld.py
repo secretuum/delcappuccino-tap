@@ -185,6 +185,9 @@ def faq(html):
     v = faq_vars(html)
     out = []
     for e in data:
+        unknown = set(re.findall(r'\{(\w+)\}', e['a'])) - set(v)
+        if unknown:
+            sys.exit('seo_jsonld: в ответе FAQ «%s» неизвестная подстановка {%s} — есть: %s' % (e['q'], ', '.join(unknown), ', '.join(v)))
         a = re.sub(r'\{(\w+)\}', lambda m: v[m.group(1)], e['a'])
         bad = re.sub(r'</?(a|ul|li)\b[^>]*>', '', a)
         if '<' in bad or '{' in a:
@@ -327,7 +330,8 @@ def menu_page(html):
                 extra += ' <small>· %s</small>' % e(it['note'])
             price = ''
             if it['p']:
-                price = '<b class="p">%s%s ₸</b>' % ('<s>%s</s> ' % fmt_p(it['old']) if it['old'] else '', fmt_p(it['p']))
+                # старая цена словами («вместо»), а не только <s>: бот, вырезающий теги, иначе прочтёт «6 000 3 990 ₸»
+                price = '<b class="p">%s ₸%s</b>' % (fmt_p(it['p']), ' <small>вместо <s>%s</s></small>' % fmt_p(it['old']) if it['old'] else '')
             rows.append('<li><span class="n">%s%s</span>%s</li>' % (e(it['n']), extra, price))
         return '<ul>\n' + '\n'.join(rows) + '\n</ul>'
 
@@ -335,7 +339,9 @@ def menu_page(html):
         out = ['<h3 id="%s">%s</h3>' % (tab if mode == 'cafe' else 'togo-' + tab, e(ui['tab_' + tab]))]
         for s in sections(html, arr):
             head = e(s['t']) + (' <small>%s</small>' % e(s['badge']) if s['badge'] else '')
-            out.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
+            # раздел с тем же названием, что вкладка («Десерты» → «Десерты»), без своего заголовка — как dupT на главной
+            if not (s['t'] == ui['tab_' + tab] and not s['badge'] and not s['p']):
+                out.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
             if s['note']:
                 out.append('<p class="note">%s</p>' % e(s['note']))
             out.append(items_html(s['items']))
@@ -421,7 +427,10 @@ def llms(html):
     cafes = [b for b in bs if b['hours'] == '24/7']
     rest = [b for b in bs if b['hours'] != '24/7']
     ru_points = '\n'.join('- %s — %s, Алматы — %s' % (short(b), b['addr'], hours_ru(b['hours'])) for b in bs)
-    en_points = '\n'.join('- %s — %s, Almaty — %s' % (en.get(short(b), short(b)), en.get(b['addr'], b['addr']), hours_en(b['hours']))
+    missing = [x for b in bs for x in (short(b), b['addr']) if x not in en]
+    if missing:
+        sys.exit('seo_jsonld: нет английского перевода в MENU_TR.en для %s — допишите словарь' % ', '.join(missing))
+    en_points = '\n'.join('- %s — %s, Almaty — %s' % (en[short(b)], en[b['addr']], hours_en(b['hours']))
                           for b in bs)
     links_ru = '\n'.join([
         '- [Сайт](%s): адреса точек, бронь столика в WhatsApp или по телефону, меню с фото и составом блюд' % SITE,
@@ -473,6 +482,8 @@ def with_faq(html):
     m = FAQ_RE.search(html)
     if m:
         return html[:m.start()] + new + html[m.end():]
+    if FAQ_BEFORE not in html:
+        sys.exit('seo_jsonld: нет якоря %s — некуда вставить «Частые вопросы»' % FAQ_BEFORE)
     return html.replace(FAQ_BEFORE, new + '\n' + FAQ_BEFORE, 1)
 
 

@@ -55,7 +55,9 @@ class TestJsonLd(unittest.TestCase):
         self.assertIn('"name":"%s","offers":{"@type":"Offer","price":%d,' % (name, price + 1000), seo.block(changed))
         page = seo.menu_page(changed)
         self.assertNotEqual(page, read('menyu', 'index.html'), 'смена цены должна делать /menyu устаревшей')
-        self.assertIn('%s ₸' % seo.fmt_p(price + 1000), page)
+        import html as H
+        row = next(l for l in page.split('\n') if l.startswith('<li><span class="n">%s' % H.escape(name, quote=False)))
+        self.assertIn('<b class="p">%s ₸' % seo.fmt_p(price + 1000), row)
 
     def test_five_branches_from_BRANCHES(self):
         self.assertEqual(len(self.branches), 5)
@@ -216,7 +218,9 @@ class TestFaq(unittest.TestCase):
         self.assertNotRegex(text, r'\{\w+\}', 'неподставленная переменная в ответе')
         for addr in re.findall(r"addr:'([^']*)'", re.search(r'const BRANCHES = \[(.*?)\n\];', self.html, re.S).group(1)):
             self.assertIn(addr, text)
-        for fact in ('24/7', '07:00–22:00', 'КМДБ', 'весь день', 'детские комнаты', 'VIP-залы', 'намазхана',
+        for hours in re.findall(r"hours:'([^']*)'", self.html):
+            self.assertIn(re.sub(r'^ежедневно ', '', hours), text)
+        for fact in ('КМДБ', 'весь день', 'детские комнаты', 'VIP-залы', 'намазхана',
                      'https://delcappuccino.kz/', 'ҚАЗ'):
             self.assertIn(fact, text)
 
@@ -232,7 +236,7 @@ class TestMenuPage(unittest.TestCase):
     def setUpClass(cls):
         cls.html = read('index.html')
         cls.page = read('menyu', 'index.html')
-        cls.rows = re.findall(r'<li><span class="n">(.*?)</span>(?:<b class="p">(.*?) ₸</b>)?</li>', cls.page)
+        cls.rows = re.findall(r'<li><span class="n">(.*?)</span>(?:<b class="p">(.*?)</b>)?</li>', cls.page)
 
     def test_head(self):
         self.assertTrue(self.page.startswith('<!DOCTYPE html>\n<html lang="ru">'))
@@ -245,26 +249,31 @@ class TestMenuPage(unittest.TestCase):
     def test_all_items_with_prices(self):
         import html as H
         arrays = menu_arrays(self.html)
-        self.assertEqual(sorted(arrays), sorted(['MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT', 'MENU_FROZEN',
-                                                 'TOGO_DESSERT', 'TOGO_FROZEN', 'TOGO_BAR']))
-        want = [it for name in ('MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT', 'MENU_FROZEN', 'TOGO_DESSERT', 'TOGO_FROZEN', 'TOGO_BAR')
-                for it in arrays[name]]
+        # порядок — как вкладки на главной: MENU_TABS, затем вкладки режима togo
+        order = [a for block in (re.search(r'const MENU_TABS = \{([^}]*)\}', self.html).group(1),
+                                 re.search(r'togo:\{tabs:\{([^}]*)\}', self.html).group(1))
+                 for a in re.findall(r'\w+:(\w+)', block)]
+        self.assertEqual(sorted(arrays), sorted(order), 'на /menyu — все массивы меню обоих режимов')
+        want = [it for name in order for it in arrays[name]]
         self.assertEqual(len(self.rows), len(want), 'число позиций на /menyu и в массивах')
         for (n, p, old), (cell, price) in zip(want, self.rows):
             self.assertTrue(H.unescape(cell).startswith(n), n)
             if p is None:
                 self.assertEqual(price, '', n)
                 continue
-            digits = lambda s: re.sub(r'\D', ' ', s).split()
-            want_p = ([old] if old else []) + p.split('/')
-            self.assertEqual(digits(price.replace(' ', '')), [x.strip() for x in want_p], n)
+            digits = re.sub(r'\D', ' ', price.replace('\u00a0', '')).split()
+            self.assertEqual(digits, [x.strip() for x in p.split('/')] + ([old] if old else []), n)
             if old:
-                self.assertIn('<s>', price, n)
+                self.assertIn('вместо <s>', price, n)
 
     def test_only_and_sections(self):
-        row = next(c for c, _ in self.rows if c.startswith('Курица гриль'))
+        import html as H
+        only = re.search(r"\{n:'((?:[^'\\]|\\.)*)'[^{}]*\bonly:\['(\d+)'", self.html)
+        self.assertIsNotNone(only, 'в меню нет позиции с only — проверка «только: …» пустая')
+        addr = re.search(r"\{n:'%s · [^\n]*addr:'([^']*)'" % only.group(2), self.html).group(1)
+        row = next(c for c, _ in self.rows if H.unescape(c).startswith(only.group(1).replace("\\'", "'")))
         self.assertIn('только:', row)
-        self.assertIn('Толе Би, 64', row)
+        self.assertIn(addr, row)
         self.assertIn('<h2 id="togo">', self.page)
         self.assertIn('Сервисный сбор 10%', self.page)
 

@@ -47,6 +47,8 @@ def main():
             print('IndexNow:', r.status, '— принято')
     except urllib.error.HTTPError as e:
         sys.exit('IndexNow: %s %s' % (e.code, e.reason))
+    except urllib.error.URLError as e:
+        sys.exit('IndexNow: нет связи с %s — %s' % (ENDPOINT, e.reason))
 
 
 if __name__ == '__main__':
