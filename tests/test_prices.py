@@ -77,8 +77,11 @@ class TestSalePrices(unittest.TestCase):
         self.assertTrue(r > 150 and g < 80 and b < 80, 'подчёркивание должно быть красным')
 
     def test_grill_caption(self):
-        cap = re.search(r'<p class="grill-cap">(.*?)</p>', self.html, re.S).group(1)
-        self.assertIn('<s>6000</s> <span class="sale">3990 ₸</span>', cap)
+        cap = re.search(r'<p class="grill-cap">(.*?)</p>', self.html, re.S)
+        self.assertIsNotNone(cap, 'нет подписи акции <p class="grill-cap">')
+        cap = cap.group(1)
+        # &nbsp; — старая и новая цены не разъезжаются по строкам на 360 px
+        self.assertIn('<s>6000</s>&nbsp;<span class="sale">3990 ₸</span>', cap)
         self.assertIn('aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸', cap)
 
 
