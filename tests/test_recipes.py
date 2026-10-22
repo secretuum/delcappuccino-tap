@@ -18,6 +18,9 @@ RANGES = {
 }
 DRINK = (0, 600)
 EXCEPTIONS = {'Мясной сет': (300, 1800)}     # сет на компанию в разделе домашних блюд
+# состав по решению владельца (src owner): ing текстом, вес и КБЖУ не публикуем. Курица гриль, 22.10.2026: по ТТК целая
+# курица считается штукой, граммовок нет, а «не указывай что не точно». Новое имя сюда — только по решению владельца
+OWNER_FIXED = {'Курица гриль'}
 
 
 class TestRecipes(unittest.TestCase):
@@ -46,8 +49,15 @@ class TestRecipes(unittest.TestCase):
         self.assertEqual(sorted(set(self.rec) - set(self.site)), [], 'рецепты для снятых с сайта позиций')
 
     def test_ingredients_resolve_and_fields(self):
+        self.assertEqual({n for n, r in self.rec.items() if r.get('src') == 'owner' or r.get('no_w') or r.get('no_kbju')}, OWNER_FIXED)
         for name, r in self.rec.items():
-            self.assertIn(r.get('src'), ('iiko', 'est', 'label'), name)
+            self.assertIn(r.get('src'), ('iiko', 'est', 'label', 'owner'), name)
+            if name in OWNER_FIXED:
+                self.assertEqual(set(r['ing']), {'ru', 'kk', 'en'}, name)
+                self.assertTrue(r['no_w'] and r['no_kbju'], name)
+                self.assertNotIn('items', r, name)                 # граммовок нет — и выдумывать их нельзя
+                self.assertNotIn('portion_g', r, name)
+                continue
             self.assertGreater(float(r.get('portion_g') or 0), 0, name)
             if r.get('label_per_100'):
                 self.assertTrue(r.get('no_ing'), name)
@@ -62,6 +72,11 @@ class TestRecipes(unittest.TestCase):
         for name in self.site:
             c = self.cards.get(name)
             self.assertIsNotNone(c, name)
+            if name in OWNER_FIXED:
+                self.assertEqual(c['ing'], self.rec[name]['ing'], name)
+                for k in ('w', 'kbju', 'est', '_stub'):
+                    self.assertNotIn(k, c, name)
+                continue
             self.assertIn('kbju', c, name)
             self.assertIn('w', c, name)
             r = self.rec[name]
@@ -77,6 +92,8 @@ class TestRecipes(unittest.TestCase):
     def test_kbju_ranges_and_atwater(self):
         bad = []
         for name, secs in self.site.items():
+            if name in OWNER_FIXED:
+                continue
             k = self.cards[name]['kbju']
             lo, hi = EXCEPTIONS.get(name) or RANGES.get(secs[0], DRINK)
             if not lo <= k['kcal'] <= hi:
