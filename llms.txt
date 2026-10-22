@@ -17,6 +17,8 @@
 - [Сайт](https://tap.delcappuccino.kz/): адреса точек, бронь столика в WhatsApp или по телефону, меню с фото и составом блюд
 - [Меню и цены текстом](https://tap.delcappuccino.kz/menyu): кофейни и bakery to go, цены в тенге
 - [Частые вопросы](https://tap.delcappuccino.kz/#faq)
+- [Сайт на казахском](https://tap.delcappuccino.kz/kk/) и [меню на казахском](https://tap.delcappuccino.kz/kk/menyu)
+- [Сайт на английском](https://tap.delcappuccino.kz/en/) и [меню на английском](https://tap.delcappuccino.kz/en/menu)
 - [Заказ онлайн и приложение](https://delcappuccino.kz/)
 - [Instagram](https://instagram.com/del.cappuccino)
 
@@ -36,7 +38,9 @@ Kids' rooms (play areas) at Vavilon Residential Complex and Komfort City Residen
 
 ### Links
 
-- [Website](https://tap.delcappuccino.kz/): locations, table booking via WhatsApp or phone, menu with photos (Kazakh, Russian, English)
-- [Menu with prices, text](https://tap.delcappuccino.kz/menyu): cafés and bakery to go, prices in KZT (in Russian)
+- [Website in English](https://tap.delcappuccino.kz/en/): locations, table booking via WhatsApp or phone, FAQ
+- [Menu with prices](https://tap.delcappuccino.kz/en/menu): cafés and bakery to go, prices in KZT
+- [Menu with photos](https://tap.delcappuccino.kz/#menu-en): interactive menu on the main site, in English
+- Also in [Kazakh](https://tap.delcappuccino.kz/kk/) and [Russian](https://tap.delcappuccino.kz/)
 - [Order online / app](https://delcappuccino.kz/)
 - [Instagram](https://instagram.com/del.cappuccino)

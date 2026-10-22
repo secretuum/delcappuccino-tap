@@ -156,19 +156,24 @@ class TestPage(unittest.TestCase):
         self.assertIn('<p class="tag">кофейни в Алматы · coffee &amp; food</p>\n      <h1>', self.html)
 
     def test_menu_deep_link(self):
+        # /#menu, /#menu-togo и с языком в конце (/#menu-kk, /#menu-togo-en) — при загрузке и по hashchange
+        self.assertIn("const MENU_HASH=/^#menu(-togo)?(?:-(kk|ru|en))?$/;", self.html)
         f = re.search(r'function menuFromHash\(\)\{(.*?)\n\}', self.html, re.S)
         self.assertIsNotNone(f)
-        self.assertIn("location.hash==='#menu')openMenu()", f.group(1))
-        self.assertIn("location.hash==='#menu-togo')openMenu('togo')", f.group(1))
+        self.assertIn("openMenu(m[1]?'togo':undefined)", f.group(1))
+        self.assertIn("localStorage.setItem('dc_menu_lang', m[2])", f.group(1))
         self.assertIn("menuFromHash(); addEventListener('hashchange',menuFromHash);", self.html)
 
     def test_canonical_and_sitemap(self):
         canon = {}
-        for path in ('index.html', 'ugolok/index.html', 'menyu/index.html'):
+        for path in ('index.html', 'ugolok/index.html', 'menyu/index.html', 'kk/index.html', 'en/index.html',
+                     'kk/menyu/index.html', 'en/menu/index.html'):
             links = re.findall(r'<link rel="canonical" href="([^"]+)">', read(path).split('</head>')[0])
             self.assertEqual(len(links), 1, path)
             canon[path] = links[0]
-        self.assertEqual(canon, {'index.html': SITE, 'ugolok/index.html': SITE + 'ugolok', 'menyu/index.html': SITE + 'menyu'})
+        self.assertEqual(canon, {'index.html': SITE, 'ugolok/index.html': SITE + 'ugolok', 'menyu/index.html': SITE + 'menyu',
+                                 'kk/index.html': SITE + 'kk/', 'en/index.html': SITE + 'en/',
+                                 'kk/menyu/index.html': SITE + 'kk/menyu', 'en/menu/index.html': SITE + 'en/menu'})
         sm = read('sitemap.xml')
         urls = re.findall(r'<url>(.*?)</url>', sm, re.S)
         self.assertEqual(sorted(re.search(r'<loc>([^<]*)</loc>', u).group(1) for u in urls), sorted(canon.values()))
