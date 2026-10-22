@@ -34,7 +34,8 @@ class TestJsonLd(unittest.TestCase):
             g = lambda k: (re.search(r"\b%s:'([^']*)'" % k, line) or [None, None])[1]
             geo = re.search(r'geo:\[([-\d.]+),\s*([-\d.]+)\]', line)
             cls.branches.append({'n': g('n'), 'addr': g('addr'), 'phone': g('phone'), 'hours': g('hours'),
-                                 'menu': g('menu'), 'route': g('route'), 'geo': [float(geo.group(1)), float(geo.group(2))]})
+                                 'menu': g('menu'), 'route': g('route'), 'geo': [float(geo.group(1)), float(geo.group(2))],
+                                 'maps': [u for u in (g('gis'), g('yandex')) if u]})
 
     def test_valid_json_in_head(self):
         self.assertIsNotNone(self.text, 'нет <script type="application/ld+json"> в <head>')
@@ -90,11 +91,12 @@ class TestJsonLd(unittest.TestCase):
             self.assertIn('href="%s"' % u, self.html, 'sameAs только со страницы')
         self.assertNotIn('2gis.kz/almaty/search', self.text, 'поисковые ссылки 2GIS — не sameAs')
         for b in self.branches:
+            # sameAs точки = maps из BRANCHES: только карточки фирмы (2ГИС …/firm/<id>, Яндекс …/org/…/<id>/)
             node = self.nodes[SITE + '#branch-' + b['n'][:2]]
-            if '/firm/' in (b['route'] or ''):
-                self.assertEqual(node.get('sameAs'), [b['route']])
-            else:
-                self.assertNotIn('sameAs', node)
+            self.assertEqual(node.get('sameAs', []), b['maps'], b['n'])
+            for u in b['maps']:
+                self.assertRegex(u, r'^https://(2gis\.kz/almaty/firm/\d+|yandex\.com/maps/org/del_cappuccino/\d+/)$')
+        self.assertTrue(any(b['maps'] for b in self.branches), 'ни у одной точки нет maps — проверка пустая')
 
     def test_order_and_menu_links(self):
         self.assertEqual(self.nodes[SITE + '#org']['potentialAction'], {'@type': 'OrderAction', 'target': 'https://delcappuccino.kz/'})
@@ -238,6 +240,36 @@ class TestFaq(unittest.TestCase):
     def test_visible_link_to_menu_page(self):
         head = re.search(r'<div class="faq-head">(.*?)</div>\s*<div class="faq-list">', self.body, re.S).group(1)
         self.assertIn('<a href="/menyu">', head, 'ссылка на /menyu должна быть видна без раскрытия вопросов')
+
+
+class TestLocations(unittest.TestCase):
+    """Карточки точек (#loc-grid) лежат в HTML — их видно без JS; JS их не перерисовывает, только кнопки работают (onclick)"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.html = read('index.html')
+        grid = re.search(r'<div class="loc-grid" id="loc-grid">(.*?)\n    </div>\n  </div>\n</section>', cls.html, re.S)
+        cls.grid = grid.group(1) if grid else ''
+        cls.cards = re.findall(r'<div class="loc-card">(.*?)\n    </div>', cls.grid, re.S)
+        arr = re.search(r'const BRANCHES = \[(.*?)\n\];', cls.html, re.S).group(1)
+        cls.branches = re.findall(r"\{n:'.*\}", arr)
+
+    def test_cards_static(self):
+        self.assertEqual(len(self.cards), len(self.branches), 'карточка на каждую точку из BRANCHES')
+        for card, line in zip(self.cards, self.branches):
+            g = lambda k: re.search(r"\b%s:'([^']*)'" % k, line).group(1)
+            self.assertIn('<small>%s</small>' % g('n'), card)
+            self.assertIn('<h3>%s</h3>' % g('addr'), card)
+            self.assertIn('<b>%s</b>' % g('hours'), card)
+            self.assertIn('href="tel:%s"' % g('phone'), card)
+            self.assertIn('href="%s"' % g('route'), card)
+            self.assertIn('href="https://wa.me/%s?text=' % re.sub(r'\D', '', g('phone')), card)
+            self.assertEqual("openMenu('" in card, "menu:'" in line, g('n'))
+
+    def test_js_does_not_redraw(self):
+        scripts = ' '.join(re.findall(r'<script>(.*?)</script>', self.html, re.S))
+        self.assertNotRegex(scripts, r"['\"]#?loc-grid['\"]", 'карточки точек собирает tools/seo_jsonld.py, JS их не перерисовывает')
+        self.assertNotIn('renderLocations', self.html)
 
 
 class TestMenuPage(unittest.TestCase):

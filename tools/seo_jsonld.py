@@ -12,8 +12,11 @@
   (город и страна — «5 точек в Алматы» из текста сайта). Юрлиц, ИП и имён людей в разметке нет и быть не должно.
   Меню кофеен с ценами в тенге — по разделам; у позиции с несколькими ценами — Offer на каждый объём из vol,
   если объёмов столько же, сколько цен, иначе AggregateOffer (от и до); позиция с only:[…] (есть не во всех
-  кофейнях) — availableAtOrFrom на эти точки. В sameAs точки — только ссылка 2GIS на карточку фирмы (…/firm/<id>);
-  поисковые ссылки 2GIS (…/search/…) — не карточки, их не кладём (главный, 22.10.2026). FAQPage — из tools/faq.json.
+  кофейнях) — availableAtOrFrom на эти точки. sameAs точки — поле maps в BRANCHES (карточки фирмы в 2ГИС и Яндекс
+  Картах, сверенные по адресу, часам и телефону); поисковые ссылки 2GIS (route, …/search/…) — не карточки, их не кладём.
+  FAQPage — из tools/faq.json.
+- Карточки точек на главной (#loc-grid): та же разметка, что раньше рисовал renderLocations, но в HTML — без JS их видят
+  поисковики и ИИ; кнопки (звонок, маршрут, меню, WhatsApp) работают через onclick, перерисовки нет.
 - «Частые вопросы» (#faq): <details> без JS, тот же текст, что в FAQPage. В ответах можно {часы}, {адреса}, {точек} —
   подставляются из BRANCHES, {детские} — из карточки «Детские комнаты» раздела «Формат», чтобы ответ не разошёлся
   с сайтом. Допустимый HTML в ответах: <a href>, <ul>, <li>.
@@ -26,6 +29,7 @@ lastmod в sitemap.xml: дата последнего коммита стран�
 Только stdlib.
 """
 import datetime, html as H, json, os, re, subprocess, sys
+from urllib.parse import quote
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
@@ -82,7 +86,8 @@ def branches(html):
         b = m.group(0)
         geo = re.search(r"geo:\[([-\d.]+),\s*([-\d.]+)\]", b)
         out.append({'n': field(b, 'n'), 'addr': field(b, 'addr'), 'phone': field(b, 'phone'), 'hours': field(b, 'hours'),
-                    'menu': field(b, 'menu'), 'route': field(b, 'route'),
+                    'menu': field(b, 'menu'), 'route': field(b, 'route'), 'note': field(b, 'note'), 'wa': field(b, 'wa'),
+                    'maps': [u for u in (field(b, 'gis'), field(b, 'yandex')) if u],
                     'geo': (float(geo.group(1)), float(geo.group(2))) if geo else None})
     if len(out) != src.count("{n:'") or not all(b['geo'] and b['addr'] and b['phone'] for b in out):
         sys.exit('seo_jsonld: BRANCHES разобран не целиком (точка в несколько строк или без geo/addr/phone) — допишите разбор')
@@ -274,8 +279,8 @@ def graph(html):
                 'openingHoursSpecification': hours_spec(b['hours']),
                 'hasMenu': SITE + '#menu-togo' if togo else {'@id': SITE + '#menu'},
                 'parentOrganization': {'@id': SITE + '#org'}}
-        if re.match(r'https://2gis\.kz/[^/]+/firm/\d+$', b['route'] or ''):
-            node['sameAs'] = [b['route']]
+        if b['maps']:
+            node['sameAs'] = b['maps']
         nodes.append(node)
     nodes.append({'@type': 'Menu', '@id': SITE + '#menu', 'url': SITE + '#menu', 'name': 'Меню кофеен Del Cappuccino',
                   'inLanguage': 'ru',
@@ -514,6 +519,43 @@ def with_faq(html):
     return html.replace(FAQ_BEFORE, new + '\n' + FAQ_BEFORE, 1)
 
 
+LOC_MARK = '<!-- Точки: из BRANCHES собирает tools/seo_jsonld.py — видны без JS поисковикам и ИИ, руками не править -->'
+LOC_RE = re.compile(re.escape(LOC_MARK) + r'\n.*?<!-- /точки -->\n', re.S)
+
+
+def wa_link(html, b):
+    """как branchWa/waLink на странице: wa.me/<цифры телефона>?text=<encodeURIComponent(b.wa || текст по умолчанию + адрес)>"""
+    m = re.search(r"function branchWa\(b\)\{return waLink\(b\.phone,\(b\.wa\|\|'((?:[^'\\]|\\.)*)'\)\+b\.addr\)\}", html)
+    if not m:
+        sys.exit('seo_jsonld: branchWa на странице записан иначе — обновите wa_link, чтобы ссылки WhatsApp в карточках совпадали с модалкой')
+    default = unq(m.group(1))
+    return 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']), quote((b['wa'] or default) + b['addr'], safe="-_.!~*'()"))
+
+
+def loc_cards(html):
+    """карточки точек — разметка один в один с бывшим renderLocations (класс, порядок ссылок, onclick-и для аналитики)"""
+    a = lambda s: H.escape(s, quote=False).replace('"', '&quot;')     # атрибут в "…": одинарные кавычки onclick оставляем как есть
+    t = lambda s: H.escape(s, quote=False)
+    out = []
+    for b in branches(html):
+        links = ['<a href="tel:%s" onclick="%s">Позвонить</a>' % (a(b['phone']), a("track('loc_call',{branch:'%s'})" % b['n'])),
+                 '<a href="%s" target="_blank" rel="noopener" onclick="%s">Маршрут</a>' % (a(b['route']), a("track('loc_route',{branch:'%s'})" % b['n']))]
+        if b['menu']:
+            links.append('<a href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (b['n'], b['menu'])))
+        links.append('<a class="wa" href="%s" target="_blank" rel="noopener" onclick="%s">WhatsApp</a>' % (a(wa_link(html, b)), a("track('loc_wa',{branch:'%s'})" % b['n'])))
+        out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
+                   '      <p class="loc-meta"><b>%s</b>%s</p>\n      <div class="loc-links">\n        %s\n      </div>\n    </div>'
+                   % (t(b['n']), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', '\n        '.join(links)))
+    return LOC_MARK + '\n' + '\n'.join(out) + '\n<!-- /точки -->\n'
+
+
+def with_loc(html):
+    m = LOC_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: в #loc-grid нет маркеров «%s … <!-- /точки -->»' % LOC_MARK)
+    return html[:m.start()] + loc_cards(html) + html[m.end():]
+
+
 def with_jsonld(html):
     new = block(html)
     m = BLOCK_RE.search(html)
@@ -522,7 +564,7 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_jsonld(with_faq(html))
+    page = with_jsonld(with_loc(with_faq(html)))
     return {INDEX: page, MENU_PAGE: menu_page(page), LLMS: llms(page)}
 
 
