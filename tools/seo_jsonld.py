@@ -1,33 +1,49 @@
 #!/usr/bin/env python3
-"""Пересобирает разметку schema.org (JSON-LD) в <head> index.html из данных самой страницы и lastmod в sitemap.xml.
+"""Собирает из данных главной всё, что читают поисковики и ИИ-боты без JavaScript: разметку schema.org (JSON-LD)
+в <head> index.html, раздел «Частые вопросы» на главной, страницу меню текстом /menyu, /llms.txt и lastmod в sitemap.xml.
 
-Запуск из корня репозитория после правки меню (MENU_KITCHEN / MENU_BAR / MENU_DESSERT) или точек (BRANCHES):
+Запуск из корня репозитория после правки меню (массивы MENU_* / TOGO_*), точек (BRANCHES) или tools/faq.json:
     python3 tools/seo_jsonld.py && python3 tools/sw_version.py      # порядок важен: sw_version хэширует index.html
-С ключом --check только сравнивает блок с массивами и выходит с кодом 1, если он устарел (tests/test_seo.py).
+С ключом --check только сравнивает и выходит с кодом 1, если что-то устарело (tests/test_seo.py).
 
-Что в разметке: организация Del Cappuccino (sameAs — ссылки Instagram со страницы, заказ онлайн — OrderAction),
-5 точек из BRANCHES — 01–04 CafeOrCoffeeShop, 05 Bakery; адрес, координаты, телефон и часы — только из BRANCHES
-(город и страна — «5 точек в Алматы» из текста сайта). Юрлиц, ИП и имён людей в разметке нет и быть не должно.
-Меню кофеен с ценами в тенге — по разделам; у позиции с несколькими ценами — Offer на каждый объём из vol,
-если объёмов столько же, сколько цен, иначе AggregateOffer (от и до); позиция с only:[…] (есть не во всех
-кофейнях) — availableAtOrFrom на эти точки. Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве) — выход
-с ошибкой, а не тихий пропуск. В sameAs точки — только ссылка 2GIS на карточку
-фирмы (…/firm/<id>); поисковые ссылки 2GIS (…/search/…) — не карточки, их не кладём (главный, 22.10.2026).
+Источники — только сама страница и tools/faq.json, ничего не придумывается:
+- JSON-LD: организация Del Cappuccino (sameAs — ссылки Instagram со страницы, заказ онлайн — OrderAction),
+  5 точек из BRANCHES — 01–04 CafeOrCoffeeShop, 05 Bakery; адрес, координаты, телефон и часы — только из BRANCHES
+  (город и страна — «5 точек в Алматы» из текста сайта). Юрлиц, ИП и имён людей в разметке нет и быть не должно.
+  Меню кофеен с ценами в тенге — по разделам; у позиции с несколькими ценами — Offer на каждый объём из vol,
+  если объёмов столько же, сколько цен, иначе AggregateOffer (от и до); позиция с only:[…] (есть не во всех
+  кофейнях) — availableAtOrFrom на эти точки. В sameAs точки — только ссылка 2GIS на карточку фирмы (…/firm/<id>);
+  поисковые ссылки 2GIS (…/search/…) — не карточки, их не кладём (главный, 22.10.2026). FAQPage — из tools/faq.json.
+- «Частые вопросы» (#faq): <details> без JS, тот же текст, что в FAQPage. В ответах можно {часы}, {адреса}, {точек} —
+  подставляются из BRANCHES, {детские} — из карточки «Детские комнаты» раздела «Формат», чтобы ответ не разошёлся
+  с сайтом. Допустимый HTML в ответах: <a href>, <ul>, <li>.
+- /menyu (menyu/index.html): всё меню текстом — кофейни (вкладки MENU_TABS) и Bakery to go (вкладки режима togo),
+  разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
+- /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
+- На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — из <head> главной): видно переходы из ИИ.
+Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
 """
-import datetime, json, os, re, subprocess, sys
+import datetime, html as H, json, os, re, subprocess, sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
 SITEMAP = os.path.join(ROOT, 'sitemap.xml')
+FAQ_JSON = os.path.join(ROOT, 'tools', 'faq.json')
+MENU_PAGE = os.path.join(ROOT, 'menyu', 'index.html')
+LLMS = os.path.join(ROOT, 'llms.txt')
 SITE = 'https://tap.delcappuccino.kz/'
-ORDER_URL = 'https://delcappuccino.kz/'      # заказ онлайн и приложение (Smart Restaurant)
+MENU_URL = SITE + 'menyu'
+ORDER_URL = 'https://delcappuccino.kz/'      # заказ онлайн и приложение
 MENU_ARRAYS = ('MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT')
 DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 MARK = '<!-- schema.org: организация, точки из BRANCHES и меню с ценами — tools/seo_jsonld.py, руками не править -->'
 BLOCK_RE = re.compile(re.escape(MARK) + r'\n<script type="application/ld\+json">\n(.*?)\n</script>\n', re.S)
-PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html'}
+FAQ_MARK = '<!-- Частые вопросы: данные tools/faq.json, собирает tools/seo_jsonld.py (тот же текст — FAQPage в JSON-LD), руками не править -->'
+FAQ_RE = re.compile(re.escape(FAQ_MARK) + r'\n.*?<!-- /faq -->\n', re.S)
+FAQ_BEFORE = '<section class="contact shell" id="contacts">'
+PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html', MENU_URL: 'menyu/index.html'}
 
 
 def js_array(html, name):
@@ -50,6 +66,16 @@ def field(obj, key):
     return unq(m.group(1)) if m else None
 
 
+def num_or_str(obj, key):
+    m = re.search(r"\b%s:(?:'([^']*)'|(\d+))" % key, obj)
+    return (m.group(1) or m.group(2)) if m else None
+
+
+def str_list(obj, key):
+    m = re.search(r"\b%s:\[([^\]]*)\]" % key, obj)
+    return re.findall(r"'([^']*)'", m.group(1)) if m else []
+
+
 def branches(html):
     out, src = [], js_array(html, 'BRANCHES')
     for m in re.finditer(r"\{n:'(?:[^'\\]|\\.)*'[^\n]*\}", src):
@@ -63,30 +89,138 @@ def branches(html):
     return out
 
 
-def menu_sections(html):
-    """[(раздел, [(название, p, vol, only)])] из MENU_KITCHEN / MENU_BAR / MENU_DESSERT; p — число или строка «1400/1500»,
-    only — номера точек, где позиция есть (['04', '02']), или []"""
-    out = []
-    for name in MENU_ARRAYS:
-        s, found = js_array(html, name), 0
-        for m in re.finditer(r"\{t:'((?:[^'\\]|\\.)*)'[^\[\]]*?items:\[", s):
-            i, depth, j = m.end(), 1, m.end()
-            while depth:
-                depth += (s[j] == '[') - (s[j] == ']')
-                j += 1
-            items = []
-            for im in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'([^{}]*)\}", s[i:j - 1]):
-                p = re.search(r"\bp:(?:'([^']*)'|(\d+))", im.group(2))
-                only = re.search(r"\bonly:\[([^\]]*)\]", im.group(2))
-                items.append((unq(im.group(1)), (p.group(1) or p.group(2)) if p else None, field(im.group(2), 'vol'),
-                              re.findall(r"'(\d+)'", only.group(1)) if only else []))
-            found += len(items)
-            out.append((unq(m.group(1)), items))
-        if found != s.count("{n:'"):
-            sys.exit('seo_jsonld: в %s разобрано %d позиций из %d — раздел или позиция не по шаблону, допишите разбор'
-                     % (name, found, s.count("{n:'")))
+def sections(html, name):
+    """[{t, p, badge, note, items:[{n, p, old, vol, note, m, only}]}] массива меню; p — число или строка «1400/1500»,
+    only — номера точек, где позиция есть (['04', '02']), m — пометки (['new', 'hit'])"""
+    s, out, found = js_array(html, name), [], 0
+    for m in re.finditer(r"\{t:'((?:[^'\\]|\\.)*)'([^\[\]]*?)items:\[", s):
+        head, i, depth, j = m.group(2), m.end(), 1, m.end()
+        while depth:
+            depth += (s[j] == '[') - (s[j] == ']')
+            j += 1
+        items = [{'n': unq(im.group(1)), 'p': num_or_str(im.group(2), 'p'), 'old': num_or_str(im.group(2), 'old'),
+                  'vol': field(im.group(2), 'vol'), 'note': field(im.group(2), 'note'),
+                  'm': str_list(im.group(2), 'm'), 'only': str_list(im.group(2), 'only')}
+                 for im in re.finditer(r"\{n:'((?:[^'\\]|\\.)*)'([^{}]*)\}", s[i:j - 1])]
+        found += len(items)
+        out.append({'t': unq(m.group(1)), 'p': num_or_str(head, 'p'), 'badge': field(head, 'badge'),
+                    'note': field(head, 'note'), 'items': items})
+    if found != s.count("{n:'"):
+        sys.exit('seo_jsonld: в %s разобрано %d позиций из %d — раздел или позиция не по шаблону, допишите разбор'
+                 % (name, found, s.count("{n:'")))
     return out
 
+
+def menu_sections(html):
+    """[(раздел, [(название, p, vol, only)])] меню кофеен для JSON-LD: MENU_KITCHEN / MENU_BAR / MENU_DESSERT"""
+    return [(s['t'], [(it['n'], it['p'], it['vol'], it['only']) for it in s['items']])
+            for name in MENU_ARRAYS for s in sections(html, name)]
+
+
+def obj_block(html, start, stop):
+    i = html.index(start)
+    return html[i:html.index(stop, i)]
+
+
+def ui_ru(html):
+    """MENU_UI.ru: подписи вкладок, сервисный сбор, аллергия"""
+    return {k: unq(v) for k, v in re.findall(r"(\w+):'((?:[^'\\]|\\.)*)'", obj_block(html, '  ru:{to_togo', '\n  kk:{'))}
+
+
+def tr_en(html):
+    """MENU_TR.en: русская строка → английская (названия точек, адреса)"""
+    return {unq(a): unq(b) for a, b in re.findall(r"'((?:[^'\\]|\\.)*)':'((?:[^'\\]|\\.)*)'",
+                                                   obj_block(html, '\n en:{', '\n },'))}
+
+
+def mode_tabs(html):
+    """{'cafe': [(вкладка, массив)], 'togo': [...]} — как в MENU_TABS и MENU_MODES.togo"""
+    cafe = re.search(r'const MENU_TABS = \{([^}]*)\}', html).group(1)
+    togo = re.search(r'togo:\{tabs:\{([^}]*)\}', html).group(1)
+    return {'cafe': re.findall(r'(\w+):(\w+)', cafe), 'togo': re.findall(r'(\w+):(\w+)', togo)}
+
+
+def mark_names(html):
+    """пометка → слово из легенды: new → «новинка», hot → «острое блюдо» (MK + LEGEND); без легенды — не показываем"""
+    mk = dict(re.findall(r"(\w+):'<[^>]*>([^<]*)</[^>]*>'", obj_block(html, 'const MK = {', '};')))
+    legend = dict(re.findall(r"'(\S+) — ([^']*)'", obj_block(html, 'const LEGEND = {', '};')))
+    return {k: legend[sym] for k, sym in mk.items() if sym in legend}
+
+
+# ── точки: подписи и часы ──
+
+def place(b):
+    """«ЖК Вавилон (Розыбакиева, 247/8)» — как всплывашка «Только:» в меню (branchLabel)"""
+    return '%s (%s)' % (re.sub(r'^\d+\s*·\s*', '', b['n']), b['addr'])
+
+
+def hours_ru(h):
+    return 'круглосуточно (24/7)' if h == '24/7' else h
+
+
+def plural(n, one, few, many):
+    n10, n100 = n % 10, n % 100
+    return one if n10 == 1 and n100 != 11 else few if 2 <= n10 <= 4 and not 12 <= n100 <= 14 else many
+
+
+def hours_text(bs):
+    """(«4 кофейни работают круглосуточно, 24/7: …», [«Bakery to go · ЖК City (Жандосова, 94/12) — ежедневно 07:00–22:00»])"""
+    cafes = [b for b in bs if b['hours'] == '24/7']
+    first = '%d %s %s круглосуточно, 24/7: %s' % (len(cafes), plural(len(cafes), 'кофейня', 'кофейни', 'кофеен'),
+                                                  'работает' if len(cafes) == 1 else 'работают', ', '.join(place(b) for b in cafes))
+    return first, ['%s — %s' % (place(b), b['hours']) for b in bs if b['hours'] != '24/7']
+
+
+def kids_places(html):
+    """где детские комнаты — из карточки «Детские комнаты» раздела «Формат»: «Игровые пространства в ЖК Вавилон и …»"""
+    m = re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', html)
+    if not m:
+        sys.exit('seo_jsonld: не нашёл на главной «Детские комнаты … Игровые пространства в …» — допишите разбор')
+    return re.split(r',\s*|\s+и\s+', m.group(1))
+
+
+def and_join(xs, conj='и'):
+    return xs[0] if len(xs) == 1 else '%s %s %s' % (', '.join(xs[:-1]), conj, xs[-1])
+
+
+def faq_vars(html):
+    e = lambda s: H.escape(s, quote=False)
+    bs = branches(html)
+    first, rest = hours_text(bs)
+    return {'часы': ' '.join(e(x) + '.' for x in [first] + rest),
+            'детские': e(and_join(kids_places(html))),
+            'адреса': '<ul>' + ''.join('<li>%s — %s</li>' % (e(place(b)), e(hours_ru(b['hours']))) for b in bs) + '</ul>',
+            'точек': '%d %s' % (len(bs), plural(len(bs), 'точка', 'точки', 'точек'))}
+
+
+def faq(html):
+    """[(вопрос, ответ-HTML)] из tools/faq.json с подстановкой {часы} {адреса} {точек}"""
+    with open(FAQ_JSON, encoding='utf-8') as f:
+        data = json.load(f)
+    v = faq_vars(html)
+    out = []
+    for e in data:
+        unknown = set(re.findall(r'\{(\w+)\}', e['a'])) - set(v)
+        if unknown:
+            sys.exit('seo_jsonld: в ответе FAQ «%s» неизвестная подстановка {%s} — есть: %s' % (e['q'], ', '.join(unknown), ', '.join(v)))
+        a = re.sub(r'\{(\w+)\}', lambda m: v[m.group(1)], e['a'])
+        bad = re.sub(r'</?(a|ul|li)\b[^>]*>', '', a)
+        if '<' in bad or '{' in a:
+            sys.exit('seo_jsonld: в ответе FAQ «%s» неизвестная подстановка или тег (можно <a href>, <ul>, <li>)' % e['q'])
+        out.append((e['q'], a))
+    return out
+
+
+def faq_block(items):
+    rows = '\n'.join('      <details><summary>%s</summary><div class="faq-a">%s</div></details>' % (H.escape(q, quote=False), a)
+                     for q, a in items)
+    return (FAQ_MARK + '\n<section class="faq" id="faq">\n  <div class="shell">\n    <div class="faq-head">\n'
+            '      <div><p class="tag">вопросы и ответы</p><h2>Частые <span>вопросы</span>.</h2></div>\n'
+            '      <p>Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.</p>\n    </div>\n'
+            '    <div class="faq-list">\n' + rows + '\n    </div>\n  </div>\n</section>\n<!-- /faq -->\n')
+
+
+# ── JSON-LD ──
 
 def offers(p, vol, only=()):
     """only — позиция есть не во всех кофейнях: availableAtOrFrom со ссылками на эти точки"""
@@ -120,10 +254,13 @@ def branch_name(b):
     return 'Del Cappuccino · ' + (b['addr'] if rest == 'Del Cappuccino' else rest)
 
 
+def instagram(html):
+    return sorted(set(re.findall(r'href="(https://(?:www\.)?instagram\.com/[^"?#]+)"', html)))
+
+
 def graph(html):
-    insta = sorted(set(re.findall(r'href="(https://(?:www\.)?instagram\.com/[^"?#]+)"', html)))
     org = {'@type': 'Organization', '@id': SITE + '#org', 'name': 'Del Cappuccino', 'url': SITE,
-           'logo': SITE + 'assets/icon-192.png', 'sameAs': insta,
+           'logo': SITE + 'assets/icon-192.png', 'sameAs': instagram(html),
            'potentialAction': {'@type': 'OrderAction', 'target': ORDER_URL}}
     nodes = [org]
     for b in branches(html):
@@ -147,6 +284,9 @@ def graph(html):
                                                            **({'offers': offers(p, vol, only)} if p else {}))
                                                       for n, p, vol, only in items]}
                                      for t, items in menu_sections(html)]})
+    nodes.append({'@type': 'FAQPage', '@id': SITE + '#faq', 'inLanguage': 'ru',
+                  'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}}
+                                 for q, a in faq(html)]})
     return {'@context': 'https://schema.org', '@graph': nodes}
 
 
@@ -178,10 +318,219 @@ def block(html):
     return MARK + '\n<script type="application/ld+json">\n' + render(graph(html)) + '\n</script>\n'
 
 
+# ── /menyu: меню текстом ──
+
+def fmt_p(p):
+    """«1400/1500» → «1 400 / 1 500» (неразрывный пробел в тысячах, как fmtP на странице)"""
+    return ' / '.join('{:,}'.format(int(x.strip())).replace(',', '\u00a0') for x in str(p).split('/'))
+
+
+def menu_page(html):
+    e = lambda s: H.escape(s, quote=False)
+    ui, marks, bs = ui_ru(html), mark_names(html), branches(html)
+    by_num = {re.match(r'\d+', b['n']).group(0): b for b in bs}
+    fonts = '\n'.join(l.replace('url(assets/', 'url(/assets/') for l in re.findall(r"@font-face\{font-family:'Golos Text'[^\n]*", html))
+    allergy = re.sub(r'\s*<br>\s*', ' ', ui['allergy']).rstrip('.') + '.'
+
+    def items_html(items):
+        rows = []
+        for it in items:
+            extra = ''.join(' <small>%s</small>' % e(x) for x in [it['vol']] if x)
+            words = [marks[k] for k in it['m'] if k in marks]
+            if words:
+                extra += ' <i>· %s</i>' % e(', '.join(words))
+            if it['only']:
+                extra += ' <em>· %s %s</em>' % (e(ui['only'].lower()), e(', '.join(place(by_num[n]) for n in it['only'])))
+            if it['note']:
+                extra += ' <small>· %s</small>' % e(it['note'])
+            price = ''
+            if it['p']:
+                # старая цена словами («вместо»), а не только <s>: бот, вырезающий теги, иначе прочтёт «6 000 3 990 ₸»
+                price = '<b class="p">%s ₸%s</b>' % (fmt_p(it['p']), ' <small>вместо <s>%s</s></small>' % fmt_p(it['old']) if it['old'] else '')
+            rows.append('<li><span class="n">%s%s</span>%s</li>' % (e(it['n']), extra, price))
+        return '<ul>\n' + '\n'.join(rows) + '\n</ul>'
+
+    def tab_html(mode, tab, arr):
+        out = ['<h3 id="%s">%s</h3>' % (tab if mode == 'cafe' else 'togo-' + tab, e(ui['tab_' + tab]))]
+        for s in sections(html, arr):
+            head = e(s['t']) + (' <small>%s</small>' % e(s['badge']) if s['badge'] else '')
+            # раздел с тем же названием, что вкладка («Десерты» → «Десерты»), без своего заголовка — как dupT на главной
+            if not (s['t'] == ui['tab_' + tab] and not s['badge'] and not s['p']):
+                out.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
+            if s['note']:
+                out.append('<p class="note">%s</p>' % e(s['note']))
+            out.append(items_html(s['items']))
+        return '\n'.join(out)
+
+    tabs = mode_tabs(html)
+    cafes = [b for b in bs if b['menu'] != 'togo']
+    togo = [b for b in bs if b['menu'] == 'togo']
+    toc = ' · '.join('<a href="#%s">%s</a>' % (t, e(ui['tab_' + t])) for t, _ in tabs['cafe'])
+    toc += ' · <a href="#togo">%s</a>' % e(ui['mode_togo'])
+    body = [
+        '<h2 id="cafe">Меню кофеен</h2>',
+        '<p class="note">%s.</p>' % e(hours_text(bs)[0]),
+        '<p class="note">%s %s</p>' % (e(ui['fee']), e(allergy)),
+    ] + [tab_html('cafe', t, arr) for t, arr in tabs['cafe']] + [
+        '<h2 id="togo">%s</h2>' % e(re.sub(r'^\d+\s*·\s*', '', togo[0]['n'])) if togo else '',
+        ''.join('<p class="note">%s — %s</p>' % (e(b['addr']), e(b['hours'])) for b in togo),
+        '<p class="note">%s</p>' % e(allergy),
+    ] + [tab_html('togo', t, arr) for t, arr in tabs['togo']]
+    insta = instagram(html)
+    ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", html.split('</head>')[0]).group(1)
+    return '''<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Меню и цены — Del Cappuccino, кофейни 24/7 в Алматы</title>
+<meta name="description" content="Меню Del Cappuccino с ценами в тенге: кухня, бар, десерты, полуфабрикаты и bakery to go. Кофейни 24/7 в Алматы, завтраки весь день.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="%(url)s">
+<meta name="theme-color" content="#426349">
+<link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
+<meta property="og:type" content="website">
+<meta property="og:url" content="%(url)s">
+<meta property="og:title" content="Меню и цены — Del Cappuccino">
+<meta property="og:description" content="Всё меню кофеен Del Cappuccino и bakery to go с ценами в тенге.">
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','%(ga)s');</script>
+<!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
+<style>
+%(fonts)s
+:root{--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--cream);color:var(--ink);font:15px/1.5 'Golos Text',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+a{color:var(--forest);font-weight:600}
+header a{text-decoration:none}
+h1{font-size:28px;line-height:1.15;color:var(--forest-dk);margin:22px 0 8px}
+.lead{color:var(--ink-2)}
+.toc{margin:12px 0 4px;font-size:14px;line-height:1.9}
+h2{font-size:22px;color:var(--forest-dk);margin:30px 0 6px;padding-top:10px;border-top:2px solid var(--forest)}
+h3{font-size:18px;color:var(--olive);margin:22px 0 2px}
+h4{display:flex;justify-content:space-between;gap:12px;font-size:15px;margin:16px 0 2px}
+.note{font-size:13px;color:var(--ink-2);margin:2px 0}
+ul{list-style:none}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
+small,li i,li em{font-size:12.5px;color:var(--ink-2);font-style:normal;font-weight:400}
+.p{white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
+.p s{font-weight:400;color:var(--ink-2);margin-right:2px}
+footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2);line-height:1.9}
+@media(min-width:700px){h1{font-size:34px}}
+</style>
+</head>
+<body>
+<header class="wrap"><a href="/">← Del Cappuccino</a><a href="/#menu">Меню с фото</a></header>
+<main class="wrap">
+<h1>Меню Del Cappuccino</h1>
+<p class="lead">Цены в тенге (₸). Меню с фото и составом блюд — <a href="/#menu">на главной</a>, заказ онлайн — <a href="%(order)s">delcappuccino.kz</a>.</p>
+<nav class="toc">%(toc)s</nav>
+%(body)s
+</main>
+<footer class="wrap"><a href="/">Главная</a> · <a href="/#faq">Частые вопросы</a> · <a href="%(order)s">Заказать в приложении</a>%(insta)s · © 2026 Del Cappuccino</footer>
+<script>
+/* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
+(function(){
+  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=%(ga)s';s.async=true;document.head.appendChild(s)}
+  function idle(){('requestIdleCallback'in window)?requestIdleCallback(loadGtag,{timeout:4000}):setTimeout(loadGtag,1500)}
+  if(document.readyState==='complete')idle();else addEventListener('load',idle);
+})();
+</script>
+</body>
+</html>
+''' % {'url': MENU_URL, 'fonts': fonts, 'toc': toc, 'body': '\n'.join(x for x in body if x), 'order': ORDER_URL,
+       'insta': ''.join(' · <a href="%s">Instagram</a>' % u for u in insta), 'ga': ga}
+
+
+# ── /llms.txt ──
+
+def llms(html):
+    bs, en, insta = branches(html), tr_en(html), instagram(html)
+    short = lambda b: re.sub(r'^\d+\s*·\s*', '', b['n'])
+    hours_en = lambda h: 'open 24/7' if h == '24/7' else h.replace('ежедневно', 'daily')
+    cafes = [b for b in bs if b['hours'] == '24/7']
+    rest = [b for b in bs if b['hours'] != '24/7']
+    ru_points = '\n'.join('- %s — %s, Алматы — %s' % (short(b), b['addr'], hours_ru(b['hours'])) for b in bs)
+    kids = kids_places(html)
+    missing = [x for x in [y for b in bs for y in (short(b), b['addr'])] + kids if x not in en]
+    if missing:
+        sys.exit('seo_jsonld: нет английского перевода в MENU_TR.en для %s — допишите словарь' % ', '.join(missing))
+    en_points = '\n'.join('- %s — %s, Almaty — %s' % (en[short(b)], en[b['addr']], hours_en(b['hours']))
+                          for b in bs)
+    links_ru = '\n'.join([
+        '- [Сайт](%s): адреса точек, бронь столика в WhatsApp или по телефону, меню с фото и составом блюд' % SITE,
+        '- [Меню и цены текстом](%s): кофейни и bakery to go, цены в тенге' % MENU_URL,
+        '- [Частые вопросы](%s#faq)' % SITE,
+        '- [Заказ онлайн и приложение](%s)' % ORDER_URL] + ['- [Instagram](%s)' % u for u in insta])
+    links_en = '\n'.join([
+        '- [Website](%s): locations, table booking via WhatsApp or phone, menu with photos (Kazakh, Russian, English)' % SITE,
+        '- [Menu with prices, text](%s): cafés and bakery to go, prices in KZT (in Russian)' % MENU_URL,
+        '- [Order online / app](%s)' % ORDER_URL] + ['- [Instagram](%s)' % u for u in insta])
+    rest_ru = ''.join(', %s — %s' % (short(b).split(' · ')[0], b['hours']) for b in rest)
+    rest_en = ''.join(', %s — %s' % (short(b).split(' · ')[0], hours_en(b['hours'])) for b in rest)
+    return '''# Del Cappuccino
+
+> Кофейни Del Cappuccino в Алматы: %(cafes)s круглосуточно (24/7)%(rest_ru)s. Завтраки весь день, продукция сертифицирована КМДБ Halal (halaldamu.kz).
+
+Детские комнаты (игровые пространства) — в %(kids_ru)s. Для спокойных встреч — VIP-залы, для молитвы — намазхана. Банкеты — для компании до 40 человек. Меню на сайте — на казахском, русском и английском.
+
+## Точки
+
+%(ru_points)s
+
+## Ссылки
+
+%(links_ru)s
+
+## English
+
+> Del Cappuccino cafés in Almaty: %(cafes_en)d open 24/7%(rest_en)s. Breakfast all day; products certified halal by KMDB (halaldamu.kz).
+
+Kids' rooms (play areas) at %(kids_en)s. VIP rooms for quiet meetings, a prayer room (namazkhana). Banquets for groups of up to 40 guests. The menu on the website is available in Kazakh, Russian and English.
+
+### Locations
+
+%(en_points)s
+
+### Links
+
+%(links_en)s
+''' % {'cafes': '%d %s' % (len(cafes), plural(len(cafes), 'кофейня', 'кофейни', 'кофеен')), 'rest_ru': rest_ru,
+       'ru_points': ru_points, 'links_ru': links_ru, 'cafes_en': len(cafes), 'rest_en': rest_en,
+       'en_points': en_points, 'links_en': links_en,
+       'kids_ru': and_join(kids), 'kids_en': and_join([en[k] for k in kids], 'and')}
+
+
+# ── запись ──
+
+def with_faq(html):
+    new = faq_block(faq(html))
+    m = FAQ_RE.search(html)
+    if m:
+        return html[:m.start()] + new + html[m.end():]
+    if FAQ_BEFORE not in html:
+        sys.exit('seo_jsonld: нет якоря %s — некуда вставить «Частые вопросы»' % FAQ_BEFORE)
+    return html.replace(FAQ_BEFORE, new + '\n' + FAQ_BEFORE, 1)
+
+
+def with_jsonld(html):
+    new = block(html)
+    m = BLOCK_RE.search(html)
+    return html[:m.start()] + new + html[m.end():] if m else html.replace('</head>', new + '</head>', 1)
+
+
+def outputs(html):
+    """{путь: ожидаемый текст} — всё, что собирает генератор"""
+    page = with_jsonld(with_faq(html))
+    return {INDEX: page, MENU_PAGE: menu_page(page), LLMS: llms(page)}
+
+
 def lastmod(path):
     """дата последнего коммита файла; есть незакоммиченные правки (или файл не в git) — сегодня"""
     try:
-        dirty = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', path], cwd=ROOT).returncode != 0
+        dirty = subprocess.run(['git', 'diff', '--quiet', 'HEAD', '--', path], cwd=ROOT,
+                               capture_output=True).returncode != 0
         date = subprocess.run(['git', 'log', '-1', '--format=%cs', '--', path], cwd=ROOT,
                               capture_output=True, text=True).stdout.strip()
     except OSError:
@@ -209,25 +558,28 @@ def update_sitemap():
         print('sitemap.xml: lastmod обновлён')
 
 
+def read(path):
+    try:
+        with open(path, encoding='utf-8') as f:
+            return f.read()
+    except FileNotFoundError:
+        return None
+
+
 def main():
-    with open(INDEX, encoding='utf-8') as f:
-        html = f.read()
-    new = block(html)
-    m = BLOCK_RE.search(html)
+    want = outputs(read(INDEX))
+    stale = [os.path.relpath(p, ROOT) for p, text in want.items() if read(p) != text]
     if '--check' in sys.argv:
-        ok = bool(m) and m.group(0) == new
-        print('JSON-LD в index.html:', 'ok' if ok else 'УСТАРЕЛ — запустите python3 tools/seo_jsonld.py')
-        sys.exit(0 if ok else 1)
-    if m:
-        out = html[:m.start()] + new + html[m.end():]
-    else:
-        out = html.replace('</head>', new + '</head>', 1)
-    if out != html:
-        with open(INDEX, 'w', encoding='utf-8') as f:
-            f.write(out)
-        print('index.html: JSON-LD пересобран (%d байт)' % len(new.encode('utf-8')))
-    else:
-        print('index.html: JSON-LD уже актуален')
+        print('seo_jsonld:', 'ok' if not stale else 'УСТАРЕЛО: %s — запустите python3 tools/seo_jsonld.py' % ', '.join(stale))
+        sys.exit(1 if stale else 0)
+    for p, text in want.items():
+        if read(p) != text:
+            os.makedirs(os.path.dirname(p), exist_ok=True)
+            with open(p, 'w', encoding='utf-8') as f:
+                f.write(text)
+            print('%s: пересобран (%d байт)' % (os.path.relpath(p, ROOT), len(text.encode('utf-8'))))
+    if not stale:
+        print('всё уже актуально')
     update_sitemap()
 
 
