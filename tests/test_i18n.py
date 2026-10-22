@@ -20,6 +20,12 @@ def head(s):
     return s.split('</head>')[0]
 
 
+def visible(s):
+    """текст, который видит человек и бот без JS: без <head>, скриптов, стилей и атрибутов"""
+    body = re.sub(r'<(script|style)\b.*?</\1>', ' ', s.split('</head>')[-1], flags=re.S)
+    return H.unescape(re.sub(r'<[^>]+>', ' ', body))
+
+
 def tr(html, lang):
     i = html.index('\n %s:{' % lang)
     return {a.replace("\\'", "'"): b.replace("\\'", "'")
@@ -77,9 +83,15 @@ class TestVersions(unittest.TestCase):
                 self.assertIn('href="tel:%s"' % b['phone'], page)
                 hours = re.search(r'\d\d:\d\d–\d\d:\d\d', b['hours'])
                 self.assertIn(hours.group(0) if hours else '24/7', page)
+            faq_ru = json.loads(read('tools', 'faq.json'))
+            i = next(n for n, e in enumerate(faq_ru) if 'детская комната' in e['q'])
+            answer = H.unescape(re.findall(r'<div class="faq-a">(.*?)</div></details>', self.pages[('home', l)])[i])
             for k in kids:
-                self.assertIn(d[k], page, 'детские комнаты — там же, где на русской')
-            self.assertIn('40', page)
+                self.assertIn(d[k], answer, '%s: детские комнаты — там же, где на русской' % l)
+            # чисел, которых нет на русской главной, на kk/en быть не должно (часы, «40 человек», число точек, адреса)
+            ru_numbers = set(re.findall(r'\d+', visible(self.main)))
+            self.assertEqual(set(re.findall(r'\d+', visible(self.pages[('home', l)]))) - ru_numbers, set(), l)
+            self.assertIn('40', re.findall(r'\d+', visible(self.pages[('home', l)])))
             self.assertRegex(page, r'ҚМДБ|KMDB')
             self.assertIn('halaldamu.kz', page)
 
@@ -94,6 +106,8 @@ class TestVersions(unittest.TestCase):
             css = re.search(r'<style>(.*?)</style>', page, re.S).group(1)
             self.assertNotRegex(css, r'\.(mm-|grill|modal|strip|showcase)', 'в стилях только нужное странице')
             self.assertIn('.lang-sw', css)
+            if l == 'kk':
+                self.assertIn("html[lang=kk] :is(h1,h2", css, 'казахские буквы в заголовках — шрифтом Golos, в Comfortaa их нет')
 
     def test_links_to_menu_and_order(self):
         for l in ('kk', 'en'):
@@ -102,6 +116,10 @@ class TestVersions(unittest.TestCase):
             self.assertIn('href="/#menu-togo-%s"' % l, page, 'меню bakery to go на этом языке')
             self.assertIn('href="https://delcappuccino.kz/"', page)
             self.assertIn('href="/%s"' % MENU[l][1][len(SITE):], page, 'ссылка на текстовое меню')
+            # каждая ссылка на меню главной проходит через MENU_HASH из её JS — иначе меню не откроется
+            js_re = re.search(r'const MENU_HASH=/(.*?)/;', self.main).group(1)
+            for h in re.findall(r'href="/(#menu[^"]*)"', page):
+                self.assertRegex(h, js_re, '%s: %s' % (l, h))
             for wa in re.findall(r'href="(https://wa\.me/[^"]+)"', page):
                 self.assertRegex(wa, r'^https://wa\.me/\d+\?text=[^\s"<>]+$')
 
@@ -124,9 +142,9 @@ class TestVersions(unittest.TestCase):
             self.assertEqual(re.findall(r'<b class="p">([\d\u00a0 /]+) ₸', page), ru_prices, '%s: цены как на /menyu' % l)
             self.assertIn('<html lang="%s">' % l, page)
             translated = [H.unescape(c) for c, _ in rows]
-            for name in ('Курица гриль', 'Капучино'):
-                if name in d:
-                    self.assertTrue(any(t.startswith(d[name]) for t in translated), '%s: %s → %s' % (l, name, d[name]))
+            for name in ('Капучино', 'Мясо'):
+                self.assertIn(name, d, '%s: в MENU_TR нет «%s» — возьмите для проверки другую позицию' % (l, name))
+                self.assertIn(d[name], ' '.join(translated) + page, '%s: %s → %s' % (l, name, d[name]))
 
     def test_kk_review_lists_all_kazakh_strings(self):
         review = read('menu', 'kk_review.md')

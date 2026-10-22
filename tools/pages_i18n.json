@@ -1,7 +1,6 @@
 {
   "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной; подстановки: {часы} {адреса} {точек} {детские} {кофеен} {точек_n} {часы_togo} — из BRANCHES и текста главной. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
   "ru": {
-    "phrases": {"hours_24": "круглосуточно (24/7)", "daily": "ежедневно", "and": "и"},
     "menu_page": {
       "title": "Меню и цены — Del Cappuccino, кофейни 24/7 в Алматы",
       "description": "Меню Del Cappuccino с ценами в тенге: кухня, бар, десерты, полуфабрикаты и bakery to go. Кофейни 24/7 в Алматы, завтраки весь день.",
@@ -19,13 +18,12 @@
     }
   },
   "kk": {
-    "lang_name": "ҚАЗ",
     "phrases": {
       "hours_24": "тәулік бойы (24/7)",
       "daily": "күн сайын",
       "and": "және",
       "cafes": "{n} кофехана тәулік бойы, 24/7 жұмыс істейді: {list}.",
-      "points": "{n} нүкте"
+      "points": "{n} филиал"
     },
     "branch_note": {"Десерты, полуфабрикаты и кофе навынос": "Десерттер, жартылай фабрикаттар және алып кететін кофе"},
     "wa_book": "Сәлеметсіз бе! Del Cappuccino-да үстел брондағым келеді, ",
@@ -37,7 +35,7 @@
       "hero_alt": "Del Cappuccino маңдайшасы",
       "story_alt": "Del Cappuccino командасы",
       "halal_alt": "ҚМДБ Halal",
-      "description": "Del Cappuccino — Алматыдағы тәулік бойы жұмыс істейтін 4 кофехана және bakery to go (күн сайын {часы_togo}). Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе.",
+      "description": "Del Cappuccino — Алматыдағы тәулік бойы жұмыс істейтін {кофеен} кофехана және bakery to go (күн сайын {часы_togo}). Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе.",
       "nav_menu": "Мәзір",
       "nav_about": "Біз туралы",
       "nav_features": "Формат",
@@ -55,19 +53,19 @@
       "about_h2": "Кофе, тағам<br>және <span>қамқорлық</span>.",
       "about_p": "Жол-жөнекей кіріп, кездесу өткізіп, кеш таңғы ас ішіп немесе сүйікті тағамдарды үйге тапсырыс беріп алыңыз. Отбасымен келгендерге — балалар бөлмелері, тыныш кездесулерге — VIP-залдар, ал намаз оқуға — намазхана бар.",
       "stat_cafes": "{кофеен} кофехана",
-      "stat_points": "нүкте",
+      "stat_points": "филиал",
       "stat_breakfast": "таңғы ас",
       "features_tag": "кофеханадан да көп",
       "features_h2": "<span>Жоспарларыңызға</span><br>арналған орын.",
       "features": [
         ["Тәулік бойы", "{кофеен} кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын {часы_togo}."],
         ["Күні бойы таңғы ас", "Сүйікті таңғы ас — сағатқа қарамастан."],
-        ["Балалар бөлмелері", "Ойын кеңістіктері: {детские}."],
+        ["Балалар бөлмелері", "Ойын кеңістіктері бар жерлер: {детские}."],
         ["VIP-залдар", "Іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына арналған."],
-        ["Банкеттер", "40 адамға дейінгі компанияға іс-шараңызды өткіземіз."],
+        ["Банкеттер", "40 адамға дейінгі топқа іс-шараңызды өткіземіз."],
         ["Намазхана", "Намаз оқуға арналған жайлы, бөлек орын."]
       ],
-      "loc_tag": "алматы · {точек_n} нүкте",
+      "loc_tag": "алматы · {точек_n} филиал",
       "loc_h2": "<span>Филиалыңызды</span><br>таңдаңыз.",
       "loc_p": "Тікелей қоңырау шалыңыз, 2GIS-те бағытты ашыңыз — немесе үстел брондау не алып кетуге тапсырыс беру үшін WhatsApp-қа жазыңыз.",
       "call": "Қоңырау шалу",
@@ -87,15 +85,15 @@
       {"q": "Del Cappuccino өнімдері халал ма?", "a": "Иә, өнімдер ҚМДБ Halal сертификатынан өткен (halaldamu.kz)."},
       {"q": "Таңғы ас тек таңертең бе?", "a": "Жоқ, таңғы ас күні бойы беріледі — сүйікті таңғы ас сағатқа қарамастан."},
       {"q": "Үстелді қалай брондауға болады?", "a": "Мекенжайлар тізімінен филиалды таңдап, WhatsApp-қа жазыңыз немесе қоңырау шалыңыз."},
-      {"q": "Тағамды үйге қалай тапсырыс беруге болады?", "a": "«Қосымшада тапсырыс беру» батырмасы арқылы — <a href=\"https://delcappuccino.kz/\">delcappuccino.kz</a> сайтында онлайн тапсырыс. Алып кетуге филиалдың WhatsApp-ы арқылы да тапсырыс беруге болады."},
-      {"q": "Балалар бөлмесі, VIP-зал және намазхана бар ма?", "a": "Иә. Балалар бөлмелері — ойын кеңістіктері: {детские}. Тыныш кездесулерге VIP-залдар, намаз оқуға намазхана бар."},
-      {"q": "Сіздерде банкет өткізуге бола ма?", "a": "Иә, 40 адамға дейінгі компанияға іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы."},
+      {"q": "Тағамды үйге жеткізуге қалай тапсырыс беруге болады?", "a": "«Қосымшада тапсырыс беру» батырмасы арқылы — <a href=\"https://delcappuccino.kz/\">delcappuccino.kz</a> сайтында онлайн тапсырыс. Алып кетуге филиалдың WhatsApp-ы арқылы да тапсырыс беруге болады."},
+      {"q": "Балалар бөлмесі, VIP-зал және намазхана бар ма?", "a": "Иә. Балалар бөлмелері (ойын кеңістіктері) бар жерлер: {детские}. Тыныш кездесулерге VIP-залдар, намаз оқуға намазхана бар."},
+      {"q": "Сіздерде банкет өткізуге бола ма?", "a": "Иә, 40 адамға дейінгі топқа іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы."},
       {"q": "Мәзір қазақ және ағылшын тілдерінде бар ма?", "a": "Иә, сайттағы мәзірде тілді ауыстыруға болады: ҚАЗ, РУС немесе ENG."},
       {"q": "Мәзір мен бағаларды қайдан көруге болады?", "a": "Фотосы мен құрамы бар мәзір — <a href=\"https://tap.delcappuccino.kz/#menu-kk\">сайттағы мәзірде</a>, бағалары бар толық мәзір мәтінмен — <a href=\"https://tap.delcappuccino.kz/kk/menyu\">tap.delcappuccino.kz/kk/menyu</a>."}
     ],
     "menu_page": {
       "title": "Мәзір мен бағалар — Del Cappuccino, Алматыдағы 24/7 кофеханалар",
-      "description": "Del Cappuccino мәзірі теңгедегі бағалармен: асхана, бар, десерттер, жартылай фабрикаттар және bakery to go. Алматыдағы 24/7 кофеханалар, күні бойы таңғы ас.",
+      "description": "Del Cappuccino мәзірі теңгедегі бағалармен: тағамдар, бар, десерттер, жартылай фабрикаттар және bakery to go. Алматыдағы 24/7 кофеханалар, күні бойы таңғы ас.",
       "og_title": "Мәзір мен бағалар — Del Cappuccino",
       "og_description": "Del Cappuccino кофеханалары мен bakery to go-ның бағалары бар толық мәзірі.",
       "back": "← Del Cappuccino",
@@ -110,7 +108,6 @@
     }
   },
   "en": {
-    "lang_name": "ENG",
     "phrases": {
       "hours_24": "open 24/7",
       "daily": "daily",
@@ -128,7 +125,7 @@
       "hero_alt": "Del Cappuccino sign",
       "story_alt": "The Del Cappuccino team",
       "halal_alt": "KMDB Halal",
-      "description": "Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily {часы_togo}). Breakfast all day, favourite dishes and good coffee.",
+      "description": "Del Cappuccino in Almaty: {кофеен} cafés open 24/7 and bakery to go (daily {часы_togo}). Breakfast all day, favourite dishes and good coffee.",
       "nav_menu": "Menu",
       "nav_about": "About",
       "nav_features": "What we offer",
@@ -136,15 +133,15 @@
       "nav_faq": "FAQ",
       "hero_tag": "cafés in Almaty · coffee &amp; food",
       "hero_h1": "Flavour<br>that brings<br><span>loved ones</span> together.",
-      "hero_lead": "Breakfast all day, favourite dishes and good coffee. Our cafés are open around the clock, so a tasty break is always close by — and at bakery to go there are desserts and coffee to take away.",
+      "hero_lead": "Breakfast all day, favourite dishes and good coffee. Our cafés are open around the clock, so a tasty break is always close by, and bakery to go has desserts and coffee to take away.",
       "book": "Book a table",
       "menu": "See the menu",
       "order": "Order in the app",
       "halal": "Halal-certified products<br>KMDB · halaldamu.kz",
       "badge_cafes": "cafés",
-      "badge_days": "no days off",
+      "badge_days": "every day",
       "about_h2": "Coffee, food<br>and <span>care</span>.",
-      "about_p": "Drop in on the way, hold a meeting, have a late breakfast or order your favourite dishes home. For family visits there are kids' rooms, for quiet meetings — VIP rooms, and for prayer — a namazkhana.",
+      "about_p": "Drop in on your way, hold a meeting, have a late breakfast or order your favourite dishes for delivery. There are kids' rooms for family visits, VIP rooms for quiet meetings and a namazkhana (prayer room).",
       "stat_cafes": "{кофеен} cafés",
       "stat_points": "locations",
       "stat_breakfast": "breakfast",
@@ -153,7 +150,7 @@
       "features": [
         ["Around the clock", "{кофеен} cafés are open 24/7 — drop in whenever suits you. Bakery to go on Zhandosov St is open daily, {часы_togo}."],
         ["Breakfast all day", "Your favourite breakfasts, whatever the clock says."],
-        ["Kids' rooms", "Play areas: {детские}."],
+        ["Kids' rooms", "Play areas at {детские}."],
         ["VIP rooms", "For business breakfasts, small meetings and workshops."],
         ["Banquets", "We'll host your event for a group of up to 40 people."],
         ["Prayer room", "A separate, comfortable space for prayer (namazkhana)."]
@@ -178,15 +175,15 @@
       {"q": "Is Del Cappuccino food halal?", "a": "Yes, our products are halal-certified by KMDB (halaldamu.kz)."},
       {"q": "Do you serve breakfast only in the morning?", "a": "No, breakfast is served all day — your favourite breakfasts, whatever the clock says."},
       {"q": "How do I book a table?", "a": "Pick a café in the list of locations and message it on WhatsApp or give it a call."},
-      {"q": "Can I order food to my home?", "a": "Yes — use the “Order in the app” button: online ordering at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz</a>. You can also order takeaway on the café's WhatsApp."},
-      {"q": "Do you have a kids' room, VIP rooms and a prayer room?", "a": "Yes. Kids' rooms are play areas: {детские}. There are VIP rooms for quiet meetings and a namazkhana for prayer."},
+      {"q": "Can I order food for delivery?", "a": "Yes — tap “Order in the app” to order online at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz</a>. You can also order takeaway via the café's WhatsApp."},
+      {"q": "Do you have a kids' room, VIP rooms and a prayer room?", "a": "Yes. Kids' rooms (play areas) are at {детские}. There are VIP rooms for quiet meetings and a namazkhana for prayer."},
       {"q": "Can I hold a banquet at your café?", "a": "Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."},
       {"q": "Is the menu available in Kazakh and English?", "a": "Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG."},
       {"q": "Where can I see the menu and prices?", "a": "The menu with photos and ingredients is <a href=\"https://tap.delcappuccino.kz/#menu-en\">on the website</a>, and the full menu with prices as text is at <a href=\"https://tap.delcappuccino.kz/en/menu\">tap.delcappuccino.kz/en/menu</a>."}
     ],
     "menu_page": {
       "title": "Menu and prices — Del Cappuccino, 24/7 cafés in Almaty",
-      "description": "Del Cappuccino menu with prices in tenge: kitchen, bar, desserts, ready-to-cook food and bakery to go. 24/7 cafés in Almaty, breakfast all day.",
+      "description": "Del Cappuccino menu with prices in tenge: food, drinks, desserts, ready-to-cook food and bakery to go. 24/7 cafés in Almaty, breakfast all day.",
       "og_title": "Menu and prices — Del Cappuccino",
       "og_description": "The full Del Cappuccino café and bakery to go menu with prices in tenge.",
       "back": "← Del Cappuccino",

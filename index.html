@@ -20,6 +20,7 @@
 <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');</script>
 <meta property="og:type" content="website">
+<meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://tap.delcappuccino.kz/">
 <meta property="og:title" content="Del Cappuccino — кофейни 24/7 в Алматы и bakery to go">
 <meta property="og:description" content="Завтраки весь день, любимая кухня и хороший кофе. 5 точек в Алматы: 4 кофейни работают круглосуточно, bakery to go — ежедневно 07:00–22:00.">
@@ -89,7 +90,8 @@ nav a:hover{color:var(--forest)}
   .lang-sw a{display:inline-flex;align-items:center;min-height:40px;padding:0 5px;font-size:12px}
   .lang-sw a[aria-current]{display:none}
 }
-@media(max-width:359px){.hbar-m a,.hbar-m button{padding:0 10px}.lang-sw a{padding:0 3px}}
+/* уже 360 px: специфичнее правила .hbar-m из блока 680px ниже, иначе оно перебивает */
+@media(max-width:359px){.hbar .hbar-m a,.hbar .hbar-m button{padding:0 10px}.hbar .lang-sw a{padding:0 3px}}
 .hspace{flex:1}
 .hbar-m{display:none}
 .btn{

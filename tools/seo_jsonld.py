@@ -53,7 +53,7 @@ LANGS = ('ru', 'kk', 'en')
 HOME = {'ru': SITE, 'kk': SITE + 'kk/', 'en': SITE + 'en/'}
 MENU = {'ru': MENU_URL, 'kk': SITE + 'kk/menyu', 'en': SITE + 'en/menu'}
 MENU_HASH = {'ru': '#menu', 'kk': '#menu-kk', 'en': '#menu-en'}      # глубокие ссылки: меню главной сразу на этом языке
-LOCALE = {'ru': 'ru_RU', 'kk': 'kk_KZ', 'en': 'en_US'}
+LOCALE = {'ru': 'ru_RU', 'kk': 'kk_KZ', 'en': 'en_GB'}       # английский — британское написание (flavour, favourite)
 HREF_MARK = '<!-- hreflang: версии главной на ru/kk/en — tools/seo_jsonld.py -->'
 HREF_RE = re.compile(re.escape(HREF_MARK) + r'\n.*?<!-- /hreflang -->\n', re.S)
 PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html', MENU_URL: 'menyu/index.html',
@@ -614,7 +614,10 @@ def css_subset(html):
 
 def img_tag(html, pattern, alt, extra=''):
     """<img> с главной (srcset, размеры) с путями от корня и подписью на языке страницы"""
-    tag = re.search(pattern, html).group(0)
+    m = re.search(pattern, html)
+    if not m:
+        sys.exit('seo_jsonld: на главной не нашёл картинку по шаблону %s — поправьте img_tag' % pattern)
+    tag = m.group(0)
     tag = re.sub(r'(?<=["\s,])assets/', '/assets/', tag)
     tag = re.sub(r'alt="[^"]*"', 'alt="%s"' % H.escape(alt), tag)
     return tag.replace('<img ', '<img %s' % extra, 1) if extra else tag
@@ -664,7 +667,7 @@ def lang_page(html, lang):
         links = ['<a href="tel:%s">%s</a>' % (b['phone'], e(P['call'])),
                  '<a href="%s" target="_blank" rel="noopener">%s</a>' % (H.escape(b['route']), e(P['route']))]
         if b['menu']:
-            links.append('<a href="/#menu-%s-%s">%s</a>' % (b['menu'], lang, e(P['card_menu'])))
+            links.append('<a href="/%s-%s">%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, e(P['card_menu'])))
         links.append('<a class="wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>' % H.escape(wa, quote=False).replace('"', '&quot;'))
         return ('    <div class="loc-card">\n      <small>%s · %s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
                 '      <div class="loc-links">\n        %s\n      </div>\n    </div>'
@@ -835,7 +838,7 @@ def kk_review(html):
     where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
              'wa_book': 'текст сообщения WhatsApp из карточек кофеен /kk/', 'wa_togo': 'текст сообщения WhatsApp из карточки bakery to go /kk/',
              'page': 'страница /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
-             'lang_name': 'переключатель языка'}
+             }
     rows = []
 
     def walk(x, path):
