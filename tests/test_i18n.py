@@ -67,7 +67,7 @@ class TestVersions(unittest.TestCase):
             nodes = {n['@type']: n for n in data['@graph']}
             self.assertEqual(nodes['WebPage']['inLanguage'], l)
             self.assertEqual(nodes['FAQPage']['inLanguage'], l)
-            shown = re.findall(r'<details><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', page)
+            shown = re.findall(r'<details[^>]*><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', page)
             self.assertEqual(len(shown), len(faq_ru), 'те же вопросы, что на русской')
             self.assertEqual([(H.unescape(q), H.unescape(a)) for q, a in shown],
                              [(e['name'], e['acceptedAnswer']['text']) for e in nodes['FAQPage']['mainEntity']])
@@ -109,7 +109,9 @@ class TestVersions(unittest.TestCase):
             scripts = re.findall(r'<script(?: type="application/ld\+json")?>(.*?)</script>', page, re.S)
             self.assertEqual(len(re.findall(r'<script\b', page)), 3, 'аналитика (2) и JSON-LD — других скриптов нет')
             self.assertTrue(all('gtag' in s or '"@context"' in s for s in scripts))
-            self.assertNotIn('onclick=', page)
+            # обработчики на кнопках — только события аналитики (те же, что на главной), без логики страницы
+            for h in re.findall(r'\son(?:click|toggle)="([^"]*)"', page):
+                self.assertRegex(h, r"^(?:if\(this\.open\))?track\('[a-z_]+'(?:,\{[^}]*\})?\)$", h)
             self.assertNotRegex(page, r'(src|href|srcset)="(?!/|https://|#|tel:)', 'пути только от корня')
             css = re.search(r'<style>(.*?)</style>', page, re.S).group(1)
             self.assertNotRegex(css, r'\.(mm-|grill|modal|strip|showcase)', 'в стилях только нужное странице')

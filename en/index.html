@@ -20,7 +20,10 @@
 <meta property="og:description" content="Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily 07:00–22:00). Breakfast all day, favourite dishes and good coffee.">
 <meta property="og:locale" content="en_GB">
 <meta property="og:image" content="https://tap.delcappuccino.kz/assets/photo_01.jpg">
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');</script>
+<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
+function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
+<!-- /аналитика -->
 <!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
 @font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
@@ -272,19 +275,19 @@ footer{padding:16px 0}
       <img class="logo-m" src="/assets/logo-mono-192.webp" width="192" height="192" alt="Del Cappuccino">
     </a>
     <nav>
-      <a href="/#menu-en">Menu</a>
+      <a href="/#menu-en" onclick="track('cta_menu',{src:'nav'})">Menu</a>
       <a href="#about">About</a>
       <a href="#features">What we offer</a>
       <a href="#locations">Locations</a>
       <a href="#faq">FAQ</a>
     </nav>
     <div class="hbar-m">
-      <a href="/#menu-en">Menu</a>
+      <a href="/#menu-en" onclick="track('cta_menu',{src:'hbar_m'})">Menu</a>
     </div>
     <nav class="lang-sw" aria-label="Site language">
-      <a href="/" lang="ru" hreflang="ru">РУС</a>
-      <a href="/kk/" lang="kk" hreflang="kk">ҚАЗ</a>
-      <a href="/en/" lang="en" aria-current="page">ENG</a>
+      <a href="/" lang="ru" hreflang="ru" onclick="track('lang_switch',{lang:'ru'})">РУС</a>
+      <a href="/kk/" lang="kk" hreflang="kk" onclick="track('lang_switch',{lang:'kk'})">ҚАЗ</a>
+      <a href="/en/" lang="en" aria-current="page" onclick="track('lang_switch',{lang:'en'})">ENG</a>
     </nav>
   </div>
 </header>
@@ -296,9 +299,9 @@ footer{padding:16px 0}
       <h1>Flavour<br>that brings<br><span>loved ones</span> together.</h1>
       <p class="lead">Breakfast all day, favourite dishes and good coffee. Our cafés are open around the clock, so a tasty break is always close by, and bakery to go has desserts and coffee to take away.</p>
       <div class="actions">
-        <a class="btn olive" href="#locations">Book a table</a>
-        <a class="btn ghost" href="/#menu-en">See the menu</a>
-        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Order in the app</a>
+        <a class="btn olive" href="#locations" onclick="track('cta_book')">Book a table</a>
+        <a class="btn ghost" href="/#menu-en" onclick="track('cta_menu')">See the menu</a>
+        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_order')">Order in the app</a>
       </div>
       <div class="halal-badge">
         <img src="/assets/halal-104.webp" srcset="/assets/halal-104.webp 104w, /assets/halal-156.webp 156w" sizes="52px" width="104" height="104" decoding="async" alt="KMDB Halal">
@@ -366,9 +369,9 @@ footer{padding:16px 0}
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>kids' area</span> · <span>VIP rooms</span> · <span>VIP booths</span> · <span>banquet hall</span> · <span>Wi-Fi</span> · <span>parking</span></p>
       <div class="loc-links">
-        <a href="tel:+77025672332">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener">Directions</a>
-        <a class="wa" href="https://wa.me/77025672332?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20247%2F8%20Rozybakiev%20St" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77025672332" onclick="track('loc_call',{branch:'01 · ЖК Вавилон'})">Call</a>
+        <a href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})">Directions</a>
+        <a class="wa" href="https://wa.me/77025672332?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20247%2F8%20Rozybakiev%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'01 · ЖК Вавилон'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -377,9 +380,9 @@ footer{padding:16px 0}
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>VIP booth</span> · <span>prayer room</span> · <span>free Wi-Fi</span> · <span>parking</span></p>
       <div class="loc-links">
-        <a href="tel:+77053673232">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener">Directions</a>
-        <a class="wa" href="https://wa.me/77053673232?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20146%20Serkebaev%20St" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77053673232" onclick="track('loc_call',{branch:'02 · ЖК Комфорт Сити'})">Call</a>
+        <a href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})">Directions</a>
+        <a class="wa" href="https://wa.me/77053673232?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20146%20Serkebaev%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'02 · ЖК Комфорт Сити'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -389,9 +392,9 @@ footer{padding:16px 0}
       <p class="loc-about">A space for work, meetings and downtime, next to the Baluan Sholak sports complex and the Central Stadium.</p>
       <p class="loc-amen"><span>VIP room</span> · <span>hall for up to 60</span> · <span>space for freelancers</span> · <span>prayer room</span> · <span>summer terrace</span></p>
       <div class="loc-links">
-        <a href="tel:+77770355617">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener">Directions</a>
-        <a class="wa" href="https://wa.me/77770355617?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2044A%20Abay%20Ave" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77770355617" onclick="track('loc_call',{branch:'03 · БП Promenade'})">Call</a>
+        <a href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'03 · БП Promenade'})">Directions</a>
+        <a class="wa" href="https://wa.me/77770355617?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2044A%20Abay%20Ave" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'03 · БП Promenade'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -400,9 +403,9 @@ footer{padding:16px 0}
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>delivery within 800 m</span> · <span>parking</span></p>
       <div class="loc-links">
-        <a href="tel:+77769079070">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener">Directions</a>
-        <a class="wa" href="https://wa.me/77769079070?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2064%20Tole%20Bi%20St" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77769079070" onclick="track('loc_call',{branch:'04 · Del Cappuccino'})">Call</a>
+        <a href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})">Directions</a>
+        <a class="wa" href="https://wa.me/77769079070?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2064%20Tole%20Bi%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'04 · Del Cappuccino'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -411,10 +414,10 @@ footer{padding:16px 0}
       <p class="loc-meta"><b>daily 07:00–22:00</b> · Desserts, ready-to-cook food and coffee to go</p>
       <p class="loc-amen"><span>takeaway</span> · <span>3 tables for two</span> · <span>Wi-Fi</span> · <span>parking in the complex</span> · <span>pets OK for takeaway</span></p>
       <div class="loc-links">
-        <a href="tel:+77773278566">Call</a>
-        <a href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener">Directions</a>
-        <a href="/#menu-togo-en">Menu</a>
-        <a class="wa" href="https://wa.me/77773278566?text=Hello!%20I'd%20like%20to%20order%20takeaway%20from%20delCappuccino%20bakery%20to%20go%2C%2094%2F12%20Zhandosov%20St" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77773278566" onclick="track('loc_call',{branch:'05 · Bakery to go · ЖК Rams City'})">Call</a>
+        <a href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'05 · Bakery to go · ЖК Rams City'})">Directions</a>
+        <a href="/#menu-togo-en" onclick="track('loc_menu',{branch:'05 · Bakery to go · ЖК Rams City'})">Menu</a>
+        <a class="wa" href="https://wa.me/77773278566?text=Hello!%20I'd%20like%20to%20order%20takeaway%20from%20delCappuccino%20bakery%20to%20go%2C%2094%2F12%20Zhandosov%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'05 · Bakery to go · ЖК Rams City'})">WhatsApp</a>
       </div>
     </div>
     </div>
@@ -428,24 +431,24 @@ footer{padding:16px 0}
       <p>The full menu with prices as text is <a href="/en/menu">on a separate page</a>.</p>
     </div>
     <div class="faq-list">
-      <details><summary>When are Del Cappuccino cafés open?</summary><div class="faq-a">4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00.</div></details>
-      <details><summary>Where are Del Cappuccino cafés in Almaty?</summary><div class="faq-a">5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7</li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7</li><li>Promenade Business Park (44A Abay Ave) — open 24/7</li><li>Del Cappuccino (64 Tole Bi St) — open 24/7</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00</li></ul></div></details>
-      <details><summary>Is Del Cappuccino food halal?</summary><div class="faq-a">Yes, our products are halal-certified by KMDB (halaldamu.kz).</div></details>
-      <details><summary>Do you serve breakfast only in the morning?</summary><div class="faq-a">No, breakfast is served all day — your favourite breakfasts, whatever the clock says.</div></details>
-      <details><summary>How do I book a table?</summary><div class="faq-a">Pick a café in the list of locations and message it on WhatsApp or give it a call.</div></details>
-      <details><summary>Do I need to prepay a booking?</summary><div class="faq-a">It depends on the café:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP booths need a prepayment</li><li>Komfort City Residential Complex (146 Serkebaev St): a standard booking needs no prepayment</li><li>Del Cappuccino (64 Tole Bi St): tables need no prepayment unless you pre-order from the menu</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): bookings need no prepayment</li></ul></div></details>
-      <details><summary>Can I order food for delivery?</summary><div class="faq-a">Yes — tap “Order in the app” to order online at <a href="https://delcappuccino.kz/">delcappuccino.kz</a>. You can also order takeaway via the café's WhatsApp.</div></details>
-      <details><summary>Do you deliver?</summary><div class="faq-a">You can order online with “Order in the app” on the website. Delivery by location:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): through all the delivery apps</li><li>Komfort City Residential Complex (146 Serkebaev St): our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt</li><li>Del Cappuccino (64 Tole Bi St): delivered by our own staff within 800 m</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): delivery within the residential complex</li></ul></div></details>
-      <details><summary>Is there parking?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): parking available</li><li>Komfort City Residential Complex (146 Serkebaev St): public parking next to the café</li><li>Del Cappuccino (64 Tole Bi St): city parking; VIP guests can park in the inner courtyard</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): parking inside the residential complex</li></ul></div></details>
-      <details><summary>Is there Wi-Fi?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): Wi-Fi available</li><li>Komfort City Residential Complex (146 Serkebaev St): free Wi-Fi</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): Wi-Fi available</li></ul></div></details>
-      <details><summary>Do you have a kids' area?</summary><div class="faq-a">Yes, there's a kids' area at Vavilon Residential Complex.</div></details>
-      <details><summary>What VIP rooms and banquet halls do you have?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people</li><li>Komfort City Residential Complex (146 Serkebaev St): a VIP booth</li><li>Promenade Business Park (44A Abay Ave): a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people</li></ul></div></details>
-      <details><summary>Can I hold a banquet at your café?</summary><div class="faq-a">Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops.</div></details>
-      <details><summary>Where can I work or hold a business meeting?</summary><div class="faq-a"><ul><li>Promenade Business Park (44A Abay Ave): a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens</li></ul></div></details>
-      <details><summary>Where is there a prayer room?</summary><div class="faq-a">There's a namazkhana (prayer room) at Komfort City Residential Complex (146 Serkebaev St) and Promenade Business Park (44A Abay Ave).</div></details>
-      <details><summary>Can I bring my pet?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): pets only on the summer terrace; large dogs must wear a muzzle</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): you can come with pets to pick up takeaway</li></ul></div></details>
-      <details><summary>Is the menu available in Kazakh and English?</summary><div class="faq-a">Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG.</div></details>
-      <details><summary>Where can I see the menu and prices?</summary><div class="faq-a">The menu with photos and ingredients is <a href="https://tap.delcappuccino.kz/#menu-en">on the website</a>, and the full menu with prices as text is at <a href="https://tap.delcappuccino.kz/en/menu">tap.delcappuccino.kz/en/menu</a>.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:1})"><summary>When are Del Cappuccino cafés open?</summary><div class="faq-a">4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:2})"><summary>Where are Del Cappuccino cafés in Almaty?</summary><div class="faq-a">5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7</li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7</li><li>Promenade Business Park (44A Abay Ave) — open 24/7</li><li>Del Cappuccino (64 Tole Bi St) — open 24/7</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:3})"><summary>Is Del Cappuccino food halal?</summary><div class="faq-a">Yes, our products are halal-certified by KMDB (halaldamu.kz).</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:4})"><summary>Do you serve breakfast only in the morning?</summary><div class="faq-a">No, breakfast is served all day — your favourite breakfasts, whatever the clock says.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:5})"><summary>How do I book a table?</summary><div class="faq-a">Pick a café in the list of locations and message it on WhatsApp or give it a call.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:6})"><summary>Do I need to prepay a booking?</summary><div class="faq-a">It depends on the café:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP booths need a prepayment</li><li>Komfort City Residential Complex (146 Serkebaev St): a standard booking needs no prepayment</li><li>Del Cappuccino (64 Tole Bi St): tables need no prepayment unless you pre-order from the menu</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): bookings need no prepayment</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:7})"><summary>Can I order food for delivery?</summary><div class="faq-a">Yes — tap “Order in the app” to order online at <a href="https://delcappuccino.kz/">delcappuccino.kz</a>. You can also order takeaway via the café's WhatsApp.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:8})"><summary>Do you deliver?</summary><div class="faq-a">You can order online with “Order in the app” on the website. Delivery by location:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): through all the delivery apps</li><li>Komfort City Residential Complex (146 Serkebaev St): our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt</li><li>Del Cappuccino (64 Tole Bi St): delivered by our own staff within 800 m</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): delivery within the residential complex</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:9})"><summary>Is there parking?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): parking available</li><li>Komfort City Residential Complex (146 Serkebaev St): public parking next to the café</li><li>Del Cappuccino (64 Tole Bi St): city parking; VIP guests can park in the inner courtyard</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): parking inside the residential complex</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:10})"><summary>Is there Wi-Fi?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): Wi-Fi available</li><li>Komfort City Residential Complex (146 Serkebaev St): free Wi-Fi</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): Wi-Fi available</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:11})"><summary>Do you have a kids' area?</summary><div class="faq-a">Yes, there's a kids' area at Vavilon Residential Complex.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:12})"><summary>What VIP rooms and banquet halls do you have?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people</li><li>Komfort City Residential Complex (146 Serkebaev St): a VIP booth</li><li>Promenade Business Park (44A Abay Ave): a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:13})"><summary>Can I hold a banquet at your café?</summary><div class="faq-a">Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:14})"><summary>Where can I work or hold a business meeting?</summary><div class="faq-a"><ul><li>Promenade Business Park (44A Abay Ave): a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:15})"><summary>Where is there a prayer room?</summary><div class="faq-a">There's a namazkhana (prayer room) at Komfort City Residential Complex (146 Serkebaev St) and Promenade Business Park (44A Abay Ave).</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:16})"><summary>Can I bring my pet?</summary><div class="faq-a"><ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): pets only on the summer terrace; large dogs must wear a muzzle</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): you can come with pets to pick up takeaway</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:17})"><summary>Is the menu available in Kazakh and English?</summary><div class="faq-a">Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:18})"><summary>Where can I see the menu and prices?</summary><div class="faq-a">The menu with photos and ingredients is <a href="https://tap.delcappuccino.kz/#menu-en">on the website</a>, and the full menu with prices as text is at <a href="https://tap.delcappuccino.kz/en/menu">tap.delcappuccino.kz/en/menu</a>.</div></details>
     </div>
   </div>
 </section>
@@ -454,8 +457,8 @@ footer{padding:16px 0}
   <a href="/en/" aria-label="Del Cappuccino — home"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
   <h2>Come by<br>for <span>coffee</span>.</h2>
   <div class="contact-actions">
-    <a class="btn olive" href="#locations">WhatsApp</a>
-    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener">@del.cappuccino</a>
+    <a class="btn olive" href="#locations" onclick="track('cta_wa_contact')">WhatsApp</a>
+    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram')">@del.cappuccino</a>
   </div>
 </section>
 
@@ -464,7 +467,7 @@ footer{padding:16px 0}
     <a href="/en/" aria-label="Del Cappuccino — home"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
     <span>coffee &amp; food · Almaty</span>
     <a href="/en/menu">Menu with prices</a>
-    <a class="f-ugolok" href="/ugolok/">Consumer corner</a>
+    <a class="f-ugolok" href="/ugolok/" onclick="track('cta_ugolok')">Consumer corner</a>
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>

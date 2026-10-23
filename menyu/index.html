@@ -18,7 +18,10 @@
 <meta property="og:title" content="Меню и цены — Del Cappuccino">
 <meta property="og:description" content="Всё меню кофеен Del Cappuccino и bakery to go с ценами в тенге.">
 <meta property="og:locale" content="ru_RU">
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');</script>
+<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
+function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
+<!-- /аналитика -->
 <!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 @font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic-ext.70cf502d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
@@ -48,7 +51,7 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 </style>
 </head>
 <body>
-<header class="wrap"><a href="/">← Del Cappuccino</a><a href="/#menu">Меню с фото</a></header>
+<header class="wrap"><a href="/">← Del Cappuccino</a><a href="/#menu" onclick="track('cta_menu',{src:'menu_page'})">Меню с фото</a></header>
 <main class="wrap">
 <h1>Меню Del Cappuccino</h1>
 <p class="lead">Цены в тенге (₸). Меню с фото и составом блюд — <a href="/#menu">на главной</a>, заказ онлайн — <a href="https://delcappuccino.kz/">delcappuccino.kz</a>.</p>
@@ -573,7 +576,7 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Безлактозное молоко</span><b class="p">500 ₸</b></li>
 </ul>
 </main>
-<footer class="wrap"><a href="/">Главная</a> · <a href="/#faq">Частые вопросы</a> · <a href="https://delcappuccino.kz/">Заказать в приложении</a> · <a href="https://instagram.com/del.cappuccino">Instagram</a> · © 2026 Del Cappuccino</footer>
+<footer class="wrap"><a href="/">Главная</a> · <a href="/#faq">Частые вопросы</a> · <a href="https://delcappuccino.kz/" onclick="track('cta_order',{src:'menu_page'})">Заказать в приложении</a> · <a href="https://instagram.com/del.cappuccino" onclick="track('cta_instagram',{src:'menu_page'})">Instagram</a> · © 2026 Del Cappuccino</footer>
 <script>
 /* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
 (function(){

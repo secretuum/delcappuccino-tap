@@ -25,6 +25,10 @@
   разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
 - На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — из <head> главной): видно переходы из ИИ.
+- Аналитика (блок в <head> всех страниц, включая /ugolok): gtag и единая track() — все события в Google Analytics;
+  цели YM_GOALS (22 события → 12 целей) ещё и в Яндекс Метрику. Включить Метрику: YM_ID = <номер счётчика> ниже,
+  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех страницах появится ym init (вебвизор,
+  карта кликов, ссылки), tag.js грузится после load. Пока YM_ID = None, кода Метрики на страницах нет (тест).
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -50,6 +54,22 @@ FAQ_RE = re.compile(re.escape(FAQ_MARK) + r'\n.*?<!-- /faq -->\n', re.S)
 FAQ_BEFORE = '<section class="contact shell" id="contacts">'
 I18N_JSON = os.path.join(ROOT, 'tools', 'pages_i18n.json')
 FACTS_JSON = os.path.join(ROOT, 'tools', 'branch_facts.json')     # факты по точкам от владельца (23.10.2026)
+GA_ID = 'G-D50YPM8RMK'
+YM_ID = None   # номер счётчика Яндекс Метрики (число) — пришлёт владелец; пока None, кода Метрики на страницах нет
+# событие track() → цель Метрики (ym reachGoal); в Google Analytics уходят все события как есть (план владельца 23.10.2026)
+YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
+            'loc_wa': 'whatsapp', 'modal_wa': 'whatsapp', 'cta_wa_contact': 'whatsapp',
+            'loc_call': 'call', 'modal_call': 'call',
+            'cta_route': 'route', 'loc_route': 'route', 'modal_route': 'route',
+            'cta_menu': 'menu_open', 'menu_open': 'menu_open', 'loc_menu': 'menu_open', 'modal_menu': 'menu_open',
+            'menu_card': 'dish_card', 'cta_grill': 'grill_promo', 'cta_instagram': 'instagram',
+            'lang_switch': 'lang_switch', 'menu_lang': 'lang_switch', 'faq_open': 'faq_open',
+            'cta_ugolok': 'ugolok', 'ugolok_talon': 'ugolok'}
+AN_MARK = '<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->'
+AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n', re.S)
+GA_LINE_RE = re.compile(r"<script>window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\)\}"
+                        r"gtag\('js',new Date\(\)\);gtag\('config','G-[A-Z0-9]+'\);(?:function track\(n,p\)\{[^<]*\})?</script>\n")
+UGOLOK = os.path.join(ROOT, 'ugolok', 'index.html')
 FACT_TOPICS = ('tags', 'about', 'delivery', 'parking', 'wifi', 'booking', 'halls', 'business', 'pets')
 KK_REVIEW = os.path.join(ROOT, 'menu', 'kk_review.md')
 LANGS = ('ru', 'kk', 'en')
@@ -307,8 +327,8 @@ def faq_block(items, head=None):
     """раздел «Частые вопросы»; head — (метка, заголовок, строка со ссылкой на меню) для /kk/ и /en/"""
     tag, h2, p = head or ('вопросы и ответы', 'Частые <span>вопросы</span>.',
                           'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
-    rows = '\n'.join('      <details><summary>%s</summary><div class="faq-a">%s</div></details>' % (H.escape(q, quote=False), a)
-                     for q, a in items)
+    rows = '\n'.join('      <details ontoggle="if(this.open)track(\'faq_open\',{q:%d})"><summary>%s</summary><div class="faq-a">%s</div></details>'
+                     % (i + 1, H.escape(q, quote=False), a) for i, (q, a) in enumerate(items))
     return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n    <div class="faq-head">\n'
             '      <div><p class="tag">%s</p><h2>%s</h2></div>\n      <p>%s</p>\n    </div>\n' % (tag, h2, p) +
             '    <div class="faq-list">\n' + rows + '\n    </div>\n  </div>\n</section>\n' + ('' if head else '<!-- /faq -->\n'))
@@ -578,8 +598,7 @@ def menu_page(html, lang='ru'):
 <meta property="og:title" content="%(og_title)s">
 <meta property="og:description" content="%(og_description)s">
 <meta property="og:locale" content="%(locale)s">
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','%(ga)s');</script>
-<!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
+%(analytics)s<!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 %(fonts)s
 :root{--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
@@ -606,14 +625,14 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 </style>
 </head>
 <body>
-<header class="wrap"><a href="%(home)s">%(back)s</a><a href="%(menu_link)s">%(photo_menu)s</a></header>
+<header class="wrap"><a href="%(home)s">%(back)s</a><a href="%(menu_link)s" onclick="track('cta_menu',{src:'menu_page'})">%(photo_menu)s</a></header>
 <main class="wrap">
 <h1>%(h1)s</h1>
 <p class="lead">%(lead)s</p>
 <nav class="toc">%(toc)s</nav>
 %(body)s
 </main>
-<footer class="wrap"><a href="%(home)s">%(f_home)s</a> · <a href="%(home)s#faq">%(f_faq)s</a> · <a href="%(order)s">%(f_order)s</a>%(insta)s · © 2026 Del Cappuccino</footer>
+<footer class="wrap"><a href="%(home)s">%(f_home)s</a> · <a href="%(home)s#faq">%(f_faq)s</a> · <a href="%(order)s" onclick="track('cta_order',{src:'menu_page'})">%(f_order)s</a>%(insta)s · © 2026 Del Cappuccino</footer>
 %(ga_loader)s
 </body>
 </html>
@@ -623,7 +642,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
        'og_description': H.escape(mp['og_description']), 'back': e(mp['back']), 'photo_menu': e(mp['photo_menu']),
        'h1': e(mp['h1']), 'lead': mp['lead'].replace('{menu_link}', menu_link),
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
-       'insta': ''.join(' · <a href="%s">Instagram</a>' % u for u in insta), 'ga': ga_id(html), 'ga_loader': GA_LOADER % ga_id(html)}
+       'insta': ''.join(' · <a href="%s" onclick="track(\'cta_instagram\',{src:\'menu_page\'})">Instagram</a>' % u for u in insta),
+       'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID}
 
 
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: шапка, hero, «О нас», «Формат», точки, вопросы, контакты, подвал
@@ -639,8 +659,35 @@ def hreflang(urls):
                      ['<link rel="alternate" hreflang="x-default" href="%s">' % urls['ru']])
 
 
-def ga_id(html):
-    return re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", html.split('</head>')[0]).group(1)
+def ga_id(html=None):
+    return GA_ID
+
+
+def analytics_head(ym_id=None):
+    """<head>: gtag и track(); с номером Метрики — ещё ym init (вебвизор, карта кликов, ссылки) и цели reachGoal по YM_GOALS,
+    сам tag.js — после load, в простое (как gtag). Без номера — ни строчки Метрики."""
+    js = ("window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());"
+          "gtag('config','%s');" % GA_ID)
+    if not ym_id:
+        js += "\nfunction track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}"
+    else:
+        js += ("\nvar YM_ID=%d,YM_GOALS=%s;\n" % (int(ym_id), dumps(YM_GOALS)) +
+               "window.ym=window.ym||function(){(ym.a=ym.a||[]).push(arguments)};ym.l=+new Date;\n"
+               "ym(YM_ID,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});\n"
+               "function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{});var g=YM_GOALS[n];if(g)ym(YM_ID,'reachGoal',g,p||{})}\n"
+               "(function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://mc.yandex.ru/metrika/tag.js';"
+               "document.head.appendChild(s)}\nfunction idle(){('requestIdleCallback'in window)?requestIdleCallback(load,{timeout:4000}):setTimeout(load,1500)}\n"
+               "if(document.readyState==='complete')idle();else addEventListener('load',idle)})();")
+    return AN_MARK + '\n<script>' + js + '</script>\n<!-- /аналитика -->\n'
+
+
+def with_analytics(html):
+    """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID)"""
+    new, head = analytics_head(YM_ID), html.split('</head>')[0]
+    m = AN_RE.search(head) or GA_LINE_RE.search(head)
+    if not m:
+        sys.exit('seo_jsonld: в <head> нет блока аналитики и строки gtag — некуда поставить analytics_head')
+    return html[:m.start()] + new + html[m.end():]
 
 
 GA_LOADER = '''<script>
@@ -719,9 +766,9 @@ def lang_page(html, lang):
     kk_fix = ('\n/* казахские буквы (ә, ғ, қ, ң, ө, ү, һ) есть в Golos (cyrillic-ext), в Comfortaa — нет: заголовки на Golos */\n'
               "html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.loc-card h3,.f-grid b)"
               "{font-family:'Golos Text',sans-serif;letter-spacing:-.01em}") if lang == 'kk' else ''
-    sw = '\n'.join('      <a href="%s" lang="%s"%s>%s</a>' % ('/' if l == 'ru' else '/%s/' % l, l,
+    sw = '\n'.join('      <a href="%s" lang="%s"%s onclick="track(\'lang_switch\',{lang:\'%s\'})">%s</a>' % ('/' if l == 'ru' else '/%s/' % l, l,
                                                             ' aria-current="page"' if l == lang else ' hreflang="%s"' % l,
-                                                            {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
+                                                            l, {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
     logo_d = img_tag(html, r'<img class="logo-d"[^>]*>', 'Del Cappuccino')
     logo_m = img_tag(html, r'<img class="logo-m"[^>]*>', 'Del Cappuccino')
     hero_img = img_tag(html, r'(?<=<div class="hero-photo">\n      )<img[^>]*>', P['hero_alt'])
@@ -735,11 +782,12 @@ def lang_page(html, lang):
         note = c['d']['branch_note'].get(b['note'], T(c, b['note'])) if b['note'] else ''
         wa = 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']),
                                            quote((c['d']['wa_togo'] if b['wa'] else c['d']['wa_book']) + T(c, b['addr']), safe="-_.!~*'()"))
-        links = ['<a href="tel:%s">%s</a>' % (b['phone'], e(P['call'])),
-                 '<a href="%s" target="_blank" rel="noopener">%s</a>' % (H.escape(b['route']), e(P['route']))]
+        ev = lambda name: ' onclick="track(\'%s\',{branch:\'%s\'})"' % (name, b['n'])
+        links = ['<a href="tel:%s"%s>%s</a>' % (b['phone'], ev('loc_call'), e(P['call'])),
+                 '<a href="%s" target="_blank" rel="noopener"%s>%s</a>' % (H.escape(b['route']), ev('loc_route'), e(P['route']))]
         if b['menu']:
-            links.append('<a href="/%s-%s">%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, e(P['card_menu'])))
-        links.append('<a class="wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>' % H.escape(wa, quote=False).replace('"', '&quot;'))
+            links.append('<a href="/%s-%s"%s>%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, ev('loc_menu'), e(P['card_menu'])))
+        links.append('<a class="wa" href="%s" target="_blank" rel="noopener"%s>WhatsApp</a>' % (H.escape(wa, quote=False).replace('"', '&quot;'), ev('loc_wa')))
         return ('    <div class="loc-card">\n      <small>%s · %s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
                 '%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
                 % (num, e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
@@ -768,8 +816,7 @@ def lang_page(html, lang):
 <meta property="og:description" content="%(description)s">
 <meta property="og:locale" content="%(locale)s">
 <meta property="og:image" content="%(site)sassets/photo_01.jpg">
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','%(ga)s');</script>
-<!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
+%(analytics)s<!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
 %(fonts)s
 %(css)s%(kk_fix)s
@@ -786,14 +833,14 @@ def lang_page(html, lang):
       %(logo_m)s
     </a>
     <nav>
-      <a href="%(menu_link)s">%(nav_menu)s</a>
+      <a href="%(menu_link)s" onclick="track('cta_menu',{src:'nav'})">%(nav_menu)s</a>
       <a href="#about">%(nav_about)s</a>
       <a href="#features">%(nav_features)s</a>
       <a href="#locations">%(nav_locations)s</a>
       <a href="#faq">%(nav_faq)s</a>
     </nav>
     <div class="hbar-m">
-      <a href="%(menu_link)s">%(nav_menu)s</a>
+      <a href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})">%(nav_menu)s</a>
     </div>
     <nav class="lang-sw" aria-label="%(lang_label)s">
 %(sw)s
@@ -808,9 +855,9 @@ def lang_page(html, lang):
       <h1>%(hero_h1)s</h1>
       <p class="lead">%(hero_lead)s</p>
       <div class="actions">
-        <a class="btn olive" href="#locations">%(book)s</a>
-        <a class="btn ghost" href="%(menu_link)s">%(menu)s</a>
-        <a class="btn" href="%(order_url)s" target="_blank" rel="noopener">%(order)s</a>
+        <a class="btn olive" href="#locations" onclick="track('cta_book')">%(book)s</a>
+        <a class="btn ghost" href="%(menu_link)s" onclick="track('cta_menu')">%(menu)s</a>
+        <a class="btn" href="%(order_url)s" target="_blank" rel="noopener" onclick="track('cta_order')">%(order)s</a>
       </div>
       <div class="halal-badge">
         %(halal_img)s
@@ -873,7 +920,7 @@ def lang_page(html, lang):
   <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
   <h2>%(contact_h2)s</h2>
   <div class="contact-actions">
-    <a class="btn olive" href="#locations">WhatsApp</a>
+    <a class="btn olive" href="#locations" onclick="track('cta_wa_contact')">WhatsApp</a>
 %(insta_btn)s
   </div>
 </section>
@@ -883,7 +930,7 @@ def lang_page(html, lang):
     <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
     <span>%(footer_tag)s</span>
     <a href="%(menu_page)s">%(footer_menu)s</a>
-    <a class="f-ugolok" href="/ugolok/">%(footer_ugolok)s</a>
+    <a class="f-ugolok" href="/ugolok/" onclick="track('cta_ugolok')">%(footer_ugolok)s</a>
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
@@ -895,13 +942,14 @@ def lang_page(html, lang):
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
-           locale=LOCALE[lang], site=SITE, ga=ga_id(html), ga_loader=GA_LOADER % ga_id(html), fonts=fonts, css=css_subset(html),
+           locale=LOCALE[lang], site=SITE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
            kk_fix=kk_fix, jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, logo_m=logo_m, menu_link=menu_link, sw=sw,
            order_url=ORDER_URL, halal_img=halal_img, hero_img=hero_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article><b>%02d</b><h3>%s</h3><p>%s</p></article>' % (i + 1, h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
-           insta_btn='\n'.join('    <a class="btn ghost" href="%s" target="_blank" rel="noopener">@%s</a>' % (u, u.rstrip('/').rsplit('/', 1)[1]) for u in insta))
+           insta_btn='\n'.join('    <a class="btn ghost" href="%s" target="_blank" rel="noopener" onclick="track(\'cta_instagram\')">@%s</a>'
+                                % (u, u.rstrip('/').rsplit('/', 1)[1]) for u in insta))
 
 
 def kk_review(html):
@@ -1093,8 +1141,8 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_hreflang(with_jsonld(with_loc(with_faq(html))))
-    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page)}
+    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_faq(html)))))
+    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK))}
     for lang in LANGS:
         out[os.path.join(ROOT, PAGES[MENU[lang]])] = menu_page(page, lang)
         if lang != 'ru':
