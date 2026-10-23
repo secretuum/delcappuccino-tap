@@ -14,8 +14,10 @@
 sw.js разбирается как JavaScript (esprima, если установлен, иначе проверка скобок/строк);
 manifest.webmanifest — валидный JSON с существующими иконками; есть .nojekyll;
 версия кэша в sw.js соответствует хэшу index.html (tools/sw_version.py) — иначе предупреждение.
+Стратегия sw.js (TestServiceWorkerStrategy): страницы, HTML и menu/cards.json — сначала сеть с тайм-аутом, офлайн — из
+кэша; картинки — из кэша с обновлением в фоне; ассеты с хэшем — только кэш. Поведение гоняется в node (если он есть).
 """
-import gzip, hashlib, json, os, re, sys, unittest
+import glob, gzip, hashlib, json, os, re, shutil, subprocess, sys, tempfile, unittest
 from html.parser import HTMLParser
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -469,6 +471,140 @@ class TestServiceWorker(unittest.TestCase):
 
     def test_nojekyll(self):
         self.assertTrue(os.path.isfile(os.path.join(ROOT, '.nojekyll')))
+
+
+def find_node():
+    """node из PATH или из ~/.nvm (на ноутбуке владельца node только там); нет — тест поведения SW пропускается"""
+    return shutil.which('node') or (sorted(glob.glob(os.path.expanduser('~/.nvm/versions/node/*/bin/node'))) or [None])[-1]
+
+
+# Прогон sw.js в node с подставными caches / fetch / таймерами: какой ответ получает страница и что остаётся в кэше.
+SW_HARNESS = r"""
+const fs = require('fs'), vm = require('vm');
+const ORIGIN = 'https://tap.delcappuccino.kz';
+const tick = () => new Promise(r => setImmediate(r));
+class Res { constructor(body, status) { this.body = body; this.status = status || 200; this.ok = this.status >= 200 && this.status < 300; }
+  clone() { return new Res(this.body, this.status); } static error() { return { error: true }; } }
+function setup(state) {
+  const store = {}, handlers = {}, timers = [], fetches = [];
+  const cacheObj = name => (store[name] = store[name] || new Map(), {
+    match: k => Promise.resolve(store[name].get(k)), put: (k, r) => (store[name].set(k, r), Promise.resolve()) });
+  const ctx = { console, URL, Promise, Response: Res, Request: function (u, o) { return { url: new URL(u, ORIGIN).href, mode: 'cors' }; },
+    setTimeout: fn => timers.push(fn), caches: { open: n => Promise.resolve(cacheObj(n)), keys: () => Promise.resolve(Object.keys(store)),
+      delete: n => Promise.resolve(delete store[n]) },
+    fetch: req => { fetches.push(req.url); return state.net(req.url); } };
+  ctx.self = { location: { origin: ORIGIN }, addEventListener: (t, f) => handlers[t] = f, skipWaiting() {}, clients: { claim() {} } };
+  vm.createContext(ctx); vm.runInContext(fs.readFileSync(process.argv[2], 'utf8'), ctx);
+  const SHELL = vm.runInContext('SHELL', ctx), RT = vm.runInContext('RT', ctx);
+  return { store, handlers, timers, fetches, SHELL, RT, put: (n, k, body) => cacheObj(n).put(k, new Res(body)) };
+}
+async function run(name, { url, mode, cache, net, slow }) {
+  let release;
+  const state = { net: () => net === 'offline' ? Promise.reject(new TypeError('offline'))
+    : slow ? new Promise(r => release = () => r(new Res(net.body, net.status))) : Promise.resolve(new Res(net.body, net.status)) };
+  const sw = setup(state);
+  for (const [n, k, body] of cache) await sw.put(n === 'SHELL' ? sw.SHELL : sw.RT, k, body);
+  const ev = { request: { url: ORIGIN + url, mode, method: 'GET', headers: { get: () => null } }, waits: [],
+    respondWith(p) { this.resp = p; }, waitUntil(p) { this.waits.push(p); } };
+  sw.handlers.fetch(ev);
+  let answered = null; ev.resp.then(r => answered = r);
+  for (let i = 0; i < 20; i++) await tick();
+  const beforeTimer = answered;
+  sw.timers.forEach(f => f());                                   // прошло NET_TIMEOUT
+  for (let i = 0; i < 20; i++) await tick();
+  const res = await ev.resp;
+  if (release) release();
+  await Promise.all(ev.waits.map(p => p.catch(() => {}))); for (let i = 0; i < 20; i++) await tick();
+  const dump = {}; for (const n of [sw.SHELL, sw.RT]) for (const [k, v] of (sw.store[n] || new Map())) dump[k] = v.body;
+  return { name, body: res && res.body, status: res && res.status, error: !!(res && res.error), fetched: sw.fetches.length,
+           answered_before_timeout: !!beforeTimer, cache: dump };
+}
+(async () => {
+  const S = 'SHELL', R = 'RT', fresh = { body: 'new' };
+  const out = await Promise.all([
+    run('nav_fresh', { url: '/', mode: 'navigate', cache: [[S, './', 'old']], net: fresh }),
+    run('nav_offline', { url: '/', mode: 'navigate', cache: [[S, './', 'old']], net: 'offline' }),
+    run('nav_slow', { url: '/kk/', mode: 'navigate', cache: [[S, ORIGIN + '/kk/', 'old']], net: fresh, slow: true }),
+    run('nav_offline_uncached', { url: '/en/', mode: 'navigate', cache: [[S, './', 'home']], net: 'offline' }),
+    run('nav_404', { url: '/nope', mode: 'navigate', cache: [], net: { body: 'nf', status: 404 } }),
+    run('cards_json', { url: '/menu/cards.json', mode: 'cors', cache: [[S, ORIGIN + '/menu/cards.json', 'old']], net: fresh }),
+    run('image_swr', { url: '/img/menu/a.webp', mode: 'no-cors', cache: [[R, ORIGIN + '/img/menu/a.webp', 'old']], net: fresh }),
+    run('hashed', { url: '/assets/x.1a2b3c4d.webp', mode: 'no-cors', cache: [[R, ORIGIN + '/assets/x.1a2b3c4d.webp', 'old']], net: fresh }),
+  ]);
+  console.log(JSON.stringify(out));
+})();
+"""
+
+
+class TestServiceWorkerStrategy(unittest.TestCase):
+    """sw.js: страницы, HTML и menu/cards.json — сначала сеть (тайм-аут NET_TIMEOUT), офлайн — из кэша; картинки — из кэша
+    с обновлением в фоне; ассеты с хэшем — только кэш. Раньше страницы шли stale-while-revalidate: после выкладки все,
+    кто уже заходил, видели прошлую версию (23.10.2026)."""
+
+    @classmethod
+    def setUpClass(cls):
+        with open(os.path.join(ROOT, 'sw.js'), encoding='utf-8') as f:
+            cls.src = f.read()
+        node = find_node()
+        cls.res = None
+        if node:
+            with tempfile.TemporaryDirectory() as d:
+                h = os.path.join(d, 'harness.js')
+                with open(h, 'w', encoding='utf-8') as f:
+                    f.write(SW_HARNESS)
+                out = subprocess.run([node, h, os.path.join(ROOT, 'sw.js')], capture_output=True, text=True, timeout=60)
+                if out.returncode:
+                    raise AssertionError('стенд sw.js упал: ' + out.stderr[-2000:])
+                cls.res = {r['name']: r for r in json.loads(out.stdout)}
+
+    def test_navigation_routed_network_first(self):
+        # без node: в обработчике fetch навигация и оболочка идут в networkFirst, а он начинает с fetch(req)
+        fetch_handler = self.src[self.src.index("self.addEventListener('fetch'"):]
+        self.assertRegex(fetch_handler, r"if \(req\.mode === 'navigate' \|\| isShell\(url\)\)[^}]*networkFirst\(")
+        nf = re.search(r'function networkFirst\(e, c, req, key\) \{(.*?)\n\}', self.src, re.S).group(1)
+        self.assertLess(nf.index('fetch(req)'), nf.index('c.match(key)'), 'networkFirst: сначала сеть, потом кэш')
+        self.assertRegex(self.src, r'var NET_TIMEOUT = \d{3,5};')
+
+    def need(self):
+        if self.res is None:
+            self.skipTest('нет node — поведение sw.js не прогнать (статическая проверка выше всё равно идёт)')
+
+    def test_navigation_network_first(self):
+        self.need()
+        r = self.res['nav_fresh']
+        self.assertEqual((r['body'], r['fetched']), ('new', 1), 'страница — свежая из сети, не прошлая из кэша')
+        self.assertEqual(r['cache']['./'], 'new', 'свежая страница записана в кэш')
+        self.assertTrue(r['answered_before_timeout'])
+
+    def test_offline_from_cache(self):
+        self.need()
+        self.assertEqual(self.res['nav_offline']['body'], 'old', 'без сети — страница из кэша')
+        self.assertEqual(self.res['nav_offline_uncached']['body'], 'home', 'страницы нет в кэше — главная из кэша')
+
+    def test_slow_network_falls_back_after_timeout(self):
+        self.need()
+        r = self.res['nav_slow']
+        self.assertFalse(r['answered_before_timeout'], 'до тайм-аута ждём сеть')
+        self.assertEqual(r['body'], 'old', 'после тайм-аута — из кэша')
+        self.assertEqual(r['cache']['https://tap.delcappuccino.kz/kk/'], 'new', 'запоздавший ответ сети дописан в кэш')
+
+    def test_errors_not_cached(self):
+        self.need()
+        r = self.res['nav_404']
+        self.assertEqual(r['status'], 404)
+        self.assertEqual(r['cache'], {}, 'ответы не 2xx в кэш не попадают')
+
+    def test_cards_json_network_first(self):
+        self.need()
+        self.assertEqual(self.res['cards_json']['body'], 'new', 'menu/cards.json — свежий из сети')
+
+    def test_images_and_hashed_unchanged(self):
+        self.need()
+        r = self.res['image_swr']
+        self.assertEqual((r['body'], r['fetched']), ('old', 1), 'картинка — из кэша, обновление в фоне')
+        self.assertEqual(r['cache']['https://tap.delcappuccino.kz/img/menu/a.webp'], 'new')
+        r = self.res['hashed']
+        self.assertEqual((r['body'], r['fetched']), ('old', 0), 'файл с хэшем в имени — только кэш, без сети')
 
 
 if __name__ == '__main__':

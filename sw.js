@@ -1,9 +1,12 @@
 /* Service worker tap.delcappuccino.kz — повторные заходы из кэша, обновление в фоне, офлайн-оболочка.
  *
  * ПРАВИЛА ПО ПУТЯМ (важно для всех терминалов — menu/ и img/menu/ обновляются без смены имён файлов):
- *   ./  *.html  manifest.webmanifest   — stale-while-revalidate: отдать из кэша, в фоне скачать свежее
- *   любая навигация (/, /ugolok/, 404)  — то же, в кэш оболочки; ответы не 2xx (404) не кэшируются
- *   menu/cards.json                    — stale-while-revalidate (пересобирается скриптом на том же пути)
+ *   любая навигация (/, /kk/, /en/, /menyu, /ugolok, 404), ./  *.html  *.json (menu/cards.json)  manifest.webmanifest
+ *                                      — network-first с тайм-аутом NET_TIMEOUT: сначала сеть, свежий ответ — в кэш
+ *                                        оболочки; сеть молчит дольше NET_TIMEOUT или её нет — из кэша (офлайн
+ *                                        работает), страницы нет в кэше — главная из кэша; ответы не 2xx не кэшируются.
+ *                                        Раньше было stale-while-revalidate — после выкладки все, кто уже заходил,
+ *                                        видели прошлую версию до следующего захода (владелец не видел новую кнопку, 23.10)
  *   img/menu/*.webp                    — stale-while-revalidate (перекодируются на том же пути)
  *   assets/* без хэша в имени          — stale-while-revalidate
  *   файлы с хэшем в имени (*.1a2b3c4d.woff2 и т.п.) — cache-first навечно: имя меняется вместе с содержимым
@@ -33,6 +36,7 @@ var PRECACHE = [
   'assets/photo_01-1200.webp'
 ];
 var HASHED = new RegExp('\\.[0-9a-f]{8}\\.(woff2|webp|png|jpg|svg|js|css)$');
+var NET_TIMEOUT = 3000;   // мс: дольше ждать сеть для страницы не стоит — отдаём из кэша, свежее допишется в кэш в фоне
 
 function isShell(url) {
   var p = url.pathname;
@@ -69,6 +73,27 @@ self.addEventListener('activate', function (e) {
   );
 });
 
+// сначала сеть: свежая страница сразу после выкладки; медленно или офлайн — из кэша
+function networkFirst(e, c, req, key) {
+  var stored = null;
+  var net = fetch(req).then(function (res) {
+    if (res && res.ok) stored = c.put(key, res.clone());
+    return res;
+  });
+  e.waitUntil(net.then(function () { return stored; }).catch(function () {}));   // запись в кэш доживёт, даже если ответили кэшем
+  var slow = new Promise(function (resolve) { setTimeout(resolve, NET_TIMEOUT); }).then(function () {
+    return c.match(key).then(function (cached) { return cached || net; });       // в кэше нет — ждём сеть дальше
+  });
+  slow.catch(function () {});                                                      // проигравший гонку не шумит в консоли
+  return Promise.race([net, slow]).catch(function () {                             // сети нет
+    return c.match(key).then(function (cached) {
+      if (cached) return cached;
+      if (req.mode !== 'navigate') return Response.error();
+      return caches.open(SHELL).then(function (s) { return s.match('./'); }).then(function (r) { return r || Response.error(); });
+    });
+  });
+}
+
 self.addEventListener('fetch', function (e) {
   var req = e.request;
   if (req.method !== 'GET') return;
@@ -77,20 +102,21 @@ self.addEventListener('fetch', function (e) {
   if (/\.(mp4|webm|m4v)$/.test(url.pathname) || req.headers.get('range')) return;   // видео и Range-запросы — браузеру
 
   var key = cacheKey(req, url);
-  var cacheName = (req.mode === 'navigate' || isShell(url)) ? SHELL : RT;   // навигации (/, /ugolok, 404) — оболочка
+  if (req.mode === 'navigate' || isShell(url)) {                                   // страницы, HTML, cards.json, manifest
+    e.respondWith(caches.open(SHELL).then(function (c) { return networkFirst(e, c, req, key); }));
+    return;
+  }
 
-  e.respondWith(caches.open(cacheName).then(function (c) {
+  e.respondWith(caches.open(RT).then(function (c) {
     return c.match(key).then(function (cached) {
       if (cached && HASHED.test(url.pathname)) return cached;            // cache-first для версионированных
       var update = fetch(req).then(function (res) {
         if (res && res.ok) return c.put(key, res.clone()).then(function () { return res; });
         return res;
       }).catch(function () {
-        if (cached) return cached;
-        if (req.mode === 'navigate') return caches.open(SHELL).then(function (s) { return s.match('./'); });
-        return Response.error();
+        return cached || Response.error();
       });
-      if (cached) {                                                      // stale-while-revalidate
+      if (cached) {                                                      // stale-while-revalidate: картинки и ассеты без хэша
         e.waitUntil(update.catch(function () {}));
         return cached;
       }
