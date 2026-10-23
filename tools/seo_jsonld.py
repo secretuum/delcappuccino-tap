@@ -26,7 +26,7 @@
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
 - На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — константа GA_ID): видно переходы из ИИ.
 - Аналитика (блок в <head> всех страниц, включая /ugolok): gtag и единая track() — все события в Google Analytics;
-  цели YM_GOALS (22 события → 12 целей) ещё и в Яндекс Метрику. Включить Метрику: YM_ID = <номер счётчика> ниже,
+  цели YM_GOALS (17 событий → 12 целей, одна цель на одно действие) ещё и в Яндекс Метрику; на /ugolok trackLinks:false. Включить Метрику: YM_ID = <номер счётчика> ниже,
   затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 7 собираемых страницах (404.html — нет) появится ym init (вебвизор,
   карта кликов, ссылки), tag.js грузится после load. Пока YM_ID = None, кода Метрики на страницах нет (тест).
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
@@ -56,12 +56,15 @@ I18N_JSON = os.path.join(ROOT, 'tools', 'pages_i18n.json')
 FACTS_JSON = os.path.join(ROOT, 'tools', 'branch_facts.json')     # факты по точкам от владельца (23.10.2026)
 GA_ID = 'G-D50YPM8RMK'
 YM_ID = None   # номер счётчика Яндекс Метрики (число) — пришлёт владелец; пока None, кода Метрики на страницах нет
-# событие track() → цель Метрики (ym reachGoal); в Google Analytics уходят все события как есть (план владельца 23.10.2026)
+# событие track() → цель Метрики (ym reachGoal); в Google Analytics уходят все события как есть (план владельца 23.10.2026).
+# Одна цель на одно действие: menu_open шлёт само открытие меню (openMenu), поэтому кнопки «Меню» (cta_menu, loc_menu,
+# modal_menu) целью не считаются; cta_wa_contact и cta_route только открывают окно выбора филиала — цель ставят modal_wa
+# и modal_route (главный, 23.10.2026)
 YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
-            'loc_wa': 'whatsapp', 'modal_wa': 'whatsapp', 'cta_wa_contact': 'whatsapp',
+            'loc_wa': 'whatsapp', 'modal_wa': 'whatsapp',
             'loc_call': 'call', 'modal_call': 'call',
-            'cta_route': 'route', 'loc_route': 'route', 'modal_route': 'route',
-            'cta_menu': 'menu_open', 'menu_open': 'menu_open', 'loc_menu': 'menu_open', 'modal_menu': 'menu_open',
+            'loc_route': 'route', 'modal_route': 'route',
+            'menu_open': 'menu_open',
             'menu_card': 'dish_card', 'cta_grill': 'grill_promo', 'cta_instagram': 'instagram',
             'lang_switch': 'lang_switch', 'menu_lang': 'lang_switch', 'faq_open': 'faq_open',
             'cta_ugolok': 'ugolok', 'ugolok_talon': 'ugolok'}
@@ -659,7 +662,7 @@ def hreflang(urls):
                      ['<link rel="alternate" hreflang="x-default" href="%s">' % urls['ru']])
 
 
-def analytics_head(ym_id=None):
+def analytics_head(ym_id=None, track_links=True):
     """<head>: gtag и track(); с номером Метрики — ещё ym init (вебвизор, карта кликов, ссылки) и цели reachGoal по YM_GOALS,
     сам tag.js — после load, в простое (как gtag). Без номера — ни строчки Метрики."""
     js = ("window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());"
@@ -669,7 +672,7 @@ def analytics_head(ym_id=None):
     else:
         js += ("\nvar YM_ID=%d,YM_GOALS=%s;\n" % (int(ym_id), dumps(YM_GOALS)) +
                "window.ym=window.ym||function(){(ym.a=ym.a||[]).push(arguments)};ym.l=+new Date;\n"
-               "ym(YM_ID,'init',{clickmap:true,trackLinks:true,accurateTrackBounce:true,webvisor:true});\n"
+               "ym(YM_ID,'init',{clickmap:true,trackLinks:%s,accurateTrackBounce:true,webvisor:true});\n" % ('true' if track_links else 'false') +
                "function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{});var g=YM_GOALS[n];if(g)ym(YM_ID,'reachGoal',g,p||{})}\n"
                "(function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://mc.yandex.ru/metrika/tag.js';"
                "document.head.appendChild(s)}\nfunction idle(){('requestIdleCallback'in window)?requestIdleCallback(load,{timeout:4000}):setTimeout(load,1500)}\n"
@@ -677,9 +680,10 @@ def analytics_head(ym_id=None):
     return AN_MARK + '\n<script>' + js + '</script>\n<!-- /аналитика -->\n'
 
 
-def with_analytics(html):
-    """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID)"""
-    new, head = analytics_head(YM_ID), html.split('</head>')[0]
+def with_analytics(html, track_links=True):
+    """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID); track_links=False — /ugolok:
+    адреса PDF-талонов с именами ИП не уходят в Метрику (главный, 23.10.2026)"""
+    new, head = analytics_head(YM_ID, track_links), html.split('</head>')[0]
     m = AN_RE.search(head) or GA_LINE_RE.search(head)
     if not m:
         sys.exit('seo_jsonld: в <head> нет блока аналитики и строки gtag — некуда поставить analytics_head')
@@ -1150,7 +1154,7 @@ def with_jsonld(html):
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
     page = with_analytics(with_hreflang(with_jsonld(with_loc(with_faq(html)))))
-    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK))}
+    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False)}
     for lang in LANGS:
         out[os.path.join(ROOT, PAGES[MENU[lang]])] = menu_page(page, lang)
         if lang != 'ru':

@@ -11,9 +11,10 @@ import seo_jsonld as seo  # noqa: E402
 PAGES = ['index.html', 'ugolok/index.html', 'menyu/index.html', 'kk/index.html', 'en/index.html',
          'kk/menyu/index.html', 'en/menu/index.html']
 # сопоставление из плана владельца (лист «Статистика сайтов»), 12 целей
-PLAN = {'order_app': ['cta_order'], 'book_open': ['cta_book'], 'whatsapp': ['loc_wa', 'modal_wa', 'cta_wa_contact'],
-        'call': ['loc_call', 'modal_call'], 'route': ['cta_route', 'loc_route', 'modal_route'],
-        'menu_open': ['cta_menu', 'menu_open', 'loc_menu', 'modal_menu'], 'dish_card': ['menu_card'],
+# одна цель на одно действие (главный, 23.10): кнопки «Меню» и открытие окна выбора филиала целью не считаются
+PLAN = {'order_app': ['cta_order'], 'book_open': ['cta_book'], 'whatsapp': ['loc_wa', 'modal_wa'],
+        'call': ['loc_call', 'modal_call'], 'route': ['loc_route', 'modal_route'],
+        'menu_open': ['menu_open'], 'dish_card': ['menu_card'],
         'grill_promo': ['cta_grill'], 'instagram': ['cta_instagram'], 'lang_switch': ['lang_switch', 'menu_lang'],
         'faq_open': ['faq_open'], 'ugolok': ['cta_ugolok', 'ugolok_talon']}
 
@@ -26,6 +27,54 @@ def read(p):
 def find_node():
     ver = lambda p: [int(x) for x in re.findall(r'\d+', p.split('/node/')[-1].split('/')[0])]
     return shutil.which('node') or (sorted(glob.glob(os.path.expanduser('~/.nvm/versions/node/*/bin/node')), key=ver) or [None])[-1]
+
+
+# Главная в node с пробным номером Метрики: клики выполняются кодом из onclick/ontoggle разметки, считаются ym reachGoal
+GOALS_HARNESS = r"""
+const fs = require('fs'), vm = require('vm');
+const { html, actions, hashActions } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+function page(hash) {
+  const els = {};
+  const el = id => ({ id, innerHTML: '', textContent: '', style: { setProperty() {}, removeProperty() {} }, dataset: {}, scrollTop: 0,
+    classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } }, addEventListener() {}, removeEventListener() {},
+    setAttribute() {}, getAttribute() { return null; }, removeAttribute() {}, appendChild(x) { return x; }, querySelector() { return el(); },
+    querySelectorAll() { return []; }, getBoundingClientRect() { return { top: 0, left: 0, width: 360, height: 0, bottom: 0, right: 360 }; },
+    scrollIntoView() {}, scrollTo() {}, focus() {}, closest() { return null; }, play() { return Promise.resolve(); }, pause() {},
+    insertAdjacentHTML() {}, contains() { return false; }, offsetHeight: 0 });
+  const document = { getElementById: id => els[id] || (els[id] = el(id)), querySelector: () => el(), querySelectorAll: () => [],
+    addEventListener() {}, createElement: () => el(), body: el('body'), documentElement: el('html'), head: el('head'), readyState: 'loading' };
+  const ctx = { document, console, setTimeout: () => 0, clearTimeout() {}, setInterval: () => 0, clearInterval() {},
+    requestAnimationFrame: () => 0, requestIdleCallback: () => 0, cancelIdleCallback() {},
+    matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }),
+    IntersectionObserver: function () { return { observe() {}, disconnect() {} }; }, ResizeObserver: function () { return { observe() {} }; },
+    fetch: () => new Promise(() => {}), localStorage: { getItem() { return null; }, setItem() {} }, navigator: { language: 'ru' },
+    location: { hash: hash || '', pathname: '/', search: '' }, history: { replaceState() {}, pushState() {} },
+    innerWidth: 360, innerHeight: 640, scrollTo() {}, addEventListener() {}, removeEventListener() {} };
+  ctx.window = ctx; vm.createContext(ctx);
+  scripts.forEach(s => vm.runInContext(s, ctx));
+  return { ctx, els };
+}
+const goals = ctx => (ctx.ym.a || []).filter(a => a[1] === 'reachGoal').map(a => a[2]);
+const out = {};
+for (const [name, steps] of Object.entries(actions)) {
+  const { ctx, els } = page('');
+  ctx.ym.a = [];
+  for (const step of steps) {
+    let code = step;
+    if (step.startsWith('MODAL:')) {                          // кнопка в окне выбора филиала (его рисует openModal)
+      const ev = step.slice(6);
+      code = (els['branch-list'].innerHTML.match(new RegExp('onclick="([^"]*track\\(\'' + ev + '\'[^"]*)"')) || [])[1];
+      if (!code) { out[name] = 'нет кнопки ' + ev + ' в окне выбора филиала'; break; }
+    }
+    ctx.__code = code;
+    vm.runInContext('(function(event){ eval(__code) }).call({ open: true }, { preventDefault() {} })', ctx);
+  }
+  if (!out[name]) out[name] = goals(ctx);
+}
+for (const [name, hash] of Object.entries(hashActions)) out[name] = goals(page(hash).ctx);   // заход по глубокой ссылке
+console.log(JSON.stringify(out));
+"""
 
 
 class TestAnalytics(unittest.TestCase):
@@ -87,6 +136,63 @@ class TestAnalytics(unittest.TestCase):
         self.assertIn(['gtag', 'event', 'cta_locations', {}], calls, 'в GA — все события')
         self.assertEqual([c for c in calls if c[:3] == ['ym', 12345678, 'reachGoal']],
                          [['ym', 12345678, 'reachGoal', 'whatsapp', {'branch': '01'}]], 'в Метрику — только цели')
+
+    def test_ugolok_without_track_links(self):
+        # /ugolok: при включённой Метрике trackLinks:false — адреса PDF-талонов с именами ИП не уходят в Метрику
+        saved = seo.YM_ID
+        try:
+            seo.YM_ID = 12345678
+            out = seo.outputs(read('index.html'))
+        finally:
+            seo.YM_ID = saved
+        for path, text in out.items():
+            rel = os.path.relpath(path, ROOT)
+            if rel.endswith('.html'):
+                want = 'false' if rel == 'ugolok/index.html' else 'true'
+                self.assertIn("trackLinks:%s" % want, text.split('</head>')[0], rel)
+
+    def test_one_goal_per_action(self):
+        node = find_node()
+        if not node:
+            self.skipTest('нет node — клики главной не прогнать')
+        import html as H
+        main = self.pages['index.html']
+        page = main.replace(re.search(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n', main, re.S).group(0),
+                            seo.analytics_head(12345678), 1)
+        handlers = [H.unescape(x) for x in re.findall(r'\son(?:click|toggle)="([^"]*)"', page)]
+        pick = lambda sub: next(x for x in handlers if sub in x)
+        actions = {   # действие посетителя → ровно одна цель
+            'hero_menu': ([pick("track('cta_menu');openMenu()")], ['menu_open']),
+            'nav_menu': ([pick("track('cta_menu',{src:'nav'})")], ['menu_open']),
+            'hbar_menu': ([pick("track('cta_menu',{src:'hbar_m'})")], ['menu_open']),
+            'card_menu': ([pick("track('loc_menu'")], ['menu_open']),
+            'contact_wa_then_branch': ([pick("track('cta_wa_contact')"), 'MODAL:modal_wa'], ['whatsapp']),
+            'route_then_branch': ([pick("track('cta_route')"), 'MODAL:modal_route'], ['route']),
+            'picker_then_menu': ([pick("track('cta_route')"), 'MODAL:modal_menu'], ['menu_open']),
+            'picker_then_call': ([pick("track('cta_route')"), 'MODAL:modal_call'], ['call']),
+            'book': ([pick("track('cta_book')")], ['book_open']),
+            'card_wa': ([pick("track('loc_wa'")], ['whatsapp']),
+            'card_call': ([pick("track('loc_call'")], ['call']),
+            'card_route': ([pick("track('loc_route'")], ['route']),
+            'order': ([pick("track('cta_order')")], ['order_app']),
+            'instagram': ([pick("track('cta_instagram')")], ['instagram']),
+            'lang_kk': ([pick("track('lang_switch',{lang:'kk'})")], ['lang_switch']),
+            'faq': ([pick("if(this.open)track('faq_open'")], ['faq_open']),
+            'ugolok': ([pick("track('cta_ugolok')")], ['ugolok']),
+        }
+        hash_actions = {'deep_link_kk': ('#menu-kk', ['menu_open']), 'deep_link_togo_en': ('#menu-togo-en', ['menu_open'])}
+        with tempfile.TemporaryDirectory() as d:
+            h, data = os.path.join(d, 'h.js'), os.path.join(d, 'data.json')
+            with open(h, 'w', encoding='utf-8') as f:
+                f.write(GOALS_HARNESS)
+            with open(data, 'w', encoding='utf-8') as f:
+                json.dump({'html': page, 'actions': {k: v[0] for k, v in actions.items()},
+                           'hashActions': {k: v[0] for k, v in hash_actions.items()}}, f)
+            out = subprocess.run([node, h, data], capture_output=True, text=True, timeout=60)
+        self.assertEqual(out.returncode, 0, out.stderr[-1500:])
+        got = json.loads(out.stdout)
+        for name, (_, want) in list(actions.items()) + list(hash_actions.items()):
+            self.assertEqual(got[name], want, '%s: одно действие — одна цель' % name)
 
     def test_ugolok_events_without_names(self):
         html = self.pages['ugolok/index.html']
