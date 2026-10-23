@@ -142,6 +142,19 @@ class TestCalc(Base):
         self.assertEqual(cards['Тест: омлет']['kbju']['kcal'], 150)
         self.assertIn('ТТК неполная', rep)
 
+    def test_owner_ing_beats_ttk_without_weight_and_kbju(self):
+        # курица гриль: в ТТК штука и гарнир, на сайте только то, что решил владелец, без веса и КБЖУ
+        ing = {"ru": "курица, соль", "kk": "тауық еті, тұз", "en": "chicken, salt"}
+        rec = self.w('recipes.json', {"Тест: курица с рисом": {"src": "owner", "ing": ing, "no_w": True, "no_kbju": True}})
+        iiko = self.w('iiko.json', export([{"key": "t1", "name": "Тест: курица с рисом", "portion": {"value": 300, "unit": "г"},
+                                            "per_portion": {"kcal": 500, "p": 40, "f": 30, "c": 10}}]))
+        ttk = self.w('ttk.json', export([{"key": "t1", "name": "Тест: курица с рисом",
+                                          "composition": [{"name": "тест-курица", "qty": 1, "unit": "шт", "via": None},
+                                                          {"name": "тест-рис", "qty": 150, "unit": "г", "via": None}]}]))
+        cards, rep = self.build(iiko=iiko, ttk=ttk, recipes=rec)
+        self.assertEqual(cards['Тест: курица с рисом'], {'ing': ing})
+        self.assertIn('не публикуем (no_kbju)', rep)
+
     def test_pieces_and_partial_translation(self):
         ttk = self.w('ttk.json', export([{
             "key": "t2", "name": "Тест: омлет",

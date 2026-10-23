@@ -19,6 +19,9 @@ class TestCardsSanity(unittest.TestCase):
     def setUpClass(cls):
         with open(os.path.join(ROOT, 'menu', 'cards.json'), encoding='utf-8') as f:
             cls.cards = json.load(f)
+        with open(os.path.join(ROOT, 'menu', 'recipes_est.json'), encoding='utf-8') as f:
+            # вес и КБЖУ не публикуем по решению владельца (список закреплён в test_recipes.OWNER_FIXED)
+            cls.no_w_kbju = {k for k, v in json.load(f).items() if not k.startswith('_') and v.get('no_w') and v.get('no_kbju')}
         cls.secs, cls.vols = {}, mn.site_vols(os.path.join(ROOT, 'index.html'))
         for key, sec, name in mn.site_keys(os.path.join(ROOT, 'index.html')):
             cls.secs.setdefault(key, sec)
@@ -33,6 +36,9 @@ class TestCardsSanity(unittest.TestCase):
         for key, sec in self.secs.items():
             c = self.cards.get(key)
             self.assertIsNotNone(c, key)
+            if key in self.no_w_kbju:
+                self.assertFalse(c.get('w') or c.get('kbju') or c.get('est'), key)
+                continue
             g, unit = self.grams(c.get('w'))
             self.assertTrue(g and c.get('kbju'), key)
             per = c['kbju']['kcal'] / g * 100

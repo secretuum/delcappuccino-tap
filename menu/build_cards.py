@@ -14,7 +14,9 @@
                            отдельный файл, чтобы состав из ТТК не затирал тексты
   menu/recipes_est.json  — оценочные составы с нетто-граммовками и порцией (пока нет ТТК): запасной
                            источник состава и КБЖУ после ТТК; такие КБЖУ помечаются "est": true;
-                           бутылочные напитки — label_per_100 (этикетка), без состава
+                           бутылочные напитки — label_per_100 (этикетка), без состава; src "owner" — состав
+                           по решению владельца: ing {ru, kk, en} текстом (сильнее ТТК), no_w / no_kbju — вес / КБЖУ
+                           не публикуем (курица гриль считается штукой: граммовок нет, выдумывать нельзя)
 
 Правила:
   • ключ карточки — русское название блюда ровно как в index.html (n:'…'); между файлами
@@ -215,7 +217,7 @@ def load_export(path, rep):
 
 
 def load_recipes(path, rep):
-    """menu/recipes_est.json {блюдо: {portion_g, src, items:[{name, qty_g}] | label_per_100, no_ing}}"""
+    """menu/recipes_est.json {блюдо: {portion_g, src, items:[{name, qty_g}] | label_per_100, no_ing | ing, no_w, no_kbju}}"""
     if not path or not os.path.isfile(path):
         rep.add(f'нет {path} — без оценочных составов')
         return {}
@@ -428,6 +430,8 @@ def build_kbju(item, ref, missing, recipe=None):
     """→ (kbju | None, источник, оценочно?). Порядок: этикетка (бутылочное) → состав ТТК → оценочный состав →
     iiko per_portion → per_100g × выход. Ручные поля iiko — последними: там встречаются «191 ккал, белка 0,36»
     и per_100g, которое на самом деле на порцию (728 ккал у бургера)"""
+    if recipe and recipe.get('no_kbju'):
+        return None, 'не публикуем (no_kbju)', False
     g, _ = portion_g(item)
     if recipe and recipe.get('label_per_100'):
         l = recipe['label_per_100']
@@ -839,6 +843,8 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
                       'portion': {'value': sl_g, 'unit': 'г'}, 'comp_portion': None, 'ttk_portion': None}
                 missing.append(f'кусок: состав и КБЖУ от целого торта ({wg:.0f} г) в доле {k:.3f}, вес куска {sl_src}')
         g, unit, wsrc, it, kscale = resolve_portion(it, recipe, sec, vol, ref, missing, name)
+        if recipe and recipe.get('no_w'):
+            g, wsrc = None, 'не публикуем (no_w)'
         if g:
             it = {**it, 'portion': {'value': g, 'unit': unit}}
             card['w'] = f'{int(g) if float(g).is_integer() else g} {unit}'
@@ -859,7 +865,10 @@ def build(iiko_path, ttk_path, ref_path, out_path, img_dir, index_html=None, no_
             if desc:
                 card['d'] = {'ru': desc}
         pf_missing = []
-        ing = None if recipe and recipe.get('no_ing') else ingredients_text(it, ref, pf_names, pf_missing)
+        if recipe and recipe.get('ing'):               # состав по решению владельца — текстом, сильнее ТТК
+            ing = {l: recipe['ing'][l] for l in LANGS if recipe['ing'].get(l)}
+        else:
+            ing = None if recipe and recipe.get('no_ing') else ingredients_text(it, ref, pf_names, pf_missing)
         if not ing and recipe and recipe.get('items') and not recipe.get('no_ing'):
             ing = ingredients_text({'composition': [{'name': x['name']} for x in recipe['items']]}, ref)
         if ing:
@@ -955,10 +964,13 @@ def write_recipes_report(path, rows, ref, pf_names=None):
          'справочник `menu/nutrition_ref.json`; у позиций без техкарты — оценочный состав из `menu/recipes_est.json`.',
          'В скобках у полуфабриката — из чего он раскрыт (в карточке показывается одним пунктом, имя — `menu/pf_names.json`).',
          'Выход: номенклатурный из iiko; «сумма ТТК» — когда выхода нет и он посчитан как сумма граммов состава.', '']
+    own = [r for r in rows if r[1] and r[1].get('ing')]
+    rows = [r for r in rows if r not in own]
     ttk = [r for r in rows if r[4].get('composition')]
     est = [r for r in rows if not r[4].get('composition') and r[1] and not r[1].get('label_per_100')]
     lab = [r for r in rows if not r[4].get('composition') and r[1] and r[1].get('label_per_100')]
-    L.append(f'Итого: по техкартам — {len(ttk)}, оценочных (техкарты нет) — {len(est)}, этикетка — {len(lab)}.')
+    L.append(f'Итого: по техкартам — {len(ttk)}, оценочных (техкарты нет) — {len(est)}, этикетка — {len(lab)}, '
+             f'по решению владельца — {len(own)}.')
     L.append('')
 
     def kb(card):
@@ -983,6 +995,11 @@ def write_recipes_report(path, rows, ref, pf_names=None):
     for name, r, card, src, it, wsrc in lab:
         L.append(f"- **{name}** — {card.get('w', '')} — состав не указываем (бутылочный напиток), КБЖУ по этикетке на 100 мл: "
                  f"{json.dumps(r['label_per_100'], ensure_ascii=False)} → {kb(card)}")
+    L.append('')
+    L.append(f'## По решению владельца ({len(own)})')
+    L.append('')
+    for name, r, card, src, it, wsrc in own:
+        L.append(f"- **{name}** — {card.get('w', 'вес не указываем')} — {r['ing']['ru']} → {kb(card)}")
     with open(path, 'w', encoding='utf-8') as f:
         f.write('\n'.join(L) + '\n')
 
