@@ -212,7 +212,7 @@ class TestFaq(unittest.TestCase):
     def setUpClass(cls):
         cls.html = read('index.html')
         cls.body = cls.html.split('</head>')[1]
-        cls.shown = re.findall(r'<details><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', cls.body)
+        cls.shown = re.findall(r'<details[^>]*><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', cls.body)
         data = json.loads(ld_text(cls.html))
         cls.ld = next(n for n in data['@graph'] if n['@type'] == 'FAQPage')
 
@@ -302,7 +302,7 @@ class TestBranchFacts(unittest.TestCase):
         cls.html = read('index.html')
         cls.cards = re.findall(r'<div class="loc-card">(.*?)\n    </div>', cls.html, re.S)
         cls.nums = re.findall(r"\{n:'(\d+) · ", re.search(r'const BRANCHES = \[(.*?)\n\];', cls.html, re.S).group(1))
-        cls.shown = {q: a for q, a in re.findall(r'<details><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', cls.html)}
+        cls.shown = {q: a for q, a in re.findall(r'<details[^>]*><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', cls.html)}
         data = json.loads(ld_text(cls.html))
         cls.ld = {n['@id'].rsplit('-', 1)[1]: n for n in data['@graph'] if '#branch-' in n.get('@id', '')}
 

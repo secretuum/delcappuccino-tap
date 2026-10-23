@@ -20,7 +20,10 @@
 <meta property="og:description" content="Del Cappuccino — Алматыдағы тәулік бойы жұмыс істейтін 4 кофехана және bakery to go (күн сайын 07:00–22:00). Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе.">
 <meta property="og:locale" content="kk_KZ">
 <meta property="og:image" content="https://tap.delcappuccino.kz/assets/photo_01.jpg">
-<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');</script>
+<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
+function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
+<!-- /аналитика -->
 <!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
 @font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
@@ -274,19 +277,19 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <img class="logo-m" src="/assets/logo-mono-192.webp" width="192" height="192" alt="Del Cappuccino">
     </a>
     <nav>
-      <a href="/#menu-kk">Мәзір</a>
+      <a href="/#menu-kk" onclick="track('cta_menu',{src:'nav'})">Мәзір</a>
       <a href="#about">Біз туралы</a>
       <a href="#features">Формат</a>
       <a href="#locations">Мекенжайлар</a>
       <a href="#faq">Сұрақтар</a>
     </nav>
     <div class="hbar-m">
-      <a href="/#menu-kk">Мәзір</a>
+      <a href="/#menu-kk" onclick="track('cta_menu',{src:'hbar_m'})">Мәзір</a>
     </div>
     <nav class="lang-sw" aria-label="Сайт тілі">
-      <a href="/" lang="ru" hreflang="ru">РУС</a>
+      <a href="/" lang="ru" hreflang="ru" onclick="track('lang_switch',{lang:'ru'})">РУС</a>
       <a href="/kk/" lang="kk" aria-current="page">ҚАЗ</a>
-      <a href="/en/" lang="en" hreflang="en">ENG</a>
+      <a href="/en/" lang="en" hreflang="en" onclick="track('lang_switch',{lang:'en'})">ENG</a>
     </nav>
   </div>
 </header>
@@ -298,9 +301,9 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <h1><span>Жақындарды</span><br>біріктіретін<br>дәм.</h1>
       <p class="lead">Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе. Кофеханаларымыз тәулік бойы жұмыс істейді — дәмді үзіліс әрқашан жаныңызда, ал bakery to go-да — десерттер мен алып кететін кофе.</p>
       <div class="actions">
-        <a class="btn olive" href="#locations">Үстел брондау</a>
-        <a class="btn ghost" href="/#menu-kk">Мәзірді қарау</a>
-        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener">Қосымшада тапсырыс беру</a>
+        <a class="btn olive" href="#locations" onclick="track('cta_book')">Үстел брондау</a>
+        <a class="btn ghost" href="/#menu-kk" onclick="track('cta_menu')">Мәзірді қарау</a>
+        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_order')">Қосымшада тапсырыс беру</a>
       </div>
       <div class="halal-badge">
         <img src="/assets/halal-104.webp" srcset="/assets/halal-104.webp 104w, /assets/halal-156.webp 156w" sizes="52px" width="104" height="104" decoding="async" alt="ҚМДБ Halal">
@@ -368,9 +371,9 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>балалар аймағы</span> · <span>VIP-залдар</span> · <span>VIP-кабиналар</span> · <span>банкет залы</span> · <span>Wi-Fi</span> · <span>автотұрақ</span></p>
       <div class="loc-links">
-        <a href="tel:+77025672332">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener">Бағыт</a>
-        <a class="wa" href="https://wa.me/77025672332?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20247%2F8" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77025672332" onclick="track('loc_call',{branch:'01 · ЖК Вавилон'})">Қоңырау шалу</a>
+        <a href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})">Бағыт</a>
+        <a class="wa" href="https://wa.me/77025672332?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'01 · ЖК Вавилон'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -379,9 +382,9 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>VIP-кабина</span> · <span>намазхана</span> · <span>тегін Wi-Fi</span> · <span>автотұрақ</span></p>
       <div class="loc-links">
-        <a href="tel:+77053673232">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener">Бағыт</a>
-        <a class="wa" href="https://wa.me/77053673232?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20146" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77053673232" onclick="track('loc_call',{branch:'02 · ЖК Комфорт Сити'})">Қоңырау шалу</a>
+        <a href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})">Бағыт</a>
+        <a class="wa" href="https://wa.me/77053673232?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20146" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'02 · ЖК Комфорт Сити'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -391,9 +394,9 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <p class="loc-about">Жұмыс, кездесу және демалыс кеңістігі. Жанында — «Балуан Шолақ» спорт кешені мен Орталық стадион.</p>
       <p class="loc-amen"><span>VIP-зал</span> · <span>60 адамға дейінгі зал</span> · <span>фрилансерлерге арналған аймақ</span> · <span>намазхана</span> · <span>жазғы алаң</span></p>
       <div class="loc-links">
-        <a href="tel:+77770355617">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener">Бағыт</a>
-        <a class="wa" href="https://wa.me/77770355617?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B4%D0%B0%D2%A3%D2%93%D1%8B%D0%BB%D1%8B%2C%2044%D0%90" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77770355617" onclick="track('loc_call',{branch:'03 · БП Promenade'})">Қоңырау шалу</a>
+        <a href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'03 · БП Promenade'})">Бағыт</a>
+        <a class="wa" href="https://wa.me/77770355617?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B4%D0%B0%D2%A3%D2%93%D1%8B%D0%BB%D1%8B%2C%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'03 · БП Promenade'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -402,9 +405,9 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>800 м-ге дейін жеткізу</span> · <span>автотұрақ</span></p>
       <div class="loc-links">
-        <a href="tel:+77769079070">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener">Бағыт</a>
-        <a class="wa" href="https://wa.me/77769079070?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A2%D3%A9%D0%BB%D0%B5%20%D0%B1%D0%B8%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2064" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77769079070" onclick="track('loc_call',{branch:'04 · Del Cappuccino'})">Қоңырау шалу</a>
+        <a href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})">Бағыт</a>
+        <a class="wa" href="https://wa.me/77769079070?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A2%D3%A9%D0%BB%D0%B5%20%D0%B1%D0%B8%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2064" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'04 · Del Cappuccino'})">WhatsApp</a>
       </div>
     </div>
     <div class="loc-card">
@@ -413,10 +416,10 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <p class="loc-meta"><b>күн сайын 07:00–22:00</b> · Десерттер, жартылай фабрикаттар және алып кететін кофе</p>
       <p class="loc-amen"><span>алып кету</span> · <span>екі адамдық 3 үстел</span> · <span>Wi-Fi</span> · <span>ТК ішінде автотұрақ</span> · <span>жануармен — алып кетуге</span></p>
       <div class="loc-links">
-        <a href="tel:+77773278566">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener">Бағыт</a>
-        <a href="/#menu-togo-kk">Мәзір</a>
-        <a class="wa" href="https://wa.me/77773278566?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20delCappuccino%20bakery%20to%20go-%D0%B4%D0%B0%D0%BD%20%D0%B0%D0%BB%D1%8B%D0%BF%20%D0%BA%D0%B5%D1%82%D1%83%D0%B3%D0%B5%20%D1%82%D0%B0%D0%BF%D1%81%D1%8B%D1%80%D1%8B%D1%81%20%D0%B1%D0%B5%D1%80%D0%B3%D1%96%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%96%D0%B0%D0%BD%D0%B4%D0%BE%D1%81%D0%BE%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2094%2F12" target="_blank" rel="noopener">WhatsApp</a>
+        <a href="tel:+77773278566" onclick="track('loc_call',{branch:'05 · Bakery to go · ЖК Rams City'})">Қоңырау шалу</a>
+        <a href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'05 · Bakery to go · ЖК Rams City'})">Бағыт</a>
+        <a href="/#menu-togo-kk" onclick="track('loc_menu',{branch:'05 · Bakery to go · ЖК Rams City'})">Мәзір</a>
+        <a class="wa" href="https://wa.me/77773278566?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20delCappuccino%20bakery%20to%20go-%D0%B4%D0%B0%D0%BD%20%D0%B0%D0%BB%D1%8B%D0%BF%20%D0%BA%D0%B5%D1%82%D1%83%D0%B3%D0%B5%20%D1%82%D0%B0%D0%BF%D1%81%D1%8B%D1%80%D1%8B%D1%81%20%D0%B1%D0%B5%D1%80%D0%B3%D1%96%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%96%D0%B0%D0%BD%D0%B4%D0%BE%D1%81%D0%BE%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2094%2F12" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'05 · Bakery to go · ЖК Rams City'})">WhatsApp</a>
       </div>
     </div>
     </div>
@@ -430,24 +433,24 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <p>Бағалары бар толық мәзір мәтінмен — <a href="/kk/menyu">бөлек бетте</a>.</p>
     </div>
     <div class="faq-list">
-      <details><summary>Del Cappuccino кофеханалары қашан жұмыс істейді?</summary><div class="faq-a">4 кофехана тәулік бойы, 24/7 жұмыс істейді: «Вавилон» ТК (Розыбакиев көшесі, 247/8), «Комфорт Сити» ТК (Серкебаев көшесі, 146), Promenade бизнес-паркі (Абай даңғылы, 44А), Del Cappuccino (Төле би көшесі, 64). Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00.</div></details>
-      <details><summary>Алматыда Del Cappuccino кофеханалары қайда орналасқан?</summary><div class="faq-a">Алматыда 5 филиал:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8) — тәулік бойы (24/7)</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146) — тәулік бойы (24/7)</li><li>Promenade бизнес-паркі (Абай даңғылы, 44А) — тәулік бойы (24/7)</li><li>Del Cappuccino (Төле би көшесі, 64) — тәулік бойы (24/7)</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00</li></ul></div></details>
-      <details><summary>Del Cappuccino өнімдері халал ма?</summary><div class="faq-a">Иә, өнімдер ҚМДБ Halal сертификатынан өткен (halaldamu.kz).</div></details>
-      <details><summary>Таңғы ас тек таңертең бе?</summary><div class="faq-a">Жоқ, таңғы ас күні бойы беріледі — сүйікті таңғы ас сағатқа қарамастан.</div></details>
-      <details><summary>Үстелді қалай брондауға болады?</summary><div class="faq-a">Мекенжайлар тізімінен филиалды таңдап, WhatsApp-қа жазыңыз немесе қоңырау шалыңыз.</div></details>
-      <details><summary>Брондау үшін алдын ала төлем керек пе?</summary><div class="faq-a">Филиалға байланысты:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): VIP-кабиналарға алдын ала төлем алынады</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): әдеттегі брондау — алдын ала төлемсіз</li><li>Del Cappuccino (Төле би көшесі, 64): мәзір бойынша алдын ала тапсырыс болмаса, үстел алдын ала төлемсіз брондалады</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): брондау — алдын ала төлемсіз</li></ul></div></details>
-      <details><summary>Тағамды үйге жеткізуге қалай тапсырыс беруге болады?</summary><div class="faq-a">«Қосымшада тапсырыс беру» батырмасы арқылы — <a href="https://delcappuccino.kz/">delcappuccino.kz</a> сайтында онлайн тапсырыс. Алып кетуге филиалдың WhatsApp-ы арқылы да тапсырыс беруге болады.</div></details>
-      <details><summary>Жеткізу бар ма?</summary><div class="faq-a">Онлайн тапсырысты сайттағы «Қосымшада тапсырыс беру» арқылы беруге болады. Филиалдар бойынша жеткізу:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): барлық жеткізу агрегаторлары арқылы</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): «Комфорт Сити» ТК ішінде өз жеткізуіміз, сондай-ақ Glovo, Яндекс Еда, Choco және Wolt</li><li>Del Cappuccino (Төле би көшесі, 64): 800 м радиуста өз қызметкерлеріміз жеткізеді</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): ТК аумағында жеткізу</li></ul></div></details>
-      <details><summary>Автотұрақ бар ма?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): автотұрақ бар</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): кафе жанында қоғамдық автотұрақ</li><li>Del Cappuccino (Төле би көшесі, 64): қалалық автотұрақ, VIP-қонақтарға — ішкі аулада автотұрақ</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): ТК ішінде автотұрақ</li></ul></div></details>
-      <details><summary>Wi-Fi бар ма?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): Wi-Fi бар</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): тегін Wi-Fi</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): Wi-Fi бар</li></ul></div></details>
-      <details><summary>Балалар аймағы бар ма?</summary><div class="faq-a">Иә, балалар аймағы бар жер: «Вавилон» ТК.</div></details>
-      <details><summary>Қандай VIP-залдар мен банкет залдары бар?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): 10–15 және 20–25 адамға арналған VIP-залдар, жабық VIP-кабиналар, банкетке арналған 30–35 адамдық зал</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): VIP-кабина</li><li>Promenade бизнес-паркі (Абай даңғылы, 44А): конференция, семинар, банкет және іскерлік кездесулерге арналған 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету; 60 адамға дейінгі ортақ зал; 20–70 адамға кофе-брейк</li></ul></div></details>
-      <details><summary>Сіздерде банкет өткізуге бола ма?</summary><div class="faq-a">Иә, 40 адамға дейінгі топқа іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы.</div></details>
-      <details><summary>Қай жерде жұмыс істеуге немесе іскерлік кездесу өткізуге болады?</summary><div class="faq-a"><ul><li>Promenade бизнес-паркі (Абай даңғылы, 44А): фрилансерлерге арналған аймақ; іскерлік тамақтану — бизнес-ланчтар, іскерлік түскі және кешкі ас; 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету</li></ul></div></details>
-      <details><summary>Намазхана қай жерде бар?</summary><div class="faq-a">Намазхана бар жерлер: «Комфорт Сити» ТК (Серкебаев көшесі, 146) және Promenade бизнес-паркі (Абай даңғылы, 44А).</div></details>
-      <details><summary>Жануарлармен келуге бола ма?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): жануарлармен — тек жазғы алаңда, үлкен ит тұмылдырықпен болуы керек</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): алып кетуге жануармен кіруге болады</li></ul></div></details>
-      <details><summary>Мәзір қазақ және ағылшын тілдерінде бар ма?</summary><div class="faq-a">Иә, сайттағы мәзірде тілді ауыстыруға болады: ҚАЗ, РУС немесе ENG.</div></details>
-      <details><summary>Мәзір мен бағаларды қайдан көруге болады?</summary><div class="faq-a">Фотосы мен құрамы бар мәзір — <a href="https://tap.delcappuccino.kz/#menu-kk">сайттағы мәзірде</a>, бағалары бар толық мәзір мәтінмен — <a href="https://tap.delcappuccino.kz/kk/menyu">tap.delcappuccino.kz/kk/menyu</a>.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:1})"><summary>Del Cappuccino кофеханалары қашан жұмыс істейді?</summary><div class="faq-a">4 кофехана тәулік бойы, 24/7 жұмыс істейді: «Вавилон» ТК (Розыбакиев көшесі, 247/8), «Комфорт Сити» ТК (Серкебаев көшесі, 146), Promenade бизнес-паркі (Абай даңғылы, 44А), Del Cappuccino (Төле би көшесі, 64). Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:2})"><summary>Алматыда Del Cappuccino кофеханалары қайда орналасқан?</summary><div class="faq-a">Алматыда 5 филиал:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8) — тәулік бойы (24/7)</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146) — тәулік бойы (24/7)</li><li>Promenade бизнес-паркі (Абай даңғылы, 44А) — тәулік бойы (24/7)</li><li>Del Cappuccino (Төле би көшесі, 64) — тәулік бойы (24/7)</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:3})"><summary>Del Cappuccino өнімдері халал ма?</summary><div class="faq-a">Иә, өнімдер ҚМДБ Halal сертификатынан өткен (halaldamu.kz).</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:4})"><summary>Таңғы ас тек таңертең бе?</summary><div class="faq-a">Жоқ, таңғы ас күні бойы беріледі — сүйікті таңғы ас сағатқа қарамастан.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:5})"><summary>Үстелді қалай брондауға болады?</summary><div class="faq-a">Мекенжайлар тізімінен филиалды таңдап, WhatsApp-қа жазыңыз немесе қоңырау шалыңыз.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:6})"><summary>Брондау үшін алдын ала төлем керек пе?</summary><div class="faq-a">Филиалға байланысты:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): VIP-кабиналарға алдын ала төлем алынады</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): әдеттегі брондау — алдын ала төлемсіз</li><li>Del Cappuccino (Төле би көшесі, 64): мәзір бойынша алдын ала тапсырыс болмаса, үстел алдын ала төлемсіз брондалады</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): брондау — алдын ала төлемсіз</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:7})"><summary>Тағамды үйге жеткізуге қалай тапсырыс беруге болады?</summary><div class="faq-a">«Қосымшада тапсырыс беру» батырмасы арқылы — <a href="https://delcappuccino.kz/">delcappuccino.kz</a> сайтында онлайн тапсырыс. Алып кетуге филиалдың WhatsApp-ы арқылы да тапсырыс беруге болады.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:8})"><summary>Жеткізу бар ма?</summary><div class="faq-a">Онлайн тапсырысты сайттағы «Қосымшада тапсырыс беру» арқылы беруге болады. Филиалдар бойынша жеткізу:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): барлық жеткізу агрегаторлары арқылы</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): «Комфорт Сити» ТК ішінде өз жеткізуіміз, сондай-ақ Glovo, Яндекс Еда, Choco және Wolt</li><li>Del Cappuccino (Төле би көшесі, 64): 800 м радиуста өз қызметкерлеріміз жеткізеді</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): ТК аумағында жеткізу</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:9})"><summary>Автотұрақ бар ма?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): автотұрақ бар</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): кафе жанында қоғамдық автотұрақ</li><li>Del Cappuccino (Төле би көшесі, 64): қалалық автотұрақ, VIP-қонақтарға — ішкі аулада автотұрақ</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): ТК ішінде автотұрақ</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:10})"><summary>Wi-Fi бар ма?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): Wi-Fi бар</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): тегін Wi-Fi</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): Wi-Fi бар</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:11})"><summary>Балалар аймағы бар ма?</summary><div class="faq-a">Иә, балалар аймағы бар жер: «Вавилон» ТК.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:12})"><summary>Қандай VIP-залдар мен банкет залдары бар?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): 10–15 және 20–25 адамға арналған VIP-залдар, жабық VIP-кабиналар, банкетке арналған 30–35 адамдық зал</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): VIP-кабина</li><li>Promenade бизнес-паркі (Абай даңғылы, 44А): конференция, семинар, банкет және іскерлік кездесулерге арналған 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету; 60 адамға дейінгі ортақ зал; 20–70 адамға кофе-брейк</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:13})"><summary>Сіздерде банкет өткізуге бола ма?</summary><div class="faq-a">Иә, 40 адамға дейінгі топқа іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:14})"><summary>Қай жерде жұмыс істеуге немесе іскерлік кездесу өткізуге болады?</summary><div class="faq-a"><ul><li>Promenade бизнес-паркі (Абай даңғылы, 44А): фрилансерлерге арналған аймақ; іскерлік тамақтану — бизнес-ланчтар, іскерлік түскі және кешкі ас; 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:15})"><summary>Намазхана қай жерде бар?</summary><div class="faq-a">Намазхана бар жерлер: «Комфорт Сити» ТК (Серкебаев көшесі, 146) және Promenade бизнес-паркі (Абай даңғылы, 44А).</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:16})"><summary>Жануарлармен келуге бола ма?</summary><div class="faq-a"><ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): жануарлармен — тек жазғы алаңда, үлкен ит тұмылдырықпен болуы керек</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): алып кетуге жануармен кіруге болады</li></ul></div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:17})"><summary>Мәзір қазақ және ағылшын тілдерінде бар ма?</summary><div class="faq-a">Иә, сайттағы мәзірде тілді ауыстыруға болады: ҚАЗ, РУС немесе ENG.</div></details>
+      <details ontoggle="if(this.open)track('faq_open',{q:18})"><summary>Мәзір мен бағаларды қайдан көруге болады?</summary><div class="faq-a">Фотосы мен құрамы бар мәзір — <a href="https://tap.delcappuccino.kz/#menu-kk">сайттағы мәзірде</a>, бағалары бар толық мәзір мәтінмен — <a href="https://tap.delcappuccino.kz/kk/menyu">tap.delcappuccino.kz/kk/menyu</a>.</div></details>
     </div>
   </div>
 </section>
@@ -456,8 +459,8 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
   <a href="/kk/" aria-label="Del Cappuccino — басты бет"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
   <h2><span>Кофеге</span><br>келіңіз.</h2>
   <div class="contact-actions">
-    <a class="btn olive" href="#locations">WhatsApp</a>
-    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener">@del.cappuccino</a>
+    <a class="btn olive" href="#locations" onclick="track('cta_wa_contact')">WhatsApp</a>
+    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram')">@del.cappuccino</a>
   </div>
 </section>
 
@@ -466,7 +469,7 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
     <a href="/kk/" aria-label="Del Cappuccino — басты бет"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
     <span>coffee &amp; food · Алматы</span>
     <a href="/kk/menyu">Бағалары бар мәзір</a>
-    <a class="f-ugolok" href="/ugolok/">Тұтынушы бұрышы</a>
+    <a class="f-ugolok" href="/ugolok/" onclick="track('cta_ugolok')">Тұтынушы бұрышы</a>
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
