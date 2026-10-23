@@ -24,10 +24,10 @@
 - /menyu (menyu/index.html): всё меню текстом — кофейни (вкладки MENU_TABS) и Bakery to go (вкладки режима togo),
   разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
-- На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — из <head> главной): видно переходы из ИИ.
+- На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — константа GA_ID): видно переходы из ИИ.
 - Аналитика (блок в <head> всех страниц, включая /ugolok): gtag и единая track() — все события в Google Analytics;
   цели YM_GOALS (22 события → 12 целей) ещё и в Яндекс Метрику. Включить Метрику: YM_ID = <номер счётчика> ниже,
-  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех страницах появится ym init (вебвизор,
+  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 7 собираемых страницах (404.html — нет) появится ym init (вебвизор,
   карта кликов, ссылки), tag.js грузится после load. Пока YM_ID = None, кода Метрики на страницах нет (тест).
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
@@ -659,10 +659,6 @@ def hreflang(urls):
                      ['<link rel="alternate" hreflang="x-default" href="%s">' % urls['ru']])
 
 
-def ga_id(html=None):
-    return GA_ID
-
-
 def analytics_head(ym_id=None):
     """<head>: gtag и track(); с номером Метрики — ещё ym init (вебвизор, карта кликов, ссылки) и цели reachGoal по YM_GOALS,
     сам tag.js — после load, в простое (как gtag). Без номера — ни строчки Метрики."""
@@ -766,9 +762,10 @@ def lang_page(html, lang):
     kk_fix = ('\n/* казахские буквы (ә, ғ, қ, ң, ө, ү, һ) есть в Golos (cyrillic-ext), в Comfortaa — нет: заголовки на Golos */\n'
               "html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.loc-card h3,.f-grid b)"
               "{font-family:'Golos Text',sans-serif;letter-spacing:-.01em}") if lang == 'kk' else ''
-    sw = '\n'.join('      <a href="%s" lang="%s"%s onclick="track(\'lang_switch\',{lang:\'%s\'})">%s</a>' % ('/' if l == 'ru' else '/%s/' % l, l,
-                                                            ' aria-current="page"' if l == lang else ' hreflang="%s"' % l,
-                                                            l, {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
+    sw = '\n'.join('      <a href="%s" lang="%s"%s>%s</a>' % ('/' if l == 'ru' else '/%s/' % l, l,
+                                                    ' aria-current="page"' if l == lang else
+                                                    ' hreflang="%s" onclick="track(\'lang_switch\',{lang:\'%s\'})"' % (l, l),
+                                                    {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
     logo_d = img_tag(html, r'<img class="logo-d"[^>]*>', 'Del Cappuccino')
     logo_m = img_tag(html, r'<img class="logo-m"[^>]*>', 'Del Cappuccino')
     hero_img = img_tag(html, r'(?<=<div class="hero-photo">\n      )<img[^>]*>', P['hero_alt'])
@@ -782,7 +779,7 @@ def lang_page(html, lang):
         note = c['d']['branch_note'].get(b['note'], T(c, b['note'])) if b['note'] else ''
         wa = 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']),
                                            quote((c['d']['wa_togo'] if b['wa'] else c['d']['wa_book']) + T(c, b['addr']), safe="-_.!~*'()"))
-        ev = lambda name: ' onclick="track(\'%s\',{branch:\'%s\'})"' % (name, b['n'])
+        ev = lambda name: ' onclick="track(\'%s\',{branch:\'%s\'})"' % (name, js_attr(b['n']))
         links = ['<a href="tel:%s"%s>%s</a>' % (b['phone'], ev('loc_call'), e(P['call'])),
                  '<a href="%s" target="_blank" rel="noopener"%s>%s</a>' % (H.escape(b['route']), ev('loc_route'), e(P['route']))]
         if b['menu']:
@@ -1095,6 +1092,16 @@ def card_extra(html, b, lang):
     return out
 
 
+def js_str(s):
+    """строка внутри '…' в JS: обратная косая и апостроф экранируются (название точки с ' не сломает onclick)"""
+    return s.replace('\\', '\\\\').replace("'", "\\'")
+
+
+def js_attr(s):
+    """то же для вставки прямо в атрибут onclick="…": JS-экранирование, потом HTML (& < > ")"""
+    return H.escape(js_str(s), quote=False).replace('"', '&quot;')
+
+
 LOC_MARK = '<!-- Точки: из BRANCHES собирает tools/seo_jsonld.py — видны без JS поисковикам и ИИ, руками не править -->'
 LOC_RE = re.compile(re.escape(LOC_MARK) + r'\n.*?<!-- /точки -->\n', re.S)
 
@@ -1114,11 +1121,12 @@ def loc_cards(html):
     t = lambda s: H.escape(s, quote=False)
     out = []
     for b in branches(html):
-        links = ['<a href="tel:%s" onclick="%s">Позвонить</a>' % (a(b['phone']), a("track('loc_call',{branch:'%s'})" % b['n'])),
-                 '<a href="%s" target="_blank" rel="noopener" onclick="%s">Маршрут</a>' % (a(b['route']), a("track('loc_route',{branch:'%s'})" % b['n']))]
+        n = js_str(b['n'])
+        links = ['<a href="tel:%s" onclick="%s">Позвонить</a>' % (a(b['phone']), a("track('loc_call',{branch:'%s'})" % n)),
+                 '<a href="%s" target="_blank" rel="noopener" onclick="%s">Маршрут</a>' % (a(b['route']), a("track('loc_route',{branch:'%s'})" % n))]
         if b['menu']:
-            links.append('<a href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (b['n'], b['menu'])))
-        links.append('<a class="wa" href="%s" target="_blank" rel="noopener" onclick="%s">WhatsApp</a>' % (a(wa_link(html, b)), a("track('loc_wa',{branch:'%s'})" % b['n'])))
+            links.append('<a href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
+        links.append('<a class="wa" href="%s" target="_blank" rel="noopener" onclick="%s">WhatsApp</a>' % (a(wa_link(html, b)), a("track('loc_wa',{branch:'%s'})" % n)))
         out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
                    '      <p class="loc-meta"><b>%s</b>%s</p>\n%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
                    % (t(b['n']), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),

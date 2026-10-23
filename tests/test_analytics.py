@@ -92,10 +92,11 @@ class TestAnalytics(unittest.TestCase):
         html = self.pages['ugolok/index.html']
         branches = re.findall(r"track\('ugolok_talon',\{branch:'([^']*)'\}\)", html)
         self.assertEqual(branches, ['01', '02', '03', '04', '05'], 'параметр branch — номер точки, не имя ИП')
-        self.assertNotRegex(html, r"branch:'[^'0-9]", 'в событиях /ugolok нет подписей с именами')
+        for v in re.findall(r"branch:'([^']*)'", html):
+            self.assertRegex(v, r'^\d\d$', 'в событиях /ugolok — только номер точки, без подписей и имён')
 
     def test_same_buttons_on_language_and_menu_pages(self):
-        n = len(re.findall(r"\{n:'\d+ · ", read('index.html')))
+        n = len(re.findall(r"\{n:'\d+ · ", re.search(r'const BRANCHES = \[(.*?)\n\];', read('index.html'), re.S).group(1)))
         faq_n = len(json.loads(read('tools/faq.json')))
         for p in ('kk/index.html', 'en/index.html'):
             page = self.pages[p]
@@ -103,14 +104,21 @@ class TestAnalytics(unittest.TestCase):
                 self.assertEqual(page.count("track('%s'" % ev), n, '%s: %s на каждой точке' % (p, ev))
             for ev in ('cta_book', 'cta_order', 'cta_menu', 'cta_wa_contact', 'cta_instagram', 'cta_ugolok', 'loc_menu'):
                 self.assertIn("track('%s'" % ev, page, p)
-            self.assertEqual(page.count("track('lang_switch'"), 3, '%s: РУС / ҚАЗ / ЕNG' % p)
+            self.assertEqual(page.count("track('lang_switch'"), 2, '%s: два других языка; у текущего события нет' % p)
             self.assertEqual(page.count("track('faq_open'"), faq_n, '%s: раскрытие каждого вопроса' % p)
         for p in ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html'):
             for ev in ('cta_menu', 'cta_order', 'cta_instagram'):
                 self.assertIn("track('%s'" % ev, self.pages[p], p)
         main = self.pages['index.html']
-        self.assertEqual(main.count("track('lang_switch'"), 3, 'переключатель в шапке главной')
+        self.assertEqual(main.count("track('lang_switch'"), 2, 'переключатель в шапке главной: ҚАЗ и ENG')
+        for page in (main, self.pages['kk/index.html'], self.pages['en/index.html']):
+            self.assertNotRegex(page, r'aria-current="page"[^>]*onclick', 'клик по текущему языку — не цель')
+        self.assertIn('class="dist ym-hide-content"', main, 'вебвизор не пишет расстояния до точек (по ним видно, где посетитель)')
         self.assertEqual(main.count("track('faq_open'"), faq_n)
+
+    def test_branch_name_escaped_in_onclick(self):
+        self.assertEqual(seo.js_str("01 · O'Neil \\ x"), "01 · O\\'Neil \\\\ x")
+        self.assertEqual(seo.js_attr('a"b'), 'a&quot;b')
 
 
 if __name__ == '__main__':
