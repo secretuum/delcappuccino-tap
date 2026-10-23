@@ -26,8 +26,9 @@
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
 - На /menyu — Google Analytics как на /ugolok (загрузка после load, ID — константа GA_ID): видно переходы из ИИ.
 - Аналитика (блок в <head> всех страниц, включая /ugolok): gtag и единая track() — все события в Google Analytics;
-  цели YM_GOALS (17 событий → 12 целей, одна цель на одно действие) ещё и в Яндекс Метрику; на /ugolok trackLinks:false. Включить Метрику: YM_ID = <номер счётчика> ниже,
-  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 7 собираемых страницах (404.html — нет) появится ym init (вебвизор,
+  цели YM_GOALS (18 событий → 13 целей, одна цель на одно действие) ещё и в Яндекс Метрику; на /ugolok trackLinks:false;
+  404.html — тот же блок и при загрузке событие page_not_found {path} (цель not_found). Включить Метрику: YM_ID = <номер счётчика> ниже,
+  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 8 собираемых страницах (с 404.html) появится ym init (вебвизор,
   карта кликов, ссылки), tag.js грузится после load. Пока YM_ID = None, кода Метрики на страницах нет (тест).
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
@@ -67,12 +68,16 @@ YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
             'menu_open': 'menu_open',
             'menu_card': 'dish_card', 'cta_grill': 'grill_promo', 'cta_instagram': 'instagram',
             'lang_switch': 'lang_switch', 'menu_lang': 'lang_switch', 'faq_open': 'faq_open',
-            'cta_ugolok': 'ugolok', 'ugolok_talon': 'ugolok'}
+            'cta_ugolok': 'ugolok', 'ugolok_talon': 'ugolok',
+            'page_not_found': 'not_found'}     # 404: один раз при загрузке, параметр path — путь без строки запроса
+NOT_FOUND_JS = "track('page_not_found',{path:location.pathname})"
+
 AN_MARK = '<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->'
 AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n', re.S)
 GA_LINE_RE = re.compile(r"<script>window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\)\}"
                         r"gtag\('js',new Date\(\)\);gtag\('config','G-[A-Z0-9]+'\);(?:function track\(n,p\)\{[^<]*\})?</script>\n")
 UGOLOK = os.path.join(ROOT, 'ugolok', 'index.html')
+NOT_FOUND = os.path.join(ROOT, '404.html')
 FACT_TOPICS = ('tags', 'about', 'delivery', 'parking', 'wifi', 'booking', 'halls', 'business', 'pets')
 KK_REVIEW = os.path.join(ROOT, 'menu', 'kk_review.md')
 LANGS = ('ru', 'kk', 'en')
@@ -662,7 +667,7 @@ def hreflang(urls):
                      ['<link rel="alternate" hreflang="x-default" href="%s">' % urls['ru']])
 
 
-def analytics_head(ym_id=None, track_links=True):
+def analytics_head(ym_id=None, track_links=True, on_load=None):
     """<head>: gtag и track(); с номером Метрики — ещё ym init (вебвизор, карта кликов, ссылки) и цели reachGoal по YM_GOALS,
     сам tag.js — после load, в простое (как gtag). Без номера — ни строчки Метрики."""
     js = ("window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());"
@@ -677,13 +682,15 @@ def analytics_head(ym_id=None, track_links=True):
                "(function(){function load(){var s=document.createElement('script');s.async=true;s.src='https://mc.yandex.ru/metrika/tag.js';"
                "document.head.appendChild(s)}\nfunction idle(){('requestIdleCallback'in window)?requestIdleCallback(load,{timeout:4000}):setTimeout(load,1500)}\n"
                "if(document.readyState==='complete')idle();else addEventListener('load',idle)})();")
+    if on_load:
+        js += '\n' + on_load + ';'                  # событие страницы при загрузке (404 — page_not_found)
     return AN_MARK + '\n<script>' + js + '</script>\n<!-- /аналитика -->\n'
 
 
-def with_analytics(html, track_links=True):
+def with_analytics(html, track_links=True, on_load=None):
     """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID); track_links=False — /ugolok:
     адреса PDF-талонов с именами ИП не уходят в Метрику (главный, 23.10.2026)"""
-    new, head = analytics_head(YM_ID, track_links), html.split('</head>')[0]
+    new, head = analytics_head(YM_ID, track_links, on_load), html.split('</head>')[0]
     m = AN_RE.search(head) or GA_LINE_RE.search(head)
     if not m:
         sys.exit('seo_jsonld: в <head> нет блока аналитики и строки gtag — некуда поставить analytics_head')
@@ -1154,7 +1161,8 @@ def with_jsonld(html):
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
     page = with_analytics(with_hreflang(with_jsonld(with_loc(with_faq(html)))))
-    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False)}
+    out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
+           NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
     for lang in LANGS:
         out[os.path.join(ROOT, PAGES[MENU[lang]])] = menu_page(page, lang)
         if lang != 'ru':
