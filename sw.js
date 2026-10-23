@@ -1,4 +1,5 @@
-/* Service worker tap.delcappuccino.kz — повторные заходы из кэша, обновление в фоне, офлайн-оболочка.
+/* Service worker tap.delcappuccino.kz — страницы сначала из сети (свежие сразу после выкладки), офлайн — из кэша;
+ * картинки и шрифты — из кэша.
  *
  * ПРАВИЛА ПО ПУТЯМ (важно для всех терминалов — menu/ и img/menu/ обновляются без смены имён файлов):
  *   любая навигация (/, /kk/, /en/, /menyu, /ugolok, 404), ./  *.html  *.json (menu/cards.json)  manifest.webmanifest
@@ -73,23 +74,29 @@ self.addEventListener('activate', function (e) {
   );
 });
 
-// сначала сеть: свежая страница сразу после выкладки; медленно или офлайн — из кэша
-function networkFirst(e, c, req, key) {
-  var stored = null;
+// сначала сеть: свежая страница сразу после выкладки; медленно, офлайн или сбой хостинга (5xx) — из кэша.
+// Сеть стартует сразу, не дожидаясь открытия кэша; e.waitUntil — синхронно в обработчике fetch (позже браузер может
+// бросить InvalidStateError), поэтому запись свежего ответа в кэш доживёт, даже если посетителю уже отдали кэш.
+function networkFirst(e, req, key) {
+  var cacheP = caches.open(SHELL), copy = null;
   var net = fetch(req).then(function (res) {
-    if (res && res.ok) stored = c.put(key, res.clone());
+    if (res && res.ok) copy = res.clone();                                         // клон до того, как тело прочтут
     return res;
   });
-  e.waitUntil(net.then(function () { return stored; }).catch(function () {}));   // запись в кэш доживёт, даже если ответили кэшем
+  e.waitUntil(Promise.all([cacheP, net]).then(function (v) { return copy && v[0].put(key, copy); }).catch(function () {}));
+  var fromCache = function () { return cacheP.then(function (c) { return c.match(key); }); };
+  var fresh = net.then(function (res) {                                           // 5xx при живом кэше — кэш
+    return res.status >= 500 ? fromCache().then(function (cached) { return cached || res; }) : res;
+  });
   var slow = new Promise(function (resolve) { setTimeout(resolve, NET_TIMEOUT); }).then(function () {
-    return c.match(key).then(function (cached) { return cached || net; });       // в кэше нет — ждём сеть дальше
+    return fromCache().then(function (cached) { return cached || fresh; });       // в кэше нет — ждём сеть дальше
   });
   slow.catch(function () {});                                                      // проигравший гонку не шумит в консоли
-  return Promise.race([net, slow]).catch(function () {                             // сети нет
-    return c.match(key).then(function (cached) {
+  return Promise.race([fresh, slow]).catch(function () {                           // сети нет
+    return fromCache().then(function (cached) {
       if (cached) return cached;
       if (req.mode !== 'navigate') return Response.error();
-      return caches.open(SHELL).then(function (s) { return s.match('./'); }).then(function (r) { return r || Response.error(); });
+      return cacheP.then(function (c) { return c.match('./'); }).then(function (r) { return r || Response.error(); });
     });
   });
 }
@@ -103,7 +110,7 @@ self.addEventListener('fetch', function (e) {
 
   var key = cacheKey(req, url);
   if (req.mode === 'navigate' || isShell(url)) {                                   // страницы, HTML, cards.json, manifest
-    e.respondWith(caches.open(SHELL).then(function (c) { return networkFirst(e, c, req, key); }));
+    e.respondWith(networkFirst(e, req, key));
     return;
   }
 
