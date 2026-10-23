@@ -235,13 +235,12 @@ class TestFaq(unittest.TestCase):
             self.assertIn(addr, text)
         for hours in re.findall(r"hours:'([^']*)'", self.html):
             self.assertIn(re.sub(r'^ежедневно ', '', hours), text)
-        for fact in ('КМДБ', 'весь день', 'игровая зона', 'VIP-залы', 'Намазхана', 'Wi-Fi', 'парковка', 'предоплат',
+        for fact in ('КМДБ', 'весь день', 'детская зона', 'VIP-залы', 'Намазхана', 'Wi-Fi', 'парковка', 'предоплат',
                      'https://delcappuccino.kz/', 'ҚАЗ'):
             self.assertIn(fact, text)
 
     def test_kids_area_only_where_owner_says(self):
         # владелец 23.10: детская зона только в ЖК Вавилон, в ЖК Комфорт Сити её нет — карточка «Формат», FAQ, llms.txt
-        places = [b for n, b in FACTS['points'].items() if 'kids' in b.get('tags', [])]
         self.assertEqual([n for n, b in FACTS['points'].items() if 'kids' in b.get('tags', [])], ['01'])
         card = re.search(r'<h3>Детская зона</h3><p>Игровая зона в ([^<]+?)\.</p>', self.html)
         self.assertIsNotNone(card, 'карточка «Детская зона» в «Формате»')
@@ -252,9 +251,12 @@ class TestFaq(unittest.TestCase):
         llms = read('llms.txt')
         kids_line = next(x for l in llms.split('\n') for x in l.split('. ') if x.startswith('Детская зона'))
         self.assertNotIn('Комфорт Сити', kids_line)
-        for text in (visible_text(self.html), llms, read('tools', 'faq.json')):
-            self.assertNotRegex(text, r'(?i)детские комнаты|игровые пространства', 'старая формулировка про две детские')
-        self.assertTrue(places)
+        self.assertIn('Для семейных визитов в ЖК Вавилон есть детская зона', self.html, '«О нас» — с местом детской зоны')
+        old = r"(?i)детские комнаты|игровые пространства|балалар бөлмелері|ойын кеңістіктері|kids' rooms|play areas"
+        for path in ('index.html', 'llms.txt', 'tools/faq.json', 'tools/pages_i18n.json', 'menu/kk_review.md',
+                     'kk/index.html', 'en/index.html'):
+            text = read(path)
+            self.assertNotRegex(visible_text(text) if path.endswith('.html') else text, old, '%s: старая формулировка про две детские' % path)
 
     def test_visible_link_to_menu_page(self):
         head = re.search(r'<div class="faq-head">(.*?)</div>\s*<div class="faq-list">', self.body, re.S).group(1)
@@ -305,6 +307,7 @@ class TestBranchFacts(unittest.TestCase):
         cls.ld = {n['@id'].rsplit('-', 1)[1]: n for n in data['@graph'] if '#branch-' in n.get('@id', '')}
 
     def test_amenity_line_on_cards(self):
+        self.assertEqual(len(self.cards), len(self.nums))
         for num, card in zip(self.nums, self.cards):
             pf = FACTS['points'].get(num, {})
             labels = [FACTS['labels'][t]['ru'] for t in pf.get('tags', [])]
@@ -328,6 +331,10 @@ class TestBranchFacts(unittest.TestCase):
         # про животных у ЖК Комфорт Сити не пишем (просьба владельца)
         self.assertNotIn('pets', FACTS['points']['02'])
         self.assertNotIn('Серкебаева', self.shown['Можно ли прийти с животными?'])
+        # название ЖК у bakery не меняем, пока главный уточняет; про санузел не пишем (владелец 23.10)
+        self.assertIn("{n:'05 · Bakery to go · ЖК City'", self.html)
+        for path in ('index.html', 'llms.txt', 'kk/index.html', 'en/index.html'):
+            self.assertNotRegex(read(path), r'(?i)Rams City|санузел|туалет|toilet|restroom|дәретхана', path)
         # банкеты до 40 человек — прежний ответ не меняли
         self.assertIn('до 40 человек', self.shown['Можно ли провести у вас банкет?'])
 

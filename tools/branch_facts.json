@@ -17,7 +17,7 @@
     "parking_zhk": {"ru": "парковка в ЖК", "kk": "ТК ішінде автотұрақ", "en": "parking in the complex", "schema": true},
     "delivery800": {"ru": "доставка до 800 м", "kk": "800 м-ге дейін жеткізу", "en": "delivery within 800 m", "schema": false},
     "tables3": {"ru": "3 столика на двоих", "kk": "екі адамдық 3 үстел", "en": "3 tables for two", "schema": false},
-    "pets_takeaway": {"ru": "навынос — с животными", "kk": "алып кетуге — жануармен", "en": "pets welcome for takeaway", "schema": false}
+    "pets_takeaway": {"ru": "навынос — с животными", "kk": "алып кетуге — жануармен", "en": "pets OK for takeaway", "schema": false}
   },
   "points": {
     "01": {
@@ -40,8 +40,8 @@
     "03": {
       "tags": ["vip_room", "hall60", "cowork", "namaz", "terrace"],
       "about": {"ru": "Пространство для работы, встреч и отдыха. Рядом — спорткомплекс «Балуан Шолак» и Центральный стадион.", "kk": "Жұмыс, кездесу және демалыс кеңістігі. Жанында — «Балуан Шолақ» спорт кешені мен Орталық стадион.", "en": "A space for work, meetings and downtime, next to the Baluan Sholak sports complex and the Central Stadium."},
-      "halls": {"ru": "VIP-зал до 20 человек для конференций, семинаров, банкетов и деловых встреч, с трансляцией видео на телевизорах; общий зал до 60 человек; кофе-брейки на 20–70 человек", "kk": "конференция, семинар, банкет және іскерлік кездесулерге арналған 20 адамға дейінгі VIP-зал, теледидарларда бейне көрсетуге болады; 60 адамға дейінгі ортақ зал; 20–70 адамға кофе-брейк", "en": "a VIP room for up to 20 people for conferences, seminars, banquets and business meetings, with video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people"},
-      "business": {"ru": "зона для фрилансеров, деловое питание — бизнес-ланчи, деловые обеды и ужины, VIP-зал до 20 человек с трансляцией видео на телевизорах", "kk": "фрилансерлерге арналған аймақ, іскерлік тамақтану — бизнес-ланчтар, іскерлік түскі және кешкі ас, теледидарларда бейне көрсетілетін 20 адамға дейінгі VIP-зал", "en": "a space for freelancers, business dining — business lunches, working lunches and dinners — and a VIP room for up to 20 with video on the TV screens"}
+      "halls": {"ru": "VIP-зал до 20 человек для конференций, семинаров, банкетов и деловых встреч; трансляция видео на телевизорах; общий зал до 60 человек; кофе-брейки на 20–70 человек", "kk": "конференция, семинар, банкет және іскерлік кездесулерге арналған 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету; 60 адамға дейінгі ортақ зал; 20–70 адамға кофе-брейк", "en": "a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people"},
+      "business": {"ru": "зона для фрилансеров; деловое питание — бизнес-ланчи, деловые обеды и ужины; VIP-зал до 20 человек; трансляция видео на телевизорах", "kk": "фрилансерлерге арналған аймақ; іскерлік тамақтану — бизнес-ланчтар, іскерлік түскі және кешкі ас; 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету", "en": "a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens"}
     },
     "04": {
       "tags": ["delivery800", "parking"],

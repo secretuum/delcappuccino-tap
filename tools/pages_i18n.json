@@ -1,5 +1,5 @@
 {
-  "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной; подстановки: {часы} {адреса} {точек} {детские} {кофеен} {точек_n} {часы_togo} — из BRANCHES и текста главной. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
+  "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной и из tools/branch_facts.json; подстановки: {часы} {адреса} {точек} {кофеен} {точек_n} {часы_togo} — из BRANCHES, {детские} {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы} {работа} {животные}) — из tools/branch_facts.json. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
   "ru": {
     "menu_page": {
       "title": "Меню и цены — Del Cappuccino, кофейни 24/7 в Алматы",
@@ -51,7 +51,7 @@
       "badge_cafes": "кофехана",
       "badge_days": "демалыссыз",
       "about_h2": "Кофе, тағам<br>және <span>қамқорлық</span>.",
-      "about_p": "Жол-жөнекей кіріп, кездесу өткізіп, кеш таңғы ас ішіп немесе сүйікті тағамдарды үйге тапсырыс беріп алыңыз. Отбасымен келгендерге — балалар аймағы, тыныш кездесулерге — VIP-залдар, ал намаз оқуға — намазхана бар.",
+      "about_p": "Жол-жөнекей кіріп, кездесу өткізіп, кеш таңғы ас ішіп немесе сүйікті тағамдарды үйге тапсырыс беріп алыңыз. Отбасымен келгендерге — балалар аймағы ({детские}), тыныш кездесулерге — VIP-залдар, ал намаз оқуға — намазхана бар.",
       "stat_cafes": "{кофеен} кофехана",
       "stat_points": "филиал",
       "stat_breakfast": "таңғы ас",
@@ -90,7 +90,7 @@
       {"q": "Жеткізу бар ма?", "a": "Онлайн тапсырысты сайттағы «Қосымшада тапсырыс беру» арқылы беруге болады. Филиалдар бойынша жеткізу:{доставка}"},
       {"q": "Автотұрақ бар ма?", "a": "{парковка}"},
       {"q": "Wi-Fi бар ма?", "a": "{wifi}"},
-      {"q": "Балалар аймағы бар ма?", "a": "Иә, ойын аймағы бар жер: {детские}."},
+      {"q": "Балалар аймағы бар ма?", "a": "Иә, балалар аймағы бар жер: {детские}."},
       {"q": "Қандай VIP-залдар мен банкет залдары бар?", "a": "{залы}"},
       {"q": "Сіздерде банкет өткізуге бола ма?", "a": "Иә, 40 адамға дейінгі топқа іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы."},
       {"q": "Қай жерде жұмыс істеуге немесе іскерлік кездесу өткізуге болады?", "a": "{работа}"},
@@ -149,7 +149,7 @@
       "badge_cafes": "cafés",
       "badge_days": "every day",
       "about_h2": "Coffee, food<br>and <span>care</span>.",
-      "about_p": "Drop in on your way, hold a meeting, have a late breakfast or order your favourite dishes for delivery. There's a kids' area for family visits, VIP rooms for quiet meetings and a namazkhana (prayer room).",
+      "about_p": "Drop in on your way, hold a meeting, have a late breakfast or order your favourite dishes for delivery. There's a kids' area at {детские} for family visits, VIP rooms for quiet meetings and a namazkhana (prayer room).",
       "stat_cafes": "{кофеен} cafés",
       "stat_points": "locations",
       "stat_breakfast": "breakfast",
@@ -188,7 +188,7 @@
       {"q": "Do you deliver?", "a": "You can order online with “Order in the app” on the website. Delivery by location:{доставка}"},
       {"q": "Is there parking?", "a": "{парковка}"},
       {"q": "Is there Wi-Fi?", "a": "{wifi}"},
-      {"q": "Do you have a kids' area?", "a": "Yes, there's a play area at {детские}."},
+      {"q": "Do you have a kids' area?", "a": "Yes, there's a kids' area at {детские}."},
       {"q": "What VIP rooms and banquet halls do you have?", "a": "{залы}"},
       {"q": "Can I hold a banquet at your café?", "a": "Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."},
       {"q": "Where can I work or hold a business meeting?", "a": "{работа}"},

@@ -50,6 +50,7 @@ FAQ_RE = re.compile(re.escape(FAQ_MARK) + r'\n.*?<!-- /faq -->\n', re.S)
 FAQ_BEFORE = '<section class="contact shell" id="contacts">'
 I18N_JSON = os.path.join(ROOT, 'tools', 'pages_i18n.json')
 FACTS_JSON = os.path.join(ROOT, 'tools', 'branch_facts.json')     # факты по точкам от владельца (23.10.2026)
+FACT_TOPICS = ('tags', 'about', 'delivery', 'parking', 'wifi', 'booking', 'halls', 'business', 'pets')
 KK_REVIEW = os.path.join(ROOT, 'menu', 'kk_review.md')
 LANGS = ('ru', 'kk', 'en')
 HOME = {'ru': SITE, 'kk': SITE + 'kk/', 'en': SITE + 'en/'}
@@ -200,6 +201,15 @@ def point_facts(html):
         unknown = [t for t in pf.get('tags', []) if t not in data['labels']]
         if unknown:
             sys.exit('seo_jsonld: у точки %s в branch_facts.json нет подписи для меток %s (labels)' % (num, ', '.join(unknown)))
+        bad = [k for k in pf if k not in FACT_TOPICS]          # опечатка в теме («parkng») иначе молча выкинет факт с сайта
+        if bad:
+            sys.exit('seo_jsonld: у точки %s в branch_facts.json неизвестные поля %s — есть: %s' % (num, ', '.join(bad), ', '.join(FACT_TOPICS)))
+        for k, v in pf.items():
+            if isinstance(v, dict) and set(v) != set(LANGS):
+                sys.exit('seo_jsonld: точка %s, %s — нужны ru, kk и en (есть: %s)' % (num, k, ', '.join(sorted(v))))
+    for key, lab in data['labels'].items():
+        if set(lab) != set(LANGS) | {'schema'}:
+            sys.exit('seo_jsonld: метка %s в branch_facts.json — нужны ru, kk, en и schema' % key)
     return {n: data['points'].get(n, {}) for n in nums}
 
 
