@@ -180,7 +180,7 @@ def plural(n, one, few, many):
 
 
 def hours_text(bs):
-    """(«4 кофейни работают круглосуточно, 24/7: …», [«Bakery to go · ЖК City (Жандосова, 94/12) — ежедневно 07:00–22:00»])"""
+    """(«4 кофейни работают круглосуточно, 24/7: …», [«Bakery to go · ЖК Rams City (Жандосова, 94/12) — ежедневно 07:00–22:00»])"""
     cafes = [b for b in bs if b['hours'] == '24/7']
     first = '%d %s %s круглосуточно, 24/7: %s' % (len(cafes), plural(len(cafes), 'кофейня', 'кофейни', 'кофеен'),
                                                   'работает' if len(cafes) == 1 else 'работают', ', '.join(place(b) for b in cafes))

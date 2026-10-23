@@ -124,6 +124,7 @@
 | `menu_page.home` | текстовое меню /kk/menyu | Басты бет |
 | `menu_page.faq` | текстовое меню /kk/menyu | Жиі қойылатын сұрақтар |
 | `menu_page.order` | текстовое меню /kk/menyu | Қосымшада тапсырыс беру |
+| `branch_facts.labels.takeaway` | метка удобства на карточке точки /kk/ | алып кету |
 | `branch_facts.labels.kids` | метка удобства на карточке точки /kk/ | балалар аймағы |
 | `branch_facts.labels.vip_rooms` | метка удобства на карточке точки /kk/ | VIP-залдар |
 | `branch_facts.labels.vip_room` | метка удобства на карточке точки /kk/ | VIP-зал |
@@ -140,7 +141,7 @@
 | `branch_facts.labels.parking_zhk` | метка удобства на карточке точки /kk/ | ТК ішінде автотұрақ |
 | `branch_facts.labels.delivery800` | метка удобства на карточке точки /kk/ | 800 м-ге дейін жеткізу |
 | `branch_facts.labels.tables3` | метка удобства на карточке точки /kk/ | екі адамдық 3 үстел |
-| `branch_facts.labels.pets_takeaway` | метка удобства на карточке точки /kk/ | алып кетуге — жануармен |
+| `branch_facts.labels.pets_takeaway` | метка удобства на карточке точки /kk/ | жануармен — алып кетуге |
 | `branch_facts.points.01.delivery` | ответ «по точкам» в частых вопросах /kk/ | барлық жеткізу агрегаторлары арқылы |
 | `branch_facts.points.01.parking` | ответ «по точкам» в частых вопросах /kk/ | автотұрақ бар |
 | `branch_facts.points.01.wifi` | ответ «по точкам» в частых вопросах /kk/ | Wi-Fi бар |

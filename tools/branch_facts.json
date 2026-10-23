@@ -1,6 +1,7 @@
 {
   "_": "Факты по точкам от владельца (23.10.2026) — только то, что он прислал, ничего не додумывать. Ключ точки — номер из BRANCHES. tags — короткая строка удобств на карточке точки и amenityFeature в разметке (schema: true); темы (delivery, parking, wifi, booking, halls, business, pets) — ответы «по точкам» в частых вопросах. Детская зона — только у 01 (у 02 её нет). Про животных у 02 не писать (просьба владельца). Собирает tools/seo_jsonld.py; казахские строки уходят в menu/kk_review.md.",
   "labels": {
+    "takeaway": {"ru": "навынос", "kk": "алып кету", "en": "takeaway", "schema": false},
     "kids": {"ru": "детская зона", "kk": "балалар аймағы", "en": "kids' area", "schema": true},
     "vip_rooms": {"ru": "VIP-залы", "kk": "VIP-залдар", "en": "VIP rooms", "schema": true},
     "vip_room": {"ru": "VIP-зал", "kk": "VIP-зал", "en": "VIP room", "schema": true},
@@ -17,7 +18,7 @@
     "parking_zhk": {"ru": "парковка в ЖК", "kk": "ТК ішінде автотұрақ", "en": "parking in the complex", "schema": true},
     "delivery800": {"ru": "доставка до 800 м", "kk": "800 м-ге дейін жеткізу", "en": "delivery within 800 m", "schema": false},
     "tables3": {"ru": "3 столика на двоих", "kk": "екі адамдық 3 үстел", "en": "3 tables for two", "schema": false},
-    "pets_takeaway": {"ru": "навынос — с животными", "kk": "алып кетуге — жануармен", "en": "pets OK for takeaway", "schema": false}
+    "pets_takeaway": {"ru": "с животными навынос", "kk": "жануармен — алып кетуге", "en": "pets OK for takeaway", "schema": false}
   },
   "points": {
     "01": {
@@ -50,7 +51,7 @@
       "booking": {"ru": "столики — без предоплаты, если нет предварительного заказа по меню", "kk": "мәзір бойынша алдын ала тапсырыс болмаса, үстел алдын ала төлемсіз брондалады", "en": "tables need no prepayment unless you pre-order from the menu"}
     },
     "05": {
-      "tags": ["tables3", "wifi", "parking_zhk", "pets_takeaway"],
+      "tags": ["takeaway", "tables3", "wifi", "parking_zhk", "pets_takeaway"],
       "delivery": {"ru": "доставка в пределах ЖК", "kk": "ТК аумағында жеткізу", "en": "delivery within the residential complex"},
       "parking": {"ru": "парковка внутри ЖК", "kk": "ТК ішінде автотұрақ", "en": "parking inside the residential complex"},
       "wifi": {"ru": "есть Wi-Fi", "kk": "Wi-Fi бар", "en": "Wi-Fi available"},
