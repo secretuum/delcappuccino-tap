@@ -1,4 +1,4 @@
-"""Аналитика (план владельца 23.10.2026): единая track() во всех страницах — каждое событие в Google Analytics, 12 целей
+"""Аналитика (план владельца 23.10.2026): единая track() во всех страницах — каждое событие в Google Analytics, 13 целей
 ещё и в Яндекс Метрику (ym reachGoal). Номер счётчика — константа YM_ID в tools/seo_jsonld.py; пока его нет, кода
 Метрики на страницах нет. Параметры событий обезличены: на /ugolok — номера точек 01–05, без имён ИП.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
@@ -9,14 +9,14 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
 
 PAGES = ['index.html', 'ugolok/index.html', 'menyu/index.html', 'kk/index.html', 'en/index.html',
-         'kk/menyu/index.html', 'en/menu/index.html']
+         'kk/menyu/index.html', 'en/menu/index.html', '404.html']
 # сопоставление из плана владельца (лист «Статистика сайтов»), 12 целей
 # одна цель на одно действие (главный, 23.10): кнопки «Меню» и открытие окна выбора филиала целью не считаются
 PLAN = {'order_app': ['cta_order'], 'book_open': ['cta_book'], 'whatsapp': ['loc_wa', 'modal_wa'],
         'call': ['loc_call', 'modal_call'], 'route': ['loc_route', 'modal_route'],
         'menu_open': ['menu_open'], 'dish_card': ['menu_card'],
         'grill_promo': ['cta_grill'], 'instagram': ['cta_instagram'], 'lang_switch': ['lang_switch', 'menu_lang'],
-        'faq_open': ['faq_open'], 'ugolok': ['cta_ugolok', 'ugolok_talon']}
+        'faq_open': ['faq_open'], 'ugolok': ['cta_ugolok', 'ugolok_talon'], 'not_found': ['page_not_found']}
 
 
 def read(p):
@@ -83,8 +83,8 @@ class TestAnalytics(unittest.TestCase):
         cls.pages = {p: read(p) for p in PAGES}
 
     def test_one_block_in_head_everywhere(self):
-        want = seo.analytics_head(seo.YM_ID)
         for p, html in self.pages.items():
+            want = seo.analytics_head(seo.YM_ID, on_load=seo.NOT_FOUND_JS if p == '404.html' else None)
             head = html.split('</head>')[0]
             self.assertEqual(head.count(seo.AN_MARK), 1, p)
             self.assertIn(want, head, '%s: блок аналитики разошёлся с генератором — python3 tools/seo_jsonld.py' % p)
@@ -98,7 +98,7 @@ class TestAnalytics(unittest.TestCase):
             self.assertNotRegex(html, r'\bym\(|mc\.yandex|YM_ID|YM_GOALS|reachGoal', '%s: без номера Метрики её кода нет' % p)
 
     def test_goals_as_planned(self):
-        self.assertEqual(sorted(set(seo.YM_GOALS.values())), sorted(PLAN), '12 целей')
+        self.assertEqual(sorted(set(seo.YM_GOALS.values())), sorted(PLAN), '13 целей')
         self.assertEqual(seo.YM_GOALS, {ev: goal for goal, evs in PLAN.items() for ev in evs})
 
     def test_every_goal_event_fires_somewhere(self):
@@ -136,6 +136,29 @@ class TestAnalytics(unittest.TestCase):
         self.assertIn(['gtag', 'event', 'cta_locations', {}], calls, 'в GA — все события')
         self.assertEqual([c for c in calls if c[:3] == ['ym', 12345678, 'reachGoal']],
                          [['ym', 12345678, 'reachGoal', 'whatsapp', {'branch': '01'}]], 'в Метрику — только цели')
+
+    def test_not_found_page(self):
+        # 404: при загрузке — одно событие page_not_found {path} в GA и (с номером) одна цель not_found
+        page = self.pages['404.html']
+        self.assertEqual(page.count(seo.NOT_FOUND_JS), 1)
+        node = find_node()
+        if not node:
+            self.skipTest('нет node — событие 404 не прогнать')
+        js = re.search(r'<script>(.*?)</script>', seo.analytics_head(12345678, on_load=seo.NOT_FOUND_JS), re.S).group(1)
+        harness = ("const vm=require('vm');const ctx={document:{readyState:'loading',createElement(){return {}},head:{appendChild(){}}},"
+                   "location:{pathname:'/no/such',search:'?utm=x'},addEventListener(){}};ctx.window=ctx;vm.createContext(ctx);"
+                   "vm.runInContext(%s,ctx);"
+                   "console.log(JSON.stringify({ga:ctx.dataLayer.map(a=>Array.from(a)).filter(a=>a[0]==='event'),"
+                   "ym:(ctx.ym.a||[]).map(a=>Array.from(a)).filter(a=>a[1]==='reachGoal')}))") % json.dumps(js)
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, 't.js')
+            with open(f, 'w', encoding='utf-8') as fh:
+                fh.write(harness)
+            out = subprocess.run([node, f], capture_output=True, text=True, timeout=30)
+        self.assertEqual(out.returncode, 0, out.stderr[-1000:])
+        got = json.loads(out.stdout)
+        self.assertEqual(got['ga'], [['event', 'page_not_found', {'path': '/no/such'}]], 'путь без строки запроса')
+        self.assertEqual(got['ym'], [[12345678, 'reachGoal', 'not_found', {'path': '/no/such'}]])
 
     def test_ugolok_without_track_links(self):
         # /ugolok: при включённой Метрике trackLinks:false — адреса PDF-талонов с именами ИП не уходят в Метрику
