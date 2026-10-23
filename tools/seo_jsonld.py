@@ -18,8 +18,9 @@
 - Карточки точек на главной (#loc-grid): та же разметка, что раньше рисовал renderLocations, но в HTML — без JS их видят
   поисковики и ИИ; кнопки (звонок, маршрут, меню, WhatsApp) работают через onclick, перерисовки нет.
 - «Частые вопросы» (#faq): <details> без JS, тот же текст, что в FAQPage. В ответах можно {часы}, {адреса}, {точек} —
-  подставляются из BRANCHES, {детские} — из карточки «Детские комнаты» раздела «Формат», чтобы ответ не разошёлся
-  с сайтом. Допустимый HTML в ответах: <a href>, <ul>, <li>.
+  подставляются из BRANCHES; {детские}, {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы}
+  {работа} {животные}) — из tools/branch_facts.json (факты владельца 23.10.2026); карточка «Детская зона» на главной
+  сверяется с ними. Допустимый HTML в ответах: <a href>, <ul>, <li>.
 - /menyu (menyu/index.html): всё меню текстом — кофейни (вкладки MENU_TABS) и Bakery to go (вкладки режима togo),
   разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
@@ -48,6 +49,7 @@ FAQ_MARK = '<!-- Частые вопросы: данные tools/faq.json, со�
 FAQ_RE = re.compile(re.escape(FAQ_MARK) + r'\n.*?<!-- /faq -->\n', re.S)
 FAQ_BEFORE = '<section class="contact shell" id="contacts">'
 I18N_JSON = os.path.join(ROOT, 'tools', 'pages_i18n.json')
+FACTS_JSON = os.path.join(ROOT, 'tools', 'branch_facts.json')     # факты по точкам от владельца (23.10.2026)
 KK_REVIEW = os.path.join(ROOT, 'menu', 'kk_review.md')
 LANGS = ('ru', 'kk', 'en')
 HOME = {'ru': SITE, 'kk': SITE + 'kk/', 'en': SITE + 'en/'}
@@ -184,12 +186,56 @@ def hours_text(bs):
     return first, ['%s — %s' % (place(b), b['hours']) for b in bs if b['hours'] != '24/7']
 
 
+def facts():
+    with open(FACTS_JSON, encoding='utf-8') as f:
+        return json.load(f)
+
+
+def point_facts(html):
+    """{номер точки: факты} из tools/branch_facts.json — с проверкой, что номера есть в BRANCHES, а метки — в labels"""
+    data, nums = facts(), [re.match(r'\d+', b['n']).group(0) for b in branches(html)]
+    for num, pf in data['points'].items():
+        if num not in nums:
+            sys.exit('seo_jsonld: в branch_facts.json точка %s, а в BRANCHES такой нет' % num)
+        unknown = [t for t in pf.get('tags', []) if t not in data['labels']]
+        if unknown:
+            sys.exit('seo_jsonld: у точки %s в branch_facts.json нет подписи для меток %s (labels)' % (num, ', '.join(unknown)))
+    return {n: data['points'].get(n, {}) for n in nums}
+
+
+def bnum(b):
+    return re.match(r'\d+', b['n']).group(0)
+
+
+def tag_labels(html, b, lang):
+    """короткая строка удобств точки: «детская зона · VIP-залы · Wi-Fi · парковка»"""
+    labels = facts()['labels']
+    return [labels[t][lang] for t in point_facts(html)[bnum(b)].get('tags', [])]
+
+
+def topic_list(html, c, topic):
+    """ответ «по точкам»: <ul><li>ЖК Вавилон (Розыбакиева, 247/8): через все агрегаторы доставки</li>…</ul>"""
+    e = lambda s: H.escape(s, quote=False)
+    pf = point_facts(html)
+    rows = ['<li>%s: %s</li>' % (e(place_l(c, b)), e(pf[bnum(b)][topic][c['lang']])) for b in branches(html) if topic in pf[bnum(b)]]
+    return '<ul>' + ''.join(rows) + '</ul>'
+
+
+def tag_places(html, tag):
+    """точки с меткой (детская зона, намазхана) — короткие названия из BRANCHES"""
+    pf = point_facts(html)
+    return [b for b in branches(html) if tag in pf[bnum(b)].get('tags', [])]
+
+
 def kids_places(html):
-    """где детские комнаты — из карточки «Детские комнаты» раздела «Формат»: «Игровые пространства в ЖК Вавилон и …»"""
-    m = re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', html)
-    if not m:
-        sys.exit('seo_jsonld: не нашёл на главной «Детские комнаты … Игровые пространства в …» — допишите разбор')
-    return re.split(r',\s*|\s+и\s+', m.group(1))
+    """где детская зона — из tools/branch_facts.json (метка kids); карточка «Детская зона» в «Формате» главной должна
+    говорить то же самое, иначе выход с ошибкой (владелец 23.10: детская только в ЖК Вавилон, в Комфорт Сити её нет)"""
+    places = [short(b) for b in tag_places(html, 'kids')]
+    m = re.search(r'<h3>Детская зона</h3><p>Игровая зона в ([^<]+?)\.</p>', html)
+    if not m or re.split(r',\s*|\s+и\s+', m.group(1)) != places:
+        sys.exit('seo_jsonld: карточка «Детская зона» в «Формате» главной (%s) расходится с tools/branch_facts.json (%s)'
+                 % (m.group(1) if m else 'не найдена', ', '.join(places)))
+    return places
 
 
 def and_join(xs, conj='и'):
@@ -203,6 +249,13 @@ def faq_vars(html, lang='ru'):
     cafes, rest = [b for b in bs if b['hours'] == '24/7'], [b for b in bs if b['hours'] != '24/7']
     togo_h = [m.group(0) for m in (re.search(r'\d\d:\d\d\s*[–-]\s*\d\d:\d\d', b['hours']) for b in rest) if m]
     v = {'кофеен': str(len(cafes)), 'точек_n': str(len(bs)), 'часы_togo': togo_h[0] if togo_h else ''}
+    c0 = lang_ctx(html, lang)
+    # ответы «по точкам» из tools/branch_facts.json: {доставка} {парковка} {wifi} {бронь} {залы} {работа} {животные} {намазхана}
+    for key, topic in (('доставка', 'delivery'), ('парковка', 'parking'), ('wifi', 'wifi'), ('бронь', 'booking'),
+                       ('залы', 'halls'), ('работа', 'business'), ('животные', 'pets')):
+        v[key] = topic_list(html, c0, topic)
+    v['намазхана'] = e(and_join([place_l(c0, b) for b in tag_places(html, 'namaz')],
+                                'и' if lang == 'ru' else c0['d']['phrases']['and']))
     if lang == 'ru':
         first, rest_t = hours_text(bs)
         v.update({'часы': ' '.join(e(x) + '.' for x in [first] + rest_t),
@@ -382,6 +435,14 @@ def graph(html):
                 'parentOrganization': {'@id': SITE + '#org'}}
         if b['maps']:
             node['sameAs'] = b['maps']
+        pf, labels = point_facts(html)[num], facts()['labels']
+        amen = [labels[t]['ru'] for t in pf.get('tags', []) if labels[t]['schema']]
+        if amen:
+            node['amenityFeature'] = [{'@type': 'LocationFeatureSpecification', 'name': x[:1].upper() + x[1:], 'value': True} for x in amen]
+        if 'about' in pf:
+            node['description'] = pf['about']['ru']
+        if 'booking' in pf:
+            node['acceptsReservations'] = True
         nodes.append(node)
     nodes.append({'@type': 'Menu', '@id': SITE + '#menu', 'url': SITE + '#menu', 'name': 'Меню кофеен Del Cappuccino',
                   'inLanguage': 'ru',
@@ -558,7 +619,7 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: шапка, hero, «О нас», «Формат», точки, вопросы, контакты, подвал
 CSS_KEEP = re.compile(r'^(?::root|\*|html|body|a|h1|header|nav|footer|\.(?:shell|hbar|hbar-m|logo-d|logo-m|btn|tag|lead|actions|'
                       r'halal-badge|hero|hero-photo|hero-badge|story|story-grid|story-photo|stats|mini-stats|features|f-head|f-grid|'
-                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-links|faq|faq-head|faq-list|faq-a|contact|contact-actions|'
+                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|lang-sw|hide-mobile))(?![\w-])')
 
 
@@ -670,9 +731,9 @@ def lang_page(html, lang):
             links.append('<a href="/%s-%s">%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, e(P['card_menu'])))
         links.append('<a class="wa" href="%s" target="_blank" rel="noopener">WhatsApp</a>' % H.escape(wa, quote=False).replace('"', '&quot;'))
         return ('    <div class="loc-card">\n      <small>%s · %s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
-                '      <div class="loc-links">\n        %s\n      </div>\n    </div>'
+                '%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
                 % (num, e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
-                   '\n        '.join(links)))
+                   card_extra(html, b, lang), '\n        '.join(links)))
 
     stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b>all day</b><span>%s</span></div>'
              % (P['stat_cafes'], len(bs), P['stat_points'], P['stat_breakfast']))
@@ -851,12 +912,22 @@ def kk_review(html):
         else:
             rows.append('| `%s` | %s | %s |' % ('.'.join(path), where.get(path[0], path[0]), str(x).replace('|', '\\|')))
     walk(i18n()['kk'], [])
+    fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
+    for key, lab in facts()['labels'].items():
+        rows.append('| `branch_facts.labels.%s` | %s | %s |' % (key, fw['labels'], lab['kk']))
+    for num, pf in facts()['points'].items():
+        for topic, val in pf.items():
+            if isinstance(val, dict):
+                rows.append('| `branch_facts.points.%s.%s` | %s | %s |' % (num, topic, fw.get(topic, 'ответ «по точкам» в частых вопросах /kk/'), val['kk']))
     return ('# Казахские строки на вычитку носителем\n\n'
-            'Собрано `tools/seo_jsonld.py` из `tools/pages_i18n.json` (раздел `kk`). Правки вносить туда и пересобрать:\n'
+            'Собрано `tools/seo_jsonld.py` из `tools/pages_i18n.json` (раздел `kk`) и `tools/branch_facts.json` (поля `kk`).\n'
+            'Правки вносить туда и пересобрать:\n'
             '`python3 tools/seo_jsonld.py && python3 tools/sw_version.py`.\n\n'
             '- `{…}` — подстановки из данных сайта, их не переводить: `{часы}` — часы точек, `{адреса}` — список адресов,\n'
             '  `{точек}` / `{точек_n}` — число точек, `{кофеен}` — число кофеен 24/7, `{часы_togo}` — часы bakery to go,\n'
-            '  `{детские}` — где детские комнаты, `{n}` / `{list}` / `{old}` — число, список, старая цена.\n'
+            '  `{детские}` — где детская зона, `{намазхана}` — где намазхана, `{доставка}` `{парковка}` `{wifi}` `{бронь}`\n'
+            '  `{залы}` `{работа}` `{животные}` — списки «по точкам» из branch_facts.json, `{n}` / `{list}` / `{old}` — число,\n'
+            '  список, старая цена.\n'
             '- `<br>`, `<span>`, `<a href>` — разметка, её оставить.\n'
             '- Названия блюд, разделов меню и адреса точек берутся из прежнего словаря меню (`MENU_TR.kk` в `index.html`), '
             'в этот список не входят.\n\n'
@@ -882,12 +953,15 @@ def llms(html):
     hours_en = lambda h: 'open 24/7' if h == '24/7' else h.replace('ежедневно', 'daily')
     cafes = [b for b in bs if b['hours'] == '24/7']
     rest = [b for b in bs if b['hours'] != '24/7']
-    ru_points = '\n'.join('- %s — %s, Алматы — %s' % (short(b), b['addr'], hours_ru(b['hours'])) for b in bs)
+    amen = lambda b, l: ''.join('; ' + ', '.join(x) for x in [tag_labels(html, b, l)] if x)
+    namaz = [short(b) for b in tag_places(html, 'namaz')]
+    ru_points = '\n'.join('- %s — %s, Алматы — %s%s' % (short(b), b['addr'], hours_ru(b['hours']), amen(b, 'ru')) for b in bs)
     kids = kids_places(html)
     missing = [x for x in [y for b in bs for y in (short(b), b['addr'])] + kids if x not in en]
+    missing += [short(b) for b in tag_places(html, 'namaz') if short(b) not in en]
     if missing:
         sys.exit('seo_jsonld: нет английского перевода в MENU_TR.en для %s — допишите словарь' % ', '.join(missing))
-    en_points = '\n'.join('- %s — %s, Almaty — %s' % (en[short(b)], en[b['addr']], hours_en(b['hours']))
+    en_points = '\n'.join('- %s — %s, Almaty — %s%s' % (en[short(b)], en[b['addr']], hours_en(b['hours']), amen(b, 'en'))
                           for b in bs)
     links_ru = '\n'.join([
         '- [Сайт](%s): адреса точек, бронь столика в WhatsApp или по телефону, меню с фото и составом блюд' % SITE,
@@ -908,7 +982,7 @@ def llms(html):
 
 > Кофейни Del Cappuccino в Алматы: %(cafes)s круглосуточно (24/7)%(rest_ru)s. Завтраки весь день, продукция сертифицирована КМДБ Halal (halaldamu.kz).
 
-Детские комнаты (игровые пространства) — в %(kids_ru)s. Для спокойных встреч — VIP-залы, для молитвы — намазхана. Банкеты — для компании до 40 человек. Меню на сайте — на казахском, русском и английском.
+Детская зона — в %(kids_ru)s. Для спокойных встреч — VIP-залы и кабинки, намазхана — в %(namaz_ru)s. Банкеты — для компании до 40 человек. Меню на сайте — на казахском, русском и английском.
 
 ## Точки
 
@@ -922,7 +996,7 @@ def llms(html):
 
 > Del Cappuccino cafés in Almaty: %(cafes_en)d open 24/7%(rest_en)s. Breakfast all day; products certified halal by KMDB (halaldamu.kz).
 
-Kids' rooms (play areas) at %(kids_en)s. VIP rooms for quiet meetings, a prayer room (namazkhana). Banquets for groups of up to 40 guests. The menu on the website is available in Kazakh, Russian and English.
+Kids' area at %(kids_en)s. VIP rooms and booths for quiet meetings; a prayer room (namazkhana) at %(namaz_en)s. Banquets for groups of up to 40 guests. The menu on the website is available in Kazakh, Russian and English.
 
 ### Locations
 
@@ -934,7 +1008,8 @@ Kids' rooms (play areas) at %(kids_en)s. VIP rooms for quiet meetings, a prayer 
 ''' % {'cafes': '%d %s' % (len(cafes), plural(len(cafes), 'кофейня', 'кофейни', 'кофеен')), 'rest_ru': rest_ru,
        'ru_points': ru_points, 'links_ru': links_ru, 'cafes_en': len(cafes), 'rest_en': rest_en,
        'en_points': en_points, 'links_en': links_en,
-       'kids_ru': and_join(kids), 'kids_en': and_join([en[k] for k in kids], 'and')}
+       'kids_ru': and_join(kids), 'kids_en': and_join([en[k] for k in kids], 'and'),
+       'namaz_ru': and_join(namaz), 'namaz_en': and_join([en[k] for k in namaz], 'and')}
 
 
 # ── запись ──
@@ -947,6 +1022,19 @@ def with_faq(html):
     if FAQ_BEFORE not in html:
         sys.exit('seo_jsonld: нет якоря %s — некуда вставить «Частые вопросы»' % FAQ_BEFORE)
     return html.replace(FAQ_BEFORE, new + '\n' + FAQ_BEFORE, 1)
+
+
+def card_extra(html, b, lang):
+    """строки карточки точки из tools/branch_facts.json: описание (у Promenade) и удобства через «·»"""
+    e = lambda s: H.escape(s, quote=False)
+    pf = point_facts(html)[bnum(b)]
+    out = ''
+    if 'about' in pf:
+        out += '      <p class="loc-about">%s</p>\n' % e(pf['about'][lang])
+    tags = tag_labels(html, b, lang)
+    if tags:
+        out += '      <p class="loc-amen">%s</p>\n' % ' · '.join('<span>%s</span>' % e(x) for x in tags)   # перенос только между метками
+    return out
 
 
 LOC_MARK = '<!-- Точки: из BRANCHES собирает tools/seo_jsonld.py — видны без JS поисковикам и ИИ, руками не править -->'
@@ -974,8 +1062,9 @@ def loc_cards(html):
             links.append('<a href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (b['n'], b['menu'])))
         links.append('<a class="wa" href="%s" target="_blank" rel="noopener" onclick="%s">WhatsApp</a>' % (a(wa_link(html, b)), a("track('loc_wa',{branch:'%s'})" % b['n'])))
         out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
-                   '      <p class="loc-meta"><b>%s</b>%s</p>\n      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                   % (t(b['n']), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', '\n        '.join(links)))
+                   '      <p class="loc-meta"><b>%s</b>%s</p>\n%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
+                   % (t(b['n']), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),
+                      '\n        '.join(links)))
     return LOC_MARK + '\n' + '\n'.join(out) + '\n<!-- /точки -->\n'
 
 

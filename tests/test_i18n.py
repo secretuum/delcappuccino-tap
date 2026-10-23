@@ -74,7 +74,7 @@ class TestVersions(unittest.TestCase):
             self.assertNotRegex(page, r'\{\w+\}', 'неподставленная переменная')
 
     def test_facts_same_as_russian(self):
-        kids = re.split(r',\s*|\s+и\s+', re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', self.main).group(1))
+        kids = re.split(r',\s*|\s+и\s+', re.search(r'<h3>Детская зона</h3><p>Игровая зона в ([^<]+?)\.</p>', self.main).group(1))
         for l in ('kk', 'en'):
             page, d = H.unescape(self.pages[('home', l)]), tr(self.main, l)
             for b in self.branches:
@@ -84,10 +84,18 @@ class TestVersions(unittest.TestCase):
                 hours = re.search(r'\d\d:\d\d–\d\d:\d\d', b['hours'])
                 self.assertIn(hours.group(0) if hours else '24/7', page)
             faq_ru = json.loads(read('tools', 'faq.json'))
-            i = next(n for n, e in enumerate(faq_ru) if 'детская комната' in e['q'])
+            i = next(n for n, e in enumerate(faq_ru) if 'детская зона' in e['q'])
             answer = H.unescape(re.findall(r'<div class="faq-a">(.*?)</div></details>', self.pages[('home', l)])[i])
             for k in kids:
-                self.assertIn(d[k], answer, '%s: детские комнаты — там же, где на русской' % l)
+                self.assertIn(d[k], answer, '%s: детская зона — там же, где на русской' % l)
+            self.assertNotIn(d['ЖК Комфорт Сити'], answer, '%s: в Комфорт Сити детской нет' % l)
+            # строки удобств и описание Promenade — на языке страницы, из tools/branch_facts.json
+            facts = json.loads(read('tools', 'branch_facts.json'))
+            for num, pf in facts['points'].items():
+                if pf.get('tags'):
+                    self.assertIn(' · '.join('<span>%s</span>' % facts['labels'][t][l] for t in pf['tags']), page, '%s: удобства %s' % (l, num))
+                if 'about' in pf:
+                    self.assertIn(pf['about'][l], page)
             # чисел, которых нет на русской главной, на kk/en быть не должно (часы, «40 человек», число точек, адреса)
             ru_numbers = set(re.findall(r'\d+', visible(self.main)))
             self.assertEqual(set(re.findall(r'\d+', visible(self.pages[('home', l)]))) - ru_numbers, set(), l)
