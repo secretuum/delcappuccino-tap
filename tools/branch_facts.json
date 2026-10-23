@@ -1,0 +1,61 @@
+{
+  "_": "Факты по точкам от владельца (23.10.2026) — только то, что он прислал, ничего не додумывать. Ключ точки — номер из BRANCHES. tags — короткая строка удобств на карточке точки и amenityFeature в разметке (schema: true); темы (delivery, parking, wifi, booking, halls, business, pets) — ответы «по точкам» в частых вопросах. Детская зона — только у 01 (у 02 её нет). Про животных у 02 не писать (просьба владельца). Собирает tools/seo_jsonld.py; казахские строки уходят в menu/kk_review.md.",
+  "labels": {
+    "kids": {"ru": "детская зона", "kk": "балалар аймағы", "en": "kids' area", "schema": true},
+    "vip_rooms": {"ru": "VIP-залы", "kk": "VIP-залдар", "en": "VIP rooms", "schema": true},
+    "vip_room": {"ru": "VIP-зал", "kk": "VIP-зал", "en": "VIP room", "schema": true},
+    "vip_booths": {"ru": "VIP-кабинки", "kk": "VIP-кабиналар", "en": "VIP booths", "schema": true},
+    "vip_booth": {"ru": "VIP-кабинка", "kk": "VIP-кабина", "en": "VIP booth", "schema": true},
+    "banquet_hall": {"ru": "банкетный зал", "kk": "банкет залы", "en": "banquet hall", "schema": true},
+    "hall60": {"ru": "зал до 60 человек", "kk": "60 адамға дейінгі зал", "en": "hall for up to 60", "schema": true},
+    "cowork": {"ru": "зона для фрилансеров", "kk": "фрилансерлерге арналған аймақ", "en": "space for freelancers", "schema": true},
+    "namaz": {"ru": "намазхана", "kk": "намазхана", "en": "prayer room", "schema": true},
+    "terrace": {"ru": "летняя площадка", "kk": "жазғы алаң", "en": "summer terrace", "schema": true},
+    "wifi": {"ru": "Wi-Fi", "kk": "Wi-Fi", "en": "Wi-Fi", "schema": true},
+    "wifi_free": {"ru": "бесплатный Wi-Fi", "kk": "тегін Wi-Fi", "en": "free Wi-Fi", "schema": true},
+    "parking": {"ru": "парковка", "kk": "автотұрақ", "en": "parking", "schema": true},
+    "parking_zhk": {"ru": "парковка в ЖК", "kk": "ТК ішінде автотұрақ", "en": "parking in the complex", "schema": true},
+    "delivery800": {"ru": "доставка до 800 м", "kk": "800 м-ге дейін жеткізу", "en": "delivery within 800 m", "schema": false},
+    "tables3": {"ru": "3 столика на двоих", "kk": "екі адамдық 3 үстел", "en": "3 tables for two", "schema": false},
+    "pets_takeaway": {"ru": "навынос — с животными", "kk": "алып кетуге — жануармен", "en": "pets OK for takeaway", "schema": false}
+  },
+  "points": {
+    "01": {
+      "tags": ["kids", "vip_rooms", "vip_booths", "banquet_hall", "wifi", "parking"],
+      "delivery": {"ru": "через все агрегаторы доставки", "kk": "барлық жеткізу агрегаторлары арқылы", "en": "through all the delivery apps"},
+      "parking": {"ru": "есть парковка", "kk": "автотұрақ бар", "en": "parking available"},
+      "wifi": {"ru": "есть Wi-Fi", "kk": "Wi-Fi бар", "en": "Wi-Fi available"},
+      "booking": {"ru": "за VIP-кабинки — предоплата", "kk": "VIP-кабиналарға алдын ала төлем алынады", "en": "VIP booths need a prepayment"},
+      "halls": {"ru": "VIP-залы на 10–15 и 20–25 человек, закрытые VIP-кабинки, зал на 30–35 человек для банкетов", "kk": "10–15 және 20–25 адамға арналған VIP-залдар, жабық VIP-кабиналар, банкетке арналған 30–35 адамдық зал", "en": "VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people"},
+      "pets": {"ru": "с животными — только на летней площадке, большую собаку — в наморднике", "kk": "жануарлармен — тек жазғы алаңда, үлкен ит тұмылдырықпен болуы керек", "en": "pets only on the summer terrace; large dogs must wear a muzzle"}
+    },
+    "02": {
+      "tags": ["vip_booth", "namaz", "wifi_free", "parking"],
+      "delivery": {"ru": "своя доставка по ЖК Комфорт Сити, а также Glovo, Яндекс Еда, Choco и Wolt", "kk": "«Комфорт Сити» ТК ішінде өз жеткізуіміз, сондай-ақ Glovo, Яндекс Еда, Choco және Wolt", "en": "our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt"},
+      "parking": {"ru": "общественная парковка у заведения", "kk": "кафе жанында қоғамдық автотұрақ", "en": "public parking next to the café"},
+      "wifi": {"ru": "бесплатный Wi-Fi", "kk": "тегін Wi-Fi", "en": "free Wi-Fi"},
+      "booking": {"ru": "стандартная бронь — без предоплаты", "kk": "әдеттегі брондау — алдын ала төлемсіз", "en": "a standard booking needs no prepayment"},
+      "halls": {"ru": "VIP-кабинка", "kk": "VIP-кабина", "en": "a VIP booth"}
+    },
+    "03": {
+      "tags": ["vip_room", "hall60", "cowork", "namaz", "terrace"],
+      "about": {"ru": "Пространство для работы, встреч и отдыха. Рядом — спорткомплекс «Балуан Шолак» и Центральный стадион.", "kk": "Жұмыс, кездесу және демалыс кеңістігі. Жанында — «Балуан Шолақ» спорт кешені мен Орталық стадион.", "en": "A space for work, meetings and downtime, next to the Baluan Sholak sports complex and the Central Stadium."},
+      "halls": {"ru": "VIP-зал до 20 человек для конференций, семинаров, банкетов и деловых встреч; трансляция видео на телевизорах; общий зал до 60 человек; кофе-брейки на 20–70 человек", "kk": "конференция, семинар, банкет және іскерлік кездесулерге арналған 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету; 60 адамға дейінгі ортақ зал; 20–70 адамға кофе-брейк", "en": "a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people"},
+      "business": {"ru": "зона для фрилансеров; деловое питание — бизнес-ланчи, деловые обеды и ужины; VIP-зал до 20 человек; трансляция видео на телевизорах", "kk": "фрилансерлерге арналған аймақ; іскерлік тамақтану — бизнес-ланчтар, іскерлік түскі және кешкі ас; 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету", "en": "a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens"}
+    },
+    "04": {
+      "tags": ["delivery800", "parking"],
+      "delivery": {"ru": "доставка нашим персоналом в радиусе до 800 м", "kk": "800 м радиуста өз қызметкерлеріміз жеткізеді", "en": "delivered by our own staff within 800 m"},
+      "parking": {"ru": "городская парковка, для VIP-гостей — парковка во внутреннем дворе", "kk": "қалалық автотұрақ, VIP-қонақтарға — ішкі аулада автотұрақ", "en": "city parking; VIP guests can park in the inner courtyard"},
+      "booking": {"ru": "столики — без предоплаты, если нет предварительного заказа по меню", "kk": "мәзір бойынша алдын ала тапсырыс болмаса, үстел алдын ала төлемсіз брондалады", "en": "tables need no prepayment unless you pre-order from the menu"}
+    },
+    "05": {
+      "tags": ["tables3", "wifi", "parking_zhk", "pets_takeaway"],
+      "delivery": {"ru": "доставка в пределах ЖК", "kk": "ТК аумағында жеткізу", "en": "delivery within the residential complex"},
+      "parking": {"ru": "парковка внутри ЖК", "kk": "ТК ішінде автотұрақ", "en": "parking inside the residential complex"},
+      "wifi": {"ru": "есть Wi-Fi", "kk": "Wi-Fi бар", "en": "Wi-Fi available"},
+      "booking": {"ru": "бронь — без предоплаты", "kk": "брондау — алдын ала төлемсіз", "en": "bookings need no prepayment"},
+      "pets": {"ru": "навынос можно с животными", "kk": "алып кетуге жануармен кіруге болады", "en": "you can come with pets to pick up takeaway"}
+    }
+  }
+}

@@ -15,6 +15,14 @@ def read(*p):
         return f.read()
 
 
+FACTS = json.loads(open(os.path.join(ROOT, 'tools', 'branch_facts.json'), encoding='utf-8').read())
+
+
+def visible_text(s):
+    body = re.sub(r'<(script|style)\b.*?</\1>', ' ', s.split('</head>')[-1], flags=re.S)
+    return re.sub(r'<[^>]+>', ' ', body)
+
+
 def ld_text(html):
     m = re.search(r'<script type="application/ld\+json">\n(.*?)\n</script>', html.split('</head>')[0], re.S)
     return m.group(1) if m else None
@@ -227,20 +235,28 @@ class TestFaq(unittest.TestCase):
             self.assertIn(addr, text)
         for hours in re.findall(r"hours:'([^']*)'", self.html):
             self.assertIn(re.sub(r'^ежедневно ', '', hours), text)
-        for fact in ('КМДБ', 'весь день', 'Детские комнаты', 'VIP-залы', 'намазхана',
+        for fact in ('КМДБ', 'весь день', 'детская зона', 'VIP-залы', 'Намазхана', 'Wi-Fi', 'парковка', 'предоплат',
                      'https://delcappuccino.kz/', 'ҚАЗ'):
             self.assertIn(fact, text)
 
-    def test_kids_rooms_where_site_says(self):
-        # на сайте: «Детские комнаты — Игровые пространства в ЖК Вавилон и ЖК Комфорт Сити» — в FAQ и llms.txt так же
-        places = re.search(r'<h3>Детские комнаты</h3><p>Игровые пространства в ([^<]+?)\.</p>', self.html).group(1)
-        answer = next(a for q, a in self.shown if 'детская комната' in q)
-        self.assertIn('игровые пространства в %s' % places, answer)
+    def test_kids_area_only_where_owner_says(self):
+        # владелец 23.10: детская зона только в ЖК Вавилон, в ЖК Комфорт Сити её нет — карточка «Формат», FAQ, llms.txt
+        self.assertEqual([n for n, b in FACTS['points'].items() if 'kids' in b.get('tags', [])], ['01'])
+        card = re.search(r'<h3>Детская зона</h3><p>Игровая зона в ([^<]+?)\.</p>', self.html)
+        self.assertIsNotNone(card, 'карточка «Детская зона» в «Формате»')
+        self.assertEqual(card.group(1), 'ЖК Вавилон')
+        answer = next(a for q, a in self.shown if 'детская зона' in q)
+        self.assertIn('ЖК Вавилон', answer)
+        self.assertNotIn('Комфорт Сити', answer)
         llms = read('llms.txt')
-        en = dict(re.findall(r"'([^']*)':'([^']*)'", self.html[self.html.index('\n en:{'):]))
-        for p in re.split(r',\s*|\s+и\s+', places):
-            self.assertIn(p, llms.split('## English')[0])
-            self.assertIn(en[p], llms.split('## English')[1])
+        kids_line = next(x for l in llms.split('\n') for x in l.split('. ') if x.startswith('Детская зона'))
+        self.assertNotIn('Комфорт Сити', kids_line)
+        self.assertIn('Для семейных визитов в ЖК Вавилон есть детская зона', self.html, '«О нас» — с местом детской зоны')
+        old = r"(?i)детские комнаты|игровые пространства|балалар бөлмелері|ойын кеңістіктері|kids' rooms|play areas"
+        for path in ('index.html', 'llms.txt', 'tools/faq.json', 'tools/pages_i18n.json', 'menu/kk_review.md',
+                     'kk/index.html', 'en/index.html'):
+            text = read(path)
+            self.assertNotRegex(visible_text(text) if path.endswith('.html') else text, old, '%s: старая формулировка про две детские' % path)
 
     def test_visible_link_to_menu_page(self):
         head = re.search(r'<div class="faq-head">(.*?)</div>\s*<div class="faq-list">', self.body, re.S).group(1)
@@ -275,6 +291,62 @@ class TestLocations(unittest.TestCase):
         scripts = ' '.join(re.findall(r'<script>(.*?)</script>', self.html, re.S))
         self.assertNotRegex(scripts, r"['\"]#?loc-grid['\"]", 'карточки точек собирает tools/seo_jsonld.py, JS их не перерисовывает')
         self.assertNotIn('renderLocations', self.html)
+
+
+class TestBranchFacts(unittest.TestCase):
+    """Факты по точкам от владельца (tools/branch_facts.json, 23.10.2026): строка удобств на карточках, ответы «по точкам»
+    в частых вопросах, amenityFeature в разметке — один источник; чего нет в фактах, того нет и на сайте"""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.html = read('index.html')
+        cls.cards = re.findall(r'<div class="loc-card">(.*?)\n    </div>', cls.html, re.S)
+        cls.nums = re.findall(r"\{n:'(\d+) · ", re.search(r'const BRANCHES = \[(.*?)\n\];', cls.html, re.S).group(1))
+        cls.shown = {q: a for q, a in re.findall(r'<details><summary>(.*?)</summary><div class="faq-a">(.*?)</div></details>', cls.html)}
+        data = json.loads(ld_text(cls.html))
+        cls.ld = {n['@id'].rsplit('-', 1)[1]: n for n in data['@graph'] if '#branch-' in n.get('@id', '')}
+
+    def test_amenity_line_on_cards(self):
+        self.assertEqual(len(self.cards), len(self.nums))
+        for num, card in zip(self.nums, self.cards):
+            pf = FACTS['points'].get(num, {})
+            labels = [FACTS['labels'][t]['ru'] for t in pf.get('tags', [])]
+            line = re.search(r'<p class="loc-amen">(.*?)</p>', card)
+            self.assertEqual(re.findall(r'<span>(.*?)</span>', line.group(1)) if line else [], labels, num)
+            about = re.search(r'<p class="loc-about">(.*?)</p>', card)
+            self.assertEqual(about.group(1) if about else None, pf.get('about', {}).get('ru'), num)
+
+    def test_topics_by_point(self):
+        topics = {'Есть ли доставка?': 'delivery', 'Есть ли парковка?': 'parking', 'Есть ли Wi-Fi?': 'wifi',
+                  'Нужна ли предоплата за бронь?': 'booking', 'Какие есть VIP-залы и залы для банкетов?': 'halls',
+                  'Где можно поработать или провести деловую встречу?': 'business', 'Можно ли прийти с животными?': 'pets'}
+        addr = dict(re.findall(r"\{n:'(\d+) · [^\n]*?addr:'([^']*)'", self.html))
+        for q, topic in topics.items():
+            self.assertIn(q, self.shown)
+            items = re.findall(r'<li>(.*?)</li>', self.shown[q])
+            want = [n for n in self.nums if topic in FACTS['points'].get(n, {})]
+            self.assertEqual(len(items), len(want), q)
+            for n, item in zip(want, items):
+                self.assertIn('(%s): %s' % (addr[n], FACTS['points'][n][topic]['ru']), item, q)
+        # про животных у ЖК Комфорт Сити не пишем (просьба владельца)
+        self.assertNotIn('pets', FACTS['points']['02'])
+        self.assertNotIn('Серкебаева', self.shown['Можно ли прийти с животными?'])
+        # название ЖК у bakery не меняем, пока главный уточняет; про санузел не пишем (владелец 23.10)
+        self.assertIn("{n:'05 · Bakery to go · ЖК City'", self.html)
+        for path in ('index.html', 'llms.txt', 'kk/index.html', 'en/index.html'):
+            self.assertNotRegex(read(path), r'(?i)Rams City|санузел|туалет|toilet|restroom|дәретхана', path)
+        # банкеты до 40 человек — прежний ответ не меняли
+        self.assertIn('до 40 человек', self.shown['Можно ли провести у вас банкет?'])
+
+    def test_jsonld_amenities(self):
+        for num in self.nums:
+            pf, node = FACTS['points'].get(num, {}), self.ld[num]
+            want = [FACTS['labels'][t]['ru'] for t in pf.get('tags', []) if FACTS['labels'][t]['schema']]
+            got = [a['name'].lower() for a in node.get('amenityFeature', [])]
+            self.assertEqual(got, [w.lower() for w in want], num)
+            self.assertTrue(all(a['@type'] == 'LocationFeatureSpecification' and a['value'] is True for a in node.get('amenityFeature', [])))
+            self.assertEqual(node.get('acceptsReservations'), True if 'booking' in pf else None, num)
+            self.assertEqual(node.get('description'), pf.get('about', {}).get('ru'), num)
 
 
 class TestMenuPage(unittest.TestCase):

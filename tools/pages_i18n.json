@@ -1,5 +1,5 @@
 {
-  "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной; подстановки: {часы} {адреса} {точек} {детские} {кофеен} {точек_n} {часы_togo} — из BRANCHES и текста главной. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
+  "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной и из tools/branch_facts.json; подстановки: {часы} {адреса} {точек} {кофеен} {точек_n} {часы_togo} — из BRANCHES, {детские} {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы} {работа} {животные}) — из tools/branch_facts.json. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
   "ru": {
     "menu_page": {
       "title": "Меню и цены — Del Cappuccino, кофейни 24/7 в Алматы",
@@ -51,7 +51,7 @@
       "badge_cafes": "кофехана",
       "badge_days": "демалыссыз",
       "about_h2": "Кофе, тағам<br>және <span>қамқорлық</span>.",
-      "about_p": "Жол-жөнекей кіріп, кездесу өткізіп, кеш таңғы ас ішіп немесе сүйікті тағамдарды үйге тапсырыс беріп алыңыз. Отбасымен келгендерге — балалар бөлмелері, тыныш кездесулерге — VIP-залдар, ал намаз оқуға — намазхана бар.",
+      "about_p": "Жол-жөнекей кіріп, кездесу өткізіп, кеш таңғы ас ішіп немесе сүйікті тағамдарды үйге тапсырыс беріп алыңыз. Отбасымен келгендерге — балалар аймағы ({детские}), тыныш кездесулерге — VIP-залдар, ал намаз оқуға — намазхана бар.",
       "stat_cafes": "{кофеен} кофехана",
       "stat_points": "филиал",
       "stat_breakfast": "таңғы ас",
@@ -60,7 +60,7 @@
       "features": [
         ["Тәулік бойы", "{кофеен} кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын {часы_togo}."],
         ["Күні бойы таңғы ас", "Сүйікті таңғы ас — сағатқа қарамастан."],
-        ["Балалар бөлмелері", "Ойын кеңістіктері бар жерлер: {детские}."],
+        ["Балалар аймағы", "Ойын аймағы бар жер: {детские}."],
         ["VIP-залдар", "Іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына арналған."],
         ["Банкеттер", "40 адамға дейінгі топқа іс-шараңызды өткіземіз."],
         ["Намазхана", "Намаз оқуға арналған жайлы, бөлек орын."]
@@ -85,9 +85,17 @@
       {"q": "Del Cappuccino өнімдері халал ма?", "a": "Иә, өнімдер ҚМДБ Halal сертификатынан өткен (halaldamu.kz)."},
       {"q": "Таңғы ас тек таңертең бе?", "a": "Жоқ, таңғы ас күні бойы беріледі — сүйікті таңғы ас сағатқа қарамастан."},
       {"q": "Үстелді қалай брондауға болады?", "a": "Мекенжайлар тізімінен филиалды таңдап, WhatsApp-қа жазыңыз немесе қоңырау шалыңыз."},
+      {"q": "Брондау үшін алдын ала төлем керек пе?", "a": "Филиалға байланысты:{бронь}"},
       {"q": "Тағамды үйге жеткізуге қалай тапсырыс беруге болады?", "a": "«Қосымшада тапсырыс беру» батырмасы арқылы — <a href=\"https://delcappuccino.kz/\">delcappuccino.kz</a> сайтында онлайн тапсырыс. Алып кетуге филиалдың WhatsApp-ы арқылы да тапсырыс беруге болады."},
-      {"q": "Балалар бөлмесі, VIP-зал және намазхана бар ма?", "a": "Иә. Балалар бөлмелері (ойын кеңістіктері) бар жерлер: {детские}. Тыныш кездесулерге VIP-залдар, намаз оқуға намазхана бар."},
+      {"q": "Жеткізу бар ма?", "a": "Онлайн тапсырысты сайттағы «Қосымшада тапсырыс беру» арқылы беруге болады. Филиалдар бойынша жеткізу:{доставка}"},
+      {"q": "Автотұрақ бар ма?", "a": "{парковка}"},
+      {"q": "Wi-Fi бар ма?", "a": "{wifi}"},
+      {"q": "Балалар аймағы бар ма?", "a": "Иә, балалар аймағы бар жер: {детские}."},
+      {"q": "Қандай VIP-залдар мен банкет залдары бар?", "a": "{залы}"},
       {"q": "Сіздерде банкет өткізуге бола ма?", "a": "Иә, 40 адамға дейінгі топқа іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы."},
+      {"q": "Қай жерде жұмыс істеуге немесе іскерлік кездесу өткізуге болады?", "a": "{работа}"},
+      {"q": "Намазхана қай жерде бар?", "a": "Намазхана бар жерлер: {намазхана}."},
+      {"q": "Жануарлармен келуге бола ма?", "a": "{животные}"},
       {"q": "Мәзір қазақ және ағылшын тілдерінде бар ма?", "a": "Иә, сайттағы мәзірде тілді ауыстыруға болады: ҚАЗ, РУС немесе ENG."},
       {"q": "Мәзір мен бағаларды қайдан көруге болады?", "a": "Фотосы мен құрамы бар мәзір — <a href=\"https://tap.delcappuccino.kz/#menu-kk\">сайттағы мәзірде</a>, бағалары бар толық мәзір мәтінмен — <a href=\"https://tap.delcappuccino.kz/kk/menyu\">tap.delcappuccino.kz/kk/menyu</a>."}
     ],
@@ -141,7 +149,7 @@
       "badge_cafes": "cafés",
       "badge_days": "every day",
       "about_h2": "Coffee, food<br>and <span>care</span>.",
-      "about_p": "Drop in on your way, hold a meeting, have a late breakfast or order your favourite dishes for delivery. There are kids' rooms for family visits, VIP rooms for quiet meetings and a namazkhana (prayer room).",
+      "about_p": "Drop in on your way, hold a meeting, have a late breakfast or order your favourite dishes for delivery. There's a kids' area at {детские} for family visits, VIP rooms for quiet meetings and a namazkhana (prayer room).",
       "stat_cafes": "{кофеен} cafés",
       "stat_points": "locations",
       "stat_breakfast": "breakfast",
@@ -150,7 +158,7 @@
       "features": [
         ["Around the clock", "{кофеен} cafés are open 24/7 — drop in whenever suits you. Bakery to go on Zhandosov St is open daily, {часы_togo}."],
         ["Breakfast all day", "Your favourite breakfasts, whatever the clock says."],
-        ["Kids' rooms", "Play areas at {детские}."],
+        ["Kids' area", "Play area at {детские}."],
         ["VIP rooms", "For business breakfasts, small meetings and workshops."],
         ["Banquets", "We'll host your event for a group of up to 40 people."],
         ["Prayer room", "A separate, comfortable space for prayer (namazkhana)."]
@@ -175,9 +183,17 @@
       {"q": "Is Del Cappuccino food halal?", "a": "Yes, our products are halal-certified by KMDB (halaldamu.kz)."},
       {"q": "Do you serve breakfast only in the morning?", "a": "No, breakfast is served all day — your favourite breakfasts, whatever the clock says."},
       {"q": "How do I book a table?", "a": "Pick a café in the list of locations and message it on WhatsApp or give it a call."},
+      {"q": "Do I need to prepay a booking?", "a": "It depends on the café:{бронь}"},
       {"q": "Can I order food for delivery?", "a": "Yes — tap “Order in the app” to order online at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz</a>. You can also order takeaway via the café's WhatsApp."},
-      {"q": "Do you have a kids' room, VIP rooms and a prayer room?", "a": "Yes. Kids' rooms (play areas) are at {детские}. There are VIP rooms for quiet meetings and a namazkhana for prayer."},
+      {"q": "Do you deliver?", "a": "You can order online with “Order in the app” on the website. Delivery by location:{доставка}"},
+      {"q": "Is there parking?", "a": "{парковка}"},
+      {"q": "Is there Wi-Fi?", "a": "{wifi}"},
+      {"q": "Do you have a kids' area?", "a": "Yes, there's a kids' area at {детские}."},
+      {"q": "What VIP rooms and banquet halls do you have?", "a": "{залы}"},
       {"q": "Can I hold a banquet at your café?", "a": "Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."},
+      {"q": "Where can I work or hold a business meeting?", "a": "{работа}"},
+      {"q": "Where is there a prayer room?", "a": "There's a namazkhana (prayer room) at {намазхана}."},
+      {"q": "Can I bring my pet?", "a": "{животные}"},
       {"q": "Is the menu available in Kazakh and English?", "a": "Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG."},
       {"q": "Where can I see the menu and prices?", "a": "The menu with photos and ingredients is <a href=\"https://tap.delcappuccino.kz/#menu-en\">on the website</a>, and the full menu with prices as text is at <a href=\"https://tap.delcappuccino.kz/en/menu\">tap.delcappuccino.kz/en/menu</a>."}
     ],
