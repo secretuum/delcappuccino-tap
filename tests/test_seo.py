@@ -331,10 +331,15 @@ class TestBranchFacts(unittest.TestCase):
         # про животных у ЖК Комфорт Сити не пишем (просьба владельца)
         self.assertNotIn('pets', FACTS['points']['02'])
         self.assertNotIn('Серкебаева', self.shown['Можно ли прийти с животными?'])
-        # название ЖК у bakery не меняем, пока главный уточняет; про санузел не пишем (владелец 23.10)
-        self.assertIn("{n:'05 · Bakery to go · ЖК City'", self.html)
-        for path in ('index.html', 'llms.txt', 'kk/index.html', 'en/index.html'):
-            self.assertNotRegex(read(path), r'(?i)Rams City|санузел|туалет|toilet|restroom|дәретхана', path)
+        # ЖК точки 05 — «Rams City» (владелец 23.10); старого «ЖК City» без «Rams» нигде нет; про санузел не пишем
+        self.assertIn("{n:'05 · Bakery to go · ЖК Rams City'", self.html)
+        # «Komfort/Comfort City» — это точка 02, её не трогаем
+        old = r'ЖК City|«City» ТК|(?<!Rams )(?<!Komfort )City Residential|(?<!Rams )City ТК|(?<!Rams )(?<!Comfort )City RC'
+        for path in ('index.html', 'llms.txt', 'kk/index.html', 'en/index.html', 'menyu/index.html', 'kk/menyu/index.html',
+                     'en/menu/index.html', 'ugolok/index.html', 'tools/branch_facts.json', 'tools/pages_i18n.json'):
+            self.assertNotRegex(read(path), old, '%s: старое название ЖК точки 05' % path)
+            self.assertNotRegex(read(path), r'(?i)санузел|туалет|toilet|restroom|дәретхана', path)
+        self.assertEqual(FACTS['points']['05']['tags'][0], 'takeaway', 'у bakery первым пунктом — «навынос»')
         # банкеты до 40 человек — прежний ответ не меняли
         self.assertIn('до 40 человек', self.shown['Можно ли провести у вас банкет?'])
 
