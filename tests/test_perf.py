@@ -512,6 +512,7 @@ async function run(name, { url, mode, cache, net, slow }) {   // net: {body, sta
     waitUntil(p) { if (this.settled && !this.pending) throw new Error('InvalidStateError'); this.pending++; this.waits.push(p);
                    p.finally(() => this.pending--); } };
   sw.handlers.fetch(ev);
+  if (!ev.resp) return { name, passthrough: true, fetched: sw.fetches.length, waits: ev.waits.length };   // мимо SW — в сеть сам браузер
   let answered = null; ev.resp.then(r => answered = r);
   for (let i = 0; i < 20; i++) await tick();
   const beforeTimer = answered;
@@ -540,6 +541,8 @@ async function run(name, { url, mode, cache, net, slow }) {   // net: {body, sta
     run('cards_json', { url: '/menu/cards.json', mode: 'cors', cache: [[S, ORIGIN + '/menu/cards.json', 'old']], net: fresh }),
     run('image_swr', { url: '/img/menu/a.webp', mode: 'no-cors', cache: [[R, ORIGIN + '/img/menu/a.webp', 'old']], net: fresh }),
     run('hashed', { url: '/assets/x.1a2b3c4d.webp', mode: 'no-cors', cache: [[R, ORIGIN + '/assets/x.1a2b3c4d.webp', 'old']], net: fresh }),
+    run('legal_nav', { url: '/legal/offer.html', mode: 'navigate', cache: [[S, ORIGIN + '/legal/offer.html', 'old']], net: fresh }),
+    run('legal_css', { url: '/legal/style.css', mode: 'no-cors', cache: [[R, ORIGIN + '/legal/style.css', 'old']], net: fresh }),
   ]);
   console.log(JSON.stringify(out));
 })();
@@ -625,6 +628,15 @@ class TestServiceWorkerStrategy(unittest.TestCase):
         self.assertEqual(r['cache']['https://tap.delcappuccino.kz/img/menu/a.webp'], 'new')
         r = self.res['hashed']
         self.assertEqual((r['body'], r['fetched']), ('old', 0), 'файл с хэшем в имени — только кэш, без сети')
+
+    def test_legal_not_intercepted(self):
+        # /legal/ (оферта, политика, контакты приложения, 30.10.2026) — мимо SW: без respondWith, не из кэша и не в кэш
+        self.need()
+        for name in ('legal_nav', 'legal_css'):
+            r = self.res[name]
+            self.assertTrue(r.get('passthrough'), '%s: /legal/ не перехватывается (fetch-обработчик выходит без respondWith)' % name)
+            self.assertEqual((r['fetched'], r['waits']), (0, 0), '%s: SW сам не ходит в сеть и не пишет в кэш' % name)
+        self.assertFalse(self.res['nav_fresh'].get('passthrough'), 'обычные страницы SW по-прежнему перехватывает')
 
 
 if __name__ == '__main__':
