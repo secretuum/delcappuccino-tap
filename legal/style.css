@@ -1,0 +1,81 @@
+/* Общий стиль юридических страниц: читаемо на телефоне, без внешних шрифтов и скриптов. */
+:root {
+  --bg: #ffffff;
+  --text: #1f1f1f;
+  --muted: #5f5f5f;
+  --line: #e2e2e2;
+  --accent: #6b4226;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #161412;
+    --text: #ece8e4;
+    --muted: #a8a19a;
+    --line: #34302c;
+    --accent: #d8a77c;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+main, .top {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.top a { color: var(--accent); text-decoration: none; }
+.top a[aria-current="page"] { font-weight: 700; text-decoration: underline; }
+
+h1 { font-size: 1.6rem; line-height: 1.25; margin: 24px 0 4px; }
+h2 { font-size: 1.2rem; margin: 28px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); }
+h3 { font-size: 1.05rem; margin: 18px 0 6px; }
+
+.edition { color: var(--muted); margin: 0 0 16px; }
+
+a { color: var(--accent); overflow-wrap: anywhere; }
+
+p, li { overflow-wrap: break-word; }
+
+ol, ul { padding-left: 1.4em; }
+li { margin: 4px 0; }
+
+
+table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; }
+th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+th { width: 42%; font-weight: 600; }
+
+@media (max-width: 480px) {
+  h1 { font-size: 1.35rem; }
+  th, td { display: block; width: 100%; padding: 4px 0; }
+  th { padding-top: 10px; border-bottom: 0; }
+}
+
+footer {
+  max-width: 760px;
+  margin: 32px auto 0;
+  padding: 16px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.9rem;
+}

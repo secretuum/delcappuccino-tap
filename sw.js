@@ -13,6 +13,8 @@
  *   файлы с хэшем в имени (*.1a2b3c4d.woff2 и т.п.) — cache-first навечно: имя меняется вместе с содержимым
  *   видео (*.mp4, *.webm) и Range-запросы    — мимо service worker, кэширует сам браузер
  *   чужие домены (gtag, 2gis, wa.me, карты) и не-GET — мимо service worker
+ *   /legal/* (оферта, политика, контакты мобильного приложения) — мимо service worker: не кэшируются и не
+ *                                        перехватываются, браузер всегда берёт их из сети (страницы вне сайта, noindex)
  *
  * Кэши: 'dc-shell-<VERSION>' — оболочка (HTML, cards.json, manifest), 'dc-rt-vN' — картинки и шрифты.
  * VERSION — хэш index.html, его ставит tools/sw_version.py (запускать после правки index.html; тест
@@ -107,6 +109,7 @@ self.addEventListener('fetch', function (e) {
   var url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (/\.(mp4|webm|m4v)$/.test(url.pathname) || req.headers.get('range')) return;   // видео и Range-запросы — браузеру
+  if (url.pathname.indexOf('/legal/') === 0) return;                               // юр. страницы приложения — всегда из сети
 
   var key = cacheKey(req, url);
   if (req.mode === 'navigate' || isShell(url)) {                                   // страницы, HTML, cards.json, manifest
