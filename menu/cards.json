@@ -4369,12 +4369,6 @@
     }
   },
   "Сироп в ассортименте": {
-    "img": "img/menu/sirop-v-assortimente.webp",
-    "img480": "img/menu/sirop-v-assortimente-480.webp",
-    "ar": [
-      960,
-      960
-    ],
     "w": "30 мл",
     "kbju": {
       "kcal": 78,
