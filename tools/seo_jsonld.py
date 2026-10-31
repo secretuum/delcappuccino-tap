@@ -42,6 +42,9 @@ lastmod в sitemap.xml: дата последнего коммита стран�
 import datetime, html as H, json, os, re, subprocess, sys
 from urllib.parse import quote
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import feature_icons  # noqa: E402  значки «Формата»
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
 SITEMAP = os.path.join(ROOT, 'sitemap.xml')
@@ -668,7 +671,7 @@ CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
                       r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
                       r'icons|ic|ib|pill|social|'
-                      r'story|story-grid|story-photo|stats|features|f-head|f-grid|'
+                      r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|hide-mobile))(?![\w-])')
 CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out')     # анимации заставки
@@ -1002,7 +1005,7 @@ def lang_page(html, lang):
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
            sub=sub_card(lang), icons=ICONS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
-           features='\n'.join('        <article><h3>%s</h3><p>%s</p></article>' % (h, p) for h, p in feats),
+           features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
            social=social_row())
 
@@ -1192,6 +1195,8 @@ ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="tru
          '<symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol>'
          '<symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol>'
          '<symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol></svg>') % (_LUCIDE, _LUCIDE, IG_D, YT_D, TH_D)
+# значки карточек «Место для ваших планов» — свой набор (tools/feature_icons.py), в тот же спрайт
+ICONS = ICONS.replace('</svg>', feature_icons.symbols() + '</svg>')
 
 
 def icon_link(cls, href, label, onclick, icon, blank=True):
@@ -1199,6 +1204,11 @@ def icon_link(cls, href, label, onclick, icon, blank=True):
     a = lambda x: H.escape(x, quote=False).replace('"', '&quot;')
     return ('<a class="%s" href="%s"%s%s aria-label="%s" title="%s"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-%s"/></svg></a>'
             % (cls, a(href), ' target="_blank" rel="noopener"' if blank else '', onclick, a(label), a(label), icon))
+
+
+def feature_icon(i):
+    """значок i-й карточки «Формата» (порядок — как карточки: 24/7, завтраки, детская, VIP, банкеты, намазхана)"""
+    return '<svg class="f-ic" aria-hidden="true" focusable="false"><use href="#%s"/></svg>' % feature_icons.FEATURE_IDS[i]
 
 
 def social_row():

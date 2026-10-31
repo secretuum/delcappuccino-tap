@@ -287,7 +287,7 @@ class TestPage(unittest.TestCase):
             feats = re.search(r'<section class="features" id="features">(.*?)</section>', html, re.S).group(1)
             self.assertNotIn('<p class="tag">', feats, '%s: без надзаголовка «больше, чем кофейня»' % l)
             self.assertNotRegex(feats, r'<b>\d+</b>', '%s: без цифр 01–06' % l)
-            self.assertEqual(len(re.findall(r'<article><h3>', feats)), 6, l)
+            self.assertEqual(len(re.findall(r'<article><svg class="f-ic"[^>]*><use href="#f-[\w-]+"/></svg><h3>', feats)), 6, l)   # 1.11: со значком
             actions = re.search(r'<div class="actions">(.*?)</div>', html, re.S).group(1)
             for ev in ('cta_book', 'cta_order', 'cta_menu'):
                 self.assertIn("track('%s')" % ev, actions, l)
@@ -443,6 +443,37 @@ class TestPage(unittest.TestCase):
         for need in ('instagram', 'youtube', 'threads', 'CC0'):
             self.assertIn(need, lic)
 
+    def test_feature_icons_and_large_type(self):
+        """«Место для ваших планов» (владелец 1.11): у каждой из 6 карточек свой линейный SVG-значок (сетка 48, обводка 2,
+        скруглённые концы, currentColor = forest), без эмодзи; заголовок 28 px, текст 20 px (телефон 22 / 17), значок 60 / 48 px"""
+        sys.path.insert(0, os.path.join(ROOT, 'tools'))
+        import feature_icons as fi
+        self.assertEqual(fi.FEATURE_IDS, ['f-247', 'f-breakfast', 'f-kids', 'f-vip', 'f-banquet', 'f-namaz'])
+        emoji = re.compile('[\U0001F300-\U0001FAFF☀-➿]')
+        for l, html in self.pages.items():
+            feats = re.search(r'<section class="features" id="features">(.*?)</section>', html, re.S).group(1)
+            arts = re.findall(r'<article>(.*?)</article>', feats, re.S)
+            self.assertEqual(len(arts), 6, l)
+            got = [re.match(r'<svg class="f-ic" aria-hidden="true" focusable="false"><use href="#([\w-]+)"/></svg><h3>', a) for a in arts]
+            self.assertTrue(all(got), '%s: значок над заголовком в каждой карточке' % l)
+            self.assertEqual([g.group(1) for g in got], fi.FEATURE_IDS, l)
+            self.assertNotRegex(feats, emoji, '%s: без эмодзи' % l)
+            for sid in fi.FEATURE_IDS:
+                sym = re.search(r'<symbol id="%s" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" '
+                                r'stroke-linecap="round" stroke-linejoin="round">(.*?)</symbol>' % sid, html)
+                self.assertIsNotNone(sym, '%s: %s в спрайте' % (l, sid))
+                self.assertNotRegex(sym.group(1), r'#[0-9A-Fa-f]{3,6}|<image|<text', 'только линии в currentColor')
+            css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
+            ic = re.search(r'\.f-ic\{([^}]*)\}', css).group(1)
+            self.assertIn('width:60px;height:60px', ic, l)
+            self.assertIn('color:var(--c-accent)', ic, l)
+            self.assertIn('font-size:var(--fs-heading)', re.search(r'\.f-grid h3\{([^}]*)\}', css).group(1), l)
+            self.assertIn('font-size:20px;line-height:1.5', re.search(r'\.f-grid p\{([^}]*)\}', css).group(1), l)
+            mob = re.search(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S).group(1)
+            for need in ('.f-ic{width:48px;height:48px', '.f-grid h3{font-size:var(--fs-title)}', '.f-grid p{font-size:17px}'):
+                self.assertIn(need, mob, l)
+        self.assertEqual(root_vars(self.pages['ru'])['--fs-heading'], '28px')
+
     def test_location_names_without_numbers(self):
         for l, html in self.pages.items():
             names = re.findall(r'<div class="loc-card">\n      <small>([^<]+)</small>', html)
@@ -587,10 +618,11 @@ console.log(JSON.stringify(out));
 
     def test_weight(self):
         sizes = {l: len(html.encode('utf-8')) for l, html in self.pages.items()}
-        self.assertLessEqual(sizes['ru'], 230 * 1024, 'главная была ~215 КБ — не раздувать')
+        # 1.11: +4 КБ — свой набор значков «Формата» в спрайте; предел 240 КБ (было 230)
+        self.assertLessEqual(sizes['ru'], 240 * 1024, 'главная была ~215 КБ — не раздувать')
         self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 56 * 1024)
         for l in ('kk', 'en'):
-            self.assertLessEqual(sizes[l], 70 * 1024, l)
+            self.assertLessEqual(sizes[l], 75 * 1024, l)   # 1.11: +4 КБ значков, было 70
 
     def test_scripts_in_node(self):
         """пилюля точки и заметка меню — на заглушке DOM: скрипты главной целиком"""
