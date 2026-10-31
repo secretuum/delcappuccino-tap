@@ -55,6 +55,11 @@ PLATE_EATEN = 0.12      # «не фона» сверх маски модели �
 # фолбэк без поиска рамки: квадрат во всю узкую сторону кадра по центру блюда. Для снимков, где белая тарелка на
 # градиентном серо-голубом фоне почти не отличается от фона и рамка по «не фону» режет тарелку (листы «до / после», 1.11.2026)
 FULL_FRAME = {'farfalle-s-tomlenoj-govyadinoj'}
+# обрезанные в исходнике, целого снимка нет нигде: крупный план (×1,25) — срез почти не заметен (решение владельца 1.11.2026,
+# из вариантов A/B/C/D на листе выбран C)
+CLOSE_UP = {'margarita', 'pepperoni', 'chetyre-sezona', 'syrniki-klassicheskie-sladkie-zavtraki',
+            'tomlenaya-govyadina-s-kartofelnym-pyure', 'zharenyj-ris-s-hrustyaschej-kurochkoj'}
+CLOSE_UP_ZOOM = 1.25
 
 
 def base_sign(val):
@@ -443,7 +448,7 @@ def main():
         alpha = np.asarray(get_mask(im, session), dtype=np.float32) / 255
         plate, union, bg = recover_plates(im, alpha)
         if sl in fb or (plate > PLATE_EATEN and sl not in force_cut):                 # ручной список или модель съела тарелку
-            img, mode = fallback(im, union, bg, full=sl in FULL_FRAME), 'fb'
+            img, mode = fallback(im, union, bg, full=sl in FULL_FRAME, zoom=CLOSE_UP_ZOOM if sl in CLOSE_UP else 1.0), 'fb'
         else:
             rgb = np.asarray(im, dtype=np.float32) / 255
             rgb = correct(rgb, alpha)
