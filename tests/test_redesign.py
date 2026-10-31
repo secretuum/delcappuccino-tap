@@ -346,7 +346,29 @@ class TestPage(unittest.TestCase):
         self.assertIn('bottom:0', cap)
         self.assertIn('linear-gradient(to top', cap, 'затемнение для читаемости')
         self.assertIn('border-radius:var(--r-pill)', rule('.promo-a'), 'кнопка — пилюлей')
-        self.assertIn('top:9%', rule('.grill-ticker'), 'бегущая строка — наверху окна, низ занят подписью')
+        # 1.11.: наверху строку перекрывали зубцы пламени — теперь тонкая полоса у низа окна, под кнопкой, над подписью по z
+        tick = rule('.grill-ticker')
+        tb, th = (float(re.search(r'%s:([\d.]+)%%' % k, tick).group(1)) for k in ('bottom', 'height'))
+        pb = float(re.search(r'padding:[\d.]+% [\d.]+% ([\d.]+)%', cap).group(1))       # % ширины окна
+        win_ratio = 485 / 730                                                           # высота / ширина окна (flame_frame WINDOW)
+        self.assertLess((tb + th) * win_ratio, pb, 'подпись и кнопка не налезают на бегущую строку')
+        self.assertIn('z-index:3', tick)
+        # внешний край пламени — по ячейке сетки: габарит OUTER из tools/flame_frame.py
+        sys.path.insert(0, os.path.join(ROOT, 'tools'))
+        import flame_frame as ff
+        xs = [p[0] for seg in ff.OUTER for p in seg[1:]]
+        ys = [p[1] for seg in ff.OUTER for p in seg[1:]]
+        bw = max(xs) - min(xs)
+        fr = rule('.grill-promo .grill-frame')
+        got = {k: float(re.search(r'%s:(-?[\d.]+)%%' % k, fr).group(1)) for k in ('left', 'width', 'bottom')}
+        self.assertIn('position:absolute', fr)
+        self.assertAlmostEqual(got['width'], ff.W / bw * 100, places=1)
+        self.assertAlmostEqual(got['left'], -min(xs) / bw * 100, places=2)
+        self.assertAlmostEqual(got['bottom'], -(ff.H - max(ys)) / ff.H * (ff.W / bw) * 100, places=2)
+        for cell in (540, 358):                                                         # 2000 px и 390 px
+            frame_w = cell * got['width'] / 100
+            self.assertAlmostEqual(frame_w * bw / ff.W, cell, places=0)                 # пламя — во всю ячейку
+            self.assertAlmostEqual(cell * got['left'] / 100 + frame_w * min(xs) / ff.W, 0, places=0)   # left — % ширины ячейки
         mid = re.search(r'@media\(max-width:900px\)\{(.*?)\}\}', css, re.S).group(1)
         self.assertIn('.promo-grid{grid-template-columns:1fr', mid, 'на телефоне и планшете — одна под другой, как hero')
 

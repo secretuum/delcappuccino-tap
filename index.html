@@ -190,14 +190,19 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
    трети окна — всё режется контуром пламени, на кремовом фоне текста нет.
    Видео: preload=none, play() по IntersectionObserver, при reduced-motion — постер. ── */
 .grill-promo{cursor:pointer}
-/* подпись «Курицы гриль» — внутри окна с видео (режется контуром огня), внизу, на затемняющем градиенте */
-.grill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2);padding:22% 9% 9%;background:linear-gradient(to top,rgba(24,10,4,.86),rgba(24,10,4,.55) 55%,rgba(24,10,4,0))}
+/* внешний край пламени (габарит OUTER в tools/flame_frame.py: x 60–850, низ 600 из 910×620) — ровно по ячейке сетки:
+   рамка шире ячейки на 910/790 и сдвинута влево на 60/790, низ пламени = низ плитки; языки выступают вверх над плиткой.
+   2000 px: ячейка 540 → рамка 622 × 424, пламя 540 × 368; 390 px: ячейка 358 → рамка 412 × 281, пламя 358 × 244 */
+.grill-promo .grill-frame{position:absolute;left:-7.595%;width:115.19%;bottom:-3.716%}
+/* подпись «Курицы гриль» — внутри окна с видео (режется контуром огня), внизу, на затемняющем градиенте; снизу отступ
+   11 % ширины окна — под ним бегущая строка (полоса 3–15 % высоты окна = 2–10 % ширины) */
+.grill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2);padding:14% 9% 11%;background:linear-gradient(to top,rgba(24,10,4,.86),rgba(24,10,4,.55) 55%,rgba(24,10,4,0))}
 .grill-frame{position:relative;aspect-ratio:910/620;filter:drop-shadow(0 16px 26px rgba(215,38,30,.32))}
 .grill-win{position:absolute;left:9.89%;top:13.71%;width:80.22%;height:78.23%;overflow:hidden;z-index:1;clip-path:polygon(0.0% 91.8%,0.0% 93.0%,0.2% 94.2%,0.4% 95.2%,0.7% 96.2%,1.0% 97.0%,1.5% 97.8%,2.0% 98.5%,2.5% 99.0%,3.2% 99.4%,3.9% 99.7%,4.7% 99.9%,5.5% 100.0%,94.5% 100.0%,95.3% 99.9%,96.1% 99.7%,96.8% 99.4%,97.5% 99.0%,98.0% 98.5%,98.5% 97.8%,99.0% 97.0%,99.3% 96.2%,99.6% 95.2%,99.8% 94.2%,100.0% 93.0%,100.0% 91.8%,100.0% 34.0%,99.9% 31.7%,99.7% 29.5%,99.3% 27.3%,98.8% 25.1%,98.1% 23.0%,97.3% 20.9%,96.5% 18.8%,95.5% 16.8%,94.5% 14.9%,93.4% 13.0%,92.3% 11.1%,91.1% 9.3%,90.3% 11.1%,89.4% 12.9%,88.3% 14.8%,87.0% 16.6%,85.7% 18.3%,84.3% 20.0%,82.9% 21.5%,81.5% 22.9%,80.0% 24.2%,78.6% 25.3%,77.3% 26.2%,76.0% 26.8%,74.1% 24.9%,72.1% 22.8%,70.1% 20.6%,68.0% 18.3%,65.9% 15.8%,63.8% 13.4%,61.7% 11.0%,59.6% 8.6%,57.6% 6.2%,55.7% 4.0%,53.8% 1.9%,52.1% 0.0%,50.6% 2.3%,49.1% 4.7%,47.5% 7.1%,45.9% 9.4%,44.2% 11.7%,42.6% 13.9%,40.9% 16.1%,39.3% 18.1%,37.7% 20.0%,36.2% 21.8%,34.8% 23.3%,33.6% 24.7%,32.3% 23.4%,30.9% 22.1%,29.4% 20.7%,27.8% 19.3%,26.1% 17.9%,24.3% 16.5%,22.5% 15.1%,20.6% 13.7%,18.7% 12.3%,16.8% 10.9%,14.9% 9.6%,13.0% 8.2%,11.8% 10.1%,10.6% 12.0%,9.3% 14.0%,8.1% 16.1%,6.9% 18.2%,5.7% 20.4%,4.6% 22.6%,3.5% 24.8%,2.5% 27.1%,1.6% 29.4%,0.7% 31.7%,0.0% 34.0%)}
 .grill-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .grill-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 62% 60% at 50% 58%,transparent 0,transparent 60%,rgba(255,150,0,.45) 85%,rgba(255,90,0,.7) 100%)}
 .grill-fire{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-.grill-ticker{position:absolute;left:0;right:0;top:9%;height:16%;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(13px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500;text-shadow:0 0 6px #FF7A00,0 0 16px rgba(255,90,0,.85),0 1px 0 #A80F00;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.grill-ticker{position:absolute;left:0;right:0;bottom:3%;height:12%;z-index:3;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(13px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500;text-shadow:0 0 6px #FF7A00,0 0 16px rgba(255,90,0,.85),0 1px 0 #A80F00;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
 .grill-ticker span{display:inline-block;padding-right:.6em;animation:grill-run 9s linear infinite}
 @keyframes grill-run{to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}

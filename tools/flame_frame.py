@@ -48,7 +48,7 @@ WINDOW = [
     ('Z',),
 ]
 INNER_K = 1.045                                       # жёлтая кромка: окно, увеличенное вокруг своего центра
-TICKER_Y0 = None                                      # тикер теперь внутри окна (CSS .grill-ticker: bottom 7%, height 16%)
+TICKER_Y0 = None                                      # тикер внутри окна: CSS .grill-ticker — тонкая полоса у низа (bottom 3%, height 12%), над ней подпись
 
 
 def scaled(path, k, center):
