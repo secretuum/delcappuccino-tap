@@ -51,11 +51,14 @@ h1{font-size:var(--fs-heading);margin:16px 0 8px}
 .toc{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px}
 h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
 h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
-h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:40px 0 6px}
-h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-surface);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
+h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:0 0 6px}
+.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
+h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-bg);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
 .note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
-li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid var(--c-border);font-size:15px;line-height:1.4}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid rgba(36,28,21,.06);font-size:15px;line-height:1.4}
+li:last-child{border-bottom:0}
+@media(min-width:700px){.sec{padding:20px 24px}}
 li .n{font-weight:500}
 small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
 .p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}
@@ -79,6 +82,7 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <p class="note">4 кофейни работают круглосуточно, 24/7: ЖК Вавилон (Розыбакиева, 247/8), ЖК Комфорт Сити (Серкебаева, 146), БП Promenade (Абая, 44А), Del Cappuccino (Толе Би, 64).</p>
 <p class="note">Сервисный сбор 10% добавляется к счёту. Предупредите официанта об аллергии на продукты.</p>
 <h3 id="kitchen">Кухня</h3>
+<section class="sec">
 <h4><span>Завтраки <small>весь день</small></span></h4>
 <ul>
 <li><span class="n">Каша овсяная с гранолой и персиком</span><b class="p">2 000 ₸</b></li>
@@ -97,6 +101,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Стейк-омлет <i>· новинка</i></span><b class="p">4 000 ₸</b></li>
 <li><span class="n">Завтрак с лососем <i>· популярное</i></span><b class="p">4 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Сладкие завтраки</span></h4>
 <ul>
 <li><span class="n">Блины со сметаной и мёдом</span><b class="p">1 700 ₸</b></li>
@@ -105,6 +111,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Бельгийские вафли</span><b class="p">2 500 ₸</b></li>
 <li><span class="n">Сырники классические <i>· особенно рекомендуем</i></span><b class="p">2 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Салаты</span></h4>
 <ul>
 <li><span class="n">Греческий салат</span><b class="p">2 700 ₸</b></li>
@@ -113,12 +121,16 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Салат с запечённой сёмгой в соусе терияки <i>· популярное</i></span><b class="p">3 200 ₸</b></li>
 <li><span class="n">Салат со стейком <i>· новинка</i></span><b class="p">4 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Боулы</span></h4>
 <ul>
 <li><span class="n">Боул с курицей <i>· особенно рекомендуем, правильное питание</i></span><b class="p">3 000 ₸</b></li>
 <li><span class="n">Боул с креветками <i>· правильное питание</i></span><b class="p">3 100 ₸</b></li>
 <li><span class="n">Боул с сёмгой <i>· популярное, правильное питание</i></span><b class="p">3 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Супы</span></h4>
 <ul>
 <li><span class="n">Суп лапша куриная <i>· особенно рекомендуем</i></span><b class="p">1 800 ₸</b></li>
@@ -128,6 +140,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Борщ с говядиной и бородинским хлебом</span><b class="p">2 100 ₸</b></li>
 <li><span class="n">Чучвара (пельмени с говядиной) <i>· новинка, острое блюдо</i></span><b class="p">2 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Сэндвичи / Закуски</span></h4>
 <ul>
 <li><span class="n">Лепёшка с пюре и сыром <i>· новинка</i></span><b class="p">1 800 ₸</b></li>
@@ -139,6 +153,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Клаб сэндвич с курицей и картофелем фри <i>· популярное</i></span><b class="p">3 300 ₸</b></li>
 <li><span class="n">Бургер классический с картофелем фри <i>· популярное</i></span><b class="p">3 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Пицца</span></h4>
 <ul>
 <li><span class="n">Маргарита</span><b class="p">3 100 ₸</b></li>
@@ -147,6 +163,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Болоньезе <i>· популярное, острое блюдо</i></span><b class="p">3 600 ₸</b></li>
 <li><span class="n">Четыре сезона <i>· особенно рекомендуем</i></span><b class="p">3 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Паназия</span></h4>
 <ul>
 <li><span class="n">Курица по-тайски с рисом</span><b class="p">2 900 ₸</b></li>
@@ -157,6 +175,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Том Ям с курицей <i>· особенно рекомендуем, острое блюдо</i></span><b class="p">3 300 ₸</b></li>
 <li><span class="n">Том Ям с креветками <i>· острое блюдо</i></span><b class="p">3 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Паста фреш</span></h4>
 <p class="note">для пасты используем муку semola</p>
 <ul>
@@ -166,6 +186,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Фарфалле с томлёной говядиной <i>· особенно рекомендуем</i></span><b class="p">3 700 ₸</b></li>
 <li><span class="n">Фарфалле с лососем</span><b class="p">4 100 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Горячие блюда</span></h4>
 <ul>
 <li><span class="n">Курочка в сливочном соусе с грибами и рисом <i>· особенно рекомендуем</i></span><b class="p">3 000 ₸</b></li>
@@ -179,6 +201,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Говяжий шницель <i>· новинка</i></span><b class="p">4 200 ₸</b></li>
 <li><span class="n">Томлёные рёбра</span><b class="p">4 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Домашние блюда</span></h4>
 <ul>
 <li><span class="n">Самса с курицей <small>1 шт</small></span><b class="p">395 ₸</b></li>
@@ -189,6 +213,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Манты с рубленой говядиной и тыквой <small>5 шт</small> <i>· время ожидания от 30 минут</i></span><b class="p">2 490 ₸</b></li>
 <li><span class="n">Мясной сет <i>· время ожидания от 30 минут</i></span><b class="p">15 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Блюда на гриле</span></h4>
 <ul>
 <li><span class="n">Люля из говядины с салатом и питой <i>· новинка</i></span><b class="p">3 200 ₸</b></li>
@@ -198,12 +224,16 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Ти-бон стейк с молодым картофелем <small>300 гр</small> <i>· время ожидания от 30 минут</i></span><b class="p">3 990 ₸ <small>вместо <s>7 200</s></small></b></li>
 <li><span class="n">Стейк лосося с молодым картофелем <small>250 гр</small> <i>· время ожидания от 30 минут</i></span><b class="p">7 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Хлеба</span></h4>
 <ul>
 <li><span class="n">Багет</span><b class="p">1 000 ₸</b></li>
 <li><span class="n">Чесночный хлеб</span><b class="p">1 000 ₸</b></li>
 <li><span class="n">Хлебная корзина</span><b class="p">1 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Гарниры</span></h4>
 <ul>
 <li><span class="n">Рис</span><b class="p">1 300 ₸</b></li>
@@ -213,6 +243,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Хашбраун со сметаной</span><b class="p">1 700 ₸</b></li>
 <li><span class="n">Овощи на гриле</span><b class="p">2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Соусы</span></h4>
 <ul>
 <li><span class="n">Кетчуп</span><b class="p">500 ₸</b></li>
@@ -223,6 +255,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Шрирача</span><b class="p">500 ₸</b></li>
 <li><span class="n">Sweet chili</span><b class="p">500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>На компанию</span></h4>
 <ul>
 <li><span class="n">Ассорти колбасок на 4–5 персон</span><b class="p">21 000 ₸</b></li>
@@ -231,7 +265,9 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Бешбармак на 4–5 персон (только по предзаказу)</span><b class="p">30 000 ₸</b></li>
 <li><span class="n">Куырдак на 4–5 персон (только по предзаказу)</span><b class="p">30 000 ₸</b></li>
 </ul>
+</section>
 <h3 id="bar">Бар</h3>
+<section class="sec">
 <h4><span>Классический кофе</span></h4>
 <p class="note">зерно на выбор — 100% арабика: Бразилия Суль-де-Минас (орехи, какао, карамель) или Эфиопия Иргачиф (цветы, ягоды, грейпфрут)</p>
 <ul>
@@ -244,6 +280,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Батч Брю <small>200/300 мл</small> <i>· новинка</i> <em>· только: БП Promenade (Абая, 44А), ЖК Вавилон (Розыбакиева, 247/8)</em></span><b class="p">1 200 / 1 300 ₸</b></li>
 <li><span class="n">Капучино 0.3 + синнабон <i>· особенно рекомендуем</i></span><b class="p">1 890 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Холодные кофейные напитки <small>330 мл</small></span></h4>
 <ul>
 <li><span class="n">Ice Американо</span><b class="p">1 400 ₸</b></li>
@@ -254,6 +292,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Бамбл кофе на соке / на фреше</span><b class="p">2 100 ₸</b></li>
 <li><span class="n">Фраппучино: карамель, шоколад</span><b class="p">2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Листовые чаи</span></h4>
 <p class="note">чашка 330 мл / чайник 1 л</p>
 <ul>
@@ -261,6 +301,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Жасмин</span><b class="p">1 300 / 2 400 ₸</b></li>
 <li><span class="n">Молочный улун</span><b class="p">1 300 / 2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Авторские чаи</span></h4>
 <p class="note">чашка 330 мл / чайник 900 мл</p>
 <ul>
@@ -273,6 +315,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Малина-розмарин-лимон <i>· новинка</i></span><b class="p">1 500 / 2 700 ₸</b></li>
 <li><span class="n">Маракуйя-ананас-апельсин <i>· новинка</i></span><b class="p">1 500 / 2 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Ice tea <small>330 мл</small></span></h4>
 <ul>
 <li><span class="n">Классический</span><b class="p">1 500 ₸</b></li>
@@ -280,6 +324,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Жасмин-яблоко <i>· особенно рекомендуем</i></span><b class="p">1 500 ₸</b></li>
 <li><span class="n">Клубничный улун <i>· особенно рекомендуем</i></span><b class="p">1 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Лимонады</span></h4>
 <p class="note">стакан 330 мл / графин 900 мл</p>
 <ul>
@@ -290,18 +336,24 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Киви-яблоко</span><b class="p">1 400 / 2 700 ₸</b></li>
 <li><span class="n">Ананас-черника</span><b class="p">1 400 / 2 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Милкшейки <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Ванильный</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Oreo</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Клубничный</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Фреши <small>300 мл</small></span></h4>
 <ul>
 <li><span class="n">Яблочный</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Грейпфрутовый</span><b class="p">2 600 ₸</b></li>
 <li><span class="n">Апельсиновый</span><b class="p">2 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Раф <small>375 мл</small></span></h4>
 <p class="note">*любой раф можем подать айс</p>
 <ul>
@@ -309,6 +361,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Медовый <i>· содержит мёд</i></span><b class="p">2 000 ₸</b></li>
 <li><span class="n">С солёной карамелью</span><b class="p">2 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Спешл напитки <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Латте печенье <small>300 мл</small> <i>· новинка</i></span><b class="p">2 400 ₸</b></li>
@@ -322,12 +376,16 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Ice cream-Cola</span><b class="p">2 600 ₸</b></li>
 <li><span class="n">Горячий шоколад <small>200/300 мл</small></span><b class="p">1 500 / 1 800 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Глинтвейн б/а <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Яблочный</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Вишнёвый</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Апельсин-облепиха</span><b class="p">1 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Смузи <small>350 мл</small></span></h4>
 <ul>
 <li><span class="n">Зелёный</span><b class="p">2 300 ₸</b></li>
@@ -335,6 +393,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Малина-банан</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Черника-банан</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Напитки</span></h4>
 <ul>
 <li><span class="n">Морс клюквенный <small>300 мл / 1 л</small></span><b class="p">800 / 2 300 ₸</b></li>
@@ -349,6 +409,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Piko mini <small>200 мл</small></span><b class="p">800 ₸</b></li>
 <li><span class="n">Schweppes <small>450 мл</small></span><b class="p">1 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Дополнения</span></h4>
 <ul>
 <li><span class="n">Лимон</span><b class="p">400 ₸</b></li>
@@ -360,7 +422,9 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Альтернативное молоко</span><b class="p">500 ₸</b></li>
 <li><span class="n">Безлактозное молоко</span><b class="p">500 ₸</b></li>
 </ul>
+</section>
 <h3 id="dessert">Десерты</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Кукис</span><b class="p">300 ₸</b></li>
 <li><span class="n">Картошка</span><b class="p">400 ₸</b></li>
@@ -381,6 +445,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Фисташка-малина</span><b class="p">1 200 ₸</b></li>
 <li><span class="n">Дубайский</span><b class="p">1 450 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Торты (целиком)</span></h4>
 <ul>
 <li><span class="n">Меренговый рулет</span><b class="p">6 700 ₸</b></li>
@@ -395,7 +461,9 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Фисташковый рулет</span><b class="p">9 000 ₸</b></li>
 <li><span class="n">Дубайский</span><b class="p">13 000 ₸</b></li>
 </ul>
+</section>
 <h3 id="frozen">Полуфабрикаты</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Вареники <small>500 гр</small></span><b class="p">1 550 ₸</b></li>
 <li><span class="n">Самса с курицей <small>8 шт</small></span><b class="p">1 700 ₸</b></li>
@@ -406,6 +474,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Пельмени с говядиной <small>500 гр</small></span><b class="p">2 900 ₸</b></li>
 <li><span class="n">Манты с говядиной <small>10 шт</small></span><b class="p">3 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Мясо</span><b class="p">3 596 ₸</b></h4>
 <ul>
 <li><span class="n">Мякоть <small>500 гр</small></span></li>
@@ -413,10 +483,12 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Рибай <small>1 шт (~300 гр)</small></span></li>
 <li><span class="n">Ти-бон <small>1 шт (~300 гр)</small></span></li>
 </ul>
+</section>
 <h2 id="togo">Bakery to go · ЖК Rams City</h2>
 <p class="note">Жандосова, 94/12 — ежедневно 07:00–22:00</p>
 <p class="note">Предупредите официанта об аллергии на продукты.</p>
 <h3 id="togo-dessert">Десерты</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Кукис</span><b class="p">300 ₸</b></li>
 <li><span class="n">Картошка</span><b class="p">350 ₸</b></li>
@@ -437,6 +509,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Фисташка-малина</span><b class="p">1 200 ₸</b></li>
 <li><span class="n">Дубайский</span><b class="p">1 450 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Торты (целиком)</span></h4>
 <ul>
 <li><span class="n">Меренговый рулет</span><b class="p">6 700 ₸</b></li>
@@ -451,11 +525,15 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Фисташковый рулет</span><b class="p">9 000 ₸</b></li>
 <li><span class="n">Дубайский</span><b class="p">12 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Сэндвичи</span></h4>
 <ul>
 <li><span class="n">Сэндвичи в ассортименте</span><b class="p">990 ₸</b></li>
 </ul>
+</section>
 <h3 id="togo-frozen">Полуфабрикаты</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Вареники <small>500 гр</small></span><b class="p">1 550 ₸</b></li>
 <li><span class="n">Котлеты говяжьи <small>4 шт</small></span><b class="p">3 300 ₸</b></li>
@@ -467,6 +545,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Сырники классические <small>6 шт</small></span><b class="p">1 900 ₸</b></li>
 <li><span class="n">Сырники с иримшиком <small>6 шт</small></span><b class="p">2 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Мясо</span><b class="p">3 596 ₸</b></h4>
 <ul>
 <li><span class="n">Мякоть <small>500 гр</small></span></li>
@@ -474,7 +554,9 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Рибай <small>1 шт (~300 гр)</small></span></li>
 <li><span class="n">Ти-бон <small>1 шт (~300 гр)</small></span></li>
 </ul>
+</section>
 <h3 id="togo-bar">Бар</h3>
+<section class="sec">
 <h4><span>Классический кофе</span></h4>
 <p class="note">зерно — 100% арабика Бразилия Суль-де-Минас (орехи, какао, карамель)</p>
 <ul>
@@ -485,6 +567,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Флэт уайт <small>200 мл</small></span><b class="p">1 800 ₸</b></li>
 <li><span class="n">Капучино 0.3 + синнабон <i>· особенно рекомендуем</i></span><b class="p">1 890 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Холодные кофейные напитки <small>330 мл</small></span></h4>
 <ul>
 <li><span class="n">Ice Американо</span><b class="p">1 400 ₸</b></li>
@@ -495,12 +579,16 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Бамбл кофе на соке / на фреше</span><b class="p">2 100 ₸</b></li>
 <li><span class="n">Фраппучино: карамель, шоколад</span><b class="p">2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Листовые чаи <small>400 мл</small></span></h4>
 <ul>
 <li><span class="n">Ассам</span><b class="p">1 300 ₸</b></li>
 <li><span class="n">Жасмин</span><b class="p">1 300 ₸</b></li>
 <li><span class="n">Молочный улун</span><b class="p">1 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Авторские чаи <small>400 мл</small></span></h4>
 <ul>
 <li><span class="n">Чай по-казахски (нават, иримшик) <i>· популярное, содержит мёд</i></span><b class="p">1 500 ₸</b></li>
@@ -512,6 +600,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Малина-лимон <i>· новинка</i></span><b class="p">1 500 ₸</b></li>
 <li><span class="n">Маракуйя-апельсин-мёд <i>· новинка, содержит мёд</i></span><b class="p">1 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Ice tea <small>330 мл</small></span></h4>
 <ul>
 <li><span class="n">Классический</span><b class="p">1 500 ₸</b></li>
@@ -519,6 +609,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Жасмин-яблоко <i>· особенно рекомендуем</i></span><b class="p">1 500 ₸</b></li>
 <li><span class="n">Клубничный улун <i>· особенно рекомендуем</i></span><b class="p">1 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Лимонады <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Щавель-лайм <i>· новинка</i></span><b class="p">1 400 ₸</b></li>
@@ -529,18 +621,24 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Киви-яблоко</span><b class="p">1 400 ₸</b></li>
 <li><span class="n">Ананас-черника</span><b class="p">1 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Милкшейки <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Ванильный</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Oreo</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Клубничный</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Фреши <small>300 мл</small></span></h4>
 <ul>
 <li><span class="n">Яблочный</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Грейпфрутовый</span><b class="p">2 600 ₸</b></li>
 <li><span class="n">Апельсиновый</span><b class="p">2 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Раф <small>375 мл</small></span></h4>
 <p class="note">*любой раф можем подать айс</p>
 <ul>
@@ -548,6 +646,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Медовый <i>· содержит мёд</i></span><b class="p">2 000 ₸</b></li>
 <li><span class="n">С солёной карамелью</span><b class="p">2 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Спешл напитки <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Киви-тоник</span><b class="p">2 400 ₸</b></li>
@@ -558,12 +658,16 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Ice клубничный капучино</span><b class="p">2 400 ₸</b></li>
 <li><span class="n">Горячий шоколад <small>200/300 мл</small></span><b class="p">1 500 / 1 800 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Глинтвейн б/а <small>375 мл</small></span></h4>
 <ul>
 <li><span class="n">Яблочный</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Вишнёвый</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Апельсин-облепиха</span><b class="p">1 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Смузи <small>350 мл</small></span></h4>
 <ul>
 <li><span class="n">Зелёный</span><b class="p">2 300 ₸</b></li>
@@ -571,6 +675,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Малина-банан</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Черника-банан</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Напитки</span></h4>
 <ul>
 <li><span class="n">Морс клюквенный <small>300 мл</small></span><b class="p">800 ₸</b></li>
@@ -584,6 +690,8 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">AVA lemonade citrus <small>450 мл</small></span><b class="p">1 200 ₸</b></li>
 <li><span class="n">Gracio: вишня, яблоко, апельсин <small>250 мл</small></span><b class="p">1 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Дополнения</span></h4>
 <ul>
 <li><span class="n">Лимон</span><b class="p">400 ₸</b></li>
@@ -594,6 +702,7 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <li><span class="n">Альтернативное молоко</span><b class="p">600 ₸</b></li>
 <li><span class="n">Безлактозное молоко</span><b class="p">500 ₸</b></li>
 </ul>
+</section>
 </main>
 <footer class="wrap">
 <div class="social"><a href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'instagram',src:'menu_page'})" aria-label="Instagram" title="Instagram"><svg aria-hidden="true" focusable="false"><use href="#i-ig"/></svg></a><a href="https://www.youtube.com/@DelCappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'youtube',src:'menu_page'})" aria-label="YouTube" title="YouTube"><svg aria-hidden="true" focusable="false"><use href="#i-yt"/></svg></a><a href="https://www.threads.com/@del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'threads',src:'menu_page'})" aria-label="Threads" title="Threads"><svg aria-hidden="true" focusable="false"><use href="#i-th"/></svg></a></div>

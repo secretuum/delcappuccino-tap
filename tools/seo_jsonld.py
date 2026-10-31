@@ -599,11 +599,13 @@ def menu_page(html, lang='ru'):
         for s in sections(html, arr):
             head = e(tt(s['t'])) + (' <small>%s</small>' % e(tt(s['badge'])) if s['badge'] else '')
             # раздел с тем же названием, что вкладка («Десерты» → «Десерты»), без своего заголовка — как dupT на главной
+            sec = []                                          # раздел — на своей мягкой подложке, как в меню главной
             if not (s['t'] == ui0['tab_' + tab] and not s['badge'] and not s['p']):
-                out.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
+                sec.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
             if s['note']:
-                out.append('<p class="note">%s</p>' % e(tt(s['note'])))
-            out.append(items_html(s['items']))
+                sec.append('<p class="note">%s</p>' % e(tt(s['note'])))
+            sec.append(items_html(s['items']))
+            out.append('<section class="sec">\n%s\n</section>' % '\n'.join(sec))
         return '\n'.join(out)
 
     tabs = mode_tabs(html)
@@ -661,11 +663,14 @@ h1{font-size:var(--fs-heading);margin:16px 0 8px}
 .toc{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px}
 h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
 h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
-h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:40px 0 6px}
-h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-surface);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
+h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:0 0 6px}
+.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
+h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-bg);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
 .note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
-li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid var(--c-border);font-size:15px;line-height:1.4}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid rgba(36,28,21,.06);font-size:15px;line-height:1.4}
+li:last-child{border-bottom:0}
+@media(min-width:700px){.sec{padding:20px 24px}}
 li .n{font-weight:500}
 small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
 .p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}

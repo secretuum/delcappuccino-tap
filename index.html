@@ -427,13 +427,15 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 /* над меню — одна карточка: аллергия и сервисный сбор (адреса точек — в карточках на главной) */
 .mm-intro{margin-bottom:var(--s-4)}
 .mm-notice{margin:0;font-size:13px;line-height:1.5;color:var(--c-muted)}
-.mm-sec{break-inside:avoid;margin-bottom:48px}
+/* раздел — на своей мягкой подложке (владелец 1.11): чуть темнее белого, скругление 22, едва заметная тень-размытие */
+.mm-sec{break-inside:avoid;margin-bottom:var(--s-24);padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
 .mm-sec h4{display:flex;align-items:center;gap:var(--s-8);flex-wrap:wrap;font-family:var(--font-display);font-weight:700;font-size:21px;line-height:1.2;text-transform:lowercase;color:var(--c-text);margin-bottom:var(--s-8)}
-.mm-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s-8);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-muted);font-family:var(--font-body);font-size:var(--fs-caption);font-weight:600;line-height:1;text-transform:none;white-space:nowrap}
+.mm-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s-8);border-radius:var(--r-pill);background:var(--c-bg);color:var(--c-muted);font-family:var(--font-body);font-size:var(--fs-caption);font-weight:600;line-height:1;text-transform:none;white-space:nowrap}
 .mm-secp{margin-left:auto;font-family:var(--font-body);font-size:var(--fs-body);font-weight:700;text-transform:none;color:var(--c-text);font-variant-numeric:tabular-nums}
 .mm-note{font-size:var(--fs-caption);color:var(--c-muted);margin:-4px 0 var(--s-8);line-height:1.5}
 /* позиция — строка-карточка: превью фото 60 px (если есть), название с пометками, ниже объём приглушённо, справа цена */
-.mm-it{display:flex;align-items:baseline;gap:var(--s-8);padding:6px 0;border-bottom:1px solid var(--c-border);font-size:15px;line-height:1.4}
+.mm-it{display:flex;align-items:baseline;gap:var(--s-8);padding:6px 0;border-bottom:1px solid rgba(36,28,21,.06);font-size:15px;line-height:1.4}
+.mm-it:last-child{border-bottom:0}   /* линии внутри подложки — тонкие и светлые, у последней строки нет */
 .mm-it.has-card{cursor:pointer}
 .mm-it.has-card:hover .nm-t{color:var(--c-accent)}
 .mm-it .nm{min-width:0;color:var(--c-text);font-weight:500;overflow-wrap:anywhere}
@@ -515,7 +517,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
      справа — белая полоса на ширину отступа ряда) */
   .mm-search-btn{position:sticky;right:0;z-index:1;box-shadow:var(--s-12) 0 0 var(--c-bg)}
   .mm-search-btn::before{content:'';position:absolute;top:0;bottom:0;right:100%;width:28px;background:linear-gradient(to right,rgba(255,255,255,0),var(--c-bg));pointer-events:none}
-  .mm-sec{margin-bottom:40px}
+  .mm-sec{margin-bottom:var(--s-16);padding:var(--s-16)}
   .mm-sec h4{font-size:20px}
 }
 </style>

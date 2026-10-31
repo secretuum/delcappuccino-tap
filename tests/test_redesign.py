@@ -735,6 +735,33 @@ console.log(JSON.stringify(out));
         for k, v in (('search', 'Мәзірден іздеу'), ('search_none', 'Ештеңе табылмады')):
             self.assertIn('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (k, v), review)
 
+    def test_section_plates(self):
+        """владелец 1.11: каждый раздел меню — на мягкой подложке (чуть темнее белого, скругление 22, едва заметная тень),
+        линии внутри тоньше и светлее; заголовок части — вне подложки; результаты поиска — одна подложка; текстовые меню — так же"""
+        css = re.sub(r'/\*.*?\*/', '', style(self.pages['ru']), flags=re.S)
+        sec = re.search(r'(?:^|\})\.mm-sec\{([^}]*)\}', css).group(1)
+        for need in ('break-inside:avoid', 'border-radius:var(--r-lg)', 'background:var(--c-surface)', 'box-shadow:0 2px 16px rgba(36,28,21,.04)',
+                     'padding:var(--s-24)', 'margin-bottom:var(--s-24)'):
+            self.assertIn(need, sec)
+        mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S))
+        self.assertIn('.mm-sec{margin-bottom:var(--s-16);padding:var(--s-16)}', mob)
+        self.assertIn('border-bottom:1px solid rgba(36,28,21,.06)', re.search(r'(?:^|\})\.mm-it\{([^}]*)\}', css).group(1))
+        self.assertIn('.mm-it:last-child{border-bottom:0}', css)
+        self.assertNotIn('background', re.search(r'(?:^|\})\.mm-part-h\{([^}]*)\}', css).group(1), 'заголовок части — вне подложки')
+        html = self.pages['ru']
+        self.assertIn('<section class="mm-sec${dupT?', html, 'каждый раздел — секция-подложка')
+        self.assertIn('<section class="mm-sec mm-results">', html, 'результаты поиска — одна подложка')
+        self.assertIn('columns:3', re.search(r'(?:^|\})\.mm-cols\{([^}]*)\}', css).group(1), 'колонки сохранены')
+        for path in ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html'):
+            page = read(path)
+            secs = re.findall(r'<section class="sec">\n(.*?)\n</section>', page, re.S)
+            self.assertGreater(len(secs), 40, path)
+            self.assertTrue(all('<ul>' in s_ for s_ in secs), path)
+            self.assertEqual(sum(s_.count('<li>') for s_ in secs), page.count('<li>'), '%s: все строки — внутри подложек' % path)
+            mcss = style(page)
+            self.assertIn('.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}', mcss)
+            self.assertIn('li:last-child{border-bottom:0}', mcss)
+
     def test_menu_overlay_css(self):
         """этап 2: разделы не капсом и без разрядки, строки без подчёркиваний, NEW пилюлей olive, легенда пилюлями,
         карточка блюда на белом, крестик круглый, цена пилюлей forest; крема и старых шрифтов нет"""
@@ -766,7 +793,7 @@ console.log(JSON.stringify(out));
         self.assertIn('width:14px;height:14px', rule('.mm-ph'))
         self.assertIn('color:var(--c-muted)', rule('.mm-ph'))
         self.assertIn('columns:3', rule('.mm-cols'), 'колонки как в прежнем меню')
-        self.assertIn('margin-bottom:48px', rule('.mm-sec'))
+        self.assertIn('margin-bottom:var(--s-24)', rule('.mm-sec'), 'между подложками разделов 24 px (с 1.11 — подложки)')
         self.assertIn('font-size:21px', rule('.mm-sec h4'))
         self.assertIn('font-size:30px', rule('.mm-part-h'))
         for sel, h in (('.mm-tab', 38), ('.mm-cat', 36)):
