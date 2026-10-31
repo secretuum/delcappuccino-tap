@@ -939,6 +939,7 @@ def lang_page(html, lang):
     <span>%(footer_tag)s</span>
     <a href="%(menu_page)s">%(footer_menu)s</a>
     <a class="f-ugolok" href="/ugolok/" onclick="track('cta_ugolok')">%(footer_ugolok)s</a>
+    <span class="f-legal"><a href="/legal/offer.html" onclick="track('legal_open',{doc:'offer'})">%(footer_offer)s</a> <a href="/legal/privacy.html" onclick="track('legal_open',{doc:'privacy'})">%(footer_privacy)s</a> <a href="/legal/contacts.html" onclick="track('legal_open',{doc:'contacts'})">%(footer_contacts)s</a></span>
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
@@ -947,7 +948,7 @@ def lang_page(html, lang):
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
                                'about_h2', 'about_p', 'features_tag', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
-                               'footer_tag', 'footer_menu', 'footer_ugolok', 'nav_menu', 'nav_about', 'nav_features',
+                               'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
            locale=LOCALE[lang], site=SITE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),

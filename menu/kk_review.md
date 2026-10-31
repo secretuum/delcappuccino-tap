@@ -75,6 +75,9 @@
 | `page.footer_tag` | страница /kk/ | coffee &amp; food · Алматы |
 | `page.footer_menu` | страница /kk/ | Бағалары бар мәзір |
 | `page.footer_ugolok` | страница /kk/ | Тұтынушы бұрышы |
+| `page.footer_offer` | страница /kk/ | Жария оферта |
+| `page.footer_privacy` | страница /kk/ | Құпиялылық саясаты |
+| `page.footer_contacts` | страница /kk/ | Байланыс және деректемелер |
 | `faq.1.q` | частые вопросы на /kk/ (и FAQPage в разметке) | Del Cappuccino кофеханалары қашан жұмыс істейді? |
 | `faq.1.a` | частые вопросы на /kk/ (и FAQPage в разметке) | {часы} |
 | `faq.2.q` | частые вопросы на /kk/ (и FAQPage в разметке) | Алматыда Del Cappuccino кофеханалары қайда орналасқан? |
