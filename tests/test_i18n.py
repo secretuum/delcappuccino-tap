@@ -2,9 +2,11 @@
 из tools/pages_i18n.json и данных главной. Факты — те же, что на русской; hreflang и canonical на всех версиях;
 переключатель РУС / ҚАЗ / ENG; казахские строки — в menu/kk_review.md на вычитку.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
-import html as H, json, os, re, unittest
+import html as H, json, os, re, sys, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+import seo_jsonld as seo  # noqa: E402
 SITE = 'https://tap.delcappuccino.kz/'
 HOME = {'ru': ('index.html', SITE), 'kk': ('kk/index.html', SITE + 'kk/'), 'en': ('en/index.html', SITE + 'en/')}
 MENU = {'ru': ('menyu/index.html', SITE + 'menyu'), 'kk': ('kk/menyu/index.html', SITE + 'kk/menyu'),
@@ -107,9 +109,12 @@ class TestVersions(unittest.TestCase):
         for l in ('kk', 'en'):
             page = self.pages[('home', l)]
             scripts = re.findall(r'<script(?: type="application/ld\+json")?>(.*?)</script>', page, re.S)
-            # редизайн 31.10: + скрипт заставки из <head> главной (тот же текст, раз за сессию) — страница без него видна целиком
-            self.assertEqual(len(re.findall(r'<script\b', page)), 4, 'аналитика (2), JSON-LD и заставка — других скриптов нет')
-            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s for s in scripts))
+            # редизайн 31.10: + скрипт заставки из <head> главной (тот же текст, раз за сессию) и ленивый загрузчик анимации
+            # кофе в карточке подписки (тот же, что на главной) — страница без них видна целиком, вместо анимации постер
+            self.assertEqual(len(re.findall(r'<script\b', page)), 5, 'аналитика (2), JSON-LD, заставка и анимация кофе — других скриптов нет')
+            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or 'lottie.loadAnimation' in s for s in scripts))
+            self.assertIn(seo.SUB_JS, page)
+            self.assertIn(seo.SUB_JS, self.main, 'анимация кофе — тот же загрузчик, что на главной')
             intro = [s for s in scripts if 'intro-on' in s]
             self.assertEqual(len(intro), 1)
             self.assertIn('<script>%s</script>' % intro[0], self.main.split('</head>')[0], 'заставка — тот же скрипт, что на главной')
