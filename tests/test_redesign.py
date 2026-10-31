@@ -3,8 +3,8 @@
 Comfortaa, Golos Text и Cormorant главные не грузят; заставка «мопед въезжает в логотип» — раз за сессию, не при
 reduced-motion, без JS страница видна сразу; для поиска и аналитики всё на месте (h1, JSON-LD, hreflang, .f-legal).
 Правки владельца 31.10: без чипов и лент блюд, «Формат» без цифр; в блоке «акция» — карточка «кофейная подписка — скоро,
-в приложении» с анимацией кофе (Lottie, плеер лениво, без JS — постер); шапка оверлея меню — одна строка и пилюли.
-Поведение скриптов (заставка, загрузчик анимации, пилюля точки, заметка меню) гоняется в node на заглушке DOM, если node есть.
+в приложении» (с 1.11 — видео налива кофе, лениво, без JS — постер); шапка оверлея меню — одна строка и пилюли.
+Поведение скриптов (заставка, загрузчик видео, пилюля точки, заметка меню) гоняется в node на заглушке DOM, если node есть.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import glob, gzip, json, os, re, shutil, struct, subprocess, sys, tempfile, unittest
 
@@ -261,9 +261,6 @@ console.log(JSON.stringify(out));
             self.assertEqual(got[k], [{'shown': False, 'timers': [], 'after': False}], k)
 
 
-PLAYER_SHA256 = '23cd2c01be3d4da8bb664645d03afaff40879c62dc5f8dfe075ab3aa35c108f3'   # lottie-web 5.12.2 build/player/lottie_light.min.js
-
-
 class TestPage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -495,51 +492,45 @@ class TestPage(unittest.TestCase):
         self.assertIn('max-width:760px;margin:0 auto', re.search(r'\.faq-box\{([^}]*)\}', css).group(1))
         self.assertIn('justify-content:center', re.search(r'\.faq-sum\{([^}]*)\}', css).group(1))
 
-    def test_coffee_animation_files_and_credits(self):
-        import hashlib
-        A = seo.COFFEE_ANIM
-        for k, u in A.items():
-            self.assertRegex(u, r'^/assets/[\w-]+\.[0-9a-f]{8}\.(json|webp|js)$', k)
-            self.assertTrue(os.path.isfile(os.path.join(ROOT, u.lstrip('/'))), u)
-        with open(os.path.join(ROOT, A['player'].lstrip('/')), 'rb') as f:
-            self.assertEqual(hashlib.sha256(f.read()).hexdigest(), PLAYER_SHA256, 'плеер — lottie_light.min.js 5.12.2 без изменений')
-        self.assertLessEqual(os.path.getsize(os.path.join(ROOT, A['poster'].lstrip('/'))), 10 * 1024, 'постер маленький')
-        self.assertLessEqual(os.path.getsize(os.path.join(ROOT, A['src'].lstrip('/'))), 40 * 1024)
-        data = json.loads(read(A['src'].lstrip('/')))
-        self.assertEqual((data['w'], data['h']), (1080, 1080))
-        self.assertIn('CAROLINA SALAZAR', data['nm'])
-        lic = read('docs/LICENSES-media.md')
-        for need in ('CAROLINA SALAZAR', 'Lottie Simple License', 'https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR',
-                     'lottie-web', 'MIT', A['player'].lstrip('/'), A['src'].lstrip('/'), A['poster'].lstrip('/')):
-            self.assertIn(need, lic)
+    def test_subscription_video_files_and_credits(self):
+        """плитка подписки — видео налива кофе (владелец 1.11, вместо Lottie): файлы с хэшем, webm первым, постер маленький,
+        источник и лицензия Mixkit в разметке и docs; анимация, плеер и tools/lottie_brand.py удалены"""
+        V = seo.SUB_VIDEO
+        for k in ('webm', 'mp4', 'poster'):
+            self.assertRegex(V[k], r'^/assets/latte-pour(?:-poster)?\.[0-9a-f]{8}\.(webm|mp4|webp)$', k)
+            self.assertTrue(os.path.isfile(os.path.join(ROOT, V[k].lstrip('/'))), V[k])
+        self.assertLessEqual(os.path.getsize(os.path.join(ROOT, V['mp4'].lstrip('/'))), 1.2 * 1024 * 1024, 'mp4 ≤ 1,2 МБ')
+        self.assertLessEqual(os.path.getsize(os.path.join(ROOT, V['webm'].lstrip('/'))), 1.2 * 1024 * 1024)
+        self.assertLessEqual(os.path.getsize(os.path.join(ROOT, V['poster'].lstrip('/'))), 30 * 1024, 'постер маленький')
         for l, html in self.pages.items():
-            self.assertRegex(html, r'<!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License[^>]*MIT', l)
-            # плеер не на первом экране: ни preload, ни <script src>, ни PRECACHE — только загрузчик по IntersectionObserver
-            self.assertNotRegex(html, r'<link[^>]+lottie|<script[^>]+src="[^"]*lottie', l)
+            tile = re.search(r'<div class="promo-tile sub-tile">(.*?)\n    </div>', html, re.S).group(1)
+            self.assertIn('<!-- видео: Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License', tile)
+            vid = re.search(r'<video class="sub-video" ([^>]*)>\s*<source src="([^"]+)" type="video/webm">\s*<source src="([^"]+)" type="video/mp4">\s*</video>', tile)
+            self.assertIsNotNone(vid, '%s: видео во всю плитку, webm первым' % l)
+            attrs = vid.group(1)
+            for a in ('muted', 'loop', 'playsinline', 'preload="none"', 'poster="%s"' % V['poster']):
+                self.assertIn(a, attrs, l)
+            self.assertNotIn('autoplay', attrs, '%s: играет только на экране — через IntersectionObserver' % l)
+            self.assertEqual((vid.group(2), vid.group(3)), (V['webm'], V['mp4']))
             self.assertIn(seo.SUB_JS, html, l)
-            img = re.search(r'<div class="sub-anim"[^>]*><img src="([^"]+)" width="\d+" height="\d+" loading="lazy" decoding="async" alt="">', html)
-            self.assertEqual(img.group(1), A['poster'], '%s: без JS и при reduced-motion — постер' % l)
-        self.assertNotIn('lottie', re.search(r'PRECACHE\s*=\s*\[(.*?)\]', read('sw.js'), re.S).group(1))
-
-    def test_coffee_frames_from_animation_data(self):
-        """кадры загрузчика сверены с самой анимацией: в отрезке чашка в полный размер, кадр «полная чашка» — конец подъёма кофе"""
-        data = json.loads(read(seo.COFFEE_ANIM['src'].lstrip('/')))
-        comp = next(a for a in data['assets'] if a.get('layers'))
-        lay = {l['nm']: l for l in comp['layers']}
-        cup_s = lay['cup']['ks']['s']['k']
-        self.assertEqual(cup_s[0]['s'][:2], [0, 0], 'чашка начинает с масштаба 0')
-        self.assertLessEqual(cup_s[-1]['t'], seo.COFFEE_SEGMENT[0], 'к началу отрезка чашка уже в полный размер')
-        self.assertEqual(cup_s[-1]['s'][:2], [100, 100])
-        self.assertEqual(lay['liquid']['ks']['p']['k'][-1]['t'], seo.COFFEE_FULL, 'кадр полной чашки — конец подъёма кофе')
-        self.assertEqual(seo.COFFEE_SEGMENT[1], data['op'])
-        self.assertTrue(seo.COFFEE_SEGMENT[0] < seo.COFFEE_FULL < seo.COFFEE_SEGMENT[1])
+            self.assertNotRegex(html, r'<link[^>]+latte-pour', '%s: видео не в preload' % l)
+            self.assertNotRegex(html, r'(?i)lottie|brewing-coffee|sub-anim', '%s: от Lottie ничего не осталось' % l)
         css = style(self.pages['ru'])
-        self.assertRegex(css, r'\.sub-anim-l\{position:absolute;width:142\.86%;height:142\.86%;', 'контейнер анимации — с явными размерами')
-        self.assertIn('.sub-anim.on img{visibility:hidden}', css)
-        for old in ('assets/brewing-coffee.2e74c5d9.json', 'assets/brewing-coffee-poster.f762aef7.webp'):
-            self.assertFalse(os.path.exists(os.path.join(ROOT, old)), 'первая версия анимации удалена: ' + old)
+        self.assertIn('.sub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover', css)
+        self.assertIn('linear-gradient(to top', re.search(r'\.tile-cap\{([^}]*)\}', css).group(1), 'затемнение под подписью')
+        self.assertNotIn('latte-pour', re.search(r'PRECACHE\s*=\s*\[(.*?)\]', read('sw.js'), re.S).group(1))
+        for gone in ('assets/lottie_light.23cd2c01.js', 'assets/brewing-coffee.df6fc172.json', 'assets/brewing-coffee-poster.b7411dfe.webp',
+                     'assets/brewing-coffee.2e74c5d9.json', 'assets/brewing-coffee-poster.f762aef7.webp', 'tools/lottie_brand.py'):
+            self.assertFalse(os.path.exists(os.path.join(ROOT, gone)), 'удалено: ' + gone)
+        lic = read('docs/LICENSES-media.md')
+        for need in ('Mixkit', 'Mixkit Stock Video Free License', 'https://mixkit.co/free-stock-video/latte-art-810/', V['mp4'].lstrip('/'),
+                     V['webm'].lstrip('/'), V['poster'].lstrip('/'), 'tools/build_sub_video.py'):
+            self.assertIn(need, lic)
+        tool = read('tools/build_sub_video.py')
+        self.assertIn('xfade', tool, 'петля без рывка')
+        self.assertIn('-an', tool.split('X264')[0] + tool, 'без звука')
 
-    def test_coffee_loader_in_node(self):
+    def test_subscription_video_loader_in_node(self):
         node = find_node()
         if not node:
             self.skipTest('нет node')
@@ -547,45 +538,30 @@ class TestPage(unittest.TestCase):
         harness = r"""
 const vm = require('vm'); const js = %s; const out = {};
 function run(opts) {
-  const log = [], cls = new Set(), loadL = [], ios = [];
-  const box = { getAttribute: a => ({ 'data-player': '/p.js', 'data-src': '/a.json' })[a], querySelector: () => ({ id: 'l' }),
-    classList: { add: c => cls.add(c) } };
-  const ctx = { document: { querySelector: () => box, readyState: opts.ready || 'complete',
-      createElement: () => ({}), head: { appendChild: s => { log.push(['script', s.src, s.async]); ctx.__s = s; } } },
+  const log = [], loadL = [];
+  const v = { muted: false, play() { log.push(['play', this.muted]); return Promise.resolve(); }, pause() { log.push(['pause']); } };
+  const ctx = { document: { querySelector: s => s === '.sub-video' ? v : null, readyState: opts.ready || 'complete' },
     matchMedia: () => ({ matches: !!opts.reduce }), addEventListener: (t, f) => loadL.push([t, f]) };
-  if (!opts.noIO) ctx.IntersectionObserver = function (cb, o) { ios.push(o); this.observe = () => log.push(['observe']); ctx.__cb = cb; };
+  if (!opts.noIO) ctx.IntersectionObserver = function (cb, o) { this.observe = el => log.push(['observe', el === v, o.threshold]); ctx.__cb = cb; };
   ctx.window = ctx; vm.createContext(ctx); vm.runInContext(js, ctx);
+  if (opts.ready === 'loading') { log.push(['before load']); loadL.forEach(([t, f]) => t === 'load' && f()); }
   const fire = on => ctx.__cb && ctx.__cb([{ isIntersecting: on }]);
-  if (opts.ready === 'loading') { log.push(['before load', ios.length]); loadL.forEach(([t, f]) => t === 'load' && f()); }
-  fire(false); fire(true); fire(true);
-  if (ctx.__s) {
-    const anim = { ev: {}, play() { log.push(['play']); }, pause() { log.push(['pause']); }, addEventListener(e, f) { this.ev[e] = f; },
-      setSegment(a, b) { log.push(['segment', a, b]); }, goToAndStop(v, f) { log.push(['stop', v, f]); } };
-    ctx.lottie = { loadAnimation: o => { log.push(['load', o.renderer, o.loop, o.autoplay, o.path, o.container.id,
-                                                    (o.rendererSettings || {}).preserveAspectRatio]); return anim; } };
-    ctx.__s.onload(); log.push(['on before DOMLoaded', cls.has('on')]); anim.ev.DOMLoaded(); log.push(['on', cls.has('on')]);
-    fire(false); fire(true);
-  }
+  fire(true); fire(false); fire(true);
   return log;
 }
 out.normal = run({}); out.before_load = run({ ready: 'loading' }); out.reduce = run({ reduce: true }); out.no_io = run({ noIO: true });
 console.log(JSON.stringify(out));
 """ % json.dumps(js)
         with tempfile.TemporaryDirectory() as d:
-            f = os.path.join(d, 'l.js')
+            f = os.path.join(d, 'v.js')
             with open(f, 'w', encoding='utf-8') as fh:
                 fh.write(harness)
             r = subprocess.run([node, f], capture_output=True, text=True, timeout=30)
         self.assertEqual(r.returncode, 0, r.stderr[-800:])
         got = json.loads(r.stdout)
-        # 1.11: autoplay выключен — после DOMLoaded отрезок 10–175 (без кадров 0–9, где чашка растёт из точки), кадр 150 (полная
-        # чашка; goToAndStop — от начала отрезка), постер прячется только тогда; видна карточка — play, вне экрана — пауза
-        seg, full = seo.COFFEE_SEGMENT, seo.COFFEE_FULL
-        want = [['observe'], ['script', '/p.js', True], ['load', 'svg', True, False, '/a.json', 'l', 'xMidYMid meet'],
-                ['on before DOMLoaded', False], ['segment', seg[0], seg[1]], ['stop', full - seg[0], True], ['play'], ['on', True],
-                ['pause'], ['play']]
-        self.assertEqual(got['normal'], want, 'плеер — один раз, когда карточка на экране; вне экрана — пауза')
-        self.assertEqual(got['before_load'], [['before load', 0]] + want, 'до load ничего не грузим')
+        want = [['observe', True, .25], ['play', True], ['pause'], ['play', True]]
+        self.assertEqual(got['normal'], want, 'на экране — play (muted), вне экрана — pause')
+        self.assertEqual(got['before_load'], [['before load']] + want, 'до load ничего не грузим')
         self.assertEqual(got['reduce'], [], 'reduced-motion — только постер')
         self.assertEqual(got['no_io'], [])
 

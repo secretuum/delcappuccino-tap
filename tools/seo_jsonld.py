@@ -22,7 +22,7 @@
   {работа} {животные}) — из tools/branch_facts.json (факты владельца 23.10.2026); карточка «Детская зона» на главной
   сверяется с ними. Допустимый HTML в ответах: <a href>, <ul>, <li>.
 - Главная после редизайна (31.10.2026, по приложению): в блоке «акция» — карточка «кофейная подписка — скоро, в приложении»
-  с анимацией кофе (Lottie, плеер грузится лениво; ссылки на сторы — константа APP_LINKS, пока пусто), подписи —
+  с видео налива кофе (грузится лениво; ссылки на сторы — константа APP_LINKS, пока пусто), подписи —
   tools/pages_i18n.json (sub); та же карточка на /kk/ и /en/. /kk/ и /en/ собираются по тому же макету, что главная:
   шапка с пилюлей точек и кругом языка, видеозона с логотипом, заставка; стили — правила <style> главной (токены v5,
   шрифт — --font-display и --font-body её :root).
@@ -666,8 +666,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 # точки (кнопки-значки), вопросы, контакты, подвал (без оверлея меню, модалки, «Курицы гриль» и фото «Фирменный стиль»)
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
-                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-anim|'
-                      r'sub-anim-l|icons|ic|ib|pill|social|'
+                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
+                      r'icons|ic|ib|pill|social|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|hide-mobile))(?![\w-])')
@@ -1271,44 +1271,31 @@ def with_loc(html):
     return html[:m.start()] + loc_cards(html) + html[m.end():]
 
 
-# ── Карточка подписки в блоке «акция» (редизайн, правки владельца 31.10.2026): анимация «кофе наливается в чашку» ──
-# Анимация — Lottie «Brewing coffee», автор CAROLINA SALAZAR, LottieFiles (Lottie Simple License, бесплатно, коммерция
-# разрешена): https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR; перекрашена под бренд tools/lottie_brand.py.
-# Плеер — lottie-web 5.12.2, сборка light (Airbnb, MIT), грузится лениво: после load и когда карточка на экране.
-# Без JS и при reduced-motion — статичный постер. Источники и лицензии — docs/LICENSES-media.md.
+# ── Плитка подписки в блоке «акции»: видео, где наливают кофе (решение владельца 1.11.2026 — вместо анимации-чашки) ──
+# Видео — Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License
+# (бесплатно, коммерция разрешена, атрибуция не нужна); клип собирает tools/build_sub_video.py из исходника вне репозитория:
+# весь налив 0–31 с ×2, петля с перетеканием конца в начало, 960×654 под плитку, webm VP9 + mp4 H.264, постер webp.
+# Грузится и играет, только когда плитка на экране (IntersectionObserver, после load), вне экрана — пауза; без JS и при
+# reduced-motion — постер; в preload и PRECACHE sw.js видео нет (sw.js пропускает mp4/webm). Лицензии — docs/LICENSES-media.md.
 # Подписи — tools/pages_i18n.json (раздел sub у ru/kk/en).
 
 # Мобильное приложение: ссылок на сторы пока нет (аккаунты ждут D-U-N-S, выпуск — примерно середина ноября 2026).
 # Появятся — вписать сюда (одна правка) и пересобрать: вместо «скоро, в приложении» встанут ссылки, событие app_store {store}.
 APP_LINKS = {'App Store': None, 'Google Play': None}
-COFFEE_ANIM = {'src': '/assets/brewing-coffee.df6fc172.json', 'poster': '/assets/brewing-coffee-poster.b7411dfe.webp',
-               'player': '/assets/lottie_light.23cd2c01.js'}
-SUB_MARK = '<!-- Карточка подписки (анимация кофе) — собирает tools/seo_jsonld.py, руками не править -->'
+SUB_VIDEO = {'webm': '/assets/latte-pour.0aa34e2d.webm', 'mp4': '/assets/latte-pour.eaff9eed.mp4',
+             'poster': '/assets/latte-pour-poster.eace987c.webp', 'w': 960, 'h': 654}
+SUB_MARK = '<!-- Плитка подписки (видео налива кофе) — собирает tools/seo_jsonld.py, руками не править -->'
 SUB_RE = re.compile(re.escape(SUB_MARK) + r'\n.*?<!-- /подписка -->\n', re.S)
-# Кадры анимации (assets/brewing-coffee.*.json, 24 к/с, 0–175): чашка вырастает из точки на кадрах 0–9 (масштаб 0 → 100),
-# кофе поднимается 13–150, пар — 46–72, 91–117, 140–167. Владелец видел крошечную чашку без кофе и пара — это кадры 0–3:
-# анимация стартовала с нуля и попадала на снимок / паузу в самом начале. Поэтому играем только 10–175 (чашка всегда в
-# полный размер), а до запуска и на паузе держим кадр 150 — полная чашка, как на постере.
-COFFEE_SEGMENT = (10, 175)
-COFFEE_FULL = 150
-# загрузчик плеера: после load, по IntersectionObserver (вне экрана — пауза); reduced-motion, нет IO или ошибка — остаётся
-# постер. Контейнер .sub-anim-l — того же размера и сдвига, что постер; SVG — xMidYMid meet; постер прячем по DOMLoaded,
-# когда уже стоит кадр с полной чашкой
-SUB_JS = ("<script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;"
-          "try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
-          "var anim=null,ready=false,vis=false,asked=false;function start(){new IntersectionObserver(function(es){"
-          "vis=es[es.length-1].isIntersecting;if(ready){vis?anim.play():anim.pause();return}if(!vis||asked)return;asked=true;"
-          "var s=document.createElement('script');s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{"
-          "anim=lottie.loadAnimation({container:box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:false,"
-          "path:box.getAttribute('data-src'),rendererSettings:{preserveAspectRatio:'xMidYMid meet'}});"
-          "anim.addEventListener('DOMLoaded',function(){anim.setSegment(%d,%d);anim.goToAndStop(%d,true);box.classList.add('on');"
-          "ready=true;if(vis)anim.play()})}catch(e){}};document.head.appendChild(s)},"
-          "{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>"
-          % (COFFEE_SEGMENT[0], COFFEE_SEGMENT[1], COFFEE_FULL - COFFEE_SEGMENT[0]))   # goToAndStop — от начала отрезка
+# загрузчик видео: после load, по IntersectionObserver — play, вне экрана — pause; reduced-motion или нет IO — постер
+SUB_JS = ("<script>(function(){var v=document.querySelector('.sub-video');if(!v||!('IntersectionObserver'in window))return;"
+          "try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}v.muted=true;"
+          "function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}"
+          "function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}"
+          "if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
 
 
 def sub_card(lang):
-    """карточка «кофейная подписка — скоро, в приложении» с анимацией кофе (постер без JS) и загрузчиком плеера"""
+    """плитка «кофейная подписка — скоро, в приложении» с видео (постер без JS) и загрузчиком"""
     S = i18n()[lang]['sub']
     e = lambda x: H.escape(x, quote=False)
     links = [(n, u) for n, u in APP_LINKS.items() if u]
@@ -1316,14 +1303,15 @@ def sub_card(lang):
             '<span class="promo-s">%s</span> <span class="promo-a">%s</span>' % (e(S['now']), ' · '.join(
                 '<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>' % (H.escape(u), js_str(n), e(n))
                 for n, u in links)))
-    # плитка пары к огненной рамке «Курицы гриль»: та же форма 910×620, фирменный зелёный, кремовая чашка, подпись внизу
+    V = SUB_VIDEO
+    # плитка пары к огненной рамке «Курицы гриль»: та же форма 910×620, видео во всю плитку, подпись внизу на затемнении
     return ('    <div class="promo-tile sub-tile">\n'
-            '      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License '
-            '(https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->\n'
-            '      <div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" '
-            'decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div>\n'
+            '      <!-- видео: Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License; '
+            'клип — tools/build_sub_video.py; docs/LICENSES-media.md -->\n'
+            '      <video class="sub-video" poster="%s" width="%d" height="%d" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">\n'
+            '        <source src="%s" type="video/webm">\n        <source src="%s" type="video/mp4">\n      </video>\n'
             '      <p class="tile-cap"><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
-            % (COFFEE_ANIM['src'], COFFEE_ANIM['player'], COFFEE_ANIM['poster'], e(S['title']), line, SUB_JS))
+            % (V['poster'], V['w'], V['h'], V['webm'], V['mp4'], e(S['title']), line, SUB_JS))
 
 
 def with_sub(html):
