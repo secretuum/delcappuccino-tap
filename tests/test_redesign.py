@@ -277,7 +277,19 @@ class TestPage(unittest.TestCase):
             self.assertIn(seo.AN_MARK, html.split('</head>')[0], l)
             foot = re.search(r'<footer\b.*?</footer>', html, re.S).group(0)
             self.assertIn('<span class="f-legal"><a class="f-ugolok" href="/ugolok/" onclick="track(\'cta_ugolok\')">', foot, l)
-        self.assertIn('<h1>Вкус,<br>который<br>собирает <span>близких</span>.</h1>', self.pages['ru'], 'h1 главной — прежний текст')
+        self.assertIn('<h1>Вкус,<br>который<br>собирает <span>близких</span></h1>', self.pages['ru'], 'h1 главной — прежний текст (без точки — 1.11)')
+
+    def test_headings_without_trailing_period(self):
+        """владелец 1.11: «точки в заголовках убери» — ни один видимый h1/h2/h3 на трёх главных (и заголовок окна выбора
+        филиала) не кончается точкой; текст абзацев не трогаем"""
+        import html as H
+        for l, html in self.pages.items():
+            body = html.split('</head>')[1]
+            heads = [(m.group(1), H.unescape(re.sub(r'<[^>]+>', '', m.group(2))).strip())
+                     for m in re.finditer(r'<h([123])\b[^>]*>(.*?)</h\1>', body, re.S)]
+            self.assertGreaterEqual(len(heads), 15, l)
+            self.assertEqual([t for _, t in heads if t.endswith('.')], [], '%s: заголовки с точкой в конце' % l)
+        self.assertIn('<h3>Выберите<br>филиал</h3>', self.pages['ru'], 'заголовок окна выбора филиала')
 
     def test_owner_cuts_31_10(self):
         """правки владельца 31.10: без чипов и лент блюд, «Формат» без цифр и надзаголовка; кнопки hero остаются"""

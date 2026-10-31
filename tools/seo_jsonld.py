@@ -343,7 +343,7 @@ def faq_block(items, head=None):
     """раздел «Частые вопросы» (правки владельца 31.10): по умолчанию свёрнут — видна плашка-заголовок по центру; по нажатию
     раскрывается список, каждый вопрос — свой <details>. Без JS, тексты в HTML (тот же текст — FAQPage в JSON-LD).
     Ссылка на меню текстом — под плашкой, видна и в свёрнутом виде. head — (заголовок, строка со ссылкой) для /kk/ и /en/"""
-    h2, p = head or ('Частые <span>вопросы</span>.', 'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
+    h2, p = head or ('Частые <span>вопросы</span>', 'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
     rows = '\n'.join('      <details ontoggle="if(this.open)track(\'faq_open\',{q:%d})"><summary>%s</summary><div class="faq-a">%s</div></details>'
                      % (i + 1, H.escape(q, quote=False), a) for i, (q, a) in enumerate(items))
     return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n'
