@@ -111,8 +111,12 @@ class TestVersions(unittest.TestCase):
             scripts = re.findall(r'<script(?: type="application/ld\+json")?>(.*?)</script>', page, re.S)
             # редизайн 31.10: + скрипт заставки из <head> главной (тот же текст, раз за сессию) и ленивый загрузчик анимации
             # кофе в карточке подписки (тот же, что на главной) — страница без них видна целиком, вместо анимации постер
-            self.assertEqual(len(re.findall(r'<script\b', page)), 5, 'аналитика (2), JSON-LD, заставка и видео подписки — других скриптов нет')
-            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or "querySelector('.sub-video')" in s for s in scripts))
+            # 1.11: + скрипт «движение» (появление при прокрутке, параллакс) — тот же, что на главной; без него всё видно сразу
+            self.assertEqual(len(re.findall(r'<script\b', page)), 6, 'аналитика (2), JSON-LD, заставка, видео подписки и движение — других скриптов нет')
+            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or "querySelector('.sub-video')" in s
+                                or "classList.add('rv-in')" in s for s in scripts))
+            self.assertIn(seo.MOTION_JS, page)
+            self.assertIn(seo.MOTION_JS, self.main, 'движение — тот же скрипт, что на главной')
             self.assertIn(seo.SUB_JS, page)
             self.assertIn(seo.SUB_JS, self.main, 'видео подписки — тот же загрузчик, что на главной')
             intro = [s for s in scripts if 'intro-on' in s]

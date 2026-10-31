@@ -715,7 +715,7 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
                       r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
-                      r'icons|ic|ib|pill|social|'
+                      r'icons|ic|ib|pill|social|rv|rv-in|rv-fast|px-on|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|hide-mobile))(?![\w-])')
@@ -1036,6 +1036,7 @@ def lang_page(html, lang):
   </div>
 </footer>
 <a class="fab-menu" href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>%(nav_menu)s</a>
+%(motion)s
 %(ga_loader)s
 </body>
 </html>
@@ -1048,7 +1049,7 @@ def lang_page(html, lang):
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           sub=sub_card(lang), icons=ICONS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
+           sub=sub_card(lang), icons=ICONS, motion=MOTION_JS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
@@ -1389,6 +1390,46 @@ def with_sub(html):
     return html[:m.start()] + SUB_MARK + '\n' + sub_card('ru') + '<!-- /подписка -->\n' + html[m.end():]
 
 
+# ── Движение на главных (владелец 1.11: «чтобы карточки немного двигались, когда двигаешься по экрану») ──
+# Появление при прокрутке: карточки ниже первого экрана получают класс rv (снизу 20 px и прозрачность), при входе в экран
+# (IntersectionObserver, threshold .15, rootMargin снизу −10 %) — rv-in: 600 мс cubic-bezier(.2,.7,.2,1), лесенка по 75 мс
+# в ряду (не длиннее 4); после — классы снимаются (наведение работает как обычно). Уже видимые при загрузке не прячутся.
+# Параллакс (только ширина > 900 px): логотип в зелёной видеозоне и фото «О нас» смещаются на ±6 % высоты рамки,
+# requestAnimationFrame + translate3d, scroll passive, только пока блок на экране. Меню-оверлей: подложки разделов —
+# так же, но 16 px и 350 мс, лесенка не длиннее 3 (window.revealMenu, вызывает renderFeed).
+# reduced-motion или нет IntersectionObserver — ничего не делает; без JS всё видно (класс скрытия ставит только скрипт).
+MOTION_MARK = '<!-- движение: появление при прокрутке, параллакс — собирает tools/seo_jsonld.py, руками не править -->'
+MOTION_RE = re.compile(re.escape(MOTION_MARK) + r'\n.*?<!-- /движение -->\n', re.S)
+MOTION_SEL = '.promo-tile,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
+MOTION_JS = ("<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
+             "if(!('IntersectionObserver'in window))return;var d=document,SEL='" + MOTION_SEL + "';"
+             "function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){"
+             "es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);el.classList.add('rv-in');"
+             "setTimeout(function(){el.classList.remove('rv','rv-in',cls);el.style.removeProperty('--rv-d')},1000)})},"
+             "{root:root||null,threshold:.15,rootMargin:'0px 0px -10% 0px'});"
+             "els.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vh*.9)return;var i=0,s=el.previousElementSibling;"
+             "while(s){if(s.matches&&s.matches(el.parentNode&&el.parentNode.matches&&el.parentNode.matches('.mm-cols')?'.mm-sec':SEL))i++;s=s.previousElementSibling}"
+             "el.style.setProperty('--rv-d',(i%max)*step+'ms');el.classList.add('rv');if(cls)el.classList.add(cls);io.observe(el)})}"
+             "prep([].slice.call(d.querySelectorAll(SEL)),'',null,75,4);"
+             "window.revealMenu=function(){var m=d.getElementById('menu-modal');if(!m)return;"
+             "prep([].slice.call(m.querySelectorAll('.mm-sec')),'rv-fast',m,60,3)};"
+             "if(!matchMedia('(min-width:901px)').matches)return;"
+             "var px=[].slice.call(d.querySelectorAll('.hero-zone .logo-art,.story-photo img')),on=[],tick=false;if(!px.length)return;"
+             "d.documentElement.classList.add('px-on');"
+             "function upd(){tick=false;px.forEach(function(el,k){if(!on[k])return;var f=el.parentNode.getBoundingClientRect();"
+             "var p=Math.max(-1,Math.min(1,(f.top+f.height/2-window.innerHeight/2)/window.innerHeight));el.style.setProperty('--py',(p*-.06*f.height).toFixed(1)+'px')})}"
+             "var pio=new IntersectionObserver(function(es){es.forEach(function(e){on[px.indexOf(e.target)]=e.isIntersecting})});"
+             "px.forEach(function(el){pio.observe(el)});"
+             "addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});upd()})();</script>")
+
+
+def with_motion(html):
+    m = MOTION_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: на главной нет маркеров «%s … <!-- /движение -->»' % MOTION_MARK[:40])
+    return html[:m.start()] + MOTION_MARK + '\n' + MOTION_JS + '\n<!-- /движение -->\n' + html[m.end():]
+
+
 def with_jsonld(html):
     new = block(html)
     m = BLOCK_RE.search(html)
@@ -1397,7 +1438,7 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_social(with_icons(with_sub(with_faq(html))))))))
+    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_motion(with_social(with_icons(with_sub(with_faq(html)))))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
     for lang in LANGS:

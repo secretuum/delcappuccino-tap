@@ -762,6 +762,83 @@ console.log(JSON.stringify(out));
             self.assertIn('.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}', mcss)
             self.assertIn('li:last-child{border-bottom:0}', mcss)
 
+    def test_motion_in_node(self):
+        """движение (владелец 1.11): карточки ниже экрана получают rv и лесенку --rv-d, при входе в экран — rv-in, потом
+        классы снимаются; видимые при загрузке не прячутся; reduced-motion и без IntersectionObserver — ничего; параллакс
+        только > 900 px, scroll passive, translate через --py; подложки меню — rv-fast, лесенка ≤ 3"""
+        node = find_node()
+        if not node:
+            self.skipTest('нет node')
+        js = re.search(r'<script>(.*)</script>', seo.MOTION_JS, re.S).group(1)
+        harness = r"""
+const vm = require('vm'); const js = %s; const SEL = %s; const out = {};
+function mk(name, top, parent, ref) {
+  const cls = new Set(), props = {};
+  const el = { name, parentNode: parent, previousElementSibling: ref || null, clientHeight: 800,
+    classList: { add: (...c) => c.forEach(x => cls.add(x)), remove: (...c) => c.forEach(x => cls.delete(x)), contains: c => cls.has(c) },
+    style: { setProperty: (k, v) => { props[k] = v; }, removeProperty: k => { delete props[k]; } },
+    getBoundingClientRect: () => ({ top, height: 300 }), matches: s => s.split(',').some(x => x.trim() === name || x.trim().endsWith(' ' + name)),
+    _cls: cls, _props: props };
+  return el;
+}
+function run(opts) {
+  const grid = mk('.f-grid', 0, null); grid.matches = s => s === '.f-grid';
+  const a = mk('article', 2000, grid), b = mk('article', 2000, grid, a), c = mk('article', 2000, grid, b);
+  const seen = mk('.loc-card', 100, grid);             // уже в экране при загрузке
+  const photo = mk('img', 1500, mk('.story-photo', 1500, null));
+  const timers = [], ios = [], scroll = [];
+  const ctx = { document: { querySelectorAll: s => s === SEL ? [a, b, c, seen] : (s.indexOf('logo-art') >= 0 ? [photo] : []),
+      getElementById: () => null, documentElement: mk('html', 0, null) },
+    innerHeight: 800, matchMedia: q => ({ matches: q.indexOf('reduce') >= 0 ? !!opts.reduce : (q.indexOf('901') >= 0 ? !!opts.desk : false) }),
+    setTimeout: f => timers.push(f), requestAnimationFrame: f => f(),
+    addEventListener: (t, f, o) => scroll.push([t, o, f]) };
+  if (!opts.noIO) ctx.IntersectionObserver = function (cb, o) { this.o = o; this.cb = cb; this.list = []; this.observe = el => this.list.push(el); this.unobserve = () => {}; ios.push(this); };
+  ctx.window = ctx; vm.createContext(ctx); vm.runInContext(js, ctx);
+  const st = () => [a, b, c, seen].map(e => [...e._cls].sort().join(' ') + '|' + (e._props['--rv-d'] || ''));
+  const r = { before: st(), ios: ios.map(i => [(i.o || {}).threshold, (i.o || {}).rootMargin, i.list.length]), menu: typeof ctx.revealMenu };
+  if (ios[0]) { ios[0].cb([{ isIntersecting: true, target: a }]); r.inView = st(); timers.forEach(f => f()); r.after = st(); }
+  r.px = ctx.document.documentElement._cls.has('px-on'); r.scroll = scroll.filter(x => x[0] === 'scroll').map(x => x[1]);
+  if (opts.desk && ios[1]) { ios[1].cb([{ isIntersecting: true, target: photo }]); scroll.filter(x => x[0] === 'scroll').forEach(x => x[2]()); r.py = photo._props['--py']; }
+  return r;
+}
+out.mobile = run({}); out.desk = run({ desk: true }); out.reduce = run({ reduce: true }); out.noIO = run({ noIO: true });
+console.log(JSON.stringify(out));
+""" % (json.dumps(js), json.dumps(seo.MOTION_SEL))
+        with tempfile.TemporaryDirectory() as d:
+            f = os.path.join(d, 'mo.js')
+            with open(f, 'w', encoding='utf-8') as fh:
+                fh.write(harness)
+            r = subprocess.run([node, f], capture_output=True, text=True, timeout=30)
+        self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+        got = json.loads(r.stdout)
+        m = got['mobile']
+        self.assertEqual(m['before'], ['rv|0ms', 'rv|75ms', 'rv|150ms', '|'], 'ниже экрана — rv лесенкой по 75 мс; видимая при загрузке не прячется')
+        self.assertEqual(m['ios'][0], [0.15, '0px 0px -10% 0px', 3])
+        self.assertEqual(m['inView'][0], 'rv rv-in|0ms')
+        self.assertEqual(m['after'][0], '|', 'после появления классы сняты')
+        self.assertEqual(m['menu'], 'function')
+        self.assertFalse(m['px'], 'на телефоне параллакса нет')
+        self.assertTrue(got['desk']['px'])
+        self.assertEqual(got['desk']['scroll'], [{'passive': True}])
+        self.assertRegex(got['desk']['py'] or '', r'^-?\d+(\.\d)?px$', 'параллакс — сдвиг в px через --py')
+        for k in ('reduce', 'noIO'):
+            self.assertEqual(got[k]['before'], ['|', '|', '|', '|'], '%s: всё видно сразу' % k)
+            self.assertEqual(got[k]['ios'], [])
+            self.assertFalse(got[k]['px'])
+        css = re.sub(r'/\*.*?\*/', '', style(self.pages['ru']), flags=re.S)
+        self.assertIn('.rv{opacity:0;transform:translate3d(0,20px,0)}', css)
+        self.assertIn('transition:opacity .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms),transform .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms)', css)
+        self.assertIn('.rv-fast.rv-in{transition-duration:.35s}', css)
+        self.assertIn('@media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}', css)
+        hov = re.search(r'@media\(hover:hover\)\{(.*?)\}\}', css, re.S).group(1)
+        self.assertIn('transform:translateY(-4px)', hov)
+        self.assertIn('.ib:hover{transform:scale(1.05)', hov)
+        self.assertNotRegex(re.search(r'\.rv\.rv-in\{([^}]*)\}', css).group(1), r'(?:^|;)(?:top|margin|height|width):', 'только transform и opacity')
+        for l, html in self.pages.items():
+            self.assertEqual(html.count(seo.MOTION_JS), 1, l)
+            self.assertLess(html.index(seo.MOTION_JS), html.index('</body>'))
+        self.assertIn('if(window.revealMenu) revealMenu();', self.pages['ru'], 'подложки меню появляются при прокрутке')
+
     def test_menu_overlay_css(self):
         """этап 2: разделы не капсом и без разрядки, строки без подчёркиваний, NEW пилюлей olive, легенда пилюлями,
         карточка блюда на белом, крестик круглый, цена пилюлей forest; крема и старых шрифтов нет"""

@@ -381,6 +381,23 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 @media(max-width:359px){.hbar{padding:var(--s-8) var(--s-12)}.pill-point{padding:0 var(--s-12)}}
 
 
+/* ── движение (владелец 1.11): появление при прокрутке, лёгкий параллакс, отклик на наведение; классы ставит скрипт
+   «движение» в конце страницы (tools/seo_jsonld.py), без JS и при reduced-motion — всё видно сразу. Только transform и opacity ── */
+.rv{opacity:0;transform:translate3d(0,20px,0)}
+.rv.rv-in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms),transform .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms)}
+.rv-fast{transform:translate3d(0,16px,0)}
+.rv-fast.rv-in{transition-duration:.35s}
+.px-on .hero-zone .logo-art{transform:translate3d(0,var(--py,0px),0);will-change:transform}
+.px-on .story-photo img{transform:translate3d(0,var(--py,0px),0) scale(1.12);will-change:transform}
+@media(hover:hover){
+.promo-tile,.f-grid article,.loc-card,.stats>div,.sc-row img{transition:transform .2s ease,box-shadow .2s ease}
+.promo-tile:hover,.f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{transform:translateY(-4px)}
+.f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{box-shadow:0 10px 30px rgba(49,73,47,.2)}
+.ib{transition:transform .2s ease,background .15s}
+.ib:hover{transform:scale(1.05)}
+}
+@media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}.px-on .hero-zone .logo-art,.px-on .story-photo img{transform:none!important}}
+
 /* ── MENU OVERLAY ──────────────────────── */
 .menu-modal{position:fixed;inset:0;z-index:120;display:none;background:var(--c-bg);overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .menu-modal.open{display:block}
@@ -2039,6 +2056,7 @@ function renderFeed(){
       <h3 class="mm-part-h">${ui['tab_'+t]}</h3>
       <div class="mm-cols">${tabs[t].map((s,i)=>secHTML(s,t,i)).join('')}</div>
     </section>`).join('');
+  if(window.revealMenu) revealMenu();   /* подложки разделов мягко появляются при прокрутке меню (скрипт «движение») */
 }
 
 function renderCats(){
@@ -2490,5 +2508,8 @@ menuFromHash(); addEventListener('hashchange',menuFromHash);
   if('serviceWorker'in navigator)addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){})});
 })();
 </script>
+<!-- движение: появление при прокрутке, параллакс — собирает tools/seo_jsonld.py, руками не править -->
+<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}if(!('IntersectionObserver'in window))return;var d=document,SEL='.promo-tile,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact';function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);el.classList.add('rv-in');setTimeout(function(){el.classList.remove('rv','rv-in',cls);el.style.removeProperty('--rv-d')},1000)})},{root:root||null,threshold:.15,rootMargin:'0px 0px -10% 0px'});els.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vh*.9)return;var i=0,s=el.previousElementSibling;while(s){if(s.matches&&s.matches(el.parentNode&&el.parentNode.matches&&el.parentNode.matches('.mm-cols')?'.mm-sec':SEL))i++;s=s.previousElementSibling}el.style.setProperty('--rv-d',(i%max)*step+'ms');el.classList.add('rv');if(cls)el.classList.add(cls);io.observe(el)})}prep([].slice.call(d.querySelectorAll(SEL)),'',null,75,4);window.revealMenu=function(){var m=d.getElementById('menu-modal');if(!m)return;prep([].slice.call(m.querySelectorAll('.mm-sec')),'rv-fast',m,60,3)};if(!matchMedia('(min-width:901px)').matches)return;var px=[].slice.call(d.querySelectorAll('.hero-zone .logo-art,.story-photo img')),on=[],tick=false;if(!px.length)return;d.documentElement.classList.add('px-on');function upd(){tick=false;px.forEach(function(el,k){if(!on[k])return;var f=el.parentNode.getBoundingClientRect();var p=Math.max(-1,Math.min(1,(f.top+f.height/2-window.innerHeight/2)/window.innerHeight));el.style.setProperty('--py',(p*-.06*f.height).toFixed(1)+'px')})}var pio=new IntersectionObserver(function(es){es.forEach(function(e){on[px.indexOf(e.target)]=e.isIntersecting})});px.forEach(function(el){pio.observe(el)});addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});upd()})();</script>
+<!-- /движение -->
 </body>
 </html>
