@@ -337,14 +337,16 @@ def faq(html, lang='ru'):
 
 
 def faq_block(items, head=None):
-    """раздел «Частые вопросы»; head — (метка, заголовок, строка со ссылкой на меню) для /kk/ и /en/"""
-    tag, h2, p = head or ('вопросы и ответы', 'Частые <span>вопросы</span>.',
-                          'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
+    """раздел «Частые вопросы» (правки владельца 31.10): по умолчанию свёрнут — видна плашка-заголовок по центру; по нажатию
+    раскрывается список, каждый вопрос — свой <details>. Без JS, тексты в HTML (тот же текст — FAQPage в JSON-LD).
+    Ссылка на меню текстом — под плашкой, видна и в свёрнутом виде. head — (заголовок, строка со ссылкой) для /kk/ и /en/"""
+    h2, p = head or ('Частые <span>вопросы</span>.', 'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
     rows = '\n'.join('      <details ontoggle="if(this.open)track(\'faq_open\',{q:%d})"><summary>%s</summary><div class="faq-a">%s</div></details>'
                      % (i + 1, H.escape(q, quote=False), a) for i, (q, a) in enumerate(items))
-    return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n    <div class="faq-head">\n'
-            '      <div><p class="tag">%s</p><h2>%s</h2></div>\n      <p>%s</p>\n    </div>\n' % (tag, h2, p) +
-            '    <div class="faq-list">\n' + rows + '\n    </div>\n  </div>\n</section>\n' + ('' if head else '<!-- /faq -->\n'))
+    return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n'
+            '    <details class="faq-box" ontoggle="if(this.open)track(\'faq_list\')">\n      <summary class="faq-sum"><h2>%s</h2></summary>\n'
+            '    <div class="faq-list">\n' % h2 + rows + '\n    </div>\n    </details>\n    <p class="faq-more">%s</p>\n  </div>\n</section>\n' % p +
+            ('' if head else '<!-- /faq -->\n'))
 
 
 def ui_dict(html, lang):
@@ -660,13 +662,14 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
        'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID}
 
 
-# селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, витрина, «О нас», «Формат», точки,
-# вопросы, контакты, подвал (без оверлея меню, модалки, акции и фото «Фирменный стиль»)
+# селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
+# точки (кнопки-значки), вопросы, контакты, подвал (без оверлея меню, модалки, «Курицы гриль» и фото «Фирменный стиль»)
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
-                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|row-head|sub-card|sub-anim|sub-anim-l|sub-t|sub-s|'
+                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-card|promo-media|promo-t|promo-s|promo-a|row-head|sub-card|sub-anim|'
+                      r'sub-anim-l|icons|ic|ib|pill|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|'
-                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-head|faq-list|faq-a|contact|contact-actions|'
+                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|hide-mobile))(?![\w-])')
 CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out')     # анимации заставки
 
@@ -828,25 +831,24 @@ def lang_page(html, lang):
     mono = '<img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC">'
 
     def card(b):
-        num = re.match(r'\d+', b['n']).group(0)
         need(c, [short(b), b['addr']] + ([b['note']] if b['note'] and b['note'] not in c['d']['branch_note'] else []))
         note = c['d']['branch_note'].get(b['note'], T(c, b['note'])) if b['note'] else ''
         wa = 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']),
                                            quote((c['d']['wa_togo'] if b['wa'] else c['d']['wa_book']) + T(c, b['addr']), safe="-_.!~*'()"))
         ev = lambda name: ' onclick="track(\'%s\',{branch:\'%s\'})"' % (name, js_attr(b['n']))
-        links = ['<a class="route" href="%s" target="_blank" rel="noopener"%s>%s</a>' % (H.escape(b['route']), ev('loc_route'), e(P['route'])),
-                 '<a href="tel:%s"%s>%s</a>' % (b['phone'], ev('loc_call'), e(P['call']))]
+        links = [icon_link('ib route', b['route'], P['route'], ev('loc_route'), 'pin'),
+                 icon_link('ib', 'tel:' + b['phone'], P['call'], ev('loc_call'), 'phone', blank=False),
+                 icon_link('ib wa', wa, 'WhatsApp', ev('loc_wa'), 'wa')]
         if b['menu']:
-            links.append('<a href="/%s-%s"%s>%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, ev('loc_menu'), e(P['card_menu'])))
-        links.append('<a class="wa" href="%s" target="_blank" rel="noopener"%s>WhatsApp</a>' % (H.escape(wa, quote=False).replace('"', '&quot;'), ev('loc_wa')))
-        return ('    <div class="loc-card">\n      <small>%s · %s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
+            links.append('<a class="pill" href="/%s-%s"%s>%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, ev('loc_menu'), e(P['card_menu'])))
+        return ('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
                 '%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                % (num, e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
+                % (e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
                    card_extra(html, b, lang), '\n        '.join(links)))
 
     stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b>all day</b><span>%s</span></div>'
              % (P['stat_cafes'], len(bs), P['stat_points'], P['stat_breakfast']))
-    faq_html = faq_block(items, (P['faq_tag'], P['faq_h2'], P['faq_p']))
+    faq_html = faq_block(items, (P['faq_h2'], P['faq_p']))
     insta = instagram(html)
     return '''<!DOCTYPE html>
 <html lang="%(lang)s">
@@ -881,6 +883,7 @@ def lang_page(html, lang):
 <body>
 
 %(intro)s
+%(icons)s
 
 <header>
   <div class="hbar">
@@ -1002,7 +1005,7 @@ def lang_page(html, lang):
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           sub=sub_card(lang),
+           sub=sub_card(lang), icons=ICONS,
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article><h3>%s</h3><p>%s</p></article>' % (h, p) for h, p in feats),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
@@ -1163,6 +1166,40 @@ def js_attr(s):
     return H.escape(js_str(s), quote=False).replace('"', '&quot;')
 
 
+# Значки кнопок карточки точки (правки владельца 31.10, вторая порция): метка на карте и трубка — Lucide 0.460.0 (ISC),
+# WhatsApp — Simple Icons 13.21.0 (CC0); один спрайт на страницу, кнопки ссылаются <use href="#i-…">. Лицензии — docs/LICENSES-media.md
+ICONS_MARK = '<!-- значки кнопок (SVG-спрайт: Lucide ISC, Simple Icons CC0) — собирает tools/seo_jsonld.py, руками не править -->'
+ICONS_RE = re.compile(re.escape(ICONS_MARK) + r'\n.*?<!-- /значки -->\n', re.S)
+_LUCIDE = ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">'
+         '<symbol id="i-pin"%s><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>'
+         '<circle cx="12" cy="10" r="3"/></symbol>'
+         '<symbol id="i-phone"%s><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 '
+         '4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 '
+         '2.81.7A2 2 0 0 1 22 16.92z"/></symbol>'
+         '<symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 '
+         '1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 '
+         '0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 '
+         '1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 '
+         '9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 '
+         '11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 '
+         '11.821 0 00-3.48-8.413Z"/></symbol></svg>') % (_LUCIDE, _LUCIDE)
+
+
+def icon_link(cls, href, label, onclick, icon, blank=True):
+    """круглая кнопка-значок карточки точки: aria-label и title на языке страницы, значок — <use> из спрайта ICONS"""
+    a = lambda x: H.escape(x, quote=False).replace('"', '&quot;')
+    return ('<a class="%s" href="%s"%s%s aria-label="%s" title="%s"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-%s"/></svg></a>'
+            % (cls, a(href), ' target="_blank" rel="noopener"' if blank else '', onclick, a(label), a(label), icon))
+
+
+def with_icons(html):
+    m = ICONS_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: на главной нет маркеров спрайта значков «%s … <!-- /значки -->»' % ICONS_MARK[:40])
+    return html[:m.start()] + ICONS_MARK + '\n' + ICONS + '\n<!-- /значки -->\n' + html[m.end():]
+
+
 LOC_MARK = '<!-- Точки: из BRANCHES собирает tools/seo_jsonld.py — видны без JS поисковикам и ИИ, руками не править -->'
 LOC_RE = re.compile(re.escape(LOC_MARK) + r'\n.*?<!-- /точки -->\n', re.S)
 
@@ -1177,21 +1214,22 @@ def wa_link(html, b):
 
 
 def loc_cards(html):
-    """карточки точек: название, адрес, часы, удобства; ссылки — «Маршрут» (во всю ширину), звонок, меню (у bakery), WhatsApp"""
+    """карточки точек: название (без номера — номер нужен только данным), адрес, часы, удобства; кнопки-значки — маршрут
+    (главная, forest), звонок, WhatsApp; у bakery ещё текстовая пилюля «Меню»"""
     a = lambda s: H.escape(s, quote=False).replace('"', '&quot;')     # атрибут в "…": одинарные кавычки onclick оставляем как есть
     t = lambda s: H.escape(s, quote=False)
     out = []
     for b in branches(html):
         n = js_str(b['n'])
-        # «Маршрут» — первой, зелёной пилюлей во всю ширину (экран «точки» приложения, редизайн 31.10.2026)
-        links = ['<a class="route" href="%s" target="_blank" rel="noopener" onclick="%s">Маршрут</a>' % (a(b['route']), a("track('loc_route',{branch:'%s'})" % n)),
-                 '<a href="tel:%s" onclick="%s">Позвонить</a>' % (a(b['phone']), a("track('loc_call',{branch:'%s'})" % n))]
+        ev = lambda name: ' onclick="%s"' % a("track('%s',{branch:'%s'})" % (name, n))
+        links = [icon_link('ib route', b['route'], 'Маршрут', ev('loc_route'), 'pin'),
+                 icon_link('ib', 'tel:' + b['phone'], 'Позвонить', ev('loc_call'), 'phone', blank=False),
+                 icon_link('ib wa', wa_link(html, b), 'WhatsApp', ev('loc_wa'), 'wa')]
         if b['menu']:
-            links.append('<a href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
-        links.append('<a class="wa" href="%s" target="_blank" rel="noopener" onclick="%s">WhatsApp</a>' % (a(wa_link(html, b)), a("track('loc_wa',{branch:'%s'})" % n)))
+            links.append('<a class="pill" href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
         out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
                    '      <p class="loc-meta"><b>%s</b>%s</p>\n%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                   % (t(b['n']), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),
+                   % (t(short(b)), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),
                       '\n        '.join(links)))
     return LOC_MARK + '\n' + '\n'.join(out) + '\n<!-- /точки -->\n'
 
@@ -1233,14 +1271,17 @@ def sub_card(lang):
     S = i18n()[lang]['sub']
     e = lambda x: H.escape(x, quote=False)
     links = [(n, u) for n, u in APP_LINKS.items() if u]
-    line = (e(S['now']) + ' ' + ' · '.join('<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>'
-                                            % (H.escape(u), js_str(n), e(n)) for n, u in links)) if links else e(S['soon'])
-    return ('    <div class="sub-card">\n'
+    # карточка того же вида, что «Курица гриль» рядом: поле-картинка той же пропорции, ниже заголовок, строка, ссылка
+    line = ('<span class="promo-s">%s</span>' % e(S['soon']) if not links else
+            '<span class="promo-s">%s</span> <span class="promo-a">%s</span>' % (e(S['now']), ' · '.join(
+                '<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>' % (H.escape(u), js_str(n), e(n))
+                for n, u in links)))
+    return ('    <div class="promo-card sub-card">\n'
             '      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License '
             '(https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->\n'
-            '      <div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" decoding="async" alt="">'
-            '<div class="sub-anim-l" aria-hidden="true"></div></div>\n'
-            '      <p class="sub-t">%s</p>\n      <p class="sub-s">%s</p>\n    </div>\n%s\n'
+            '      <div class="promo-media"><div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" '
+            'decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div></div>\n'
+            '      <p><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
             % (COFFEE_ANIM['src'], COFFEE_ANIM['player'], COFFEE_ANIM['poster'], e(S['title']), line, SUB_JS))
 
 
@@ -1259,7 +1300,7 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_sub(with_faq(html))))))
+    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_icons(with_sub(with_faq(html)))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
     for lang in LANGS:
