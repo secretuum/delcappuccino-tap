@@ -73,7 +73,8 @@ class TestTokensAndFonts(unittest.TestCase):
             rules = re.sub(r':root\{.*?\}', '', style(html), count=1, flags=re.S)
             self.assertNotRegex(rules, cream, '%s: крем числом в правилах' % l)
             for use in re.findall(r'[^;{}]*var\(--c-brand-cream\)[^;{}]*', rules):
-                self.assertIn('hero-zone', re.search(r'([^{}]*)\{[^{}]*' + re.escape(use), rules).group(1), '%s: крем — только на зелёном: %s' % (l, use))
+                sel = re.search(r'([^{}]*)\{[^{}]*' + re.escape(use), rules).group(1)
+                self.assertRegex(sel, r'hero-zone|tile-cap', '%s: крем — только на зелёном (видеозона, плитка подписки): %s' % (l, use))
         self.assertEqual(json.loads(read('manifest.webmanifest'))['background_color'], '#FFFFFF')
 
     def test_font_only_through_two_variables(self):
@@ -302,45 +303,120 @@ class TestPage(unittest.TestCase):
             S = self.i18n[l]['sub']
             promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S)
             self.assertIsNotNone(promo, '%s: блок акции' % l)
-            card = re.search(r'<div class="promo-card sub-card">(.*?)\n    </div>', promo.group(1), re.S)
-            self.assertIsNotNone(card, '%s: карточка подписки — в блоке акции' % l)
-            self.assertIn('<p><b class="promo-t">%s</b> <span class="promo-s">%s</span></p>' % (S['title'], S['soon']), card.group(1), l)
+            card = re.search(r'<div class="promo-tile sub-tile">(.*?)\n    </div>', promo.group(1), re.S)
+            self.assertIsNotNone(card, '%s: плитка подписки — в блоке акций' % l)
+            self.assertIn('<p class="tile-cap"><b class="promo-t">%s</b> <span class="promo-s">%s</span></p>' % (S['title'], S['soon']), card.group(1), l)
             self.assertNotRegex(html, r'apps\.apple\.com|itunes\.apple|play\.google\.com|app_store', '%s: ссылок на сторы пока нет' % l)
-            self.assertEqual(html.count('sub-card"'), 1, '%s: подписка — один раз' % l)
+            self.assertEqual(html.count('sub-tile"'), 1, '%s: подписка — один раз' % l)
             self.assertNotRegex(html, r'class="sub"|кофе каждый день|30 чашек|күн сайын кофе|coffee every day', '%s: отдельной плашки нет' % l)
         self.assertEqual((self.i18n['ru']['sub']['title'], self.i18n['ru']['sub']['soon']), ('кофейная подписка', 'скоро, в приложении'))
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', self.pages['ru'], re.S).group(1)
-        self.assertLess(promo.index('class="promo-card grill-promo"'), promo.index('class="promo-card sub-card"'), '«Курица гриль» остаётся первой')
+        self.assertLess(promo.index('class="promo-tile grill-promo"'), promo.index('class="promo-tile sub-tile"'), '«Курица гриль» остаётся первой')
         review = read('menu/kk_review.md')
         for k, v in self.i18n['kk']['sub'].items():
             self.assertIn('| `sub.%s` |' % k, review)
             self.assertIn(v, review)
 
-    def test_promo_two_equal_cards(self):
-        """акция: «Курица гриль» и подписка — две карточки одного вида (поле одной пропорции, заголовок, строка, ссылка),
-        равной ширины (один flex-basis) и высоты (stretch), пара по центру; на телефоне — колонкой во всю ширину.
-        Ширины по CSS: 360 → 328 (колонка); 768 → (720 − 24) / 2 = 348 каждая; 1280 и 2000 → 440 + 24 + 440 по центру 1112"""
+    def test_promo_tiles(self):
+        """акции (владелец 31.10): две плитки делят ширину контейнера пополам с зазором колонок hero, без серых подложек;
+        «Курица гриль» — сама огненная рамка, подпись (название, цена, адреса, кнопка-пилюля) внутри окна с видео внизу на
+        затемнении; подписка — та же форма 910×620 на фирменном зелёном. Ширины по CSS: 2000 и 1280 → (1112 − 32) / 2 = 540;
+        ≤ 900 (как hero) — одна под другой: 768 → 720, 360 → 328"""
+        for l, html in self.pages.items():
+            promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
+            self.assertIn('<div class="row-head"><h2 id="promo-h">%s</h2></div>' % self.i18n[l]['sub']['h2'], promo, '%s: «акции» — множественное' % l)
+            self.assertNotIn('promo-card', promo)
+            self.assertIn('<div class="promo-tile sub-tile">', promo)
+        self.assertEqual([self.i18n[l]['sub']['h2'] for l in ('ru', 'kk', 'en')], ['акции', 'акциялар', 'offers'])
         html = self.pages['ru']
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
-        cards = re.findall(r'\n\s*<div class="promo-card ([\w-]+)"', promo)
-        self.assertEqual(cards, ['grill-promo', 'sub-card'])
-        for kind in cards:
-            block = promo[promo.index('class="promo-card %s"' % kind):]
-            self.assertRegex(block, r'^[^\n]*\n(?:\s*<!--[^\n]*\n)?\s*<div class="promo-media">', kind)
-            self.assertRegex(block, r'<p(?: class="grill-cap")?><b class="promo-t">[^<]+</b> <span class="promo-s">', kind)
-        self.assertIn('<a class="promo-a" href="#"', promo, 'у «Курицы гриль» — ссылка «смотреть в меню»')
+        self.assertEqual(re.findall(r'\n\s*<div class="promo-tile ([\w-]+)"', promo), ['grill-promo', 'sub-tile'])
         css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
         rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
-        self.assertIn('display:flex', rule('.promo-grid'))
-        self.assertIn('justify-content:center', rule('.promo-grid'))
-        self.assertIn('align-items:stretch', rule('.promo-grid'))
-        self.assertIn('flex:0 1 440px', rule('.promo-card'))
-        self.assertIn('aspect-ratio:910/620', rule('.promo-media'))
-        self.assertIn('aspect-ratio:910/620', rule('.grill-frame'), 'огненная рамка той же пропорции, что поле карточки')
-        mob = re.search(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S).group(1)
-        self.assertIn('.promo-grid{flex-direction:column', mob)
-        self.assertIn('.promo-card{flex:none}', mob)
-        self.assertNotRegex(css, r'\.grill-cap[^{]*\{', 'подпись курицы — общими стилями карточек')
+        hero = rule('.hero')
+        self.assertIn('grid-template-columns:1fr 1fr;gap:var(--s-32)', rule('.promo-grid'))
+        self.assertIn('grid-template-columns:1fr 1fr;gap:var(--s-32)', hero, 'тот же зазор, что у колонок hero')
+        self.assertIn('padding:var(--s-8) var(--s-24)', rule('.promo'), 'край контейнера — как у hero (отступ 24)')
+        self.assertIn('aspect-ratio:910/620', rule('.promo-tile'))
+        self.assertIn('aspect-ratio:910/620', rule('.grill-frame'))
+        self.assertNotRegex(rule('.promo-tile'), r'background|padding', 'у плитки нет подложки — огненная рамка и есть плитка')
+        self.assertIn('background:var(--c-accent)', rule('.sub-tile'))
+        cap = rule('.grill-cap')
+        self.assertIn('position:absolute', cap)
+        self.assertIn('bottom:0', cap)
+        self.assertIn('linear-gradient(to top', cap, 'затемнение для читаемости')
+        self.assertIn('border-radius:var(--r-pill)', rule('.promo-a'), 'кнопка — пилюлей')
+        self.assertIn('top:9%', rule('.grill-ticker'), 'бегущая строка — наверху окна, низ занят подписью')
+        mid = re.search(r'@media\(max-width:900px\)\{(.*?)\}\}', css, re.S).group(1)
+        self.assertIn('.promo-grid{grid-template-columns:1fr', mid, 'на телефоне и планшете — одна под другой, как hero')
+
+    def test_grill_text_inside_fire_frame(self):
+        html = self.pages['ru']
+        i = html.index('<div class="grill-win">')
+        win_end = html.index('\n          </div>\n        </div>\n      </div>', i)
+        win = html[i:win_end]
+        cap = re.search(r'<p class="grill-cap">(.*?)</p>', win, re.S)
+        self.assertIsNotNone(cap, 'подпись — внутри окна огненной рамки')
+        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990 ₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
+                     '<a class="promo-a" href="#"', 'смотреть в меню'):
+            self.assertIn(need, cap.group(1))
+        self.assertLess(win.index('<div class="grill-ticker"'), win.index('<p class="grill-cap">'))
+
+    def test_no_247_and_numbers_in_cards_and_modal(self):
+        for l, html in self.pages.items():
+            loc = re.search(r'<section class="locations" id="locations">(.*?)</section>', html, re.S).group(1)
+            self.assertNotIn('<p class="tag">', loc, '%s: без надзаголовка «алматы · 5 точек»' % l)
+            cards = re.findall(r'<div class="loc-card">(.*?)\n    </div>', loc, re.S)
+            self.assertEqual(len(cards), 5)
+            for c in cards:
+                vis = re.sub(r'<[^>]+>', ' ', c)
+                self.assertNotIn('24/7', vis, '%s: «24/7» в карточке не пишем' % l)
+                self.assertNotRegex(re.search(r'<small>([^<]*)</small>', c).group(1), r'^\d')
+            self.assertEqual(len(re.findall(r'<p class="loc-meta"><b>[^<]*07:00–22:00</b>', loc)), 1, '%s: у bakery часы остались' % l)
+        css = style(self.pages['ru'])
+        self.assertIn('background:var(--c-bg)', re.search(r'\.locations\{([^}]*)\}', css).group(1), 'фон секции — белый')
+        card = re.search(r'\.loc-card\{([^}]*)\}', css).group(1)
+        self.assertIn('box-shadow:var(--shadow-floating)', card)
+        self.assertIn('text-align:center', card)
+        self.assertIn('justify-content:center', re.search(r'\.loc-links\{([^}]*)\}', css).group(1))
+        draw = re.search(r'function draw\(arr,showDist\)\{(.*?)\n  \}\n', self.pages['ru'], re.S).group(1)
+        self.assertIn("<small>${b.n.replace(/^\\d+\\s*·\\s*/,'')}</small>", draw, 'окно выбора филиала — без номеров')
+        self.assertIn("${b.hours!=='24/7'?", draw, 'окно — без «24/7»')
+        for cls, ev, ic in (('ib route', 'modal_route', 'pin'), ('ib', 'modal_call', 'phone'), ('ib wa', 'modal_wa', 'wa')):
+            self.assertRegex(draw, r'<a class="%s" [^>]*onclick="track\(\'%s\'[^>]*aria-label="[^"]+" title="[^"]+">\$\{ic\(\'%s\'\)\}</a>' % (cls, ev, ic))
+        self.assertNotIn('br-btn', self.pages['ru'], 'старых кнопок окна нет')
+
+    def test_whatsapp_green(self):
+        css = style(self.pages['ru'])
+        self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#25D366')
+        for l, html in self.pages.items():
+            wa = re.search(r'\.ib\.wa\{([^}]*)\}', style(html)).group(1)
+            self.assertEqual(wa, 'background:var(--c-whatsapp);color:#FFFFFF', l)
+            self.assertNotRegex(html, r'class="btn[^"]*"[^>]*>WhatsApp<', '%s: текстовых кнопок WhatsApp нет' % l)
+
+    def test_contacts_social_icons(self):
+        want = [('instagram', 'Instagram', 'https://instagram.com/del.cappuccino', 'ig'),
+                ('youtube', 'YouTube', 'https://www.youtube.com/@DelCappuccino', 'yt'),
+                ('threads', 'Threads', 'https://www.threads.com/@del.cappuccino', 'th')]
+        for l, html in self.pages.items():
+            sec = re.search(r'<section class="contact shell" id="contacts">(.*?)</section>', html, re.S).group(1)
+            self.assertNotIn('<img', sec, '%s: без логотипа dC над заголовком' % l)
+            self.assertNotRegex(sec, r'WhatsApp|cta_wa_contact', '%s: без кнопки WhatsApp' % l)
+            got = re.findall(r'<a class="ib so" href="([^"]+)" target="_blank" rel="noopener" onclick="track\(\'cta_instagram\',\{net:\'(\w+)\'\}\)" '
+                             r'aria-label="([^"]+)" title="([^"]+)"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-(\w+)"/></svg></a>', sec)
+            self.assertEqual([(net, lab, url, ic) for url, net, lab, tit, ic in got], want, l)
+            self.assertTrue(all(lab == tit for _, _, lab, tit, _ in got))
+            self.assertNotIn('?hl=', sec)
+            for _, _, _, ic in want:
+                self.assertIn('<symbol id="i-%s"' % ic, html)
+            self.assertIn('<footer', html)
+            self.assertRegex(re.search(r'<footer\b.*?</footer>', html, re.S).group(0), r'logo-mono-192\.webp', '%s: логотип в подвале остался' % l)
+            ld = json.loads(re.search(r'<script type="application/ld\+json">\n(.*?)\n</script>', html, re.S).group(1))
+            org = next(n for n in ld['@graph'] if n['@type'] == 'Organization')
+            self.assertEqual(org['sameAs'], [u for _, _, u, _ in want], '%s: sameAs — Instagram, YouTube, Threads' % l)
+        lic = read('docs/LICENSES-media.md')
+        for need in ('instagram', 'youtube', 'threads', 'CC0'):
+            self.assertIn(need, lic)
 
     def test_location_names_without_numbers(self):
         for l, html in self.pages.items():

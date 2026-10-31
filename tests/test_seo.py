@@ -100,7 +100,10 @@ class TestJsonLd(unittest.TestCase):
 
     def test_same_as(self):
         org = self.nodes[SITE + '#org']
-        self.assertTrue(org['sameAs'] and all(re.match(r'https://(www\.)?instagram\.com/', u) for u in org['sameAs']))
+        # 31.10: Instagram, YouTube и Threads (владелец) — все три значками на странице
+        self.assertTrue(org['sameAs'] and all(re.match(r'https://(www\.)?(instagram\.com|youtube\.com|threads\.com)/', u) for u in org['sameAs']))
+        self.assertIn('https://www.youtube.com/@DelCappuccino', org['sameAs'])
+        self.assertIn('https://www.threads.com/@del.cappuccino', org['sameAs'])
         for u in org['sameAs']:
             self.assertIn('href="%s"' % u, self.html, 'sameAs только со страницы')
         self.assertNotIn('2gis.kz/almaty/search', self.text, 'поисковые ссылки 2GIS — не sameAs')
@@ -291,7 +294,11 @@ class TestLocations(unittest.TestCase):
             # видимое название — без номера точки (владелец 31.10: «жк вавилон», а не «01 · жк вавилон»); номер — только в данных
             self.assertIn('<small>%s</small>' % re.sub(r'^\d+\s*·\s*', '', g('n')), card)
             self.assertIn('<h3>%s</h3>' % g('addr'), card)
-            self.assertIn('<b>%s</b>' % g('hours'), card)
+            # 31.10: «24/7» в карточке не пишем (владелец), часы — только у точки не 24/7
+            if g('hours') == '24/7':
+                self.assertNotIn('loc-meta', card)
+            else:
+                self.assertIn('<b>%s</b>' % g('hours'), card)
             self.assertIn('href="tel:%s"' % g('phone'), card)
             self.assertIn('href="%s"' % g('route'), card)
             self.assertIn('href="https://wa.me/%s?text=' % re.sub(r'\D', '', g('phone')), card)
