@@ -14,10 +14,11 @@ import seo_jsonld as seo  # noqa: E402
 
 PAGES = {'ru': 'index.html', 'kk': 'kk/index.html', 'en': 'en/index.html'}
 V5 = {   # app/src/theme/v5.ts
-    '--c-bg': '#FFFFFF', '--c-surface': '#FEF1E7', '--c-raised': '#F7E7D8', '--c-border': 'rgba(66,99,73,.18)',
+    '--c-bg': '#FFFFFF', '--c-surface': '#F5F5F3', '--c-raised': '#ECEBE8', '--c-disabled': '#E5E3DF',   # без крема (владелец 31.10)
+    '--c-border': 'rgba(66,99,73,.18)', '--c-brand-cream': '#FEF1E7', '--c-input-border': '#8C7E6E',
     '--c-text': '#241C15', '--c-muted': '#5C5245', '--c-accent': '#426349', '--c-accent-dk': '#31492F',
     '--c-olive': '#849E29', '--c-on-olive': '#1D2408', '--c-danger': '#C2140F', '--c-scrim': 'rgba(36,28,21,.4)',
-    '--c-glass': 'rgba(254,241,231,.92)',
+    '--c-glass': 'rgba(255,255,255,.92)',
     '--r-sm': '12px', '--r-md': '16px', '--r-lg': '22px', '--r-pill': '999px',
     '--s-2': '2px', '--s-4': '4px', '--s-8': '8px', '--s-12': '12px', '--s-16': '16px', '--s-24': '24px', '--s-32': '32px',
     '--fs-caption': '12px', '--fs-small': '14px', '--fs-body': '16px', '--fs-title': '22px', '--fs-heading': '28px',
@@ -60,6 +61,20 @@ class TestTokensAndFonts(unittest.TestCase):
             # прежние имена (оверлей меню) равны токенам; --forest и --sale записаны числом ради manifest и теста скидки
             self.assertEqual(v['--forest'], V5['--c-accent'])
             self.assertEqual(v['--sale'], V5['--c-danger'])
+
+    def test_no_cream_in_interface(self):
+        """владелец 31.10: крем (#FEF1E7, #F7E7D8) — только цвет бренда (--c-brand-cream: логотип, мопед, светлое на зелёном),
+        в токенах интерфейса и в правилах его нет; manifest — белый фон"""
+        cream = r'(?i)#FEF1E7|#F7E7D8|#F7EFE2|#E9DDD0|254,\s*241,\s*231'
+        for l, html in self.pages.items():
+            v = root_vars(html)
+            ui = {k: x for k, x in v.items() if k != '--c-brand-cream'}
+            self.assertEqual([k for k, x in ui.items() if re.search(cream, x)], [], '%s: крем в токенах интерфейса' % l)
+            rules = re.sub(r':root\{.*?\}', '', style(html), count=1, flags=re.S)
+            self.assertNotRegex(rules, cream, '%s: крем числом в правилах' % l)
+            for use in re.findall(r'[^;{}]*var\(--c-brand-cream\)[^;{}]*', rules):
+                self.assertIn('hero-zone', re.search(r'([^{}]*)\{[^{}]*' + re.escape(use), rules).group(1), '%s: крем — только на зелёном: %s' % (l, use))
+        self.assertEqual(json.loads(read('manifest.webmanifest'))['background_color'], '#FFFFFF')
 
     def test_font_only_through_two_variables(self):
         for l, html in self.pages.items():

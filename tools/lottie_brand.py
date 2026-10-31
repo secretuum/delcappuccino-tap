@@ -5,7 +5,7 @@
 разрешена) — https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR. Исходники лежат вне репозитория:
 ~/kofe-design-export/media/lottie/lottiefiles-brewing-coffee-carolina-salazar.json и …-poster.png.
 Перекраска под бренд: линии чашки (PNG внутри анимации) — forest #426349, пар — forest 55 %, кофе — тёплый коричневый,
-как в оригинале (#664430). Постер — тот же кадр: белый фон → прозрачный (карточка cream), обрезан как анимация в CSS.
+как в оригинале (#664430). Постер — тот же кадр: белый фон → прозрачный (видна подложка карточки), обрезан как анимация в CSS.
 
 Запуск из корня репозитория:  python3 tools/lottie_brand.py [папка-вывода, по умолчанию assets]
 Пишет assets/brewing-coffee.<хэш>.json и assets/brewing-coffee-poster.<хэш>.webp; новые имена вписать в COFFEE_ANIM
