@@ -124,31 +124,19 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .halal-badge{display:flex;align-items:center;gap:var(--s-12);margin-top:var(--s-24)}
 .halal-badge img{height:48px;width:48px;object-fit:contain;mix-blend-mode:multiply;flex:none}
 .halal-badge span{font-size:var(--fs-caption);color:var(--c-muted);line-height:1.5}
-.feed{padding-top:var(--s-8);padding-bottom:var(--s-8)}
-.chips{display:flex;gap:var(--s-8);overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--s-24));padding:var(--s-4) var(--s-24) var(--s-8)}
-.chips::-webkit-scrollbar{display:none}
-.chip{flex:none;display:inline-flex;align-items:center;min-height:44px;padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
-.chip:hover{background:var(--c-raised)}
+.promo{padding:var(--s-8) var(--s-24) var(--s-24)}
+.promo-grid{display:grid;grid-template-columns:minmax(0,560px) minmax(0,300px);gap:var(--s-24);align-items:start}
 .row-head{display:flex;align-items:center;justify-content:space-between;gap:var(--s-12);margin:var(--s-24) 0 var(--s-12)}
 .row-head h2{font-size:var(--fs-title);line-height:1.2}
-.row-more{flex:none;display:inline-flex;align-items:center;min-height:var(--h-touch);font-size:var(--fs-small);font-weight:600;color:var(--c-accent);text-decoration:none;white-space:nowrap}
-.rail{display:flex;gap:var(--s-12);overflow-x:auto;scroll-snap-type:x mandatory;scrollbar-width:none;margin:0 calc(-1 * var(--s-24));padding:0 var(--s-24) var(--s-8);scroll-padding-left:var(--s-24)}
-.rail::-webkit-scrollbar{display:none}
-.dish{position:relative;flex:0 0 164px;scroll-snap-align:start;display:flex;flex-direction:column;border-radius:var(--r-md);overflow:hidden;background:var(--c-surface);color:var(--c-text);text-decoration:none}
-.dish img{display:block;width:100%;height:auto;aspect-ratio:1;object-fit:cover;background:var(--c-raised)}
-.dish-n{padding:var(--s-8) var(--s-12) 0;font-family:var(--font-display);font-size:var(--fs-small);font-weight:700;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.dish-p{margin-top:auto;padding:var(--s-8) var(--s-12) var(--s-12);font-size:var(--fs-small);font-weight:700;white-space:nowrap}
-.dish-p small{font-size:var(--fs-caption);font-weight:500;color:var(--c-muted)}
-.rail-big .dish{flex-basis:248px}
-.rail-big .dish img{aspect-ratio:4/5}
-.rail-big .dish-t{position:absolute;left:var(--s-8);right:var(--s-8);bottom:var(--s-8);display:flex;flex-direction:column;border-radius:var(--r-md);background:var(--c-glass)}
-.rail-big .dish-n{font-size:var(--fs-body)}
-.sub{margin-top:var(--s-32);padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-accent-dk);color:var(--c-surface);text-align:center;box-shadow:var(--shadow-floating)}
-.sub-t{font-family:var(--font-display);font-size:var(--fs-heading);font-weight:700;line-height:1.15;text-transform:lowercase}
-.sub-s{margin-top:var(--s-4);font-size:var(--fs-body);font-weight:700;color:color-mix(in srgb,var(--c-surface) 80%,transparent)}
-.stores{margin-top:var(--s-12);text-align:center;font-size:var(--fs-small);color:var(--c-muted)}
-.stores a{color:var(--c-accent);font-weight:600}
-.feed-all{display:flex;justify-content:center;margin-top:var(--s-24)}
+.sub-card{display:flex;flex-direction:column;align-items:center;padding:var(--s-16) var(--s-16) var(--s-24);border-radius:var(--r-lg);background:var(--c-surface);text-align:center}
+.sub-anim{position:relative;width:min(100%,220px);aspect-ratio:1;overflow:hidden}
+.sub-anim img{display:block;width:100%;height:100%}
+.sub-anim-l{position:absolute;width:142.86%;height:142.86%;left:-21.43%;top:-8.57%}
+.sub-anim.on img{visibility:hidden}
+.sub-t{margin-top:var(--s-8);font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
+.sub-s{margin-top:var(--s-4);font-size:var(--fs-small);color:var(--c-muted)}
+.sub-s a{color:var(--c-accent);font-weight:600}
+.sub-card:only-child{max-width:340px}
 .story{padding-top:var(--s-32);padding-bottom:var(--s-32)}
 .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center}
 .story-photo{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:1/1.1}
@@ -164,8 +152,7 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .f-head h2{font-size:var(--fs-heading);line-height:1.15}
 .f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-12)}
 .f-grid article{padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-surface)}
-.f-grid b{display:inline-flex;align-items:center;justify-content:center;min-width:36px;height:28px;padding:0 var(--s-8);border-radius:var(--r-pill);background:var(--c-olive);color:var(--c-on-olive);font-family:var(--font-display);font-size:var(--fs-caption)}
-.f-grid h3{font-size:var(--fs-body);margin:var(--s-12) 0 var(--s-4)}
+.f-grid h3{font-size:var(--fs-body);margin:0 0 var(--s-4)}
 .f-grid p{font-size:var(--fs-small);line-height:1.55;color:var(--c-muted)}
 .locations{padding:var(--s-32) 0;background:var(--c-surface)}
 .loc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-16);margin-bottom:var(--s-16)}
@@ -215,6 +202,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 @media(max-width:900px){
 .hero{grid-template-columns:1fr;gap:var(--s-24)}
 .hero-zone{order:-1;aspect-ratio:5/4;max-height:none}
+.promo-grid{grid-template-columns:1fr}
 h1{font-size:36px}
 .story-grid{grid-template-columns:1fr;gap:var(--s-16)}
 .f-grid,.loc-grid{grid-template-columns:1fr}
@@ -232,9 +220,7 @@ h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
 .lead{font-size:var(--fs-small);margin-bottom:var(--s-16)}
 .actions{flex-direction:column}
 .actions .btn{width:100%}
-.chips,.rail{margin:0 calc(-1 * var(--s-16));padding-left:var(--s-16);padding-right:var(--s-16);scroll-padding-left:var(--s-16)}
-.dish{flex-basis:148px}
-.rail-big .dish{flex-basis:76%}
+.promo{padding:var(--s-8) var(--s-16) var(--s-16)}
 .story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .story h2,.f-head h2,.loc-head h2,.faq-head h2,.contact h2{font-size:var(--fs-title)}
 .f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
@@ -316,48 +302,17 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
     </div>
   </section>
 
-<section class="feed shell" aria-label="Мәзір: бөлімдер мен таңдаулылар">
-    <div class="chips">
-      <a class="chip" href="/?at=bar.0#menu-kk" onclick="track('menu_chip',{chip:'coffee'})">Кофе</a>
-      <a class="chip" href="/?at=bar.2#menu-kk" onclick="track('menu_chip',{chip:'notcoffee'})">Кофе емес</a>
-      <a class="chip" href="/?at=kitchen.0#menu-kk" onclick="track('menu_chip',{chip:'food'})">Тағамдар</a>
+  <section class="promo shell">
+    <div class="promo-grid">
+    <div class="sub-card">
+      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License (https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->
+      <div class="sub-anim" data-src="/assets/brewing-coffee.2e74c5d9.json" data-player="/assets/lottie_light.23cd2c01.js"><img src="/assets/brewing-coffee-poster.f762aef7.webp" width="256" height="256" loading="lazy" decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div>
+      <p class="sub-t">кофе жазылымы</p>
+      <p class="sub-s">жақында, қосымшада</p>
     </div>
-    <div class="row-head"><h2>танымал</h2></div>
-    <div class="rail">
-      <a class="dish" href="/?at=bar.0#menu-kk" onclick="track('menu_pick',{dish:'Капучино'})"><img src="/img/menu/kapuchino-480.webp" width="480" height="719" loading="lazy" decoding="async" alt="Капучино"><b class="dish-n">Капучино</b><span class="dish-p"><small>200 мл · </small>1 400 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.0#menu-kk" onclick="track('menu_pick',{dish:'Деревенский завтрак'})"><img src="/img/menu/derevenskij-zavtrak-480.webp" width="480" height="358" loading="lazy" decoding="async" alt="«Деревенский» таңғы асы"><b class="dish-n">«Деревенский» таңғы асы</b><span class="dish-p">2 900 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.1#menu-kk" onclick="track('menu_pick',{dish:'Мини-панкейки'})"><img src="/img/menu/mini-pankejki-480.webp" width="480" height="720" loading="lazy" decoding="async" alt="Шағын панкейктер"><b class="dish-n">Шағын панкейктер</b><span class="dish-p">2 200 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.2#menu-kk" onclick="track('menu_pick',{dish:'Салат с запечённой сёмгой в соусе терияки'})"><img src="/img/menu/salat-s-zapechennoj-semgoj-v-souse-teriyaki-480.webp" width="480" height="720" loading="lazy" decoding="async" alt="Терияки тұздығында пісірілген албырт қосылған салат"><b class="dish-n">Терияки тұздығында пісірілген албырт қосылған салат</b><span class="dish-p">3 200 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.3#menu-kk" onclick="track('menu_pick',{dish:'Боул с сёмгой'})"><img src="/img/menu/boul-s-semgoj-480.webp" width="480" height="608" loading="lazy" decoding="async" alt="Албырт қосылған боул"><b class="dish-n">Албырт қосылған боул</b><span class="dish-p">3 700 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.5#menu-kk" onclick="track('menu_pick',{dish:'Кесадилья с курицей'})"><img src="/img/menu/kesadilya-s-kuricej-480.webp" width="480" height="358" loading="lazy" decoding="async" alt="Тауық еті қосылған кесадилья"><b class="dish-n">Тауық еті қосылған кесадилья</b><span class="dish-p">3 000 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.6#menu-kk" onclick="track('menu_pick',{dish:'Пепперони'})"><img src="/img/menu/pepperoni-480.webp" width="480" height="358" loading="lazy" decoding="async" alt="Пепперони"><b class="dish-n">Пепперони</b><span class="dish-p">3 600 ₸</span></a>
-      <a class="dish" href="/?at=kitchen.7#menu-kk" onclick="track('menu_pick',{dish:'Жареный рис с хрустящей курочкой'})"><img src="/img/menu/zharenyj-ris-s-hrustyaschej-kurochkoj-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="Қытырлақ тауық еті қосылған қуырылған күріш"><b class="dish-n">Қытырлақ тауық еті қосылған қуырылған күріш</b><span class="dish-p">3 000 ₸</span></a>
+<script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}var anim=null,asked=false;function start(){new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;if(anim){on?anim.play():anim.pause();return}if(!on||asked)return;asked=true;var s=document.createElement('script');s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{anim=lottie.loadAnimation({container:box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:true,path:box.getAttribute('data-src')});anim.addEventListener('DOMLoaded',function(){box.classList.add('on')})}catch(e){}};document.head.appendChild(s)},{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>
     </div>
-</section>
-
-<section class="feed shell">
-    <div class="sub"><p class="sub-t">күн сайын кофе</p><p class="sub-s">айына 30 кесе</p></div>
-    <p class="stores">жақында App Store және Google Play-де</p>
-    <div class="row-head"><h2>кофеге десерттер</h2></div>
-    <div class="rail">
-      <a class="dish" href="/?at=dessert.0#menu-kk" onclick="track('menu_pick',{dish:'Кукис'})"><img src="/img/menu/kukis-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="Кукис"><b class="dish-n">Кукис</b><span class="dish-p">300 ₸</span></a>
-      <a class="dish" href="/?at=dessert.0#menu-kk" onclick="track('menu_pick',{dish:'Картошка'})"><img src="/img/menu/kartoshka-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="«Картошка» десерті"><b class="dish-n">«Картошка» десерті</b><span class="dish-p">400 ₸</span></a>
-      <a class="dish" href="/?at=dessert.0#menu-kk" onclick="track('menu_pick',{dish:'Маффин'})"><img src="/img/menu/maffin-480.webp" width="480" height="719" loading="lazy" decoding="async" alt="Маффин"><b class="dish-n">Маффин</b><span class="dish-p">400 ₸</span></a>
-      <a class="dish" href="/?at=dessert.0#menu-kk" onclick="track('menu_pick',{dish:'Тарталетка Банофи пай'})"><img src="/img/menu/tartaletka-banofi-paj-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="Банофи пай тарталеткасы"><b class="dish-n">Банофи пай тарталеткасы</b><span class="dish-p">750 ₸</span></a>
-      <a class="dish" href="/?at=dessert.0#menu-kk" onclick="track('menu_pick',{dish:'Медовик'})"><img src="/img/menu/medovik-deserty-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="«Медовик» бал торты"><b class="dish-n">«Медовик» бал торты</b><span class="dish-p">850 ₸</span></a>
-      <a class="dish" href="/?at=dessert.0#menu-kk" onclick="track('menu_pick',{dish:'Молочная девочка'})"><img src="/img/menu/molochnaya-devochka-deserty-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="«Сүтті қыз» торты"><b class="dish-n">«Сүтті қыз» торты</b><span class="dish-p">850 ₸</span></a>
-    </div>
-    <div class="row-head"><h2>жаңалықтар</h2></div>
-    <div class="rail rail-big">
-      <a class="dish" href="/?at=kitchen.0#menu-kk" onclick="track('menu_pick',{dish:'Датский завтрак'})"><img src="/img/menu/datskij-zavtrak-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="Даниялық таңғы ас"><span class="dish-t"><b class="dish-n">Даниялық таңғы ас</b><span class="dish-p">2 800 ₸</span></span></a>
-      <a class="dish" href="/?at=bar.0#menu-kk" onclick="track('menu_pick',{dish:'Батч Брю'})"><img src="/img/menu/batch-bryu-480.webp" width="480" height="720" loading="lazy" decoding="async" alt="Батч брю"><span class="dish-t"><b class="dish-n">Батч брю</b><span class="dish-p"><small>200 мл · </small>1 200 ₸</span></span></a>
-      <a class="dish" href="/?at=kitchen.0#menu-kk" onclick="track('menu_pick',{dish:'Яичница-глазунья с сосисками и соусом релиш'})"><img src="/img/menu/yaichnica-glazunya-s-sosiskami-i-sousom-relish-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="Шұжық пен релиш тұздығы қосылған қуырылған жұмыртқа"><span class="dish-t"><b class="dish-n">Шұжық пен релиш тұздығы қосылған қуырылған жұмыртқа</b><span class="dish-p">2 900 ₸</span></span></a>
-      <a class="dish" href="/?at=bar.9#menu-kk" onclick="track('menu_pick',{dish:'Латте печенье'})"><img src="/img/menu/latte-pechene-480.webp" width="480" height="651" loading="lazy" decoding="async" alt="Печенье латте"><span class="dish-t"><b class="dish-n">Печенье латте</b><span class="dish-p">2 400 ₸</span></span></a>
-      <a class="dish" href="/?at=kitchen.0#menu-kk" onclick="track('menu_pick',{dish:'Бургер бриошь с куриной котлетой и омлетом'})"><img src="/img/menu/burger-briosh-s-kurinoj-kotletoj-i-omletom-480.webp" width="480" height="480" loading="lazy" decoding="async" alt="Тауық котлеті мен омлет қосылған бриошь бургер"><span class="dish-t"><b class="dish-n">Тауық котлеті мен омлет қосылған бриошь бургер</b><span class="dish-p">3 500 ₸</span></span></a>
-      <a class="dish" href="/?at=bar.9#menu-kk" onclick="track('menu_pick',{dish:'Матча-пломбир'})"><img src="/img/menu/matcha-plombir-480.webp" width="480" height="702" loading="lazy" decoding="async" alt="Матча-пломбир"><span class="dish-t"><b class="dish-n">Матча-пломбир</b><span class="dish-p">2 400 ₸</span></span></a>
-    </div>
-    <div class="feed-all"><a class="btn ghost" href="/#menu-kk" onclick="track('cta_menu',{src:'feed'})">барлық мәзір</a></div>
-</section>
+  </section>
 
   <section class="story shell" id="about">
     <div class="story-grid">
@@ -377,16 +332,15 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
   <section class="features" id="features">
     <div class="shell">
       <div class="f-head">
-        <p class="tag">кофеханадан да көп</p>
         <h2><span>Жоспарларыңызға</span><br>арналған орын.</h2>
       </div>
       <div class="f-grid">
-        <article><b>01</b><h3>Тәулік бойы</h3><p>4 кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын 07:00–22:00.</p></article>
-        <article><b>02</b><h3>Күні бойы таңғы ас</h3><p>Сүйікті таңғы ас — сағатқа қарамастан.</p></article>
-        <article><b>03</b><h3>Балалар аймағы</h3><p>Ойын аймағы бар жер: «Вавилон» ТК.</p></article>
-        <article><b>04</b><h3>VIP-залдар</h3><p>Іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына арналған.</p></article>
-        <article><b>05</b><h3>Банкеттер</h3><p>40 адамға дейінгі топқа іс-шараңызды өткіземіз.</p></article>
-        <article><b>06</b><h3>Намазхана</h3><p>Намаз оқуға арналған жайлы, бөлек орын.</p></article>
+        <article><h3>Тәулік бойы</h3><p>4 кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын 07:00–22:00.</p></article>
+        <article><h3>Күні бойы таңғы ас</h3><p>Сүйікті таңғы ас — сағатқа қарамастан.</p></article>
+        <article><h3>Балалар аймағы</h3><p>Ойын аймағы бар жер: «Вавилон» ТК.</p></article>
+        <article><h3>VIP-залдар</h3><p>Іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына арналған.</p></article>
+        <article><h3>Банкеттер</h3><p>40 адамға дейінгі топқа іс-шараңызды өткіземіз.</p></article>
+        <article><h3>Намазхана</h3><p>Намаз оқуға арналған жайлы, бөлек орын.</p></article>
       </div>
     </div>
   </section>

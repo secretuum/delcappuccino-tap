@@ -21,12 +21,11 @@
   подставляются из BRANCHES; {детские}, {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы}
   {работа} {животные}) — из tools/branch_facts.json (факты владельца 23.10.2026); карточка «Детская зона» на главной
   сверяется с ними. Допустимый HTML в ответах: <a href>, <ul>, <li>.
-- Витрина главной (редизайн 31.10.2026 по экрану «Меню» приложения): чипы «Кофе / Не кофе / Еда» (FEED_CHIPS), «популярное»
-  (пометка hit), плашка подписки с подписью про App Store и Google Play (ссылки — константа APP_LINKS, пока пусто),
-  «десерты к кофе», «новинки» (пометка new) — позиции и цены из массивов меню, фото — сайтовые из menu/cards.json, подписи —
-  tools/pages_i18n.json (feed); то же на /kk/ и /en/. /kk/ и /en/ собираются по тому же макету, что главная: шапка с пилюлей
-  точек и кругом языка, видеозона с логотипом, заставка; стили — правила <style> главной (токены v5, шрифт — --font-display
-  и --font-body её :root).
+- Главная после редизайна (31.10.2026, по приложению): в блоке «акция» — карточка «кофейная подписка — скоро, в приложении»
+  с анимацией кофе (Lottie, плеер грузится лениво; ссылки на сторы — константа APP_LINKS, пока пусто), подписи —
+  tools/pages_i18n.json (sub); та же карточка на /kk/ и /en/. /kk/ и /en/ собираются по тому же макету, что главная:
+  шапка с пилюлей точек и кругом языка, видеозона с логотипом, заставка; стили — правила <style> главной (токены v5,
+  шрифт — --font-display и --font-body её :root).
 - /menyu (menyu/index.html): всё меню текстом — кофейни (вкладки MENU_TABS) и Bakery to go (вкладки режима togo),
   разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
@@ -665,8 +664,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 # вопросы, контакты, подвал (без оверлея меню, модалки, акции и фото «Фирменный стиль»)
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
-                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|feed|chips|chip|row-head|row-more|rail|rail-big|dish|dish-n|dish-p|'
-                      r'dish-t|sub|sub-t|sub-s|stores|feed-all|story|story-grid|story-photo|stats|features|f-head|f-grid|'
+                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|row-head|sub-card|sub-anim|sub-anim-l|sub-t|sub-s|'
+                      r'story|story-grid|story-photo|stats|features|f-head|f-grid|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|hide-mobile))(?![\w-])')
 CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out')     # анимации заставки
@@ -929,8 +928,11 @@ def lang_page(html, lang):
     </div>
   </section>
 
-%(feed_top)s
-%(feed_bottom)s
+  <section class="promo shell">
+    <div class="promo-grid">
+%(sub)s    </div>
+  </section>
+
   <section class="story shell" id="about">
     <div class="story-grid">
       <div class="story-photo">%(story_img)s</div>
@@ -947,7 +949,6 @@ def lang_page(html, lang):
   <section class="features" id="features">
     <div class="shell">
       <div class="f-head">
-        <p class="tag">%(features_tag)s</p>
         <h2>%(features_h2)s</h2>
       </div>
       <div class="f-grid">
@@ -993,7 +994,7 @@ def lang_page(html, lang):
 </body>
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
-                               'about_h2', 'about_p', 'features_tag', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
+                               'about_h2', 'about_p', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
@@ -1001,9 +1002,9 @@ def lang_page(html, lang):
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           feed_top=feed_html(html, lang, 'top'), feed_bottom=feed_html(html, lang, 'bottom'),
+           sub=sub_card(lang),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
-           features='\n'.join('        <article><b>%02d</b><h3>%s</h3><p>%s</p></article>' % (i + 1, h, p) for i, (h, p) in enumerate(feats)),
+           features='\n'.join('        <article><h3>%s</h3><p>%s</p></article>' % (h, p) for h, p in feats),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
            insta_btn='\n'.join('    <a class="btn ghost" href="%s" target="_blank" rel="noopener" onclick="track(\'cta_instagram\')">@%s</a>'
                                 % (u, u.rstrip('/').rsplit('/', 1)[1]) for u in insta))
@@ -1013,7 +1014,7 @@ def kk_review(html):
     """menu/kk_review.md — все казахские строки из pages_i18n.json со своим местом на сайте, для вычитки носителем"""
     where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
              'wa_book': 'текст сообщения WhatsApp из карточек кофеен /kk/', 'wa_togo': 'текст сообщения WhatsApp из карточки bakery to go /kk/',
-             'page': 'страница /kk/', 'feed': 'витрина меню на /kk/: чипы разделов, подборки, плашка подписки', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
+             'page': 'страница /kk/', 'sub': 'карточка подписки в блоке «акция» на /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
              }
     rows = []
 
@@ -1202,135 +1203,52 @@ def with_loc(html):
     return html[:m.start()] + loc_cards(html) + html[m.end():]
 
 
-# ── Витрина главной: чипы разделов, подборки, плашка подписки (редизайн 31.10.2026 по экрану «Меню» приложения) ──
-# Подписи — tools/pages_i18n.json (раздел feed у ru/kk/en), позиции и цены — массивы меню, фото — menu/cards.json (фото сайта).
-# Сайт не продаёт: у карточек нет «+», тап открывает меню главной на разделе позиции.
+# ── Карточка подписки в блоке «акция» (редизайн, правки владельца 31.10.2026): анимация «кофе наливается в чашку» ──
+# Анимация — Lottie «Brewing coffee», автор CAROLINA SALAZAR, LottieFiles (Lottie Simple License, бесплатно, коммерция
+# разрешена): https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR; перекрашена под бренд tools/lottie_brand.py.
+# Плеер — lottie-web 5.12.2, сборка light (Airbnb, MIT), грузится лениво: после load и когда карточка на экране.
+# Без JS и при reduced-motion — статичный постер. Источники и лицензии — docs/LICENSES-media.md.
+# Подписи — tools/pages_i18n.json (раздел sub у ru/kk/en).
 
 # Мобильное приложение: ссылок на сторы пока нет (аккаунты ждут D-U-N-S, выпуск — примерно середина ноября 2026).
-# Появятся — вписать сюда (одна правка) и пересобрать: под плашкой подписки вместо «скоро в App Store и Google Play»
-# встанут ссылки, событие app_store {store}.
+# Появятся — вписать сюда (одна правка) и пересобрать: вместо «скоро, в приложении» встанут ссылки, событие app_store {store}.
 APP_LINKS = {'App Store': None, 'Google Play': None}
-# чипы: (ключ события и подписи в pages_i18n feed.chip_<ключ>, вкладка меню, раздел, с которого открыть)
-FEED_CHIPS = (('coffee', 'bar', 'Классический кофе'), ('notcoffee', 'bar', 'Листовые чаи'), ('food', 'kitchen', 'Завтраки'))
-FEED_MAX = {'popular': 8, 'desserts': 6, 'novelties': 6}    # лента — не всё меню; больше карточек — тяжелее главная
-CARDS_JSON = os.path.join(ROOT, 'menu', 'cards.json')
-FEED_A_MARK = ('<!-- Витрина меню, верх: чипы разделов и «популярное» — собирает tools/seo_jsonld.py из массивов меню, '
-               'menu/cards.json и tools/pages_i18n.json, руками не править -->')
-FEED_A_RE = re.compile(re.escape(FEED_A_MARK) + r'\n.*?<!-- /витрина-верх -->\n', re.S)
-FEED_B_MARK = '<!-- Витрина меню, низ: подписка, «десерты к кофе», «новинки» — собирает tools/seo_jsonld.py, руками не править -->'
-FEED_B_RE = re.compile(re.escape(FEED_B_MARK) + r'\n.*?<!-- /витрина-низ -->\n', re.S)
+COFFEE_ANIM = {'src': '/assets/brewing-coffee.2e74c5d9.json', 'poster': '/assets/brewing-coffee-poster.f762aef7.webp',
+               'player': '/assets/lottie_light.23cd2c01.js'}
+SUB_MARK = '<!-- Карточка подписки (анимация кофе) — собирает tools/seo_jsonld.py, руками не править -->'
+SUB_RE = re.compile(re.escape(SUB_MARK) + r'\n.*?<!-- /подписка -->\n', re.S)
+# загрузчик плеера: после load, по IntersectionObserver (вне экрана — пауза); reduced-motion, нет IO или ошибка — остаётся постер
+SUB_JS = ("<script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;"
+          "try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
+          "var anim=null,asked=false;function start(){new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;"
+          "if(anim){on?anim.play():anim.pause();return}if(!on||asked)return;asked=true;var s=document.createElement('script');"
+          "s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{anim=lottie.loadAnimation({container:"
+          "box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:true,path:box.getAttribute('data-src')});"
+          "anim.addEventListener('DOMLoaded',function(){box.classList.add('on')})}catch(e){}};document.head.appendChild(s)},"
+          "{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
 
 
-def menu_cards():
-    with open(CARDS_JSON, encoding='utf-8') as f:
-        return json.load(f)
-
-
-def feed_items(html):
-    """{'popular': [...], 'desserts': [...], 'novelties': [...]}: позиции меню кофеен с фото сайта —
-    (вкладка, номер раздела, позиция, карточка). Популярное — пометка hit (☆), новинки — new, десерты — раздел «Десерты»;
-    у позиции с несколькими ценами нужен объём (покажем первый: «200 мл · 1 400 ₸»), иначе её в подборку не берём."""
-    cs, out = menu_cards(), {'popular': [], 'desserts': [], 'novelties': []}
-    seen = set()
-    for tab, arr in mode_tabs(html)['cafe']:
-        for i, sec in enumerate(sections(html, arr)):
-            for it in sec['items']:
-                c = cs.get(it['n'] + ' @ ' + sec['t']) or cs.get(it['n'])
-                multi = '/' in str(it['p'] or '')
-                if not c or not (c.get('img480') or c.get('img')) or not it['p'] or (multi and not it['vol']) or it['n'] in seen:
-                    continue
-                row = (tab, i, it, c)
-                if 'hit' in it['m']:
-                    out['popular'].append(row)
-                elif 'new' in it['m']:
-                    out['novelties'].append(row)
-                elif tab == 'dessert' and sec['t'] == 'Десерты':
-                    out['desserts'].append(row)
-                else:
-                    continue
-                seen.add(it['n'])
-    # популярное: бар первым (кофе), дальше по одной позиции из раздела, потом вторые и т. д. — не одни завтраки;
-    # новинки — вперемешку кухня и бар
-    rank, pos = {}, {}
-    for n, r in enumerate(out['popular']):
-        rank[n] = pos[(r[0], r[1])] = pos.get((r[0], r[1]), -1) + 1
-    out['popular'] = [r for _, r in sorted(enumerate(out['popular']), key=lambda x: (x[1][0] != 'bar', rank[x[0]], x[0]))]
-    bar, rest = [r for r in out['novelties'] if r[0] == 'bar'], [r for r in out['novelties'] if r[0] != 'bar']
-    out['novelties'] = [r for pair in zip(rest, bar) for r in pair] + rest[len(bar):] + bar[len(rest):]
-    return {k: v[:FEED_MAX[k]] for k, v in out.items()}
-
-
-def chip_targets(html):
-    """[(ключ, вкладка, номер раздела)] — номер по названию раздела в массиве (раздел переехал — чип за ним)"""
-    tabs, out = dict(mode_tabs(html)['cafe']), []
-    for key, tab, title in FEED_CHIPS:
-        titles = [x['t'] for x in sections(html, tabs[tab])]
-        if title not in titles:
-            sys.exit('seo_jsonld: чип %s ведёт в раздел «%s» вкладки %s, а его в меню нет — поправьте FEED_CHIPS' % (key, title, tab))
-        out.append((key, tab, titles.index(title)))
-    return out
-
-
-def feed_link(lang, tab, i, ev):
-    """атрибуты ссылки витрины. Главная: без JS — текстовое меню /menyu#вкладка, с JS — оверлей меню на разделе (openMenuAt).
-    /kk/ и /en/ (без JS): меню главной на своём языке сразу на разделе — /?at=вкладка.раздел#menu-kk"""
-    if lang == 'ru':
-        return 'href="/menyu#%s" onclick="event.preventDefault();%s;openMenuAt(\'%s\',%d)"' % (tab, ev, tab, i)
-    return 'href="/?at=%s.%d%s" onclick="%s"' % (tab, i, MENU_HASH[lang], ev)
-
-
-def dish_card(html, c, row, big=False):
-    tab, i, it, card = row
+def sub_card(lang):
+    """карточка «кофейная подписка — скоро, в приложении» с анимацией кофе (постер без JS) и загрузчиком плеера"""
+    S = i18n()[lang]['sub']
     e = lambda x: H.escape(x, quote=False)
-    a = lambda x: H.escape(x, quote=False).replace('"', '&quot;')
-    lang, root = c['lang'], '' if c['lang'] == 'ru' else '/'
-    img = card.get('img480') or card['img']
-    ar = card.get('ar') or [4, 3]
-    w = 480 if card.get('img480') else ar[0]
-    h = round(w * ar[1] / ar[0])
-    price = fmt_p(str(it['p']).split('/')[0]) + ' ₸'
-    vol = tr_units(T(c, it['vol']), lang).split('/')[0].strip() if it['vol'] and '/' in str(it['p']) else ''
-    if vol and not re.search(r'[^\d\s]', vol):           # «200/300/400 мл» → «200» + единица из конца строки
-        unit = re.search(r'[^\d\s/]+$', T(c, it['vol']))
-        vol = '%s %s' % (vol, unit.group(0)) if unit else vol
-    name = T(c, it['n'])
-    ev = "track('menu_pick',{dish:'%s'})" % js_str(it['n'])
-    t = ('<b class="dish-n">%s</b><span class="dish-p">%s%s</span>' % (e(name), '<small>%s · </small>' % e(vol) if vol else '', price))
-    return ('      <a class="dish" %s><img src="%s%s" width="%d" height="%d" loading="lazy" decoding="async" alt="%s">%s</a>'
-            % (feed_link(lang, tab, i, a(ev)), root, img, w, h, a(name), '<span class="dish-t">%s</span>' % t if big else t))
-
-
-def feed_html(html, lang, part):
-    """верх (part='top'): чипы и «популярное»; низ ('bottom'): плашка подписки, «десерты к кофе», «новинки», кнопка «всё меню»"""
-    c = lang_ctx(html, lang)
-    F, items = c['d']['feed'], feed_items(html)
-    e = lambda x: H.escape(x, quote=False)
-
-    def strip(key, big=False):
-        return ('    <div class="row-head"><h2>%s</h2></div>\n    <div class="rail%s">\n%s\n    </div>\n'
-                % (e(F[key]), ' rail-big' if big else '', '\n'.join(dish_card(html, c, r, big) for r in items[key])))
-    if part == 'top':
-        chips = '\n'.join('      <a class="chip" %s>%s</a>' % (feed_link(lang, tab, i, "track('menu_chip',{chip:'%s'})" % key), e(F['chip_' + key]))
-                          for key, tab, i in chip_targets(html))
-        return ('<section class="feed shell" aria-label="%s">\n    <div class="chips">\n%s\n    </div>\n%s</section>\n'
-                % (H.escape(F['aria']), chips, strip('popular')))
     links = [(n, u) for n, u in APP_LINKS.items() if u]
-    stores = (e(F['stores_now']) + ' ' + ' · '.join('<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>'
-                                                     % (H.escape(u), js_str(n), e(n)) for n, u in links)) if links else e(F['stores_soon'])
-    more = ('<button class="btn ghost" type="button" onclick="track(\'cta_menu\',{src:\'feed\'});openMenu()">%s</button>' % e(F['more'])
-            if lang == 'ru' else '<a class="btn ghost" href="/%s" onclick="track(\'cta_menu\',{src:\'feed\'})">%s</a>' % (MENU_HASH[lang], e(F['more'])))
-    return ('<section class="feed shell">\n    <div class="sub"><p class="sub-t">%s</p><p class="sub-s">%s</p></div>\n    <p class="stores">%s</p>\n'
-            '%s%s    <div class="feed-all">%s</div>\n</section>\n'
-            % (e(F['sub_t']), e(F['sub_s']), stores, strip('desserts'), strip('novelties', True), more))
+    line = (e(S['now']) + ' ' + ' · '.join('<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>'
+                                            % (H.escape(u), js_str(n), e(n)) for n, u in links)) if links else e(S['soon'])
+    return ('    <div class="sub-card">\n'
+            '      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License '
+            '(https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->\n'
+            '      <div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" decoding="async" alt="">'
+            '<div class="sub-anim-l" aria-hidden="true"></div></div>\n'
+            '      <p class="sub-t">%s</p>\n      <p class="sub-s">%s</p>\n    </div>\n%s\n'
+            % (COFFEE_ANIM['src'], COFFEE_ANIM['player'], COFFEE_ANIM['poster'], e(S['title']), line, SUB_JS))
 
 
-def with_feed(html):
-    for mark, rx, part, end in ((FEED_A_MARK, FEED_A_RE, 'top', '<!-- /витрина-верх -->'), (FEED_B_MARK, FEED_B_RE, 'bottom', '<!-- /витрина-низ -->')):
-        m = rx.search(html)
-        if not m:
-            sys.exit('seo_jsonld: на главной нет маркеров витрины «%s … %s»' % (mark[:40], end))
-        html = html[:m.start()] + mark + '\n' + feed_html(html, 'ru', part) + end + '\n' + html[m.end():]
-    return html
+def with_sub(html):
+    m = SUB_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: в блоке «акция» главной нет маркеров «%s … <!-- /подписка -->»' % SUB_MARK[:40])
+    return html[:m.start()] + SUB_MARK + '\n' + sub_card('ru') + '<!-- /подписка -->\n' + html[m.end():]
 
 
 def with_jsonld(html):
@@ -1341,7 +1259,7 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_feed(with_faq(html))))))
+    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_sub(with_faq(html))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
     for lang in LANGS:
