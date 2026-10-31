@@ -24,8 +24,11 @@ rembg тянет ещё ~200 МБ зависимостей, для вырезк�
      гасятся; насыщенность — на четверть к общей средней, в пределах 0,94–1,03. Цель — выровнять, а не перекрасить.
   3. Центровка: рамка по маске → квадратный холст, предмет по центру, поля 8 % по большей стороне (все предметы одного
      визуального масштаба, высокие стаканы — по высоте, без обрезки); под предметом — едва заметная тень-эллипс.
+     Предмет, обрезанный краем уже в исходнике (пиццы 603×450 — низ), не висит срезом посреди холста: эта сторона
+     прижата к краю холста без поля, срез идёт по краю карточки (frame); срезанный снизу — без тени. Не дорисовываем.
   4. Фолбэк: модель «съела» белую тарелку (PLATE_EATEN) или фото в списке --fallback (брак по листам «до / после») —
-     исходник без вырезки, тот же цвет, предмет вместе с тарелкой — по центру квадрата, поля цветом фона; светлый студийный
+     исходник без вырезки, тот же цвет; рамка — по всему, что не фон (тарелка целиком), по центру квадрата с теми же
+     полями, обрезанная в исходнике сторона — к краю холста; поля цветом фона; светлый студийный
      фон с оттенком доводится до белого (сдвиг ≤ 15 %), чтобы на белой карточке не было видно квадрата.
 Результат пишется прямо в img/menu/<slug>.webp и <slug>-480.webp (webp с альфой, ≤ 90 и ≤ 35 КБ), в sources.json к подписи
 источника добавляется «+cut1» или «+fb1» — build_cards.py оставляет такие файлы как есть, пока источник тот же (нужен
@@ -49,6 +52,9 @@ WB_LIMIT = 0.06
 TARGET_MED = 0.56       # общая медиана яркости предмета (эталон «света»)
 TARGET_SAT = 0.30       # общая средняя насыщенность предмета
 PLATE_EATEN = 0.12      # «не фона» сверх маски модели больше 12 % — модель съела тарелку → фолбэк
+# фолбэк без поиска рамки: квадрат во всю узкую сторону кадра по центру блюда. Для снимков, где белая тарелка на
+# градиентном серо-голубом фоне почти не отличается от фона и рамка по «не фону» режет тарелку (листы «до / после», 1.11.2026)
+FULL_FRAME = {'farfalle-s-tomlenoj-govyadinoj'}
 
 
 def base_sign(val):
@@ -205,22 +211,27 @@ def defringe(rgb, alpha):
 
 
 def compose(rgb, alpha, shadow=True):
-    """предмет по центру квадратного холста с полями MARGIN; под ним — едва заметная тень-эллипс → RGBA CANVAS×CANVAS"""
+    """предмет по центру квадратного холста с полями MARGIN; под ним — едва заметная тень-эллипс → RGBA CANVAS×CANVAS.
+    Предмет, обрезанный краем исходника, — срезом к краю холста (frame), без тени, если срез снизу"""
     import numpy as np
     from PIL import Image, ImageDraw, ImageFilter
-    ys, xs = np.where(alpha > 0.5)
+    solid = alpha > 0.5
+    ys, xs = np.where(solid)
     if len(xs) == 0:
         raise ValueError('пустая маска')
+    h, w = alpha.shape
     x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
     bw, bh = x1 - x0, y1 - y0
-    side = int(max(bw, bh) / (1 - 2 * MARGIN))
+    cut = touches(solid)
+    sx0, sy0, side = frame((x0, x1, y0, y1), w, h, cut)
     rgba = np.dstack([rgb, alpha]).astype(np.float32)
     canvas = np.zeros((side, side, 4), dtype=np.float32)
-    ox, oy = (side - bw) // 2, (side - bh) // 2
-    canvas[oy:oy + bh, ox:ox + bw] = rgba[y0:y1, x0:x1]
+    ix0, iy0, ix1, iy1 = max(sx0, 0), max(sy0, 0), min(sx0 + side, w), min(sy0 + side, h)
+    canvas[iy0 - sy0:iy1 - sy0, ix0 - sx0:ix1 - sx0] = rgba[iy0:iy1, ix0:ix1]
     out = Image.fromarray((canvas * 255).astype('uint8'), 'RGBA').resize((CANVAS, CANVAS), Image.LANCZOS)
-    if shadow:
+    if shadow and 'B' not in cut:
         k = CANVAS / side
+        ox, oy = x0 - sx0, y0 - sy0
         sh = Image.new('L', (CANVAS, CANVAS), 0)
         cx, cy, rx, ry = float((ox + bw / 2) * k), float((oy + bh) * k), float(bw * k * 0.36), float(max(6, bh * k * 0.035))
         ImageDraw.Draw(sh).ellipse((cx - rx, cy - ry, cx + rx, cy + ry), fill=46)
@@ -232,32 +243,134 @@ def compose(rgb, alpha, shadow=True):
     return out
 
 
-def fallback(im, obj=None, bg=None):
-    """без вырезки: тот же цвет; предмет (маска с тарелкой, если есть) — по центру квадрата с полями MARGIN, поля — цветом
-    фона снимка (у студийных — белым); без маски — центр кадра"""
+def not_bg(im, bg, thr=20):
+    """«не фон» по всему кадру: размытый снимок отличается от цвета фона больше чем на thr из 255 (тарелка, её тень, еда)
+    → маска того же размера, что im. Рамка по ней, а не по маске модели: модель белую тарелку часто не видит"""
+    import numpy as np
+    from PIL import Image, ImageFilter
+    small = im.copy()
+    small.thumbnail((384, 384))
+    a = np.asarray(small.filter(ImageFilter.GaussianBlur(2)), dtype=np.int16)
+    m = np.abs(a - np.asarray(bg, dtype=np.int16)).max(2) > thr
+    m = np.asarray(Image.fromarray((m * 255).astype('uint8')).filter(ImageFilter.MinFilter(3))) > 0   # без пылинок
+    m = drop_edge_strips(m)          # полоса виньетки или градиента у края кадра — не блюдо и не срез
+    return np.asarray(Image.fromarray((m * 255).astype('uint8')).resize(im.size, Image.NEAREST)) > 0
+
+
+def drop_edge_strips(m):
+    """убрать из маски «не фона» узкие пятна у кромки кадра (полоса виньетки или градиента фона): пятно касается края и
+    уже 8 % кадра поперёк; мелочь меньше 0,2 % кадра — тоже. Тарелки и блюда (даже срезанные краем) остаются.
+    Связные области (8 соседей) — на миниатюре, ≤ 384 px"""
+    import numpy as np
+    from collections import deque
+    h, w = m.shape
+    flat = m.tolist()
+    seen = [[False] * w for _ in range(h)]
+    out = np.zeros((h, w), dtype=bool)
+    thin, tiny = 0.08 * min(h, w), 0.002 * h * w
+    for y0 in range(h):
+        for x0 in range(w):
+            if not flat[y0][x0] or seen[y0][x0]:
+                continue
+            q, pts = deque([(y0, x0)]), []
+            seen[y0][x0] = True
+            while q:
+                y, x = q.popleft()
+                pts.append((y, x))
+                for dy in (-1, 0, 1):
+                    for dx in (-1, 0, 1):
+                        yy, xx = y + dy, x + dx
+                        if 0 <= yy < h and 0 <= xx < w and flat[yy][xx] and not seen[yy][xx]:
+                            seen[yy][xx] = True; q.append((yy, xx))
+            ys, xs = zip(*pts)
+            bh, bw = max(ys) - min(ys) + 1, max(xs) - min(xs) + 1
+            edge = min(ys) == 0 or min(xs) == 0 or max(ys) == h - 1 or max(xs) == w - 1
+            if len(pts) < tiny or (edge and min(bh, bw) < thin):
+                continue
+            out[list(ys), list(xs)] = True
+    return out
+
+
+def touches(mask):
+    """стороны кадра, которые предмет режет (обрезан уже в исходнике): {'T','B','L','R'} — больше 2 % кромки"""
+    t = set()
+    for side, edge in (('T', mask[0]), ('B', mask[-1]), ('L', mask[:, 0]), ('R', mask[:, -1])):
+        if edge.mean() > 0.02:
+            t.add(side)
+    return t
+
+
+def frame(box, w, h, cut, margin=MARGIN, zoom=1.0):
+    """квадратная рамка (sx0, sy0, side) вокруг предмета box=(x0, x1, y0, y1) с полями margin. Сторону, по которой предмет
+    обрезан краем исходника (cut), прижимаем к краю холста без поля — срез идёт по краю карточки, а не висит в воздухе.
+    zoom > 1 — крупнее (предмет режется и полями холста)"""
+    x0, x1, y0, y1 = box
+    nx = (('L' not in cut) + ('R' not in cut))
+    ny = (('T' not in cut) + ('B' not in cut))
+    side = max((x1 - x0) / max(1 - margin * nx, 0.5), (y1 - y0) / max(1 - margin * ny, 0.5)) / zoom
+    if {'L', 'R'} <= cut:              # срезан с обеих сторон — холст не шире кадра, иначе за краем исходника видна ступенька
+        side = min(side, w)
+    if {'T', 'B'} <= cut:
+        side = min(side, h)
+    def place(lo, hi, a, b):
+        if a and not b:
+            return lo
+        if b and not a:
+            return hi - side
+        if a and b:
+            return lo + (hi - lo - side) / 2
+        return (lo + hi) / 2 - side / 2
+    return int(round(place(x0, x1, 'L' in cut, 'R' in cut))), int(round(place(y0, y1, 'T' in cut, 'B' in cut))), int(round(side))
+
+
+def fallback(im, obj=None, bg=None, margin=MARGIN, zoom=1.0, full=False):
+    """без вырезки: тот же цвет; рамка — по всему, что не фон (тарелка целиком, а не только еда из маски модели), поля
+    margin; сторону, обрезанную в исходнике, — к краю холста (frame). Поля — цветом фона, светлый фон с оттенком — белым"""
     import numpy as np
     from PIL import Image
     rgb = np.asarray(im, dtype=np.float32) / 255
     rgb = correct(rgb, obj.astype(np.float32) if obj is not None else np.ones(rgb.shape[:2], dtype=np.float32))
     h, w = rgb.shape[:2]
-    if obj is None or not obj.any():
+    bgc = bg if bg is not None else (255, 255, 255)
+    nb = not_bg(im, bgc)
+    if obj is not None:
+        nb = nb | obj
+    if not nb.any():
         s = min(h, w)
         crop = rgb[(h - s) // 2:(h - s) // 2 + s, (w - s) // 2:(w - s) // 2 + s]
         return Image.fromarray((crop * 255).astype('uint8')).convert('RGBA').resize((CANVAS, CANVAS), Image.LANCZOS)
-    ys, xs = np.where(obj)
-    x0, x1, y0, y1 = xs.min(), xs.max() + 1, ys.min(), ys.max() + 1
-    side = int(max(x1 - x0, y1 - y0) / (1 - 2 * MARGIN))
-    fill = np.array(bg if bg is not None else (255, 255, 255), dtype=np.float32) / 255
+    ys, xs = np.where(nb)
+    if full:                                     # FULL_FRAME: квадрат во всю узкую сторону, по центру блюда, в пределах кадра
+        oy, ox = np.where(obj if obj is not None and obj.any() else nb)
+        side = min(w, h)
+        sx0 = int(min(max((ox.min() + ox.max()) / 2 - side / 2, 0), w - side))
+        sy0 = int(min(max((oy.min() + oy.max()) / 2 - side / 2, 0), h - side))
+    else:
+        sx0 = None
+    # срез краем исходника — всё, что не фон, у кромки кадра (и бледная белая тарелка, и тень): такую сторону прижимаем к
+    # краю холста, иначе за краем исходника на холсте видна ступенька; лишнее срабатывание на виньетке фона безвредно
+    if sx0 is None:
+        sx0, sy0, side = frame((xs.min(), xs.max() + 1, ys.min(), ys.max() + 1), w, h, touches(nb), margin, zoom)
+    fill = np.array(bgc, dtype=np.float32) / 255
     fill = correct(fill.reshape(1, 1, 3) * np.ones((4, 4, 3), dtype=np.float32), np.zeros((4, 4), dtype=np.float32))[0, 0]
     if fill.min() > 0.85:            # светлый студийный фон с оттенком (розоватый, голубоватый) — доводим до белого, как лист карточки
         gains = np.clip(1 / np.maximum(fill, 1e-6), 1, 1.15)
         rgb = np.clip(rgb * gains, 0, 1)
         fill = np.clip(fill * gains, 0, 1)
     canvas = np.ones((side, side, 3), dtype=np.float32) * fill
-    cx, cy = (x0 + x1) // 2, (y0 + y1) // 2
-    sx0, sy0 = cx - side // 2, cy - side // 2
     ix0, iy0, ix1, iy1 = max(sx0, 0), max(sy0, 0), min(sx0 + side, w), min(sy0 + side, h)
-    canvas[iy0 - sy0:iy1 - sy0, ix0 - sx0:ix1 - sx0] = rgb[iy0:iy1, ix0:ix1]
+    part = rgb[iy0:iy1, ix0:ix1]
+    # край исходника внутри холста (холст шире кадра) — мягкий переход в цвет полей на 4 % стороны, без ступеньки
+    f = max(2, int(side * 0.04))
+    ph, pw = part.shape[:2]
+    wy = np.ones(ph, dtype=np.float32); wx = np.ones(pw, dtype=np.float32)
+    ramp = lambda n: np.clip((np.arange(n, dtype=np.float32) + 0.5) / f, 0, 1)
+    if iy0 > sy0: wy = np.minimum(wy, ramp(ph))
+    if iy1 < sy0 + side: wy = np.minimum(wy, ramp(ph)[::-1])
+    if ix0 > sx0: wx = np.minimum(wx, ramp(pw))
+    if ix1 < sx0 + side: wx = np.minimum(wx, ramp(pw)[::-1])
+    wgt = (wy[:, None] * wx[None, :])[..., None]
+    canvas[iy0 - sy0:iy1 - sy0, ix0 - sx0:ix1 - sx0] = part * wgt + fill * (1 - wgt)
     return Image.fromarray((canvas * 255).astype('uint8')).convert('RGBA').resize((CANVAS, CANVAS), Image.LANCZOS)
 
 
@@ -322,11 +435,15 @@ def main():
         if only and sl not in only:
             continue
         sign = base_sign(sources[sl])
-        im = load(source_of(sign, a.photos))
+        try:
+            im = load(source_of(sign, a.photos))
+        except Exception as e:                           # сеть или файл: это фото оставляем как было, остальные — дальше
+            print('%-50s ОШИБКА %s — не тронуто' % (sl, e), flush=True)
+            continue
         alpha = np.asarray(get_mask(im, session), dtype=np.float32) / 255
         plate, union, bg = recover_plates(im, alpha)
         if sl in fb or (plate > PLATE_EATEN and sl not in force_cut):                 # ручной список или модель съела тарелку
-            img, mode = fallback(im, union, bg), 'fb'
+            img, mode = fallback(im, union, bg, full=sl in FULL_FRAME), 'fb'
         else:
             rgb = np.asarray(im, dtype=np.float32) / 255
             rgb = correct(rgb, alpha)

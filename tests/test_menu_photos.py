@@ -82,5 +82,32 @@ class TestMenuPhotos(unittest.TestCase):
         self.assertEqual(bad, [])
 
 
+class TestFrame(unittest.TestCase):
+    """рамка вокруг блюда (cutout_photos.frame): обрезанная в исходнике сторона — к краю холста, без поля"""
+    @classmethod
+    def setUpClass(cls):
+        import sys
+        sys.path.insert(0, os.path.join(ROOT, 'menu'))
+        import cutout_photos
+        cls.frame = staticmethod(cutout_photos.frame)
+
+    def test_centered_with_margins(self):
+        x, y, side = self.frame((100, 300, 50, 250), 400, 300, set(), margin=0.1)
+        self.assertEqual(side, 250)                              # 200 / (1 − 2·0,1)
+        self.assertEqual((x, y), (75, 25))                       # по центру
+
+    def test_cut_bottom_pressed_to_canvas_edge(self):
+        # пицца 603×450, низ срезан краем кадра: низ холста = низ кадра, поля только сверху и по бокам
+        x, y, side = self.frame((110, 490, 60, 450), 603, 450, {'B'}, margin=0.08)
+        self.assertEqual(y + side, 450)
+        self.assertEqual(x, round((110 + 490) / 2 - side / 2))
+        self.assertEqual(side, round(max(380 / 0.84, 390 / 0.92)))
+
+    def test_cut_both_sides_not_wider_than_source(self):
+        x, y, side = self.frame((0, 1024, 200, 1400), 1024, 1536, {'L', 'R'}, margin=0.08)
+        self.assertLessEqual(side, 1024)
+        self.assertEqual(x, 0)
+
+
 if __name__ == '__main__':
     unittest.main()
