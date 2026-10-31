@@ -46,6 +46,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);
   
   --c-brand-cream:#FEF1E7;
+  --c-whatsapp:#25D366;       
   --c-input-border:#8C7E6E;   
   --r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;
   --s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
@@ -128,20 +129,24 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .halal-badge img{height:48px;width:48px;object-fit:contain;mix-blend-mode:multiply;flex:none}
 .halal-badge span{font-size:var(--fs-caption);color:var(--c-muted);line-height:1.5}
 .promo{padding:var(--s-8) var(--s-24) var(--s-24)}
-.promo-grid{display:flex;justify-content:center;align-items:stretch;gap:var(--s-24)}
-.promo-card{flex:0 1 440px;min-width:0;display:flex;flex-direction:column;padding:var(--s-16);border-radius:var(--r-lg);background:var(--c-surface)}
-.promo-media{position:relative;aspect-ratio:910/620}
-.promo-card>p{display:flex;flex-direction:column;gap:var(--s-4);margin-top:var(--s-12)}
-.promo-t{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
-.promo-s{font-size:var(--fs-small);line-height:1.5;color:var(--c-muted)}
-.promo-s .sale{color:var(--c-text);font-weight:600;white-space:nowrap}
-.promo-a,.promo-a a{font-size:var(--fs-small);font-weight:600;color:var(--c-accent);text-decoration:none}
-.row-head{display:flex;align-items:center;justify-content:center;gap:var(--s-12);margin:var(--s-24) 0 var(--s-12)}
-.row-head h2{font-size:var(--fs-title);line-height:1.2}
-.sub-anim{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);height:100%;aspect-ratio:1;overflow:hidden}
+.promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:start}
+.promo-tile{position:relative;min-width:0;aspect-ratio:910/620}
+.row-head{display:flex;align-items:center;gap:var(--s-12);margin:var(--s-24) 0 var(--s-16)}
+.row-head h2{font-size:var(--fs-heading);line-height:1.15}
+.promo-t{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.15;text-transform:lowercase;color:#FFFFFF}
+.promo-s{font-size:var(--fs-small);line-height:1.4;color:rgba(255,255,255,.88)}
+.promo-s s{color:rgba(255,255,255,.7)}
+.promo-s .sale{color:#FFFFFF;font-weight:700;white-space:nowrap;text-decoration-color:#FFE500}
+.promo-a{align-self:flex-start;display:inline-flex;align-items:center;min-height:40px;margin-top:var(--s-4);padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-bg);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+.promo-a:hover{background:var(--c-surface)}
+.sub-tile{border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent)}
+.tile-cap{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s-2);padding:var(--s-24);text-align:left}
+.tile-cap .promo-t{color:var(--c-brand-cream)}
+.sub-anim{position:absolute;top:6%;left:50%;transform:translateX(-50%);height:64%;aspect-ratio:1;overflow:hidden}
 .sub-anim img{display:block;width:100%;height:100%}
 .sub-anim-l{position:absolute;width:142.86%;height:142.86%;left:-21.43%;top:-8.57%}
 .sub-anim.on img{visibility:hidden}
+.promo-grid>.promo-tile:only-child{grid-column:1/-1;aspect-ratio:1112/368}
 .story{padding-top:var(--s-32);padding-bottom:var(--s-32)}
 .story-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center}
 .story-photo{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:1/1.1}
@@ -159,12 +164,12 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .f-grid article{padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-surface)}
 .f-grid h3{font-size:var(--fs-body);margin:0 0 var(--s-4)}
 .f-grid p{font-size:var(--fs-small);line-height:1.55;color:var(--c-muted)}
-.locations{padding:var(--s-32) 0;background:var(--c-raised)}
+.locations{padding:var(--s-32) 0;background:var(--c-bg)}
 .loc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-16);margin-bottom:var(--s-16)}
 .loc-head h2{font-size:var(--fs-heading);line-height:1.15}
 .loc-head p{color:var(--c-muted);max-width:340px;font-size:var(--fs-small);line-height:1.55}
 .loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-12)}
-.loc-card{display:flex;flex-direction:column;padding:var(--s-16);border-radius:var(--r-lg);background:var(--c-bg)}
+.loc-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-24) var(--s-16);border-radius:var(--r-lg);background:var(--c-bg);box-shadow:var(--shadow-floating)}
 .loc-card small{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
 .loc-card h3{font-family:var(--font-body);font-size:var(--fs-body);font-weight:500;text-transform:none;letter-spacing:0;color:var(--c-muted);margin:var(--s-4) 0 var(--s-2)}
 .loc-meta{font-size:var(--fs-small);color:var(--c-muted);line-height:1.5;margin:0 0 var(--s-8)}
@@ -174,13 +179,15 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .loc-amen span{white-space:nowrap}
 .loc-card:last-child:nth-child(odd){grid-column:1/-1}
 .icons{position:absolute;width:0;height:0;overflow:hidden}
-.loc-links{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-8);margin-top:auto}
+.loc-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s-8);margin-top:auto}
 .ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;background:var(--c-surface);color:var(--c-text);transition:background .15s}
 .ib:hover{background:var(--c-raised)}
 .ib.route{background:var(--c-accent);color:var(--c-on-accent)}
 .ib.route:hover{background:var(--c-accent-dk)}
+.ib.wa{background:var(--c-whatsapp);color:#FFFFFF}
+.ib.wa:hover{background:color-mix(in srgb,var(--c-whatsapp) 85%,#000)}
 .ic{display:block;width:22px;height:22px}
-.pill{display:inline-flex;align-items:center;min-height:var(--h-touch);padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+.pill{display:inline-flex;align-items:center;min-height:var(--h-touch);border:0;font:inherit;cursor:pointer;padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
 .pill:hover{background:var(--c-raised)}
 .faq{padding:var(--s-32) 0}
 .faq a{color:var(--c-accent);font-weight:600}
@@ -200,9 +207,8 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .faq-a ul{margin:6px 0 0 18px}
 .faq-more{max-width:760px;margin:var(--s-12) auto 0;text-align:center;font-size:var(--fs-small);color:var(--c-muted)}
 .contact{padding:var(--s-32) var(--s-24);text-align:center}
-.contact img{height:64px;width:auto;margin-bottom:var(--s-16);border-radius:var(--r-md)}
 .contact h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-16)}
-.contact-actions{display:flex;gap:var(--s-8);justify-content:center;flex-wrap:wrap}
+.social{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s-12)}
 footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .f-row{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-caption);color:var(--c-muted);flex-wrap:wrap;gap:var(--s-12)}
 .f-row img{height:28px;width:auto;border-radius:6px}
@@ -215,6 +221,8 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 @media(max-width:900px){
 .hero{grid-template-columns:1fr;gap:var(--s-24)}
 .hero-zone{order:-1;aspect-ratio:5/4;max-height:none}
+.promo-grid{grid-template-columns:1fr;gap:var(--s-16)}
+.promo-grid>.promo-tile:only-child{aspect-ratio:910/620}
 h1{font-size:36px}
 .story-grid{grid-template-columns:1fr;gap:var(--s-16)}
 .f-grid,.loc-grid{grid-template-columns:1fr}
@@ -233,10 +241,12 @@ h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
 .actions{flex-direction:column}
 .actions .btn{width:100%}
 .promo{padding:var(--s-8) var(--s-16) var(--s-16)}
-.promo-grid{flex-direction:column;gap:var(--s-16)}
-.promo-card{flex:none}
+.promo-t{font-size:18px}
+.promo-s{font-size:var(--fs-caption)}
+.promo-a{min-height:36px;padding:0 var(--s-12);font-size:13px}
+.tile-cap{padding:var(--s-16)}
 .story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
-.story h2,.f-head h2,.loc-head h2,.contact h2{font-size:var(--fs-title)}
+.story h2,.f-head h2,.loc-head h2,.contact h2,.row-head h2{font-size:var(--fs-title)}
 .f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
 .f-grid::-webkit-scrollbar,.sc-row::-webkit-scrollbar{display:none}
 .f-grid article{flex:0 0 76%;scroll-snap-align:start;padding:var(--s-16)}
@@ -244,8 +254,6 @@ h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
 .loc-head p{display:none}
 .faq-list summary{font-size:var(--fs-small)}
 .contact{padding:var(--s-24) var(--s-16)}
-.contact img{height:40px;margin-bottom:var(--s-12);border-radius:0}
-.contact-actions .btn{flex:1}
 .fab-menu{display:inline-flex}
 footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 .f-row{flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:11px;gap:10px}
@@ -261,13 +269,13 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 }
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://tap.delcappuccino.kz/en/#webpage","url":"https://tap.delcappuccino.kz/en/","name":"Del Cappuccino — 24/7 cafés in Almaty and bakery to go","description":"Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily 07:00–22:00). Breakfast all day, favourite dishes and good coffee.","inLanguage":"en","about":{"@id":"https://tap.delcappuccino.kz/#org"},"isPartOf":{"@type":"WebSite","@id":"https://tap.delcappuccino.kz/#website","url":"https://tap.delcappuccino.kz/","name":"Del Cappuccino"}},{"@type":"Organization","@id":"https://tap.delcappuccino.kz/#org","name":"Del Cappuccino","url":"https://tap.delcappuccino.kz/","sameAs":["https://instagram.com/del.cappuccino"]},{"@type":"FAQPage","@id":"https://tap.delcappuccino.kz/en/#faq","inLanguage":"en","mainEntity":[{"@type":"Question","name":"When are Del Cappuccino cafés open?","acceptedAnswer":{"@type":"Answer","text":"4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00."}},{"@type":"Question","name":"Where are Del Cappuccino cafés in Almaty?","acceptedAnswer":{"@type":"Answer","text":"5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7<\/li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7<\/li><li>Promenade Business Park (44A Abay Ave) — open 24/7<\/li><li>Del Cappuccino (64 Tole Bi St) — open 24/7<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00<\/li><\/ul>"}},{"@type":"Question","name":"Is Del Cappuccino food halal?","acceptedAnswer":{"@type":"Answer","text":"Yes, our products are halal-certified by KMDB (halaldamu.kz)."}},{"@type":"Question","name":"Do you serve breakfast only in the morning?","acceptedAnswer":{"@type":"Answer","text":"No, breakfast is served all day — your favourite breakfasts, whatever the clock says."}},{"@type":"Question","name":"How do I book a table?","acceptedAnswer":{"@type":"Answer","text":"Pick a café in the list of locations and message it on WhatsApp or give it a call."}},{"@type":"Question","name":"Do I need to prepay a booking?","acceptedAnswer":{"@type":"Answer","text":"It depends on the café:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP booths need a prepayment<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a standard booking needs no prepayment<\/li><li>Del Cappuccino (64 Tole Bi St): tables need no prepayment unless you pre-order from the menu<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): bookings need no prepayment<\/li><\/ul>"}},{"@type":"Question","name":"Can I order food for delivery?","acceptedAnswer":{"@type":"Answer","text":"Yes — tap “Order in the app” to order online at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz<\/a>. You can also order takeaway via the café's WhatsApp."}},{"@type":"Question","name":"Do you deliver?","acceptedAnswer":{"@type":"Answer","text":"You can order online with “Order in the app” on the website. Delivery by location:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): through all the delivery apps<\/li><li>Komfort City Residential Complex (146 Serkebaev St): our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt<\/li><li>Del Cappuccino (64 Tole Bi St): delivered by our own staff within 800 m<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): delivery within the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there parking?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): parking available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): public parking next to the café<\/li><li>Del Cappuccino (64 Tole Bi St): city parking; VIP guests can park in the inner courtyard<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): parking inside the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there Wi-Fi?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): Wi-Fi available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): free Wi-Fi<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): Wi-Fi available<\/li><\/ul>"}},{"@type":"Question","name":"Do you have a kids' area?","acceptedAnswer":{"@type":"Answer","text":"Yes, there's a kids' area at Vavilon Residential Complex."}},{"@type":"Question","name":"What VIP rooms and banquet halls do you have?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a VIP booth<\/li><li>Promenade Business Park (44A Abay Ave): a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people<\/li><\/ul>"}},{"@type":"Question","name":"Can I hold a banquet at your café?","acceptedAnswer":{"@type":"Answer","text":"Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."}},{"@type":"Question","name":"Where can I work or hold a business meeting?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Promenade Business Park (44A Abay Ave): a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens<\/li><\/ul>"}},{"@type":"Question","name":"Where is there a prayer room?","acceptedAnswer":{"@type":"Answer","text":"There's a namazkhana (prayer room) at Komfort City Residential Complex (146 Serkebaev St) and Promenade Business Park (44A Abay Ave)."}},{"@type":"Question","name":"Can I bring my pet?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): pets only on the summer terrace; large dogs must wear a muzzle<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): you can come with pets to pick up takeaway<\/li><\/ul>"}},{"@type":"Question","name":"Is the menu available in Kazakh and English?","acceptedAnswer":{"@type":"Answer","text":"Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG."}},{"@type":"Question","name":"Where can I see the menu and prices?","acceptedAnswer":{"@type":"Answer","text":"The menu with photos and ingredients is <a href=\"https://tap.delcappuccino.kz/#menu-en\">on the website<\/a>, and the full menu with prices as text is at <a href=\"https://tap.delcappuccino.kz/en/menu\">tap.delcappuccino.kz/en/menu<\/a>."}}]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://tap.delcappuccino.kz/en/#webpage","url":"https://tap.delcappuccino.kz/en/","name":"Del Cappuccino — 24/7 cafés in Almaty and bakery to go","description":"Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily 07:00–22:00). Breakfast all day, favourite dishes and good coffee.","inLanguage":"en","about":{"@id":"https://tap.delcappuccino.kz/#org"},"isPartOf":{"@type":"WebSite","@id":"https://tap.delcappuccino.kz/#website","url":"https://tap.delcappuccino.kz/","name":"Del Cappuccino"}},{"@type":"Organization","@id":"https://tap.delcappuccino.kz/#org","name":"Del Cappuccino","url":"https://tap.delcappuccino.kz/","sameAs":["https://instagram.com/del.cappuccino","https://www.youtube.com/@DelCappuccino","https://www.threads.com/@del.cappuccino"]},{"@type":"FAQPage","@id":"https://tap.delcappuccino.kz/en/#faq","inLanguage":"en","mainEntity":[{"@type":"Question","name":"When are Del Cappuccino cafés open?","acceptedAnswer":{"@type":"Answer","text":"4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00."}},{"@type":"Question","name":"Where are Del Cappuccino cafés in Almaty?","acceptedAnswer":{"@type":"Answer","text":"5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7<\/li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7<\/li><li>Promenade Business Park (44A Abay Ave) — open 24/7<\/li><li>Del Cappuccino (64 Tole Bi St) — open 24/7<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00<\/li><\/ul>"}},{"@type":"Question","name":"Is Del Cappuccino food halal?","acceptedAnswer":{"@type":"Answer","text":"Yes, our products are halal-certified by KMDB (halaldamu.kz)."}},{"@type":"Question","name":"Do you serve breakfast only in the morning?","acceptedAnswer":{"@type":"Answer","text":"No, breakfast is served all day — your favourite breakfasts, whatever the clock says."}},{"@type":"Question","name":"How do I book a table?","acceptedAnswer":{"@type":"Answer","text":"Pick a café in the list of locations and message it on WhatsApp or give it a call."}},{"@type":"Question","name":"Do I need to prepay a booking?","acceptedAnswer":{"@type":"Answer","text":"It depends on the café:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP booths need a prepayment<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a standard booking needs no prepayment<\/li><li>Del Cappuccino (64 Tole Bi St): tables need no prepayment unless you pre-order from the menu<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): bookings need no prepayment<\/li><\/ul>"}},{"@type":"Question","name":"Can I order food for delivery?","acceptedAnswer":{"@type":"Answer","text":"Yes — tap “Order in the app” to order online at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz<\/a>. You can also order takeaway via the café's WhatsApp."}},{"@type":"Question","name":"Do you deliver?","acceptedAnswer":{"@type":"Answer","text":"You can order online with “Order in the app” on the website. Delivery by location:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): through all the delivery apps<\/li><li>Komfort City Residential Complex (146 Serkebaev St): our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt<\/li><li>Del Cappuccino (64 Tole Bi St): delivered by our own staff within 800 m<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): delivery within the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there parking?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): parking available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): public parking next to the café<\/li><li>Del Cappuccino (64 Tole Bi St): city parking; VIP guests can park in the inner courtyard<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): parking inside the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there Wi-Fi?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): Wi-Fi available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): free Wi-Fi<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): Wi-Fi available<\/li><\/ul>"}},{"@type":"Question","name":"Do you have a kids' area?","acceptedAnswer":{"@type":"Answer","text":"Yes, there's a kids' area at Vavilon Residential Complex."}},{"@type":"Question","name":"What VIP rooms and banquet halls do you have?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a VIP booth<\/li><li>Promenade Business Park (44A Abay Ave): a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people<\/li><\/ul>"}},{"@type":"Question","name":"Can I hold a banquet at your café?","acceptedAnswer":{"@type":"Answer","text":"Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."}},{"@type":"Question","name":"Where can I work or hold a business meeting?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Promenade Business Park (44A Abay Ave): a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens<\/li><\/ul>"}},{"@type":"Question","name":"Where is there a prayer room?","acceptedAnswer":{"@type":"Answer","text":"There's a namazkhana (prayer room) at Komfort City Residential Complex (146 Serkebaev St) and Promenade Business Park (44A Abay Ave)."}},{"@type":"Question","name":"Can I bring my pet?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): pets only on the summer terrace; large dogs must wear a muzzle<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): you can come with pets to pick up takeaway<\/li><\/ul>"}},{"@type":"Question","name":"Is the menu available in Kazakh and English?","acceptedAnswer":{"@type":"Answer","text":"Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG."}},{"@type":"Question","name":"Where can I see the menu and prices?","acceptedAnswer":{"@type":"Answer","text":"The menu with photos and ingredients is <a href=\"https://tap.delcappuccino.kz/#menu-en\">on the website<\/a>, and the full menu with prices as text is at <a href=\"https://tap.delcappuccino.kz/en/menu\">tap.delcappuccino.kz/en/menu<\/a>."}}]}]}
 </script>
 </head>
 <body>
 
 <div class="intro" aria-hidden="true"><div class="logo-art"><img class="logo-art-text" src="/assets/logo-text.73de0587.svg" width="317" height="130" loading="lazy" decoding="async" alt=""><img class="logo-art-moped" src="/assets/moped-side.5c84289d.svg" width="103" height="64" loading="lazy" decoding="async" alt=""></div></div>
-<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol></svg>
+<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol><symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></symbol><symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol><symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></symbol></svg>
 
 <header>
   <div class="hbar">
@@ -317,12 +325,13 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
     </div>
   </section>
 
-  <section class="promo shell">
+  <section class="promo shell" aria-labelledby="promo-h">
+    <div class="row-head"><h2 id="promo-h">offers</h2></div>
     <div class="promo-grid">
-    <div class="promo-card sub-card">
+    <div class="promo-tile sub-tile">
       <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License (https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->
-      <div class="promo-media"><div class="sub-anim" data-src="/assets/brewing-coffee.2e74c5d9.json" data-player="/assets/lottie_light.23cd2c01.js"><img src="/assets/brewing-coffee-poster.f762aef7.webp" width="256" height="256" loading="lazy" decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div></div>
-      <p><b class="promo-t">coffee subscription</b> <span class="promo-s">coming soon, in the app</span></p>
+      <div class="sub-anim" data-src="/assets/brewing-coffee.df6fc172.json" data-player="/assets/lottie_light.23cd2c01.js"><img src="/assets/brewing-coffee-poster.b7411dfe.webp" width="256" height="256" loading="lazy" decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div>
+      <p class="tile-cap"><b class="promo-t">coffee subscription</b> <span class="promo-s">coming soon, in the app</span></p>
     </div>
 <script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}var anim=null,asked=false;function start(){new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;if(anim){on?anim.play():anim.pause();return}if(!on||asked)return;asked=true;var s=document.createElement('script');s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{anim=lottie.loadAnimation({container:box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:true,path:box.getAttribute('data-src')});anim.addEventListener('DOMLoaded',function(){box.classList.add('on')})}catch(e){}};document.head.appendChild(s)},{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>
     </div>
@@ -363,14 +372,13 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 <section class="locations" id="locations">
   <div class="shell">
     <div class="loc-head">
-      <div><p class="tag">almaty · 5 locations</p><h2>Choose<br><span>your café</span>.</h2></div>
+      <div><h2>Choose<br><span>your café</span>.</h2></div>
       <p>Call us directly, get directions in 2GIS — or message us on WhatsApp to book a table or order takeaway.</p>
     </div>
     <div class="loc-grid">
     <div class="loc-card">
       <small>Vavilon Residential Complex</small>
       <h3>247/8 Rozybakiev St</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>kids' area</span> · <span>VIP rooms</span> · <span>VIP booths</span> · <span>banquet hall</span> · <span>Wi-Fi</span> · <span>parking</span></p>
       <div class="loc-links">
         <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
@@ -381,7 +389,6 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
     <div class="loc-card">
       <small>Komfort City Residential Complex</small>
       <h3>146 Serkebaev St</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>VIP booth</span> · <span>prayer room</span> · <span>free Wi-Fi</span> · <span>parking</span></p>
       <div class="loc-links">
         <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
@@ -392,7 +399,6 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
     <div class="loc-card">
       <small>Promenade Business Park</small>
       <h3>44A Abay Ave</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-about">A space for work, meetings and downtime, next to the Baluan Sholak sports complex and the Central Stadium.</p>
       <p class="loc-amen"><span>VIP room</span> · <span>hall for up to 60</span> · <span>space for freelancers</span> · <span>prayer room</span> · <span>summer terrace</span></p>
       <div class="loc-links">
@@ -404,7 +410,6 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
     <div class="loc-card">
       <small>Del Cappuccino</small>
       <h3>64 Tole Bi St</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>delivery within 800 m</span> · <span>parking</span></p>
       <div class="loc-links">
         <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
@@ -458,11 +463,11 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 </section>
 
 <section class="contact shell" id="contacts">
-  <a href="/en/" aria-label="Del Cappuccino — home"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
   <h2>Come by<br>for <span>coffee</span>.</h2>
-  <div class="contact-actions">
-    <a class="btn olive" href="#locations" onclick="track('cta_wa_contact')">WhatsApp</a>
-    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram')">@del.cappuccino</a>
+  <div class="social">
+    <a class="ib so" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'instagram'})" aria-label="Instagram" title="Instagram"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-ig"/></svg></a>
+    <a class="ib so" href="https://www.youtube.com/@DelCappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'youtube'})" aria-label="YouTube" title="YouTube"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-yt"/></svg></a>
+    <a class="ib so" href="https://www.threads.com/@del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'threads'})" aria-label="Threads" title="Threads"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-th"/></svg></a>
   </div>
 </section>
 

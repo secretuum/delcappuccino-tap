@@ -2,6 +2,7 @@
   "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной и из tools/branch_facts.json; подстановки: {часы} {адреса} {точек} {кофеен} {точек_n} {часы_togo} — из BRANCHES, {детские} {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы} {работа} {животные}) — из tools/branch_facts.json. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
   "ru": {
     "sub": {
+      "h2": "акции",
       "title": "кофейная подписка",
       "soon": "скоро, в приложении",
       "now": "в приложении:"
@@ -69,7 +70,6 @@
         ["Банкеттер", "40 адамға дейінгі топқа іс-шараңызды өткіземіз."],
         ["Намазхана", "Намаз оқуға арналған жайлы, бөлек орын."]
       ],
-      "loc_tag": "алматы · {точек_n} филиал",
       "loc_h2": "<span>Филиалыңызды</span><br>таңдаңыз.",
       "loc_p": "Тікелей қоңырау шалыңыз, 2GIS-те бағытты ашыңыз — немесе үстел брондау не алып кетуге тапсырыс беру үшін WhatsApp-қа жазыңыз.",
       "call": "Қоңырау шалу",
@@ -88,6 +88,7 @@
       "pill_s": "кофеханалар 24/7"
     },
     "sub": {
+      "h2": "акциялар",
       "title": "кофе жазылымы",
       "soon": "жақында, қосымшада",
       "now": "қосымшада:"
@@ -175,7 +176,6 @@
         ["Banquets", "We'll host your event for a group of up to 40 people."],
         ["Prayer room", "A separate, comfortable space for prayer (namazkhana)."]
       ],
-      "loc_tag": "almaty · {точек_n} locations",
       "loc_h2": "Choose<br><span>your café</span>.",
       "loc_p": "Call us directly, get directions in 2GIS — or message us on WhatsApp to book a table or order takeaway.",
       "call": "Call",
@@ -194,6 +194,7 @@
       "pill_s": "cafés 24/7"
     },
     "sub": {
+      "h2": "offers",
       "title": "coffee subscription",
       "soon": "coming soon, in the app",
       "now": "in the app:"

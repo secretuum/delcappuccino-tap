@@ -4,8 +4,10 @@
 Источник: Lottie «Brewing coffee», автор CAROLINA SALAZAR, LottieFiles, Lottie Simple License (бесплатно, коммерция
 разрешена) — https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR. Исходники лежат вне репозитория:
 ~/kofe-design-export/media/lottie/lottiefiles-brewing-coffee-carolina-salazar.json и …-poster.png.
-Перекраска под бренд: линии чашки (PNG внутри анимации) — forest #426349, пар — forest 55 %, кофе — тёплый коричневый,
-как в оригинале (#664430). Постер — тот же кадр: белый фон → прозрачный (видна подложка карточки), обрезан как анимация в CSS.
+Перекраска под бренд (плитка подписки — фирменный зелёный, пара к огненной рамке «Курицы гриль», правки владельца 31.10):
+линии чашки (PNG внутри анимации) — кремовый бренда #FEF1E7, пар — тот же 55 %, кофе — тёплый коричневый, как в оригинале
+(#664430). Постер — тот же кадр: белый фон → прозрачный (видна зелёная плитка), обрезан как анимация в CSS.
+Цвет линий — LINE ниже (первая версия 31.10 была forest на светлой карточке: brewing-coffee.2e74c5d9.json).
 
 Запуск из корня репозитория:  python3 tools/lottie_brand.py [папка-вывода, по умолчанию assets]
 Пишет assets/brewing-coffee.<хэш>.json и assets/brewing-coffee-poster.<хэш>.webp; новые имена вписать в COFFEE_ANIM
@@ -14,7 +16,7 @@
 import base64, hashlib, io, json, sys, os
 from PIL import Image
 SRC = os.path.expanduser('~/kofe-design-export/media/lottie/')
-FOREST = (0x42, 0x63, 0x49)
+LINE = (0xFE, 0xF1, 0xE7)     # кремовый бренда — линии на зелёной плитке
 out = sys.argv[1] if len(sys.argv) > 1 else os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'assets')
 d = json.load(open(SRC + 'lottiefiles-brewing-coffee-carolina-salazar.json'))
 
@@ -27,7 +29,7 @@ def tint(png, rgb, alpha=1.0):
 for a in d['assets']:
     if a.get('p', '').startswith('data:image/png;base64,'):
         png = base64.b64decode(a['p'].split(',', 1)[1])
-        new = tint(png, FOREST, 1.0 if a['id'] == 'image_3' else 0.55)
+        new = tint(png, LINE, 1.0 if a['id'] == 'image_3' else 0.55)
         a['p'] = 'data:image/png;base64,' + base64.b64encode(new).decode()
 d['nm'] = 'Brewing coffee — CAROLINA SALAZAR (LottieFiles, Lottie Simple License), перекрашено под del Cappuccino'
 s = json.dumps(d, ensure_ascii=False, separators=(',', ':'))
@@ -54,11 +56,11 @@ for p in im.getdata():
     best = min(((blend(p, W, L), 'WL'), (blend(p, W, C), 'WC'), (blend(p, L, C), 'LC')), key=lambda x: x[0][1])
     (t, _), k = best
     if k == 'WL':
-        px.append(FOREST + (round(255 * t),))
+        px.append(LINE + (round(255 * t),))
     elif k == 'WC':
         px.append(C + (round(255 * t),))
     else:
-        px.append(tuple(round(FOREST[i] * (1 - t) + C[i] * t) for i in range(3)) + (255,))
+        px.append(tuple(round(LINE[i] * (1 - t) + C[i] * t) for i in range(3)) + (255,))
 po = Image.new('RGBA', im.size); po.putdata(px)
 po = po.crop((96, 38, 544, 486)).resize((256, 256), Image.LANCZOS)   # та же обрезка, что у анимации в CSS: x 15–85 %, y 6–76 %
 buf = io.BytesIO(); po.save(buf, 'WEBP', quality=82, method=6); data = buf.getvalue()

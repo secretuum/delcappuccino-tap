@@ -7,7 +7,7 @@
 С ключом --check только сравнивает и выходит с кодом 1, если что-то устарело (tests/test_seo.py).
 
 Источники — только сама страница и tools/faq.json, ничего не придумывается:
-- JSON-LD: организация Del Cappuccino (sameAs — ссылки Instagram со страницы, заказ онлайн — OrderAction),
+- JSON-LD: организация Del Cappuccino (sameAs — Instagram, YouTube, Threads из SOCIAL, они же значками на странице, заказ онлайн — OrderAction),
   5 точек из BRANCHES — 01–04 CafeOrCoffeeShop, 05 Bakery; адрес, координаты, телефон и часы — только из BRANCHES
   (город и страна — «5 точек в Алматы» из текста сайта). Юрлиц, ИП и имён людей в разметке нет и быть не должно.
   Меню кофеен с ценами в тенге — по разделам; у позиции с несколькими ценами — Offer на каждый объём из vol,
@@ -464,7 +464,7 @@ def instagram(html):
 
 def graph(html):
     org = {'@type': 'Organization', '@id': SITE + '#org', 'name': 'Del Cappuccino', 'url': SITE,
-           'logo': SITE + 'assets/icon-192.png', 'sameAs': instagram(html),
+           'logo': SITE + 'assets/icon-192.png', 'sameAs': [u for _, _, u, _ in SOCIAL],
            'potentialAction': {'@type': 'OrderAction', 'target': ORDER_URL}}
     nodes = [org]
     for b in branches(html):
@@ -666,8 +666,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 # точки (кнопки-значки), вопросы, контакты, подвал (без оверлея меню, модалки, «Курицы гриль» и фото «Фирменный стиль»)
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
-                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-card|promo-media|promo-t|promo-s|promo-a|row-head|sub-card|sub-anim|'
-                      r'sub-anim-l|icons|ic|ib|pill|'
+                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-anim|'
+                      r'sub-anim-l|icons|ic|ib|pill|social|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
                       r'f-row|hide-mobile))(?![\w-])')
@@ -768,7 +768,7 @@ def lang_jsonld(html, lang, P, items):
         {'@type': 'WebPage', '@id': HOME[lang] + '#webpage', 'url': HOME[lang], 'name': P['title'], 'description': P['description'],
          'inLanguage': lang, 'about': {'@id': SITE + '#org'},
          'isPartOf': {'@type': 'WebSite', '@id': SITE + '#website', 'url': SITE, 'name': 'Del Cappuccino'}},
-        {'@type': 'Organization', '@id': SITE + '#org', 'name': 'Del Cappuccino', 'url': SITE, 'sameAs': instagram(html)},
+        {'@type': 'Organization', '@id': SITE + '#org', 'name': 'Del Cappuccino', 'url': SITE, 'sameAs': [u for _, _, u, _ in SOCIAL]},
         {'@type': 'FAQPage', '@id': HOME[lang] + '#faq', 'inLanguage': lang,
          'mainEntity': [{'@type': 'Question', 'name': q, 'acceptedAnswer': {'@type': 'Answer', 'text': a}} for q, a in items]}]}
     return dumps(data).replace('</', '<\\/')
@@ -841,15 +841,14 @@ def lang_page(html, lang):
                  icon_link('ib wa', wa, 'WhatsApp', ev('loc_wa'), 'wa')]
         if b['menu']:
             links.append('<a class="pill" href="/%s-%s"%s>%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, ev('loc_menu'), e(P['card_menu'])))
-        return ('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
-                '%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                % (e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
+        return ('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
+                '%s%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
+                % (e(T(c, short(b))), e(T(c, b['addr'])), loc_meta(e(hours_card(c, b['hours'])), e(note)),
                    card_extra(html, b, lang), '\n        '.join(links)))
 
     stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b>all day</b><span>%s</span></div>'
              % (P['stat_cafes'], len(bs), P['stat_points'], P['stat_breakfast']))
     faq_html = faq_block(items, (P['faq_h2'], P['faq_p']))
-    insta = instagram(html)
     return '''<!DOCTYPE html>
 <html lang="%(lang)s">
 <head>
@@ -931,7 +930,8 @@ def lang_page(html, lang):
     </div>
   </section>
 
-  <section class="promo shell">
+  <section class="promo shell" aria-labelledby="promo-h">
+    <div class="row-head"><h2 id="promo-h">%(promo_h2)s</h2></div>
     <div class="promo-grid">
 %(sub)s    </div>
   </section>
@@ -964,7 +964,7 @@ def lang_page(html, lang):
 <section class="locations" id="locations">
   <div class="shell">
     <div class="loc-head">
-      <div><p class="tag">%(loc_tag)s</p><h2>%(loc_h2)s</h2></div>
+      <div><h2>%(loc_h2)s</h2></div>
       <p>%(loc_p)s</p>
     </div>
     <div class="loc-grid">
@@ -975,13 +975,8 @@ def lang_page(html, lang):
 
 %(faq)s
 <section class="contact shell" id="contacts">
-  <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
   <h2>%(contact_h2)s</h2>
-  <div class="contact-actions">
-    <a class="btn olive" href="#locations" onclick="track('cta_wa_contact')">WhatsApp</a>
-%(insta_btn)s
-  </div>
-</section>
+%(social)s</section>
 
 <footer class="shell">
   <div class="f-row">
@@ -997,7 +992,7 @@ def lang_page(html, lang):
 </body>
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
-                               'about_h2', 'about_p', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
+                               'about_h2', 'about_p', 'features_h2', 'loc_h2', 'loc_p', 'contact_h2',
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
@@ -1005,12 +1000,11 @@ def lang_page(html, lang):
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           sub=sub_card(lang), icons=ICONS,
+           sub=sub_card(lang), icons=ICONS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article><h3>%s</h3><p>%s</p></article>' % (h, p) for h, p in feats),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
-           insta_btn='\n'.join('    <a class="btn ghost" href="%s" target="_blank" rel="noopener" onclick="track(\'cta_instagram\')">@%s</a>'
-                                % (u, u.rstrip('/').rsplit('/', 1)[1]) for u in insta))
+           social=social_row())
 
 
 def kk_review(html):
@@ -1169,7 +1163,17 @@ def js_attr(s):
 # Значки кнопок карточки точки (правки владельца 31.10, вторая порция): метка на карте и трубка — Lucide 0.460.0 (ISC),
 # WhatsApp — Simple Icons 13.21.0 (CC0); один спрайт на страницу, кнопки ссылаются <use href="#i-…">. Лицензии — docs/LICENSES-media.md
 ICONS_MARK = '<!-- значки кнопок (SVG-спрайт: Lucide ISC, Simple Icons CC0) — собирает tools/seo_jsonld.py, руками не править -->'
+# Соцсети (правки владельца 31.10, третья порция): ряд круглых значков в блоке «загляните на кофе» на /, /kk/, /en/ и sameAs
+# организации в JSON-LD. Событие — как у прежней ссылки на Instagram (cta_instagram) с параметром сети net.
+SOCIAL = (('instagram', 'Instagram', 'https://instagram.com/del.cappuccino', 'ig'),
+          ('youtube', 'YouTube', 'https://www.youtube.com/@DelCappuccino', 'yt'),
+          ('threads', 'Threads', 'https://www.threads.com/@del.cappuccino', 'th'))
+SOCIAL_MARK = '<!-- соцсети: значки (Simple Icons CC0) — собирает tools/seo_jsonld.py из SOCIAL, руками не править -->'
+SOCIAL_RE = re.compile(re.escape(SOCIAL_MARK) + r'\n.*?<!-- /соцсети -->\n', re.S)
 ICONS_RE = re.compile(re.escape(ICONS_MARK) + r'\n.*?<!-- /значки -->\n', re.S)
+IG_D = 'M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077'
+YT_D = 'M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z'
+TH_D = 'M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z'
 _LUCIDE = ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
 ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">'
          '<symbol id="i-pin"%s><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>'
@@ -1183,7 +1187,11 @@ ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="tru
          '1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 '
          '9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 '
          '11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 '
-         '11.821 0 00-3.48-8.413Z"/></symbol></svg>') % (_LUCIDE, _LUCIDE)
+         '11.821 0 00-3.48-8.413Z"/></symbol>'
+         # Instagram, YouTube, Threads — Simple Icons 13.21.0 (CC0), ряд соцсетей в блоке «загляните на кофе»
+         '<symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol>'
+         '<symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol>'
+         '<symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol></svg>') % (_LUCIDE, _LUCIDE, IG_D, YT_D, TH_D)
 
 
 def icon_link(cls, href, label, onclick, icon, blank=True):
@@ -1191,6 +1199,20 @@ def icon_link(cls, href, label, onclick, icon, blank=True):
     a = lambda x: H.escape(x, quote=False).replace('"', '&quot;')
     return ('<a class="%s" href="%s"%s%s aria-label="%s" title="%s"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-%s"/></svg></a>'
             % (cls, a(href), ' target="_blank" rel="noopener"' if blank else '', onclick, a(label), a(label), icon))
+
+
+def social_row():
+    """ряд круглых значков соцсетей: aria-label и title — название сети, новая вкладка, событие cta_instagram {net}"""
+    return ('  <div class="social">\n' + '\n'.join(
+        '    ' + icon_link('ib so', url, name, ' onclick="track(\'cta_instagram\',{net:\'%s\'})"' % key, ic) for key, name, url, ic in SOCIAL)
+            + '\n  </div>\n')
+
+
+def with_social(html):
+    m = SOCIAL_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: в блоке «загляните на кофе» нет маркеров «%s … <!-- /соцсети -->»' % SOCIAL_MARK[:40])
+    return html[:m.start()] + SOCIAL_MARK + '\n' + social_row() + '<!-- /соцсети -->\n' + html[m.end():]
 
 
 def with_icons(html):
@@ -1213,6 +1235,14 @@ def wa_link(html, b):
     return 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']), quote((b['wa'] or default) + b['addr'], safe="-_.!~*'()"))
 
 
+def loc_meta(hours, note):
+    """строка часов карточки — только у точек не 24/7 (владелец 31.10: «24/7» в каждой карточке не нужно — это сказано
+    в шапке, hero и «Формате»); у bakery — «ежедневно 07:00–22:00 · описание»"""
+    if hours == '24/7':
+        return ''
+    return '      <p class="loc-meta"><b>%s</b>%s</p>\n' % (hours, ' · ' + note if note else '')
+
+
 def loc_cards(html):
     """карточки точек: название (без номера — номер нужен только данным), адрес, часы, удобства; кнопки-значки — маршрут
     (главная, forest), звонок, WhatsApp; у bakery ещё текстовая пилюля «Меню»"""
@@ -1228,8 +1258,8 @@ def loc_cards(html):
         if b['menu']:
             links.append('<a class="pill" href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
         out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
-                   '      <p class="loc-meta"><b>%s</b>%s</p>\n%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                   % (t(short(b)), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),
+                   '%s%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
+                   % (t(short(b)), t(b['addr']), loc_meta(t(b['hours']), t(b['note']) if b['note'] else ''), card_extra(html, b, 'ru'),
                       '\n        '.join(links)))
     return LOC_MARK + '\n' + '\n'.join(out) + '\n<!-- /точки -->\n'
 
@@ -1251,7 +1281,7 @@ def with_loc(html):
 # Мобильное приложение: ссылок на сторы пока нет (аккаунты ждут D-U-N-S, выпуск — примерно середина ноября 2026).
 # Появятся — вписать сюда (одна правка) и пересобрать: вместо «скоро, в приложении» встанут ссылки, событие app_store {store}.
 APP_LINKS = {'App Store': None, 'Google Play': None}
-COFFEE_ANIM = {'src': '/assets/brewing-coffee.2e74c5d9.json', 'poster': '/assets/brewing-coffee-poster.f762aef7.webp',
+COFFEE_ANIM = {'src': '/assets/brewing-coffee.df6fc172.json', 'poster': '/assets/brewing-coffee-poster.b7411dfe.webp',
                'player': '/assets/lottie_light.23cd2c01.js'}
 SUB_MARK = '<!-- Карточка подписки (анимация кофе) — собирает tools/seo_jsonld.py, руками не править -->'
 SUB_RE = re.compile(re.escape(SUB_MARK) + r'\n.*?<!-- /подписка -->\n', re.S)
@@ -1271,17 +1301,17 @@ def sub_card(lang):
     S = i18n()[lang]['sub']
     e = lambda x: H.escape(x, quote=False)
     links = [(n, u) for n, u in APP_LINKS.items() if u]
-    # карточка того же вида, что «Курица гриль» рядом: поле-картинка той же пропорции, ниже заголовок, строка, ссылка
     line = ('<span class="promo-s">%s</span>' % e(S['soon']) if not links else
             '<span class="promo-s">%s</span> <span class="promo-a">%s</span>' % (e(S['now']), ' · '.join(
                 '<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>' % (H.escape(u), js_str(n), e(n))
                 for n, u in links)))
-    return ('    <div class="promo-card sub-card">\n'
+    # плитка пары к огненной рамке «Курицы гриль»: та же форма 910×620, фирменный зелёный, кремовая чашка, подпись внизу
+    return ('    <div class="promo-tile sub-tile">\n'
             '      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License '
             '(https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->\n'
-            '      <div class="promo-media"><div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" '
-            'decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div></div>\n'
-            '      <p><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
+            '      <div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" '
+            'decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div>\n'
+            '      <p class="tile-cap"><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
             % (COFFEE_ANIM['src'], COFFEE_ANIM['player'], COFFEE_ANIM['poster'], e(S['title']), line, SUB_JS))
 
 
@@ -1300,7 +1330,7 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_icons(with_sub(with_faq(html)))))))
+    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_social(with_icons(with_sub(with_faq(html))))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
     for lang in LANGS:
