@@ -265,8 +265,11 @@ class TestFaq(unittest.TestCase):
             self.assertNotRegex(visible_text(text) if path.endswith('.html') else text, old, '%s: старая формулировка про две детские' % path)
 
     def test_visible_link_to_menu_page(self):
-        head = re.search(r'<div class="faq-head">(.*?)</div>\s*<div class="faq-list">', self.body, re.S).group(1)
-        self.assertIn('<a href="/menyu">', head, 'ссылка на /menyu должна быть видна без раскрытия вопросов')
+        # с 31.10 вопросы свёрнуты в плашку <details class="faq-box">; ссылка — строкой под плашкой, видна и в свёрнутом виде
+        sec = re.search(r'<section class="faq" id="faq">(.*?)</section>', self.body, re.S).group(1)
+        more = re.search(r'</details>\n\s*<p class="faq-more">(.*?)</p>\n\s*</div>\s*$', sec, re.S)
+        self.assertIsNotNone(more, 'строка со ссылкой — после плашки, вне <details>')
+        self.assertIn('<a href="/menyu">', more.group(1), 'ссылка на /menyu должна быть видна без раскрытия вопросов')
 
 
 class TestLocations(unittest.TestCase):
@@ -285,7 +288,8 @@ class TestLocations(unittest.TestCase):
         self.assertEqual(len(self.cards), len(self.branches), 'карточка на каждую точку из BRANCHES')
         for card, line in zip(self.cards, self.branches):
             g = lambda k: re.search(r"\b%s:'([^']*)'" % k, line).group(1)
-            self.assertIn('<small>%s</small>' % g('n'), card)
+            # видимое название — без номера точки (владелец 31.10: «жк вавилон», а не «01 · жк вавилон»); номер — только в данных
+            self.assertIn('<small>%s</small>' % re.sub(r'^\d+\s*·\s*', '', g('n')), card)
             self.assertIn('<h3>%s</h3>' % g('addr'), card)
             self.assertIn('<b>%s</b>' % g('hours'), card)
             self.assertIn('href="tel:%s"' % g('phone'), card)

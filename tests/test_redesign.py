@@ -214,8 +214,8 @@ class TestIntro(unittest.TestCase):
                 srcs = set(re.findall(r'src="/?(assets/%s\.[0-9a-f]{8}\.svg)"' % name, html))
                 self.assertEqual(len(srcs), 1, '%s: %s' % (l, name))
                 self.assertLessEqual(os.path.getsize(os.path.join(ROOT, srcs.pop())), 40 * 1024)
-            self.assertNotIn('<path', re.sub(r'<svg class="grill-fire".*?</svg>', '', html.split('</head>')[1], flags=re.S),
-                             '%s: большие SVG не инлайним' % l)
+            body = re.sub(r'<svg class="(?:grill-fire|icons)".*?</svg>', '', html.split('</head>')[1], flags=re.S)
+            self.assertNotIn('<path', body, '%s: большие SVG не инлайним (кроме огня акции и спрайта значков кнопок)' % l)
 
     def test_intro_behaviour_in_node(self):
         node = find_node()
@@ -302,19 +302,94 @@ class TestPage(unittest.TestCase):
             S = self.i18n[l]['sub']
             promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S)
             self.assertIsNotNone(promo, '%s: блок акции' % l)
-            card = re.search(r'<div class="sub-card">(.*?)\n    </div>', promo.group(1), re.S)
+            card = re.search(r'<div class="promo-card sub-card">(.*?)\n    </div>', promo.group(1), re.S)
             self.assertIsNotNone(card, '%s: карточка подписки — в блоке акции' % l)
-            self.assertIn('<p class="sub-t">%s</p>\n      <p class="sub-s">%s</p>' % (S['title'], S['soon']), card.group(1), l)
+            self.assertIn('<p><b class="promo-t">%s</b> <span class="promo-s">%s</span></p>' % (S['title'], S['soon']), card.group(1), l)
             self.assertNotRegex(html, r'apps\.apple\.com|itunes\.apple|play\.google\.com|app_store', '%s: ссылок на сторы пока нет' % l)
-            self.assertEqual(html.count('class="sub-card"'), 1, '%s: подписка — один раз' % l)
+            self.assertEqual(html.count('sub-card"'), 1, '%s: подписка — один раз' % l)
             self.assertNotRegex(html, r'class="sub"|кофе каждый день|30 чашек|күн сайын кофе|coffee every day', '%s: отдельной плашки нет' % l)
         self.assertEqual((self.i18n['ru']['sub']['title'], self.i18n['ru']['sub']['soon']), ('кофейная подписка', 'скоро, в приложении'))
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', self.pages['ru'], re.S).group(1)
-        self.assertLess(promo.index('class="grill-promo"'), promo.index('class="sub-card"'), '«Курица гриль» остаётся первой')
+        self.assertLess(promo.index('class="promo-card grill-promo"'), promo.index('class="promo-card sub-card"'), '«Курица гриль» остаётся первой')
         review = read('menu/kk_review.md')
         for k, v in self.i18n['kk']['sub'].items():
             self.assertIn('| `sub.%s` |' % k, review)
             self.assertIn(v, review)
+
+    def test_promo_two_equal_cards(self):
+        """акция: «Курица гриль» и подписка — две карточки одного вида (поле одной пропорции, заголовок, строка, ссылка),
+        равной ширины (один flex-basis) и высоты (stretch), пара по центру; на телефоне — колонкой во всю ширину.
+        Ширины по CSS: 360 → 328 (колонка); 768 → (720 − 24) / 2 = 348 каждая; 1280 и 2000 → 440 + 24 + 440 по центру 1112"""
+        html = self.pages['ru']
+        promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
+        cards = re.findall(r'\n\s*<div class="promo-card ([\w-]+)"', promo)
+        self.assertEqual(cards, ['grill-promo', 'sub-card'])
+        for kind in cards:
+            block = promo[promo.index('class="promo-card %s"' % kind):]
+            self.assertRegex(block, r'^[^\n]*\n(?:\s*<!--[^\n]*\n)?\s*<div class="promo-media">', kind)
+            self.assertRegex(block, r'<p(?: class="grill-cap")?><b class="promo-t">[^<]+</b> <span class="promo-s">', kind)
+        self.assertIn('<a class="promo-a" href="#"', promo, 'у «Курицы гриль» — ссылка «смотреть в меню»')
+        css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
+        rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
+        self.assertIn('display:flex', rule('.promo-grid'))
+        self.assertIn('justify-content:center', rule('.promo-grid'))
+        self.assertIn('align-items:stretch', rule('.promo-grid'))
+        self.assertIn('flex:0 1 440px', rule('.promo-card'))
+        self.assertIn('aspect-ratio:910/620', rule('.promo-media'))
+        self.assertIn('aspect-ratio:910/620', rule('.grill-frame'), 'огненная рамка той же пропорции, что поле карточки')
+        mob = re.search(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S).group(1)
+        self.assertIn('.promo-grid{flex-direction:column', mob)
+        self.assertIn('.promo-card{flex:none}', mob)
+        self.assertNotRegex(css, r'\.grill-cap[^{]*\{', 'подпись курицы — общими стилями карточек')
+
+    def test_location_names_without_numbers(self):
+        for l, html in self.pages.items():
+            names = re.findall(r'<div class="loc-card">\n      <small>([^<]+)</small>', html)
+            self.assertEqual(len(names), 5, l)
+            for n in names:
+                self.assertNotRegex(n, r'^\d', '%s: номер в видимом названии точки: %s' % (l, n))
+        self.assertIn("track('loc_call',{branch:'01 · ЖК Вавилон'})", self.pages['ru'], 'события — с номером, как были')
+
+    def test_location_icon_buttons(self):
+        emoji = re.compile('[\U0001F300-\U0001FAFF☀-➿☎\U0001F4DE\U0001F4CD]')
+        labels = {'ru': ('Маршрут', 'Позвонить'), 'kk': (self.i18n['kk']['page']['route'], self.i18n['kk']['page']['call']),
+                  'en': (self.i18n['en']['page']['route'], self.i18n['en']['page']['call'])}
+        for l, html in self.pages.items():
+            self.assertEqual(html.count('<svg class="icons"'), 1, '%s: один спрайт значков' % l)
+            for sym in ('i-pin', 'i-phone', 'i-wa'):
+                self.assertIn('<symbol id="%s"' % sym, html, l)
+            cards = re.findall(r'<div class="loc-card">(.*?)\n    </div>', html, re.S)
+            for c in cards:
+                links = re.search(r'<div class="loc-links">(.*?)</div>', c, re.S).group(1)
+                self.assertNotRegex(links, emoji, '%s: без эмодзи' % l)
+                btns = re.findall(r'<a class="ib( route| wa)?" href="([^"]+)"[^>]*onclick="track\(\'(loc_\w+)\'[^"]*" aria-label="([^"]+)" title="([^"]+)">'
+                                  r'<svg class="ic" aria-hidden="true" focusable="false"><use href="#i-(\w+)"/></svg></a>', links)
+                self.assertEqual([(cl, ev, lab, tit, ic) for cl, _, ev, lab, tit, ic in btns],
+                                 [(' route', 'loc_route', labels[l][0], labels[l][0], 'pin'), ('', 'loc_call', labels[l][1], labels[l][1], 'phone'),
+                                  (' wa', 'loc_wa', 'WhatsApp', 'WhatsApp', 'wa')], l)
+                self.assertTrue(btns[1][1].startswith('tel:') and btns[2][1].startswith('https://wa.me/'))
+            self.assertEqual(len(re.findall(r'<a class="pill" [^>]*>[^<]+</a>', html)), 1, '%s: «Меню» у bakery — текстовой пилюлей' % l)
+        css = style(self.pages['ru'])
+        ib = re.search(r'\}\.ib\{([^}]*)\}', css).group(1)
+        self.assertIn('width:var(--h-touch);height:var(--h-touch)', ib, 'касание 48 px')
+        self.assertIn('background:var(--c-surface)', ib)
+        self.assertIn('background:var(--c-accent);color:var(--c-on-accent)', re.search(r'\.ib\.route\{([^}]*)\}', css).group(1))
+        lic = read('docs/LICENSES-media.md')
+        for need in ('Lucide', 'ISC', 'Simple Icons', 'CC0', 'map-pin', 'phone', 'whatsapp'):
+            self.assertIn(need, lic)
+
+    def test_faq_collapsed_details(self):
+        faq = json.loads(read('tools/faq.json'))
+        for l, html in self.pages.items():
+            sec = re.search(r'<section class="faq" id="faq">(.*?)</section>', html, re.S).group(1)
+            box = re.search(r'<details class="faq-box"([^>]*)>\n\s*<summary class="faq-sum"><h2>([^\n]+)</h2></summary>(.*?)</details>\n\s*<p class="faq-more">', sec, re.S)
+            self.assertIsNotNone(box, '%s: вопросы — в свёрнутой плашке <details>' % l)
+            self.assertNotRegex(box.group(1), r'(?:^|\s)open(?:[\s=>]|$)', '%s: по умолчанию свёрнуто' % l)
+            self.assertEqual(len(re.findall(r'<details ontoggle="if\(this\.open\)track\(\'faq_open\'', box.group(3))), len(faq), l)
+            self.assertNotIn('<script', sec)
+        css = style(self.pages['ru'])
+        self.assertIn('max-width:760px;margin:0 auto', re.search(r'\.faq-box\{([^}]*)\}', css).group(1))
+        self.assertIn('justify-content:center', re.search(r'\.faq-sum\{([^}]*)\}', css).group(1))
 
     def test_coffee_animation_files_and_credits(self):
         import hashlib
@@ -451,7 +526,7 @@ for (const [name, h] of [['open', 10], ['closed', 20]]) {     // UTC 10:00 = 15:
   out['pill_' + name] = [pill.querySelector('b').textContent, pill.querySelector('span').textContent];
 }
 p = page({});
-const small = { textContent: '03 · БП Promenade' }, card = { querySelector: s => s === 'small' ? small : null };
+const addr = { textContent: 'Абая, 44А' }, card = { querySelector: s => s === 'h3,.bn b' ? addr : null };
 const target = { closest: s => s === 'a,button' ? {} : (s === '.branch-row,.loc-card' ? card : null) };
 p.listeners.click.forEach(f => f({ target }));
 out.pill_click = [p.store.dc_point, p.els['pill-point'].querySelector('b').textContent, p.els['pill-point'].querySelector('span').textContent];
