@@ -86,6 +86,12 @@ class TestJsonLd(unittest.TestCase):
         self.assertEqual(sorted(n['@type'] for n in self.data['@graph'] if n['@type'] in ('Bakery', 'CafeOrCoffeeShop')),
                          ['Bakery'] + ['CafeOrCoffeeShop'] * 4)
 
+    def test_geo_by_yandex_pins(self):
+        # 31.10: координаты 01–04 сверены по меткам Яндекс Карт (ссылки maps.yandex у точек), 05 — сверена раньше (~30 м)
+        want = {'01': [43.20471, 76.893091], '02': [43.201349, 76.899537], '03': [43.240193, 76.924982],
+                '04': [43.254679, 76.945854], '05': [43.220416, 76.885263]}
+        self.assertEqual({b['n'][:2]: b['geo'] for b in self.branches}, want)
+
     def test_no_legal_entities_or_people(self):
         for key in ('legalName', 'taxID', 'vatID', 'founder', 'employee', 'member', 'contactPoint', 'email'):
             self.assertNotIn('"%s"' % key, self.text, key)
