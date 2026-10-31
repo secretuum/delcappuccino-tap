@@ -521,6 +521,24 @@ class TestPage(unittest.TestCase):
             self.assertEqual(img.group(1), A['poster'], '%s: без JS и при reduced-motion — постер' % l)
         self.assertNotIn('lottie', re.search(r'PRECACHE\s*=\s*\[(.*?)\]', read('sw.js'), re.S).group(1))
 
+    def test_coffee_frames_from_animation_data(self):
+        """кадры загрузчика сверены с самой анимацией: в отрезке чашка в полный размер, кадр «полная чашка» — конец подъёма кофе"""
+        data = json.loads(read(seo.COFFEE_ANIM['src'].lstrip('/')))
+        comp = next(a for a in data['assets'] if a.get('layers'))
+        lay = {l['nm']: l for l in comp['layers']}
+        cup_s = lay['cup']['ks']['s']['k']
+        self.assertEqual(cup_s[0]['s'][:2], [0, 0], 'чашка начинает с масштаба 0')
+        self.assertLessEqual(cup_s[-1]['t'], seo.COFFEE_SEGMENT[0], 'к началу отрезка чашка уже в полный размер')
+        self.assertEqual(cup_s[-1]['s'][:2], [100, 100])
+        self.assertEqual(lay['liquid']['ks']['p']['k'][-1]['t'], seo.COFFEE_FULL, 'кадр полной чашки — конец подъёма кофе')
+        self.assertEqual(seo.COFFEE_SEGMENT[1], data['op'])
+        self.assertTrue(seo.COFFEE_SEGMENT[0] < seo.COFFEE_FULL < seo.COFFEE_SEGMENT[1])
+        css = style(self.pages['ru'])
+        self.assertRegex(css, r'\.sub-anim-l\{position:absolute;width:142\.86%;height:142\.86%;', 'контейнер анимации — с явными размерами')
+        self.assertIn('.sub-anim.on img{visibility:hidden}', css)
+        for old in ('assets/brewing-coffee.2e74c5d9.json', 'assets/brewing-coffee-poster.f762aef7.webp'):
+            self.assertFalse(os.path.exists(os.path.join(ROOT, old)), 'первая версия анимации удалена: ' + old)
+
     def test_coffee_loader_in_node(self):
         node = find_node()
         if not node:
@@ -541,9 +559,12 @@ function run(opts) {
   if (opts.ready === 'loading') { log.push(['before load', ios.length]); loadL.forEach(([t, f]) => t === 'load' && f()); }
   fire(false); fire(true); fire(true);
   if (ctx.__s) {
-    const anim = { ev: {}, play() { log.push(['play']); }, pause() { log.push(['pause']); }, addEventListener(e, f) { this.ev[e] = f; } };
-    ctx.lottie = { loadAnimation: o => { log.push(['load', o.renderer, o.loop, o.autoplay, o.path, o.container.id]); return anim; } };
-    ctx.__s.onload(); anim.ev.DOMLoaded(); log.push(['on', cls.has('on')]); fire(false); fire(true);
+    const anim = { ev: {}, play() { log.push(['play']); }, pause() { log.push(['pause']); }, addEventListener(e, f) { this.ev[e] = f; },
+      setSegment(a, b) { log.push(['segment', a, b]); }, goToAndStop(v, f) { log.push(['stop', v, f]); } };
+    ctx.lottie = { loadAnimation: o => { log.push(['load', o.renderer, o.loop, o.autoplay, o.path, o.container.id,
+                                                    (o.rendererSettings || {}).preserveAspectRatio]); return anim; } };
+    ctx.__s.onload(); log.push(['on before DOMLoaded', cls.has('on')]); anim.ev.DOMLoaded(); log.push(['on', cls.has('on')]);
+    fire(false); fire(true);
   }
   return log;
 }
@@ -557,7 +578,12 @@ console.log(JSON.stringify(out));
             r = subprocess.run([node, f], capture_output=True, text=True, timeout=30)
         self.assertEqual(r.returncode, 0, r.stderr[-800:])
         got = json.loads(r.stdout)
-        want = [['observe'], ['script', '/p.js', True], ['load', 'svg', True, True, '/a.json', 'l'], ['on', True], ['pause'], ['play']]
+        # 1.11: autoplay выключен — после DOMLoaded отрезок 10–175 (без кадров 0–9, где чашка растёт из точки), кадр 150 (полная
+        # чашка; goToAndStop — от начала отрезка), постер прячется только тогда; видна карточка — play, вне экрана — пауза
+        seg, full = seo.COFFEE_SEGMENT, seo.COFFEE_FULL
+        want = [['observe'], ['script', '/p.js', True], ['load', 'svg', True, False, '/a.json', 'l', 'xMidYMid meet'],
+                ['on before DOMLoaded', False], ['segment', seg[0], seg[1]], ['stop', full - seg[0], True], ['play'], ['on', True],
+                ['pause'], ['play']]
         self.assertEqual(got['normal'], want, 'плеер — один раз, когда карточка на экране; вне экрана — пауза')
         self.assertEqual(got['before_load'], [['before load', 0]] + want, 'до load ничего не грузим')
         self.assertEqual(got['reduce'], [], 'reduced-motion — только постер')

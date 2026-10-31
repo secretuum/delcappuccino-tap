@@ -1285,15 +1285,26 @@ COFFEE_ANIM = {'src': '/assets/brewing-coffee.df6fc172.json', 'poster': '/assets
                'player': '/assets/lottie_light.23cd2c01.js'}
 SUB_MARK = '<!-- Карточка подписки (анимация кофе) — собирает tools/seo_jsonld.py, руками не править -->'
 SUB_RE = re.compile(re.escape(SUB_MARK) + r'\n.*?<!-- /подписка -->\n', re.S)
-# загрузчик плеера: после load, по IntersectionObserver (вне экрана — пауза); reduced-motion, нет IO или ошибка — остаётся постер
+# Кадры анимации (assets/brewing-coffee.*.json, 24 к/с, 0–175): чашка вырастает из точки на кадрах 0–9 (масштаб 0 → 100),
+# кофе поднимается 13–150, пар — 46–72, 91–117, 140–167. Владелец видел крошечную чашку без кофе и пара — это кадры 0–3:
+# анимация стартовала с нуля и попадала на снимок / паузу в самом начале. Поэтому играем только 10–175 (чашка всегда в
+# полный размер), а до запуска и на паузе держим кадр 150 — полная чашка, как на постере.
+COFFEE_SEGMENT = (10, 175)
+COFFEE_FULL = 150
+# загрузчик плеера: после load, по IntersectionObserver (вне экрана — пауза); reduced-motion, нет IO или ошибка — остаётся
+# постер. Контейнер .sub-anim-l — того же размера и сдвига, что постер; SVG — xMidYMid meet; постер прячем по DOMLoaded,
+# когда уже стоит кадр с полной чашкой
 SUB_JS = ("<script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;"
           "try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
-          "var anim=null,asked=false;function start(){new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;"
-          "if(anim){on?anim.play():anim.pause();return}if(!on||asked)return;asked=true;var s=document.createElement('script');"
-          "s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{anim=lottie.loadAnimation({container:"
-          "box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:true,path:box.getAttribute('data-src')});"
-          "anim.addEventListener('DOMLoaded',function(){box.classList.add('on')})}catch(e){}};document.head.appendChild(s)},"
-          "{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
+          "var anim=null,ready=false,vis=false,asked=false;function start(){new IntersectionObserver(function(es){"
+          "vis=es[es.length-1].isIntersecting;if(ready){vis?anim.play():anim.pause();return}if(!vis||asked)return;asked=true;"
+          "var s=document.createElement('script');s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{"
+          "anim=lottie.loadAnimation({container:box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:false,"
+          "path:box.getAttribute('data-src'),rendererSettings:{preserveAspectRatio:'xMidYMid meet'}});"
+          "anim.addEventListener('DOMLoaded',function(){anim.setSegment(%d,%d);anim.goToAndStop(%d,true);box.classList.add('on');"
+          "ready=true;if(vis)anim.play()})}catch(e){}};document.head.appendChild(s)},"
+          "{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>"
+          % (COFFEE_SEGMENT[0], COFFEE_SEGMENT[1], COFFEE_FULL - COFFEE_SEGMENT[0]))   # goToAndStop — от начала отрезка
 
 
 def sub_card(lang):
