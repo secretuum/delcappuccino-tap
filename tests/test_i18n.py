@@ -107,8 +107,12 @@ class TestVersions(unittest.TestCase):
         for l in ('kk', 'en'):
             page = self.pages[('home', l)]
             scripts = re.findall(r'<script(?: type="application/ld\+json")?>(.*?)</script>', page, re.S)
-            self.assertEqual(len(re.findall(r'<script\b', page)), 3, 'аналитика (2) и JSON-LD — других скриптов нет')
-            self.assertTrue(all('gtag' in s or '"@context"' in s for s in scripts))
+            # редизайн 31.10: + скрипт заставки из <head> главной (тот же текст, раз за сессию) — страница без него видна целиком
+            self.assertEqual(len(re.findall(r'<script\b', page)), 4, 'аналитика (2), JSON-LD и заставка — других скриптов нет')
+            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s for s in scripts))
+            intro = [s for s in scripts if 'intro-on' in s]
+            self.assertEqual(len(intro), 1)
+            self.assertIn('<script>%s</script>' % intro[0], self.main.split('</head>')[0], 'заставка — тот же скрипт, что на главной')
             # обработчики на кнопках — только события аналитики (те же, что на главной), без логики страницы
             for h in re.findall(r'\son(?:click|toggle)="([^"]*)"', page):
                 self.assertRegex(h, r"^(?:if\(this\.open\))?track\('[a-z_]+'(?:,\{[^}]*\})?\)$", h)
@@ -116,8 +120,8 @@ class TestVersions(unittest.TestCase):
             css = re.search(r'<style>(.*?)</style>', page, re.S).group(1)
             self.assertNotRegex(css, r'\.(mm-|grill|modal|strip|showcase)', 'в стилях только нужное странице')
             self.assertIn('.lang-sw', css)
-            if l == 'kk':
-                self.assertIn("html[lang=kk] :is(h1,h2", css, 'казахские буквы в заголовках — шрифтом Golos, в Comfortaa их нет')
+            # казахские буквы — в cyrillic/cyrillic-ext шрифтов из :root главной (tests/test_redesign.py), подмена шрифта для kk не нужна
+            self.assertNotIn('html[lang=kk]', css)
 
     def test_links_to_menu_and_order(self):
         for l in ('kk', 'en'):
