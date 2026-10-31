@@ -77,7 +77,10 @@
       "contact_h2": "<span>Кофеге</span><br>келіңіз.",
       "footer_tag": "coffee &amp; food · Алматы",
       "footer_menu": "Бағалары бар мәзір",
-      "footer_ugolok": "Тұтынушы бұрышы"
+      "footer_ugolok": "Тұтынушы бұрышы",
+      "footer_offer": "Жария оферта",
+      "footer_privacy": "Құпиялылық саясаты",
+      "footer_contacts": "Байланыс және деректемелер"
     },
     "faq": [
       {"q": "Del Cappuccino кофеханалары қашан жұмыс істейді?", "a": "{часы}"},
@@ -175,7 +178,10 @@
       "contact_h2": "Come by<br>for <span>coffee</span>.",
       "footer_tag": "coffee &amp; food · Almaty",
       "footer_menu": "Menu with prices",
-      "footer_ugolok": "Consumer corner"
+      "footer_ugolok": "Consumer corner",
+      "footer_offer": "Public offer",
+      "footer_privacy": "Privacy policy",
+      "footer_contacts": "Contacts &amp; legal details"
     },
     "faq": [
       {"q": "When are Del Cappuccino cafés open?", "a": "{часы}"},

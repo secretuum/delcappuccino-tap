@@ -1,7 +1,9 @@
 """Юридические страницы мобильного приложения (30.10.2026): /legal/offer.html, /legal/privacy.html, /legal/contacts.html
 и их style.css. Файлы приходят из репозитория kofe-app и лежат как есть, байт в байт; на сайте они «невидимы»:
-noindex в самих страницах, ни одна страница сайта на них не ссылается, их нет в sitemap.xml и llms.txt, генератор
-tools/seo_jsonld.py их не собирает (нет блока аналитики), service worker их не кэширует и не перехватывает.
+noindex в самих страницах, их нет в sitemap.xml и llms.txt, генератор tools/seo_jsonld.py их не собирает (нет блока
+аналитики), service worker их не кэширует и не перехватывает. С 31.10.2026 (решение владельца) на три документа ссылается
+только подвал главной, /kk/ и /en/ — рядом с «Уголком потребителя», событие legal_open {doc} (не цель Метрики);
+в остальных страницах сайта ссылок на legal/ нет. Тексты документов — на русском на всех трёх языках сайта.
 robots.txt НЕ закрывает /legal/: Disallow помешал бы Apple, Google и Meta прочитать страницы и увидеть noindex.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import os, re, sys, unittest
@@ -59,13 +61,71 @@ class TestLegalFiles(unittest.TestCase):
         self.assertFalse([p for p in seo.PAGES.values() if p.startswith('legal')], 'legal/ нет в seo_jsonld.PAGES')
 
 
-class TestLegalHidden(unittest.TestCase):
-    def test_site_does_not_link_legal(self):
+FOOTER_PAGES = ['index.html', 'kk/index.html', 'en/index.html']     # подвал с документами — только здесь
+DOCS = ['offer', 'privacy', 'contacts']
+DOC_TITLES = {'index.html': ['Публичная оферта', 'Политика конфиденциальности', 'Контакты и реквизиты'],
+              'kk/index.html': ['Жария оферта', 'Құпиялылық саясаты', 'Байланыс және деректемелер'],
+              'en/index.html': ['Public offer', 'Privacy policy', 'Contacts &amp; legal details']}
+LEGAL_REF = r'(?<![\w-])legal/'
+
+
+def footer(html):
+    m = re.search(r'<footer\b.*?</footer>', html, re.S)
+    return m.group(0) if m else ''
+
+
+class TestLegalLinks(unittest.TestCase):
+    def test_footer_links_on_three_pages(self):
+        for p in FOOTER_PAGES:
+            html, foot = read(p), footer(read(p))
+            self.assertTrue(foot, '%s: нет <footer>' % p)
+            m = re.search(r'<span class="f-legal">(.*?)</span>', foot, re.S)
+            self.assertIsNotNone(m, '%s: в подвале нет блока f-legal' % p)
+            links = re.findall(r'<a href="([^"]*)" onclick="([^"]*)">([^<]*)</a>', m.group(1))
+            self.assertEqual([h for h, _, _ in links], ['/legal/%s.html' % d for d in DOCS], p)
+            self.assertEqual([o for _, o, _ in links], ["track('legal_open',{doc:'%s'})" % d for d in DOCS], p)
+            self.assertEqual([t for _, _, t in links], DOC_TITLES[p], '%s: названия на языке страницы' % p)
+            # рядом с «Уголком потребителя»: сразу за его ссылкой
+            self.assertRegex(foot, r'<a class="f-ugolok"[^>]*>[^<]*</a>\s*<span class="f-legal">', p)
+            # ссылки только в подвале — ровно по одной на документ на всей странице
+            self.assertEqual(len(re.findall(LEGAL_REF, html)), 3, '%s: ссылки на legal/ — только три в подвале' % p)
+            self.assertEqual(len(re.findall(LEGAL_REF, foot)), 3, p)
+
+    def test_other_pages_do_not_link_legal(self):
         pages = list(site_pages())
         self.assertIn('index.html', pages)
         self.assertIn('ugolok/index.html', pages)
         for p in pages:
-            self.assertNotRegex(read(p), r'(?<![\w-])legal/', '%s ссылается на legal/' % p)
+            if p in FOOTER_PAGES:
+                continue
+            self.assertNotRegex(read(p), LEGAL_REF, '%s ссылается на legal/' % p)
+
+    def test_generator_owns_lang_footers(self):
+        # /kk/ и /en/ собирает tools/seo_jsonld.py: подписи — в tools/pages_i18n.json, kk — на вычитке в menu/kk_review.md
+        d = seo.i18n()
+        for lang in ('kk', 'en'):
+            page = d[lang]['page']
+            self.assertEqual([page['footer_' + x] for x in DOCS], DOC_TITLES['%s/index.html' % lang], lang)
+        review = read('menu', 'kk_review.md')
+        for x, t in zip(DOCS, DOC_TITLES['kk/index.html']):
+            self.assertIn('| `page.footer_%s` | страница /kk/ | %s |' % (x, t), review)
+
+    def test_legal_open_is_not_a_goal(self):
+        self.assertNotIn('legal_open', seo.YM_GOALS, 'legal_open — событие GA, целью Метрики не делаем')
+        self.assertNotIn('legal', ' '.join(seo.YM_GOALS.values()))
+
+    def test_footer_styles_mobile(self):
+        # скромно (не кнопка), на телефоне — в колонке рядом с «Уголком», переносы между ссылками, без горизонтальной прокрутки
+        for p in FOOTER_PAGES:
+            html = read(p)
+            css = html[html.index('<style>'):html.index('</style>')]
+            self.assertIn('.f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;', css, p)
+            self.assertIn('max-width:100%', re.search(r'\.f-row \.f-legal\{[^}]*\}', css).group(0), p)
+            self.assertNotRegex(css, r'\.f-legal[^{]*\{[^}]*(?:border|background)', '%s: ссылки на документы — не кнопки' % p)
+            self.assertRegex(css, r'@media\(max-width:680px\)\{[^@]*\.f-row \.f-legal\{order:-1', '%s: на телефоне — рядом с «Уголком»' % p)
+
+
+class TestLegalHidden(unittest.TestCase):
 
     def test_not_in_sitemap_and_llms(self):
         for p in ('sitemap.xml', 'llms.txt'):

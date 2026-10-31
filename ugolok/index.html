@@ -48,6 +48,12 @@ a{color:inherit}
 .lang-btn{border:0;background:transparent;color:color-mix(in srgb,var(--cream) 82%,transparent);font-family:Montserrat,sans-serif;font-weight:700;font-size:12px;letter-spacing:.03em;padding:6px 12px;border-radius:99px;cursor:pointer;transition:background .15s,color .15s}
 .lang-btn:hover{color:var(--cream)}
 .lang-btn.on{background:var(--cream);color:var(--forest-dk)}
+/* «← На главную» вверху: всегда на виду (шапка липкая); подпись — та же строка back словаря, что внизу */
+.tb-back{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;white-space:nowrap;min-height:32px;padding:6px 13px 6px 10px;border-radius:99px;background:rgba(255,255,255,.12);color:var(--cream);font-family:Montserrat,sans-serif;font-weight:600;font-size:13px;line-height:1;text-decoration:none;transition:background .15s,color .15s}
+.tb-back:hover{background:var(--cream);color:var(--forest-dk)}
+.tb-back svg{flex:none}
+.tb-back span{min-width:0;overflow:hidden;text-overflow:ellipsis}   /* запас: если не влезет — многоточие, а не прокрутка вбок */
+.lang-switch{flex:none}
 
 /* ── HERO ──────────────────────────────── */
 .uk-hero{background:var(--forest);color:var(--cream);position:relative;overflow:hidden;padding:32px 0 30px}
@@ -130,15 +136,24 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
   .info{padding:20px 18px}
   .pass{padding:18px 18px 18px}
 }
-@media(max-width:380px){
+/* шапка: «← На главную» · название · языки; на узком экране название убираем (логотип — сразу под шапкой), остаются ссылка слева и языки справа */
+@media(max-width:560px){
   .tb-brand{display:none}
-  .topbar{justify-content:flex-end}
+}
+@media(max-width:374px){
+  .topbar{gap:8px;padding:7px 10px}
+  .tb-back{font-size:12px;padding:6px 10px 6px 8px;gap:5px}
+  .lang-btn{padding:6px 9px}
 }
 </style>
 </head>
 <body>
 
 <div class="topbar">
+  <a class="tb-back" href="/">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+    <span data-i18n="back">Басты бетке</span>
+  </a>
   <span class="tb-brand">Del Cappuccino</span>
   <div class="lang-switch" role="group" aria-label="Тіл / Язык / Language">
     <button class="lang-btn on" data-lang="kk" onclick="setLang('kk')">ҚАЗ</button>
