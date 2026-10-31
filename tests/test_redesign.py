@@ -569,14 +569,16 @@ console.log(JSON.stringify(out));
             r = subprocess.run([node, h, data], capture_output=True, text=True, timeout=60)
         self.assertEqual(r.returncode, 0, r.stderr[-1500:])
         got = json.loads(r.stdout)
-        self.assertNotIn('mm-th', got['noCards'], 'до загрузки cards.json — строки без превью')
-        thumbs = re.findall(r'<img class="mm-th" src="([^"]+)" width="60" height="60" loading="lazy" decoding="async" alt="">', got['cafe'])
-        self.assertGreater(len(thumbs), 100, 'превью у позиций с фото')
-        for src in thumbs[:20]:
-            self.assertTrue(src.startswith('img/menu/') and os.path.isfile(os.path.join(ROOT, src)), src)
-        rows = re.findall(r'<div class="mm-it([^"]*)"', got['cafe'])
-        self.assertEqual(sum('has-pic' in r for r in rows), len(thumbs))
-        self.assertTrue(all('has-card' in r for r in rows if 'has-pic' in r))
+        # 1.11 (владелец): прежнее текстовое меню в новой стати — превью-фото в строках нет; у блюда с карточкой — значок фото 14 px
+        for k in ('noCards', 'cafe', 'togo', 'kk', 'en'):
+            self.assertNotRegex(got[k], r'<img|mm-th|has-pic', '%s: без превью-картинок в строках' % k)
+        self.assertNotIn('#i-photo', got['noCards'], 'до загрузки cards.json значков нет')
+        rows = re.findall(r'<div class="mm-it( has-card)?"[^>]*>\s*<span class="nm">(.*?)</span>\s*<span class="sp"></span>', got['cafe'], re.S)
+        self.assertGreater(len(rows), 150)
+        with_card = [r for r in rows if r[0]]
+        self.assertGreater(len(with_card), 100, 'строки с карточкой')
+        self.assertTrue(all('<use href="#i-photo"/>' in r[1] for r in with_card), 'у строки с карточкой — значок фото')
+        self.assertFalse(any('#i-photo' in r[1] for r in rows if not r[0]))
         self.assertIn('<h3 class="mm-part-h">Кухня</h3>', got['cafe'])
         nb = '\u00a0'                                                        # fmtP: toLocaleString('ru-RU') — неразрывный пробел
         self.assertIn('<span class="old">7%s200</span> <span class="sale">3%s990</span>' % (nb, nb), got['cafe'], 'скидка — зачёркнутая старая цена')
@@ -595,6 +597,111 @@ console.log(JSON.stringify(out));
         self.assertIn('<div class="mm-card-p">1%s400 / 1%s500 / 1%s700 ₸</div>' % (nb, nb, nb), got['cap'], 'ярусы цены — как в меню')
         self.assertIn('<div class="mm-card-p">', got['togoCard'], 'карточка в режиме togo — цена из меню bakery')
 
+    def test_menu_search_in_node(self):
+        """поиск по меню (владелец 1.11): лупа после вкладок; поле вместо вкладок; по всем вкладкам текущего режима, по
+        названию на текущем языке и по-русски, без учёта регистра и ё/е; результаты — те же строки с подписью раздела;
+        пусто — «ничего не нашлось»; Esc/крестик — назад к вкладкам; в аналитику — длина запроса, без текста"""
+        node = find_node()
+        if not node:
+            self.skipTest('нет node')
+        html = self.pages['ru']
+        harness = r"""
+const fs = require('fs'), vm = require('vm');
+const { html, cards } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+const els = {};
+const el = id => ({ id, innerHTML: '', textContent: '', hidden: false, style: { setProperty() {}, removeProperty() {} }, dataset: {}, scrollTop: 0,
+  offsetHeight: 0, classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } }, addEventListener() {}, removeEventListener() {},
+  appendChild(x) { return x; }, insertAdjacentHTML() {}, contains() { return false; }, getAttribute() { return null; }, scrollIntoView() {},
+  querySelector(sel) { return (this._q = this._q || {})[sel] || (this._q[sel] = el(sel)); }, querySelectorAll() { return []; },
+  getBoundingClientRect() { return { top: 0, bottom: 0 }; }, scrollTo() {}, setAttribute() {}, removeAttribute() {},
+  focus() { log.push(['focus', id]); }, closest() { return null; } });
+const log = [], keyL = [];
+const document = { getElementById: id => els[id] || (els[id] = el(id)), querySelector: () => el('q'), querySelectorAll: () => [],
+  addEventListener() {}, createElement: () => el('x'), body: el('body'), documentElement: el('html'), head: el('head'), readyState: 'loading' };
+const timers = [];
+const ctx = { document, console, setTimeout: f => { timers.push(f); return timers.length; }, clearTimeout() {}, requestAnimationFrame: () => 0,
+  requestIdleCallback: () => 0, matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }),
+  IntersectionObserver: function () { return { observe() {} }; }, fetch: () => new Promise(() => {}), localStorage: { getItem() { return null; }, setItem() {} },
+  navigator: {}, location: { hash: '', pathname: '/', search: '' }, history: { replaceState() {} }, scrollTo() {},
+  addEventListener: (t, f, c) => { if (t === 'keydown') keyL.push(f); }, removeEventListener() {} };
+ctx.window = ctx; vm.createContext(ctx);
+scripts.forEach(s => vm.runInContext(s, ctx));
+ctx.__cards = cards;
+const R = code => vm.runInContext(code, ctx);
+R("gtag=function(){__ga.push(Array.from(arguments))}"); ctx.__ga = [];
+const out = {};
+R("openMenu(); CARDS = __cards; renderFeed()");
+out.tabs = els['mm-tabs'].innerHTML;
+R("openSearch()");
+out.bar = els['mm-tabs'].innerHTML; out.catsHidden = els['mm-cats'].hidden; out.focus = log.filter(x => x[0] === 'focus').map(x => x[1]);
+out.empty = els['mm-cols'].innerHTML;
+for (const q of ['капу', 'КАПУ', 'капучино', 'ёжик-нет', 'ЧЁРН', 'семгой', 'Тепл']) { R("menuSearch(" + JSON.stringify(q) + ")"); out['q_' + q] = els['mm-cols'].innerHTML; }
+timers.splice(0).forEach(f => f());
+out.ga = ctx.__ga.filter(a => a[1] === 'menu_search');
+R("menuSearch('десерт')"); out.cafeDessert = els['mm-cols'].innerHTML;
+R("switchMenuMode('togo'); menuSearch('капучино')"); out.togoMeat = els['mm-cols'].innerHTML;
+R("menuSearch('рибай на кости')"); out.togoRibeye = els['mm-cols'].innerHTML;
+R("switchMenuMode('cafe'); switchMenuLang('en'); menuSearch('cappuccino')"); out.en = els['mm-cols'].innerHTML;
+R("menuSearch('капучино')"); out.enRu = els['mm-cols'].innerHTML;
+R("switchMenuLang('kk'); menuSearch('нон')"); out.kkNone = els['mm-cols'].innerHTML;
+R("switchMenuLang('ru')");
+out.closed = R("closeSearch()"); out.tabsBack = els['mm-tabs'].innerHTML; out.catsBack = els['mm-cats'].hidden; out.feedBack = els['mm-cols'].innerHTML;
+R("openSearch(); menuSearch('капу')");
+els['menu-modal'].classList.contains = c => c === 'open';               // меню открыто — Esc сначала закрывает поиск
+els['mm-card'].hidden = true; els['mm-pop'].hidden = true;             // карточки и попапа «!» нет
+keyL.forEach(f => f({ key: 'Escape', stopPropagation() {} }));
+out.escTabs = els['mm-tabs'].innerHTML; out.escQ = R("menuQ");
+console.log(JSON.stringify(out));
+"""
+        with tempfile.TemporaryDirectory() as d:
+            h, data = os.path.join(d, 's.js'), os.path.join(d, 'data.json')
+            with open(h, 'w', encoding='utf-8') as f:
+                f.write(harness)
+            with open(data, 'w', encoding='utf-8') as f:
+                json.dump({'html': html, 'cards': json.loads(read('menu/cards.json'))}, f)
+            r = subprocess.run([node, h, data], capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+        got = json.loads(r.stdout)
+        tabs = re.findall(r'<button class="mm-tab[^"]*"[^>]*>([^<]+)</button>', got['tabs'])
+        self.assertEqual(tabs, ['Кухня', 'Бар', 'Десерты', 'Полуфабрикаты'])
+        self.assertRegex(got['tabs'], r'Полуфабрикаты</button><button type="button" class="mm-search-btn" aria-label="Поиск по меню" '
+                                      r'title="Поиск по меню" onclick="openSearch\(\)"><svg class="ic"[^>]*><use href="#i-search"/></svg></button>$',
+                         'лупа — сразу после «Полуфабрикаты»')
+        self.assertIn('<input id="mm-q" type="search"', got['bar'])
+        self.assertIn('placeholder="Поиск по меню"', got['bar'])
+        self.assertIn('class="mm-search-x"', got['bar'])
+        self.assertNotIn('mm-tab', got['bar'], 'вкладки заменены полем')
+        self.assertTrue(got['catsHidden'])
+        self.assertIn('mm-q', got['focus'], 'фокус в поле')
+        self.assertEqual(got['empty'], '', 'пустой запрос — пусто')
+        names = lambda h: re.findall(r'class="nm-t[^"]*"[^>]*>([^<]+)</span>', h)
+        for q in ('капу', 'КАПУ', 'капучино'):
+            self.assertIn('Капучино', names(got['q_' + q]), q)
+        self.assertIn('<span class="mm-it-sec">Классический кофе</span>', got['q_капу'], 'подпись раздела')
+        self.assertIn('<p class="mm-search-none">Ничего не нашлось</p>', got['q_ёжик-нет'])
+        self.assertIn('Черника-банан', names(got['q_ЧЁРН']), 'ё = е, регистр не важен')
+        self.assertIn('Салат с запечённой сёмгой в соусе терияки', names(got['q_семгой']), 'е в запросе находит ё в названии')
+        self.assertIn('Тёплый салат из баклажана с соусом Ассай', names(got['q_Тепл']))
+        self.assertTrue(got['ga'], 'событие menu_search')
+        for a in got['ga']:
+            self.assertEqual(sorted(a[2]), ['found', 'len'], 'только длина и число найденного')
+            self.assertNotRegex(json.dumps(a, ensure_ascii=False), r'(?i)капу|ёжик|черн|чёрн|семг|тепл', 'текст запроса не уходит в аналитику')
+        self.assertIn('Капучино', names(got['togoMeat']), 'в togo ищет по меню bakery')
+        self.assertIn('<p class="mm-search-none">Ничего не нашлось</p>', got['togoRibeye'], 'в togo — только меню bakery (рибай на кости — в кофейнях)')
+        self.assertIn('Cappuccino', names(got['en']), 'на en — по переводу')
+        self.assertIn('Cappuccino', names(got['enRu']), 'и по-русски')
+        self.assertIn('<p class="mm-search-none">Ештеңе табылмады</p>', got['kkNone'])
+        self.assertTrue(got['closed'])
+        self.assertIn('class="mm-search-btn"', got['tabsBack'])
+        self.assertFalse(got['catsBack'])
+        self.assertIn('<h3 class="mm-part-h">Кухня</h3>', got['feedBack'])
+        self.assertIn('class="mm-search-btn"', got['escTabs'], 'Esc закрывает поиск')
+        self.assertIsNone(got['escQ'])
+        ui = {l: re.search(r"  %s:\{to_togo.*?search:'([^']+)', search_none:'([^']+)'" % l, html, re.S).groups() for l in ('ru', 'kk', 'en')}
+        self.assertEqual(ui, {'ru': ('Поиск по меню', 'Ничего не нашлось'), 'kk': ('Мәзірден іздеу', 'Ештеңе табылмады'),
+                              'en': ('Search the menu', 'Nothing found')})
+
     def test_menu_overlay_css(self):
         """этап 2: разделы не капсом и без разрядки, строки без подчёркиваний, NEW пилюлей olive, легенда пилюлями,
         карточка блюда на белом, крестик круглый, цена пилюлей forest; крема и старых шрифтов нет"""
@@ -608,9 +715,32 @@ console.log(JSON.stringify(out));
         self.assertNotRegex(css, r'\.mm-[\w-]+[^{}]*\{[^}]*text-transform:uppercase', 'в меню ничего капсом')
         self.assertNotRegex(rule('.nm-t.has-card'), r'underline', 'без подчёркиваний')
         self.assertIn('border-radius:var(--r-pill);background:var(--c-olive);color:var(--c-on-olive)', rule('.mk-new'))
-        self.assertIn('border-radius:var(--r-pill)', rule('.mm-legend-row span'))
+        legend = rule('.mm-legend-row')
+        self.assertIn('flex-wrap:nowrap', legend, 'легенда — одной строкой')
+        self.assertIn('font-size:var(--fs-caption)', legend)
+        self.assertNotIn('background', rule('.mm-notice'), 'аллергия и сбор — тонкой строкой без плашки')
+        self.assertIn('font-size:13px', rule('.mm-notice'))
+        it = rule('.mm-it')
+        self.assertIn('align-items:baseline', it, '«название … цена» в одну линию')
+        self.assertIn('padding:6px 0', it, '12 px воздуха между строками')
+        self.assertIn('font-size:15px', it)
+        self.assertNotIn('background', it, 'без плиток')
+        self.assertIn('font-weight:500', rule('.mm-it .nm'))
+        pr = rule('.mm-it .pr')
+        for need in ('font-size:15px', 'font-weight:600', 'font-variant-numeric:tabular-nums'):
+            self.assertIn(need, pr)
+        self.assertIn('font-size:13px', rule('.mm-it .vol,.mm-it .itnote'))
+        self.assertIn('width:14px;height:14px', rule('.mm-ph'))
+        self.assertIn('color:var(--c-muted)', rule('.mm-ph'))
+        self.assertIn('columns:3', rule('.mm-cols'), 'колонки как в прежнем меню')
+        self.assertIn('margin-bottom:48px', rule('.mm-sec'))
+        self.assertIn('font-size:21px', rule('.mm-sec h4'))
+        self.assertIn('font-size:30px', rule('.mm-part-h'))
+        for sel, h in (('.mm-tab', 38), ('.mm-cat', 36)):
+            self.assertIn('height:%dpx' % h, rule(sel))
+            self.assertIn('font-size:var(--fs-small)', rule(sel))
+        self.assertNotRegex(css, r'\.mm-th\b', 'превью-картинок нет')
         self.assertIn('border-radius:var(--r-pill)', rule('.mm-badge'))
-        self.assertIn('width:60px;height:60px', rule('.mm-th'))
         box = rule('.mm-card-box')
         self.assertIn('background:var(--c-bg)', box)
         self.assertIn('border-radius:50%', rule('.mm-card-x'))
@@ -798,8 +928,8 @@ console.log(JSON.stringify(out));
 
     def test_weight(self):
         sizes = {l: len(html.encode('utf-8')) for l, html in self.pages.items()}
-        # 1.11: +4 КБ — свой набор значков «Формата» в спрайте; предел 240 КБ (было 230)
-        self.assertLessEqual(sizes['ru'], 240 * 1024, 'главная была ~215 КБ — не раздувать')
+        # 1.11: +4 КБ — свой набор значков «Формата»; этап 2 — поиск по меню и стиль списка, +5 КБ; предел 250 КБ (было 230)
+        self.assertLessEqual(sizes['ru'], 250 * 1024, 'главная была ~215 КБ — не раздувать')
         self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 60 * 1024)   # этап 2 (меню): +1,5 КБ CSS, было 56
         for l in ('kk', 'en'):
             self.assertLessEqual(sizes[l], 75 * 1024, l)   # 1.11: +4 КБ значков, было 70

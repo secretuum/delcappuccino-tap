@@ -391,9 +391,21 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .mm-tabs,.mm-cats{position:relative;display:flex;gap:var(--s-8);overflow-x:auto;scrollbar-width:none;max-width:1150px;margin:0 auto;padding:0 var(--s-24) var(--s-8)}
 .mm-tabs::-webkit-scrollbar,.mm-cats::-webkit-scrollbar{display:none}
 .mm-tab,.mm-cat{flex:none;display:inline-flex;align-items:center;border:0;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body);font-weight:600;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s}
-.mm-tab{height:40px;padding:0 var(--s-16);font-size:var(--fs-small)}
-.mm-cat{height:34px;padding:0 var(--s-12);font-size:13px}
+.mm-tab{height:38px;padding:0 var(--s-16);font-size:var(--fs-small)}
+.mm-cat{height:36px;padding:0 var(--s-12);font-size:var(--fs-small)}
 .mm-tab:hover,.mm-cat:hover{background:var(--c-raised)}
+/* поиск: круглая кнопка-лупа после вкладок; в режиме поиска ряд вкладок — поле ввода с крестиком */
+.mm-search-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:var(--c-surface);color:var(--c-text);cursor:pointer}
+.mm-search-btn:hover{background:var(--c-raised)}
+.mm-search-btn .ic,.mm-search .ic{display:block;width:18px;height:18px}
+.mm-search{flex:1;display:flex;align-items:center;gap:var(--s-8);height:40px;padding:0 var(--s-4) 0 var(--s-12);border:1px solid var(--c-input-border);border-radius:var(--r-pill);background:var(--c-bg);color:var(--c-muted)}
+.mm-search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;color:var(--c-text);font:inherit;font-size:15px;-webkit-appearance:none;appearance:none}
+.mm-search input::-webkit-search-cancel-button{display:none}
+.mm-search-x{position:relative;flex:none;width:32px;height:32px;border:0;border-radius:50%;background:var(--c-surface);color:var(--c-text);font-size:0;cursor:pointer}
+.mm-search-x::before,.mm-search-x::after{content:'';position:absolute;left:50%;top:50%;width:12px;height:1.5px;margin:-.75px 0 0 -6px;background:currentColor;border-radius:1px}
+.mm-search-x::before{transform:rotate(45deg)}
+.mm-search-x::after{transform:rotate(-45deg)}
+.mm-search-none{padding:var(--s-32) 0;text-align:center;color:var(--c-muted)}
 .mm-tab.on,.mm-cat.on{background:var(--c-accent);color:var(--c-on-accent)}
 .mm-mode,.mm-lang{display:flex;gap:2px;flex:none;padding:3px;border-radius:var(--r-pill);background:var(--c-surface)}
 .mm-mode-btn,.mm-lang-btn{height:36px;border:0;border-radius:var(--r-pill);background:transparent;color:var(--c-muted);font-family:var(--font-body);font-weight:600;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s}
@@ -403,32 +415,35 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .mm-mode-btn.on,.mm-lang-btn.on{background:var(--c-accent);color:var(--c-on-accent)}
 .mm-lang-wrap{margin-left:auto;position:relative;flex:none}
 .mm-x{flex:none;border:0;border-radius:50%;background:var(--c-surface);color:var(--c-text);cursor:pointer}
-.mm-body{max-width:1150px;margin:0 auto;padding:var(--s-24) var(--s-24) 64px}
-.mm-cols{columns:3;column-gap:var(--s-32)}
+.mm-body{max-width:1150px;margin:0 auto;padding:var(--s-24) 30px 64px}
+.mm-cols{columns:3;column-gap:48px}
 /* ── списки меню в духе приложения (этап 2 редизайна): части и разделы — строчными, Geologica, без разрядки ── */
-.mm-part-h{display:flex;align-items:center;gap:var(--s-16);font-family:var(--font-display);font-weight:700;font-size:var(--fs-heading);line-height:1.15;text-transform:lowercase;color:var(--c-text);margin:var(--s-32) 0 var(--s-16)}
+.mm-part-h{display:flex;align-items:center;gap:var(--s-16);font-family:var(--font-display);font-weight:700;font-size:30px;line-height:1.15;text-transform:lowercase;color:var(--c-text);margin:56px 0 var(--s-24)}
 .mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:var(--s-24)}
 .mm-part-h::after{content:'';flex:1;height:1px;background:var(--c-border)}
 /* легенда — одной строкой пилюль-подсказок */
-.mm-legend-row{display:flex;flex-wrap:wrap;gap:var(--s-8);margin:0 0 var(--s-8)}
-.mm-legend-row span{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s-12);border-radius:var(--r-pill);background:var(--c-surface);font-size:var(--fs-caption);color:var(--c-muted);white-space:nowrap}
+.mm-legend-row{display:flex;flex-wrap:nowrap;gap:var(--s-16);overflow-x:auto;scrollbar-width:none;margin:0 0 var(--s-8);font-size:var(--fs-caption);line-height:1.6;color:var(--c-muted);white-space:nowrap}
+.mm-legend-row span{flex:none}
 /* над меню — одна карточка: аллергия и сервисный сбор (адреса точек — в карточках на главной) */
-.mm-intro{margin-bottom:var(--s-12)}
-.mm-notice{display:inline-block;max-width:100%;padding:var(--s-8) var(--s-16);border-radius:var(--r-md);background:var(--c-surface);font-size:var(--fs-caption);line-height:1.5;color:var(--c-muted)}
-.mm-sec{break-inside:avoid;margin-bottom:var(--s-24)}
-.mm-sec h4{display:flex;align-items:center;gap:var(--s-8);flex-wrap:wrap;font-family:var(--font-display);font-weight:700;font-size:var(--fs-title);line-height:1.2;text-transform:lowercase;color:var(--c-text);margin-bottom:var(--s-8)}
+.mm-intro{margin-bottom:var(--s-4)}
+.mm-notice{margin:0;font-size:13px;line-height:1.5;color:var(--c-muted)}
+.mm-sec{break-inside:avoid;margin-bottom:48px}
+.mm-sec h4{display:flex;align-items:center;gap:var(--s-8);flex-wrap:wrap;font-family:var(--font-display);font-weight:700;font-size:21px;line-height:1.2;text-transform:lowercase;color:var(--c-text);margin-bottom:var(--s-8)}
 .mm-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s-8);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-muted);font-family:var(--font-body);font-size:var(--fs-caption);font-weight:600;line-height:1;text-transform:none;white-space:nowrap}
 .mm-secp{margin-left:auto;font-family:var(--font-body);font-size:var(--fs-body);font-weight:700;text-transform:none;color:var(--c-text);font-variant-numeric:tabular-nums}
 .mm-note{font-size:var(--fs-caption);color:var(--c-muted);margin:-4px 0 var(--s-8);line-height:1.5}
 /* позиция — строка-карточка: превью фото 60 px (если есть), название с пометками, ниже объём приглушённо, справа цена */
-.mm-it{display:flex;align-items:center;gap:var(--s-12);min-height:44px;padding:var(--s-8);margin:0 calc(-1 * var(--s-8));border-radius:var(--r-md);font-size:15px;line-height:1.35}
+.mm-it{display:flex;align-items:baseline;gap:var(--s-8);padding:6px 0;border-bottom:1px solid var(--c-border);font-size:15px;line-height:1.4}
 .mm-it.has-card{cursor:pointer}
-.mm-it.has-card:hover{background:var(--c-surface)}
-.mm-th{flex:none;display:block;width:60px;height:60px;border-radius:var(--r-sm);object-fit:cover;background:var(--c-raised)}
-.mm-it .nm{flex:1;min-width:0;color:var(--c-text);overflow-wrap:anywhere}
-.mm-it .nm-l{display:block;font-weight:600}
-.mm-it .vol,.mm-it .itnote{display:block;margin-top:2px;font-size:var(--fs-caption);line-height:1.4;color:var(--c-muted)}
-.mm-it .pr{flex:none;max-width:42%;text-align:right;font-weight:700;color:var(--c-text);font-variant-numeric:tabular-nums}
+.mm-it.has-card:hover .nm-t{color:var(--c-accent)}
+.mm-it .nm{min-width:0;color:var(--c-text);font-weight:500;overflow-wrap:anywhere}
+.mm-it .itnote,.mm-it-sec{display:block;margin-top:2px;font-size:12px;font-weight:400;color:var(--c-muted)}
+.mm-it .sp{flex:1;min-width:12px}
+/* значок «есть фото» — карточка блюда по тапу на строку */
+.mm-ph{display:inline-block;width:14px;height:14px;margin-left:5px;vertical-align:-2px;color:var(--c-muted)}
+.mm-results{max-width:640px;margin:0 auto}
+.mm-it .vol,.mm-it .itnote{font-size:13px;font-weight:400;line-height:1.4;color:var(--c-muted)}
+.mm-it .pr{flex:none;font-size:15px;font-weight:600;color:var(--c-text);white-space:nowrap;font-variant-numeric:tabular-nums}
 .mm-it .pr .old{font-weight:400;color:var(--c-muted);text-decoration:line-through;margin-right:4px;font-size:13px;white-space:nowrap}
 /* новая цена рядом со старой (поле old): красное подчёркивание тоном пламени акции; то же в подписи .grill-cap */
 .sale{text-decoration-line:underline;text-decoration-color:var(--sale);text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-skip-ink:none}
@@ -479,9 +494,9 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 @media(max-width:1020px){.mm-cols{columns:2}}
 @media(max-width:680px){
   .mm-cols{columns:1}
-  .mm-part-h{font-size:var(--fs-title);margin:var(--s-24) 0 var(--s-12)}
+  .mm-part-h{font-size:24px;margin:40px 0 var(--s-16)}
   .mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:var(--s-16)}
-  .mm-legend-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--s-16)) var(--s-8);padding:0 var(--s-16)}
+  .mm-legend-row{margin:0 calc(-1 * var(--s-16)) var(--s-8);padding:0 var(--s-16)}
   .mm-intro{margin-bottom:var(--s-12)}
   .mm-body{padding:20px 16px 48px}
   .mm-head{transition:transform .25s ease}
@@ -495,10 +510,9 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
   .mm-lang{position:absolute;top:0;right:0;flex-direction:column;z-index:10}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
   .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);box-shadow:var(--shadow-floating)}
-  .mm-tab{height:38px;padding:0 var(--s-12)}
-  .mm-sec h4{font-size:18px}
-  .mm-it{font-size:14px;gap:var(--s-12)}
-  .mm-th{width:56px;height:56px}
+  .mm-tab{padding:0 var(--s-12)}
+  .mm-sec{margin-bottom:40px}
+  .mm-sec h4{font-size:20px}
 }
 </style>
 <!-- schema.org: организация, точки из BRANCHES и меню с ценами — tools/seo_jsonld.py, руками не править -->
@@ -764,7 +778,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 
 <!-- Заставка (раз за сессию): мопед въезжает в логотип — CSS .intro, класс intro-on ставит скрипт в <head> -->
 <!-- значки кнопок (SVG-спрайт: Lucide ISC, Simple Icons CC0) — собирает tools/seo_jsonld.py, руками не править -->
-<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol><symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></symbol><symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol><symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></symbol><symbol id="f-247" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M34.9 8.44A19 19 0 1 1 15.97 6.78"/><path d="M11.14 5.49L15.97 6.78L13.86 11.31"/><path d="M12.35 21.4Q12.35 19 14.85 19Q17.35 19 17.35 21.6Q17.35 23.6 12.35 29L17.35 29"/><path d="M22.55 29L22.55 19L18.95 25.6L23.95 25.6"/><path d="M29.05 18.5L25.55 29.5"/><path d="M30.65 19L35.65 19L32.4 29"/></symbol><symbol id="f-breakfast" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="21"/><path d="M10.5 20C10 14.5 15 11 19.5 12.5C22 10.5 27.5 12 27.5 16.5C30.5 19.5 29 25 25 25.5C23 29 16 29.5 13.5 26.5C10.5 25.5 9.5 22.5 10.5 20Z"/><circle cx="19.5" cy="19.5" r="3.6" fill="currentColor"/><path d="M17.5 35Q21 32.5 24.5 34.5Q28 36.5 31.5 33.5Q34 31.5 36.5 32"/><path d="M18.5 39Q22 36.5 25.5 38.5Q29 40.5 32.5 37.5Q35 35.5 37.5 36"/><path d="M17.5 35L18.5 39M36.5 32L37.5 36"/></symbol><symbol id="f-kids" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 37Q24 47 44 37"/><path d="M12 22Q20 23.5 27 20L31 11Q32 8 35 8.5L41.5 12Q43.5 13.5 42 15.5Q41 16.8 38.5 16L36 15.5Q35 19 35 23Q35 27 31 27L16 27Q12 27 12 22Z"/><path d="M32.5 9L32 4.5L35.5 8.4"/><path d="M30.5 12.5L27.5 14M29.3 15.8L26.3 17.3"/><path d="M12 23Q6 22.5 7 30"/><path d="M16 27L11.5 39.5M31 27L35.5 39.5"/><circle cx="37.5" cy="11.5" r="1.2" fill="currentColor"/></symbol><symbol id="f-vip" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5L20.5 16.5Q22 16.5 21.6 18.5L20 27Q19.5 29.5 17 29.5L9.5 29.5Q7 29.5 6.4 27L4 18.5Q3.8 16.5 4.5 16.5Z"/><path d="M43.5 16.5L27.5 16.5Q26 16.5 26.4 18.5L28 27Q28.5 29.5 31 29.5L38.5 29.5Q41 29.5 41.6 27L44 18.5Q44.2 16.5 43.5 16.5Z"/><path d="M21.8 19Q24 16.8 26.2 19"/><path d="M4.5 16.5L1.5 15"/><path d="M43.5 16.5L46.5 15"/><path d="M8.5 20.5L11.5 25.5M12.5 20.5L14 23"/><path d="M39.5 20.5L36.5 25.5M35.5 20.5L34 23"/></symbol><symbol id="f-banquet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="11.5"/><circle cx="24" cy="24" r="7"/><path d="M5.5 7L5.5 14Q5.5 18 8.5 18Q11.5 18 11.5 14L11.5 7M8.5 7L8.5 14M8.5 18L8.5 41"/><ellipse cx="39.5" cy="12" rx="3.5" ry="5.5"/><path d="M39.5 18.5L39.5 41"/></symbol><symbol id="f-namaz" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M37.57 28.8A17 17 0 1 1 22.78 8.09L22.78 8.09A13 13 0 1 0 37.57 28.8Z"/><path d="M35.5 11.8L36.79 15.22L40.45 15.39L37.59 17.68L38.56 21.21L35.5 19.2L32.44 21.21L33.41 17.68L30.55 15.39L34.21 15.22Z"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol></svg>
+<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol><symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></symbol><symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol><symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></symbol><symbol id="f-247" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M34.9 8.44A19 19 0 1 1 15.97 6.78"/><path d="M11.14 5.49L15.97 6.78L13.86 11.31"/><path d="M12.35 21.4Q12.35 19 14.85 19Q17.35 19 17.35 21.6Q17.35 23.6 12.35 29L17.35 29"/><path d="M22.55 29L22.55 19L18.95 25.6L23.95 25.6"/><path d="M29.05 18.5L25.55 29.5"/><path d="M30.65 19L35.65 19L32.4 29"/></symbol><symbol id="f-breakfast" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="21"/><path d="M10.5 20C10 14.5 15 11 19.5 12.5C22 10.5 27.5 12 27.5 16.5C30.5 19.5 29 25 25 25.5C23 29 16 29.5 13.5 26.5C10.5 25.5 9.5 22.5 10.5 20Z"/><circle cx="19.5" cy="19.5" r="3.6" fill="currentColor"/><path d="M17.5 35Q21 32.5 24.5 34.5Q28 36.5 31.5 33.5Q34 31.5 36.5 32"/><path d="M18.5 39Q22 36.5 25.5 38.5Q29 40.5 32.5 37.5Q35 35.5 37.5 36"/><path d="M17.5 35L18.5 39M36.5 32L37.5 36"/></symbol><symbol id="f-kids" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 37Q24 47 44 37"/><path d="M12 22Q20 23.5 27 20L31 11Q32 8 35 8.5L41.5 12Q43.5 13.5 42 15.5Q41 16.8 38.5 16L36 15.5Q35 19 35 23Q35 27 31 27L16 27Q12 27 12 22Z"/><path d="M32.5 9L32 4.5L35.5 8.4"/><path d="M30.5 12.5L27.5 14M29.3 15.8L26.3 17.3"/><path d="M12 23Q6 22.5 7 30"/><path d="M16 27L11.5 39.5M31 27L35.5 39.5"/><circle cx="37.5" cy="11.5" r="1.2" fill="currentColor"/></symbol><symbol id="f-vip" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5L20.5 16.5Q22 16.5 21.6 18.5L20 27Q19.5 29.5 17 29.5L9.5 29.5Q7 29.5 6.4 27L4 18.5Q3.8 16.5 4.5 16.5Z"/><path d="M43.5 16.5L27.5 16.5Q26 16.5 26.4 18.5L28 27Q28.5 29.5 31 29.5L38.5 29.5Q41 29.5 41.6 27L44 18.5Q44.2 16.5 43.5 16.5Z"/><path d="M21.8 19Q24 16.8 26.2 19"/><path d="M4.5 16.5L1.5 15"/><path d="M43.5 16.5L46.5 15"/><path d="M8.5 20.5L11.5 25.5M12.5 20.5L14 23"/><path d="M39.5 20.5L36.5 25.5M35.5 20.5L34 23"/></symbol><symbol id="f-banquet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="11.5"/><circle cx="24" cy="24" r="7"/><path d="M5.5 7L5.5 14Q5.5 18 8.5 18Q11.5 18 11.5 14L11.5 7M8.5 7L8.5 14M8.5 18L8.5 41"/><ellipse cx="39.5" cy="12" rx="3.5" ry="5.5"/><path d="M39.5 18.5L39.5 41"/></symbol><symbol id="f-namaz" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M37.57 28.8A17 17 0 1 1 22.78 8.09L22.78 8.09A13 13 0 1 0 37.57 28.8Z"/><path d="M35.5 11.8L36.79 15.22L40.45 15.39L37.59 17.68L38.56 21.21L35.5 19.2L32.44 21.21L33.41 17.68L30.55 15.39L34.21 15.22Z"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20"/></symbol><symbol id="i-photo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="14" rx="3"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8.5 5.5 10 3.5h4l1.5 2"/></symbol></svg>
 <!-- /значки -->
 <div class="intro" aria-hidden="true"><div class="logo-art"><img class="logo-art-text" src="assets/logo-text.73de0587.svg" width="317" height="130" loading="lazy" decoding="async" alt=""><img class="logo-art-moped" src="assets/moped-side.5c84289d.svg" width="103" height="64" loading="lazy" decoding="async" alt=""></div></div>
 
@@ -1608,16 +1622,19 @@ const MENU_UI = {
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
       card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
+      search:'Поиск по меню', search_none:'Ничего не нашлось',
       fee:'Сервисный сбор 10% добавляется к счёту.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
       card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
+      search:'Мәзірден іздеу', search_none:'Ештеңе табылмады',
       fee:'Шотқа 10% қызмет ақысы қосылады.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
       card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs',
       allergy:'Please tell your server<br>about any food allergies',
+      search:'Search the menu', search_none:'Nothing found',
       fee:'A 10% service charge is added to the bill.'},
 };
 
@@ -1987,14 +2004,14 @@ function secHTML(s, tab, i){
       ${s.items.map(it=>itemHTML(it, s.t)).join('')}
     </section>`;
 }
-/* позиция — строка-карточка в духе приложения (этап 2 редизайна): превью фото (если есть в cards.json), название с
-   пометками и «!», ниже объём и примечание приглушённо, справа цена; у позиции с карточкой вся строка открывает карточку */
-function itemHTML(it, sec){
-  const key=cardKey(it.n, sec), c=key&&CARDS[key], pic=c&&(c.img480||c.img);
+/* позиция — текстовая строка «название … цена», как в прежнем меню, в новой стати (правка владельца 1.11): пометки,
+   название, значок фото (у блюда есть карточка — тап по строке открывает её), «!», объём мелко; справа цена; без превью */
+function itemHTML(it, sec, secLabel){
+  const key=cardKey(it.n, sec);
   return `
-        <div class="mm-it${key?' has-card':''}${pic?' has-pic':''}"${key?` data-n="${escA(it.n)}" data-sec="${escA(sec||'')}"`:''}>
-          ${pic?`<img class="mm-th" src="${escA(pic)}" width="60" height="60" loading="lazy" decoding="async" alt="">`:''}
-          <span class="nm"><span class="nm-l">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it, sec)}${onlyBtn(it)}</span>${it.vol?`<span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
+        <div class="mm-it${key?' has-card':''}"${key?` data-n="${escA(it.n)}" data-sec="${escA(sec||'')}"`:''}>
+          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it, sec)}${key?'<svg class="mm-ph" aria-hidden="true" focusable="false"><use href="#i-photo"/></svg>':''}${onlyBtn(it)}${it.vol?` <span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}${secLabel?`<span class="mm-it-sec">${secLabel}</span>`:''}</span>
+          <span class="sp"></span>
           ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>`:fmtP(it.p)}</span>`:''}
         </div>`;
 }
@@ -2008,6 +2025,7 @@ function legendLine(){
 function renderFeed(){
   hidePop();
   const ui=MENU_UI[menuLang], tabs=curTabs();
+  if(menuQ!==null){ document.getElementById('mm-cols').innerHTML = searchHTML(); return; }
   document.getElementById('mm-cols').innerHTML =
     `<div class="mm-intro">${noticeHTML()}</div>` + legendLine() +
     Object.keys(tabs).map(t=>`
@@ -2029,9 +2047,57 @@ function centerCat(smooth){
 }
 
 function renderTabs(){
+  const ui=MENU_UI[menuLang], tabs=document.getElementById('mm-tabs');
+  if(menuQ!==null){
+    tabs.innerHTML = `<div class="mm-search"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-search"/></svg>` +
+      `<input id="mm-q" type="search" enterkeyhint="search" autocomplete="off" placeholder="${ui.search}" aria-label="${ui.search}" value="${escA(menuQ)}" oninput="menuSearch(this.value)">` +
+      `<button type="button" class="mm-search-x" aria-label="${ui.close}" onclick="closeSearch()">×</button></div>`;
+    return;
+  }
+  tabs.innerHTML = Object.keys(curTabs()).map(t=>
+    `<button class="mm-tab${t===menuTab?' on':''}" onclick="switchMenuTab('${t}')">${ui['tab_'+t]}</button>`).join('') +
+    `<button type="button" class="mm-search-btn" aria-label="${ui.search}" title="${ui.search}" onclick="openSearch()"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-search"/></svg></button>`;
+}
+
+/* ── Поиск по меню (правка владельца 1.11): кнопка-лупа после вкладок → поле вместо вкладок. Ищет по всем вкладкам текущего
+   режима (кофейни или bakery to go) — по названию на текущем языке и по-русски, без учёта регистра и ё/е. Результаты —
+   строки того же вида с подписью раздела; Esc или крестик — назад к вкладкам. В аналитику — только длина запроса. ── */
+let menuQ=null, searchTimer=0;
+const normQ=s=>String(s).toLowerCase().replace(/ё/g,'е').replace(/\s+/g,' ').trim();
+function openSearch(){
+  menuQ=''; hidePop();
+  renderTabs(); document.getElementById('mm-cats').hidden=true; renderFeed();
+  const q=document.getElementById('mm-q'); if(q&&q.focus) q.focus();
+}
+function closeSearch(){
+  if(menuQ===null) return false;
+  menuQ=null; clearTimeout(searchTimer);
+  document.getElementById('mm-cats').hidden=false;
+  renderTabs(); renderFeed(); renderCats(); lockSpy(); document.getElementById('menu-modal').scrollTop=0;
+  return true;
+}
+function searchHits(q){
+  const n=normQ(q), out=[];
+  if(!n) return out;
+  const tabs=curTabs();
+  Object.keys(tabs).forEach(t=>tabs[t].forEach(s=>s.items.forEach(it=>{
+    if(normQ(it.n).includes(n) || normQ(T(it.n)).includes(n)) out.push({it, s});
+  })));
+  return out;
+}
+function searchHTML(){
   const ui=MENU_UI[menuLang];
-  document.getElementById('mm-tabs').innerHTML = Object.keys(curTabs()).map(t=>
-    `<button class="mm-tab${t===menuTab?' on':''}" onclick="switchMenuTab('${t}')">${ui['tab_'+t]}</button>`).join('');
+  if(!normQ(menuQ)) return '';
+  const hits=searchHits(menuQ);
+  if(!hits.length) return `<p class="mm-search-none">${ui.search_none}</p>`;
+  return `<section class="mm-sec mm-results">${hits.map(h=>itemHTML(h.it, h.s.t, T(h.s.t))).join('')}</section>`;
+}
+function menuSearch(q){
+  menuQ=q;
+  renderFeed();
+  document.getElementById('menu-modal').scrollTop=0;
+  clearTimeout(searchTimer);
+  if(normQ(q)) searchTimer=setTimeout(()=>track('menu_search',{len:normQ(q).length, found:searchHits(q).length}), 800);
 }
 
 /* подсветка вкладки и категории; при смене вкладки полоса категорий показывает её разделы */
@@ -2108,6 +2174,7 @@ function openMenu(mode){
 }
 function closeMenu(){
   closeCard(); hidePop(); closeLangMenu();
+  if(menuQ!==null){ menuQ=null; clearTimeout(searchTimer); document.getElementById('mm-cats').hidden=false; }
   document.getElementById('menu-modal').classList.remove('open');
   document.body.style.overflow='';
   if(MENU_HASH.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
@@ -2343,6 +2410,7 @@ function setTopH(){
     const b=popBtn;
     if(hidePop()){ e.stopPropagation(); if(b) b.focus(); }
     else if(closeLangMenu()){ e.stopPropagation(); modal.querySelector('.mm-lang-btn.on').focus(); }
+    else if(closeSearch()){ e.stopPropagation(); }
   }, true);
   let lastY=0, spyRaf=0;
   modal.addEventListener('scroll', ()=>{

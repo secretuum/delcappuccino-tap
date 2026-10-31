@@ -661,14 +661,14 @@ h1{font-size:var(--fs-heading);margin:16px 0 8px}
 .toc{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px}
 h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
 h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
-h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:17px;margin:20px 0 4px}
+h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:40px 0 6px}
 h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-surface);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
 .note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
-li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--c-border)}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid var(--c-border);font-size:15px;line-height:1.4}
 li .n{font-weight:500}
-small,li i,li em{font-size:12.5px;color:var(--c-muted);font-style:normal;font-weight:400}
-.p{white-space:nowrap;font-family:var(--font-body);font-weight:700;text-transform:none;font-variant-numeric:tabular-nums}
+small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
+.p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}
 .p s{font-weight:400;color:var(--c-muted)}
 footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
 .social{display:flex;justify-content:center;gap:12px;margin:12px 0}
@@ -1239,6 +1239,10 @@ ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="tru
 ICONS = ICONS.replace('</svg>', feature_icons.symbols() + '</svg>')
 # «три полоски» для плавающей кнопки «меню» на телефоне (свой, три линии)
 ICONS = ICONS.replace('</svg>', '<symbol id="i-menu"%s><path d="M4 7h16M4 12h16M4 17h16"/></symbol></svg>' % _LUCIDE)
+# лупа (поиск по меню) и «фото» (у блюда есть карточка с фото) — свои, линиями
+ICONS = ICONS.replace('</svg>', '<symbol id="i-search"%s><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20"/></symbol>'
+                      '<symbol id="i-photo"%s><rect x="3" y="5.5" width="18" height="14" rx="3"/><circle cx="12" cy="12.5" r="3.5"/>'
+                      '<path d="M8.5 5.5 10 3.5h4l1.5 2"/></symbol></svg>' % (_LUCIDE, _LUCIDE))
 
 
 def icon_link(cls, href, label, onclick, icon, blank=True):
