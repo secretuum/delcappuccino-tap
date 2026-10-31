@@ -121,7 +121,7 @@
 | `menu_page.description` | текстовое меню /kk/menyu | Del Cappuccino мәзірі теңгедегі бағалармен: тағамдар, бар, десерттер, жартылай фабрикаттар және bakery to go. Алматыдағы 24/7 кофеханалар, күні бойы таңғы ас. |
 | `menu_page.og_title` | текстовое меню /kk/menyu | Мәзір мен бағалар — Del Cappuccino |
 | `menu_page.og_description` | текстовое меню /kk/menyu | Del Cappuccino кофеханалары мен bakery to go-ның бағалары бар толық мәзірі. |
-| `menu_page.back` | текстовое меню /kk/menyu | ← Del Cappuccino |
+| `menu_page.back` | текстовое меню /kk/menyu | ← басты бет |
 | `menu_page.photo_menu` | текстовое меню /kk/menyu | Фотосы бар мәзір |
 | `menu_page.h1` | текстовое меню /kk/menyu | Del Cappuccino мәзірі |
 | `menu_page.lead` | текстовое меню /kk/menyu | Бағалар теңгемен (₸). Фотосы мен құрамы бар мәзір — <a href="{menu_link}">басты бетте</a>, онлайн тапсырыс — <a href="https://delcappuccino.kz/">delcappuccino.kz</a>. |

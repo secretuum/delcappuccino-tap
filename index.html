@@ -79,7 +79,6 @@ a{color:inherit}
 /* заголовки — строчными, шрифтом заголовков (lowercaseHeadings в теме приложения) */
 h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
 h2 span,h1 span{color:var(--c-accent)}
-.mm-card-t{text-transform:none;letter-spacing:0}   /* оверлей меню — этап 2: название блюда в карточке как было */
 .shell{max-width:1160px;margin:0 auto;padding:0 var(--s-24)}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
 
@@ -404,28 +403,33 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .mm-mode-btn.on,.mm-lang-btn.on{background:var(--c-accent);color:var(--c-on-accent)}
 .mm-lang-wrap{margin-left:auto;position:relative;flex:none}
 .mm-x{flex:none;border:0;border-radius:50%;background:var(--c-surface);color:var(--c-text);cursor:pointer}
-.mm-body{max-width:1150px;margin:0 auto;padding:36px 30px 64px}
-.mm-cols{columns:3;column-gap:46px}
-.mm-part-h{display:flex;align-items:center;gap:18px;font-family:var(--font-display);font-weight:600;font-size:40px;line-height:1;letter-spacing:.18em;text-transform:uppercase;color:var(--forest);margin:56px 0 26px}
-.mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:36px}
-.mm-part-h::after{content:'';flex:1;height:1px;background:var(--forest);opacity:.3}
-.mm-legend-row{display:flex;flex-wrap:wrap;gap:4px 18px;font-size:11.5px;color:var(--ink-2);padding:11px 0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mm-body{max-width:1150px;margin:0 auto;padding:var(--s-24) var(--s-24) 64px}
+.mm-cols{columns:3;column-gap:var(--s-32)}
+/* ── списки меню в духе приложения (этап 2 редизайна): части и разделы — строчными, Geologica, без разрядки ── */
+.mm-part-h{display:flex;align-items:center;gap:var(--s-16);font-family:var(--font-display);font-weight:700;font-size:var(--fs-heading);line-height:1.15;text-transform:lowercase;color:var(--c-text);margin:var(--s-32) 0 var(--s-16)}
+.mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:var(--s-24)}
+.mm-part-h::after{content:'';flex:1;height:1px;background:var(--c-border)}
+/* легенда — одной строкой пилюль-подсказок */
+.mm-legend-row{display:flex;flex-wrap:wrap;gap:var(--s-8);margin:0 0 var(--s-8)}
+.mm-legend-row span{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s-12);border-radius:var(--r-pill);background:var(--c-surface);font-size:var(--fs-caption);color:var(--c-muted);white-space:nowrap}
 /* над меню — одна карточка: аллергия и сервисный сбор (адреса точек — в карточках на главной) */
-.mm-intro{margin-bottom:var(--s-16)}
+.mm-intro{margin-bottom:var(--s-12)}
 .mm-notice{display:inline-block;max-width:100%;padding:var(--s-8) var(--s-16);border-radius:var(--r-md);background:var(--c-surface);font-size:var(--fs-caption);line-height:1.5;color:var(--c-muted)}
-.mm-sec{break-inside:avoid;margin-bottom:32px}
-.mm-sec h4{display:flex;align-items:center;gap:10px;flex-wrap:wrap;font-family:var(--font-display);font-weight:600;font-size:16.5px;letter-spacing:.28em;text-transform:uppercase;color:var(--forest);margin-bottom:6px}
-.mm-badge{background:var(--forest);color:var(--cream);border-radius:3px;padding:3px 8px;font-family:var(--font-body);font-size:9.5px;font-weight:600;letter-spacing:.06em;white-space:nowrap}
-.mm-secp{margin-left:auto;font-family:var(--font-body);font-size:13px;font-weight:600;letter-spacing:0;text-transform:none;color:var(--ink);font-variant-numeric:tabular-nums}
-.mm-note{font-size:10.5px;color:var(--ink-2);margin:-2px 0 8px;line-height:1.5}
-.mm-it{display:flex;align-items:baseline;gap:6px;padding:4px 0;font-size:13px;line-height:1.35}
-.mm-it .nm{color:var(--ink);min-width:0;overflow-wrap:anywhere}
-.mm-it .itnote{display:block;font-size:10.5px;color:var(--ink-2);line-height:1.4;margin-top:1px}
-.mm-it .vol{font-size:10.5px;color:var(--ink-2);white-space:nowrap}
-.mm-it .vol-long{white-space:normal}   /* длинный объём («+ курица 500 / + креветки 800») переносится, короткий «200/300 мл» — нет */
-.mm-it .sp{flex:1;min-width:12px}
-.mm-it .pr{font-weight:600;color:var(--ink);white-space:nowrap;font-variant-numeric:tabular-nums}
-.mm-it .pr .old{font-weight:400;color:var(--ink-2);text-decoration:line-through;margin-right:4px;font-size:11.5px}
+.mm-sec{break-inside:avoid;margin-bottom:var(--s-24)}
+.mm-sec h4{display:flex;align-items:center;gap:var(--s-8);flex-wrap:wrap;font-family:var(--font-display);font-weight:700;font-size:var(--fs-title);line-height:1.2;text-transform:lowercase;color:var(--c-text);margin-bottom:var(--s-8)}
+.mm-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s-8);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-muted);font-family:var(--font-body);font-size:var(--fs-caption);font-weight:600;line-height:1;text-transform:none;white-space:nowrap}
+.mm-secp{margin-left:auto;font-family:var(--font-body);font-size:var(--fs-body);font-weight:700;text-transform:none;color:var(--c-text);font-variant-numeric:tabular-nums}
+.mm-note{font-size:var(--fs-caption);color:var(--c-muted);margin:-4px 0 var(--s-8);line-height:1.5}
+/* позиция — строка-карточка: превью фото 60 px (если есть), название с пометками, ниже объём приглушённо, справа цена */
+.mm-it{display:flex;align-items:center;gap:var(--s-12);min-height:44px;padding:var(--s-8);margin:0 calc(-1 * var(--s-8));border-radius:var(--r-md);font-size:15px;line-height:1.35}
+.mm-it.has-card{cursor:pointer}
+.mm-it.has-card:hover{background:var(--c-surface)}
+.mm-th{flex:none;display:block;width:60px;height:60px;border-radius:var(--r-sm);object-fit:cover;background:var(--c-raised)}
+.mm-it .nm{flex:1;min-width:0;color:var(--c-text);overflow-wrap:anywhere}
+.mm-it .nm-l{display:block;font-weight:600}
+.mm-it .vol,.mm-it .itnote{display:block;margin-top:2px;font-size:var(--fs-caption);line-height:1.4;color:var(--c-muted)}
+.mm-it .pr{flex:none;max-width:42%;text-align:right;font-weight:700;color:var(--c-text);font-variant-numeric:tabular-nums}
+.mm-it .pr .old{font-weight:400;color:var(--c-muted);text-decoration:line-through;margin-right:4px;font-size:13px;white-space:nowrap}
 /* новая цена рядом со старой (поле old): красное подчёркивание тоном пламени акции; то же в подписи .grill-cap */
 .sale{text-decoration-line:underline;text-decoration-color:var(--sale);text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-skip-ink:none}
 .mm-only{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin:0 2px 0 5px;padding:0;border:1.3px solid var(--forest);border-radius:50%;background:transparent;color:var(--forest);font-family:var(--font-body);font-size:10px;font-weight:800;line-height:1;vertical-align:1px;cursor:pointer;transition:.15s}
@@ -435,17 +439,15 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .mm-pop{position:fixed;z-index:140;max-width:min(280px,calc(100vw - 24px));background:var(--forest);color:var(--cream);font-family:var(--font-body);font-size:12px;line-height:1.5;padding:10px 13px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
 .mm-pop b{display:block;font-weight:700;margin-bottom:2px}
 .mm-pop[hidden]{display:none}
-/* ── карточка блюда (тап по названию): фото, описание, состав, КБЖУ; данные — menu/cards.json ── */
-.nm-t.has-card{cursor:pointer;text-decoration:underline;text-decoration-color:var(--moss);text-decoration-thickness:1px;text-underline-offset:3px}
-.nm-t.has-card:hover{text-decoration-color:var(--forest)}
-.nm-t.has-card:focus-visible{outline:2px solid var(--olive);outline-offset:2px;border-radius:3px}
+/* ── карточка блюда (тап по позиции): в духе экрана «напиток» приложения — крупное фото, название строчными, цена пилюлей ── */
+.nm-t.has-card{cursor:pointer}
+.nm-t.has-card:focus-visible{outline:2px solid var(--c-olive);outline-offset:2px;border-radius:3px}
 .mm-card{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center}
 .mm-card[hidden]{display:none}
-.mm-card-bg{position:absolute;inset:0;background:rgba(36,28,21,.55)}
-.mm-card-box{position:relative;width:100%;max-width:520px;max-height:88vh;max-height:88dvh;overflow:auto;overscroll-behavior:contain;background:var(--cream);color:var(--ink);border-radius:22px 22px 0 0;padding:22px 22px 24px;padding-bottom:calc(24px + env(safe-area-inset-bottom));animation:up .25s ease;font-family:var(--font-body)}
+.mm-card-bg{position:absolute;inset:0;background:var(--c-scrim)}
+.mm-card-box{position:relative;width:100%;max-width:520px;max-height:90vh;max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:var(--c-bg);color:var(--c-text);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-16) var(--s-16) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .25s ease;font-family:var(--font-body)}
 .mm-card-box:focus{outline:none}
-.mm-card-box::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--line)}
-.mm-card-x{position:absolute;top:12px;right:12px;z-index:1;border-radius:99px;border:1px solid var(--line);background:var(--cream);color:var(--ink);cursor:pointer}
+.mm-card-x{position:absolute;top:var(--s-24);right:var(--s-24);z-index:1;border:0;border-radius:50%;background:var(--c-glass);color:var(--c-text);box-shadow:var(--shadow-floating);cursor:pointer}
 /* ── крестики закрытия (модалка филиалов, шапка меню, карточка): один размер, центр без привязки к базовой линии шрифта ── */
 .sheet .x,.mm-x,.mm-card-x{position:absolute;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;margin:0;line-height:1;font-size:0;box-sizing:border-box}
 .mm-x{position:relative}
@@ -454,27 +456,32 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .sheet .x::before,.mm-x::before,.mm-card-x::before{transform:rotate(45deg)}
 .sheet .x::after,.mm-x::after,.mm-card-x::after{transform:rotate(-45deg)}
 .mm-card-x:focus-visible{outline:2px solid var(--olive);outline-offset:2px}
-/* фото карточки: контейнер по натуральной пропорции (ar из cards.json, не выше 52vh, не уже 4/5), фото целиком (contain) на белом */
-.mm-card-pic{display:flex;align-items:center;justify-content:center;width:100%;max-height:52vh;aspect-ratio:4/3;overflow:hidden;border-radius:14px;margin:8px 0 14px;background:#fff}
-.mm-card-img{display:block;width:100%;height:100%;object-fit:contain;background:#fff}
-.mm-card-t{font-family:var(--font-display);font-weight:600;font-size:22px;line-height:1.2;color:var(--forest-dk);margin:4px 44px 4px 0;overflow-wrap:anywhere}
-.mm-card-w{font-size:12px;color:var(--ink-2);margin-bottom:10px}
-.mm-card-d{font-size:13.5px;line-height:1.5;margin-bottom:12px}
-.mm-card-h{font-size:10.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-2);margin:12px 0 4px}
-.mm-card-ing{font-size:13px;line-height:1.5;overflow-wrap:anywhere}
-.mm-card-k{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
-.mm-card-k div{background:var(--cream-2);border-radius:10px;padding:8px 6px;text-align:center}
-.mm-card-k b{display:block;font-size:15px;color:var(--forest-dk);font-variant-numeric:tabular-nums}
-.mm-card-k span{font-size:10.5px;color:var(--ink-2)}
-@media(min-width:681px){.mm-card{align-items:center;padding:24px}.mm-card-box{border-radius:22px;max-height:min(88vh,760px)}.mm-card-box::before{display:none}}
-.mk{font-style:normal;font-size:10.5px;color:var(--forest)}
-.mk-new{color:var(--olive);font-weight:800;font-size:9px;letter-spacing:.04em;vertical-align:1px}
+.mm-card-x{width:44px;height:44px}
+/* фото карточки: крупно, со скруглением; контейнер по натуральной пропорции (ar из cards.json, не выше 56vh, не уже 4/5), фото целиком */
+.mm-card-pic{display:flex;align-items:center;justify-content:center;width:100%;max-height:56vh;aspect-ratio:4/3;overflow:hidden;border-radius:var(--r-lg);margin:0 0 var(--s-16);background:var(--c-bg)}
+.mm-card-img{display:block;width:100%;height:100%;object-fit:contain;background:var(--c-bg)}
+.mm-card-t{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.15;text-transform:lowercase;color:var(--c-text);margin:0 52px var(--s-8) 0;overflow-wrap:anywhere}
+.mm-card-pic+.mm-card-t{margin-right:0}
+.mm-card-p{display:inline-flex;align-items:center;gap:var(--s-8);min-height:40px;margin:0 0 var(--s-12);padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-size:var(--fs-body);font-weight:700;font-variant-numeric:tabular-nums}
+.mm-card-p .old{font-weight:500;text-decoration:line-through;color:rgba(255,255,255,.7)}
+.mm-card-w{font-size:var(--fs-caption);color:var(--c-muted);margin-bottom:var(--s-8)}
+.mm-card-d{font-size:15px;line-height:1.55;margin-bottom:var(--s-12)}
+.mm-card-h{font-family:var(--font-display);font-size:var(--fs-small);font-weight:700;text-transform:lowercase;color:var(--c-text);margin:var(--s-16) 0 var(--s-4)}
+.mm-card-ing{font-size:var(--fs-small);line-height:1.55;color:var(--c-muted);overflow-wrap:anywhere}
+.mm-card-k{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-8);margin-top:var(--s-4)}
+.mm-card-k div{background:var(--c-surface);border-radius:var(--r-sm);padding:var(--s-8) var(--s-4);text-align:center}
+.mm-card-k b{display:block;font-size:var(--fs-body);color:var(--c-text);font-variant-numeric:tabular-nums}
+.mm-card-k span{font-size:var(--fs-caption);color:var(--c-muted)}
+@media(min-width:681px){.mm-card{align-items:center;padding:24px}.mm-card-box{border-radius:var(--r-lg);max-height:min(90vh,820px);padding:var(--s-16) var(--s-16) var(--s-24)}}
+.mk{font-style:normal;font-size:12px;color:var(--c-accent)}
+/* NEW — маленькой пилюлей olive с тёмным текстом */
+.mk-new{display:inline-block;padding:2px 6px;border-radius:var(--r-pill);background:var(--c-olive);color:var(--c-on-olive);font-weight:700;font-size:10px;line-height:1.2;letter-spacing:.02em;vertical-align:2px}
 @media(max-width:1020px){.mm-cols{columns:2}}
 @media(max-width:680px){
   .mm-cols{columns:1}
-  .mm-part-h{font-size:27px;letter-spacing:.14em;gap:14px;margin:40px 0 16px}
-  .mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:28px}
-  .mm-legend-row{gap:3px 14px;font-size:11px;padding:9px 0}
+  .mm-part-h{font-size:var(--fs-title);margin:var(--s-24) 0 var(--s-12)}
+  .mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:var(--s-16)}
+  .mm-legend-row{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;margin:0 calc(-1 * var(--s-16)) var(--s-8);padding:0 var(--s-16)}
   .mm-intro{margin-bottom:var(--s-12)}
   .mm-body{padding:20px 16px 48px}
   .mm-head{transition:transform .25s ease}
@@ -489,11 +496,9 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
   .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);box-shadow:var(--shadow-floating)}
   .mm-tab{height:38px;padding:0 var(--s-12)}
-  .mm-sec h4{font-size:15px;letter-spacing:.2em}
-  .mm-note{font-size:11.5px}
-  .mm-it{gap:8px;padding:6px 0;font-size:14px}
-  .mm-it .pr{font-size:14px}
-  .mm-it .vol{font-size:11px}
+  .mm-sec h4{font-size:18px}
+  .mm-it{font-size:14px;gap:var(--s-12)}
+  .mm-th{width:56px;height:56px}
 }
 </style>
 <!-- schema.org: организация, точки из BRANCHES и меню с ценами — tools/seo_jsonld.py, руками не править -->
@@ -1979,13 +1984,19 @@ function secHTML(s, tab, i){
     <section class="mm-sec${dupT?' mm-sec-notitle':''}" id="mm-sec-${tab}-${i}" data-i="${i}">
       ${dupT?'':`<h4>${T(s.t)}${s.badge?` <span class="mm-badge">${T(s.badge)}</span>`:''}${s.p!=null?`<span class="mm-secp">${fmtP(s.p)}</span>`:''}</h4>`}
       ${s.note?`<p class="mm-note">${T(s.note)}</p>`:''}
-      ${s.items.map(it=>`
-        <div class="mm-it">
-          <span class="nm">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it, s.t)}${onlyBtn(it)}${it.vol?` <span class="vol${it.vol.length>18?' vol-long':''}">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
-          <span class="sp"></span>
-          ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>`:fmtP(it.p)}</span>`:''}
-        </div>`).join('')}
+      ${s.items.map(it=>itemHTML(it, s.t)).join('')}
     </section>`;
+}
+/* позиция — строка-карточка в духе приложения (этап 2 редизайна): превью фото (если есть в cards.json), название с
+   пометками и «!», ниже объём и примечание приглушённо, справа цена; у позиции с карточкой вся строка открывает карточку */
+function itemHTML(it, sec){
+  const key=cardKey(it.n, sec), c=key&&CARDS[key], pic=c&&(c.img480||c.img);
+  return `
+        <div class="mm-it${key?' has-card':''}${pic?' has-pic':''}"${key?` data-n="${escA(it.n)}" data-sec="${escA(sec||'')}"`:''}>
+          ${pic?`<img class="mm-th" src="${escA(pic)}" width="60" height="60" loading="lazy" decoding="async" alt="">`:''}
+          <span class="nm"><span class="nm-l">${(it.m||[]).map(k=>MK[k]).join('')} ${nameHTML(it, sec)}${onlyBtn(it)}</span>${it.vol?`<span class="vol">${T(it.vol)}</span>`:''}${it.note?`<span class="itnote">${T(it.note)}</span>`:''}</span>
+          ${it.p!=null?`<span class="pr">${it.old?`<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>`:fmtP(it.p)}</span>`:''}
+        </div>`;
 }
 
 /* Всё меню режима одной лентой: ME/NU с адресами → легенда → части по вкладкам (внутри — колонки) */
@@ -2204,11 +2215,27 @@ function cardW(w){
   if(menuLang==='kk') return w.replace(/(\d)\s*гр(?![а-яё])/g,'$1 г');
   return w;
 }
+/* позиция меню для карточки: «Название @ Раздел» — в этом разделе; ищем в текущем режиме, потом в остальных */
+function findItem(key){
+  const [name, sec]=key.split(' @ ');
+  const modes=[menuMode].concat(Object.keys(MENU_MODES).filter(m=>m!==menuMode));
+  for(const m of modes) for(const arr of Object.values(MENU_MODES[m].tabs)) for(const s of arr){
+    if(sec && s.t!==sec) continue;
+    const it=s.items.find(x=>x.n===name); if(it) return {it, s};
+  }
+  return null;
+}
+/* цена карточки — пилюлей forest: цена позиции (или раздела), старая — зачёркнута */
+function cardPrice(key){
+  const f=findItem(key); if(!f) return '';
+  const p=f.it.p!=null?f.it.p:f.s.p; if(p==null) return '';
+  return `<div class="mm-card-p">${f.it.old?`<span class="old">${fmtP(f.it.old)}</span> `:''}${fmtP(p)} ₸</div>`;
+}
 function cardHTML(key){
   const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);
   return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
     (c.img ? `<div class="mm-card-pic" style="aspect-ratio:${picRatio(c.ar)}"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(c.img480)} 480w, ${escA(c.img)} 960w" sizes="(max-width:680px) calc(100vw - 44px), 476px"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async"></div>` : '') +
-    `<h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` +
+    `<h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` + cardPrice(key) +
     (c.w ? `<div class="mm-card-w">${ui.card_w}: ${escA(cardW(String(c.w)))}</div>` : '') +
     (d ? `<p class="mm-card-d">${escA(d)}</p>` : '') +
     (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
@@ -2273,10 +2300,10 @@ function setTopH(){
 (function(){
   const modal=document.getElementById('menu-modal'), head=modal.querySelector('.mm-head'), cols=document.getElementById('mm-cols');
   cols.addEventListener('click', e=>{
-    const nb=e.target.closest('.nm-t.has-card');
-    if(nb){ openCard(nb.dataset.n, nb, nb.dataset.sec); return; }
-    const b=e.target.closest('.mm-only'); if(!b) return;
-    if(popBtn===b && popPinned) hidePop(); else showPop(b, true);
+    const b=e.target.closest('.mm-only');
+    if(b){ if(popBtn===b && popPinned) hidePop(); else showPop(b, true); return; }
+    const row=e.target.closest('.mm-it.has-card');
+    if(row) openCard(row.dataset.n, row.querySelector('.nm-t.has-card')||row, row.dataset.sec);
   });
   cols.addEventListener('mouseover', e=>{
     const b=e.target.closest('.mm-only');

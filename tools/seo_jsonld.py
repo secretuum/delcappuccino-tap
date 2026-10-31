@@ -540,13 +540,37 @@ def fmt_p(p):
     return ' / '.join('{:,}'.format(int(x.strip())).replace(',', '\u00a0') for x in str(p).split('/'))
 
 
+def tokens_css(html):
+    """:root главной (токены v5, шрифты) без комментариев — текстовые меню на тех же токенах"""
+    css = re.sub(r'/\*.*?\*/', '', html[html.index('<style>') + 7:html.index('</style>')], flags=re.S)
+    return re.sub(r'\s*\n\s*', '', re.search(r':root\{.*?\}', css, re.S).group(0))
+
+
+def social_sprite():
+    """спрайт только со значками соцсетей — для текстовых меню (вся страница без JS и фото)"""
+    syms = re.findall(r'<symbol id="i-(?:ig|yt|th)".*?</symbol>', ICONS)
+    return '<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">%s</svg>' % ''.join(syms)
+
+
+def menu_social():
+    return ''.join('<a href="%s" target="_blank" rel="noopener" onclick="track(\'cta_instagram\',{net:\'%s\',src:\'menu_page\'})" '
+                   'aria-label="%s" title="%s"><svg aria-hidden="true" focusable="false"><use href="#i-%s"/></svg></a>'
+                   % (url, key, name, name, ic) for key, name, url, ic in SOCIAL)
+
+
+def menu_lang_switch(lang):
+    return ''.join('<a href="%s" lang="%s"%s>%s</a>' % (MENU[l][len(SITE) - 1:], l, ' aria-current="page"' if l == lang else
+                                                      ' hreflang="%s" onclick="track(\'lang_switch\',{lang:\'%s\',src:\'menu_page\'})"' % (l, l),
+                                                      {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
+
+
 def menu_page(html, lang='ru'):
     """/menyu, /kk/menyu, /en/menu — всё меню текстом: кофейни (вкладки MENU_TABS) и Bakery to go (вкладки togo)"""
     e = lambda s: H.escape(s, quote=False)
     c = lang_ctx(html, lang)
     ui, ui0, marks, bs, mp = c['ui'], ui_ru(html), mark_names(html, c if lang != 'ru' else None), branches(html), c['d']['menu_page']
     by_num = {re.match(r'\d+', b['n']).group(0): b for b in bs}
-    fonts = font_faces(html, ('body',))       # шрифт текста главной (--font-body); вид страницы меню — этап 2 редизайна
+    fonts = font_faces(html)                  # шрифты главной: --font-display (заголовки) и --font-body (текст)
     allergy = re.sub(r'\s*<br>\s*', ' ', ui['allergy']).rstrip('.') + '.'
     tt = lambda s: T(c, s)
     home = '/' if lang == 'ru' else '/%s/' % lang
@@ -584,8 +608,8 @@ def menu_page(html, lang='ru'):
 
     tabs = mode_tabs(html)
     togo = [b for b in bs if b['menu'] == 'togo']
-    toc = ' · '.join('<a href="#%s">%s</a>' % (t, e(ui['tab_' + t])) for t, _ in tabs['cafe'])
-    toc += ' · <a href="#togo">%s</a>' % e(ui['mode_togo'])
+    toc = ' '.join('<a href="#%s">%s</a>' % (t, e(ui['tab_' + t])) for t, _ in tabs['cafe'])
+    toc += ' <a href="#togo">%s</a>' % e(ui['mode_togo'])
     cafes_note = (e(hours_text(bs)[0]) + '.' if lang == 'ru' else
                   e(c['d']['phrases']['cafes'].format(n=len([b for b in bs if b['hours'] == '24/7']),
                                                      list=', '.join(place_l(c, b) for b in bs if b['hours'] == '24/7'))))
@@ -598,7 +622,6 @@ def menu_page(html, lang='ru'):
         ''.join('<p class="note">%s — %s</p>' % (e(tt(b['addr'])), e(hours_card(c, b['hours']) if lang != 'ru' else b['hours'])) for b in togo),
         '<p class="note">%s</p>' % e(allergy),
     ] + [tab_html('togo', t, arr) for t, arr in tabs['togo']]
-    insta = instagram(html)
     return '''<!DOCTYPE html>
 <html lang="%(lang)s">
 <head>
@@ -619,38 +642,54 @@ def menu_page(html, lang='ru'):
 %(analytics)s<!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 %(fonts)s
-:root{--font-body:%(font_body)s;--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
+%(tokens)s
+/* меню текстом (этап 2 редизайна): токены v5 главной, Geologica — заголовки, Montserrat — текст, фон белый; без JS и фото */
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--cream);color:var(--ink);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
+body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
-a{color:var(--forest);font-weight:600}
-header a{text-decoration:none}
-h1{font-size:28px;line-height:1.15;color:var(--forest-dk);margin:22px 0 8px}
-.lead{color:var(--ink-2)}
-.toc{margin:12px 0 4px;font-size:14px;line-height:1.9}
-h2{font-size:22px;color:var(--forest-dk);margin:30px 0 6px;padding-top:10px;border-top:2px solid var(--forest)}
-h3{font-size:18px;color:var(--olive);margin:22px 0 2px}
-h4{display:flex;justify-content:space-between;gap:12px;font-size:15px;margin:16px 0 2px}
-.note{font-size:13px;color:var(--ink-2);margin:2px 0}
+a{color:var(--c-accent);font-weight:600}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
+.logo{display:inline-flex;margin-right:4px}
+.logo img{display:block;height:36px;width:auto;border-radius:8px}
+.pill,.toc a,.lang a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+.lang{display:flex;gap:4px;margin-left:auto}
+.lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption);font-weight:700}
+.lang a[aria-current]{background:var(--c-accent);color:var(--c-on-accent)}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase;line-height:1.2}
+h1{font-size:var(--fs-heading);margin:16px 0 8px}
+.lead{color:var(--c-muted)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px}
+h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
+h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
+h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:17px;margin:20px 0 4px}
+h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-surface);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
+.note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
-li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
-small,li i,li em{font-size:12.5px;color:var(--ink-2);font-style:normal;font-weight:400}
-.p{white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
-.p s{font-weight:400;color:var(--ink-2);margin-right:2px}
-footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2);line-height:1.9}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--c-border)}
+li .n{font-weight:500}
+small,li i,li em{font-size:12.5px;color:var(--c-muted);font-style:normal;font-weight:400}
+.p{white-space:nowrap;font-family:var(--font-body);font-weight:700;text-transform:none;font-variant-numeric:tabular-nums}
+.p s{font-weight:400;color:var(--c-muted)}
+footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
+.social{display:flex;justify-content:center;gap:12px;margin:12px 0}
+.social a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%%;background:var(--c-surface);color:var(--c-text)}
+.social svg{display:block;width:22px;height:22px}
+.icons{position:absolute;width:0;height:0;overflow:hidden}
 @media(min-width:700px){h1{font-size:34px}}
 </style>
 </head>
 <body>
-<header class="wrap"><a href="%(home)s">%(back)s</a><a href="%(menu_link)s" onclick="track('cta_menu',{src:'menu_page'})">%(photo_menu)s</a></header>
+%(icons)s
+<header class="wrap"><a class="logo" href="%(home)s" aria-label="Del Cappuccino"><img src="/assets/logo-lockup-128.webp" width="128" height="63" alt="Del Cappuccino"></a><a class="pill" href="%(home)s">%(back)s</a><a class="pill" href="%(menu_link)s" onclick="track('cta_menu',{src:'menu_page'})">%(photo_menu)s</a><nav class="lang" aria-label="%(lang_label)s">%(sw)s</nav></header>
 <main class="wrap">
 <h1>%(h1)s</h1>
 <p class="lead">%(lead)s</p>
 <nav class="toc">%(toc)s</nav>
 %(body)s
 </main>
-<footer class="wrap"><a href="%(home)s">%(f_home)s</a> · <a href="%(home)s#faq">%(f_faq)s</a> · <a href="%(order)s" onclick="track('cta_order',{src:'menu_page'})">%(f_order)s</a>%(insta)s · © 2026 Del Cappuccino</footer>
+<footer class="wrap">
+<div class="social">%(social)s</div>
+<a href="%(home)s">%(f_home)s</a> · <a href="%(home)s#faq">%(f_faq)s</a> · <a href="%(order)s" onclick="track('cta_order',{src:'menu_page'})">%(f_order)s</a> · © 2026 Del Cappuccino</footer>
 %(ga_loader)s
 </body>
 </html>
@@ -661,7 +700,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
        'og_description': H.escape(mp['og_description']), 'back': e(mp['back']), 'photo_menu': e(mp['photo_menu']),
        'h1': e(mp['h1']), 'lead': mp['lead'].replace('{menu_link}', menu_link),
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
-       'insta': ''.join(' · <a href="%s" onclick="track(\'cta_instagram\',{src:\'menu_page\'})">Instagram</a>' % u for u in insta),
+       'tokens': tokens_css(html), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
+       'lang_label': H.escape(i18n()['kk' if lang == 'kk' else 'en']['page']['lang_label']) if lang != 'ru' else 'Язык',
        'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID}
 
 

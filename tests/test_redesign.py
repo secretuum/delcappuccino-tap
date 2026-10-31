@@ -510,6 +510,150 @@ class TestPage(unittest.TestCase):
             self.assertRegex(html, r'class="fab-menu"[^>]*onclick="track\(\'cta_menu\',\{src:\'hbar_m\'\}\)[^"]*"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>', l)
             self.assertIn('<symbol id="i-menu"', html, l)
 
+    def test_menu_overlay_in_node(self):
+        """этап 2: оверлей меню на заглушке DOM — открыть, фото-превью у позиций с фото, вкладки, режим togo, язык kk/en,
+        карточка блюда в новом виде (фото, название, цена пилюлей, старая цена зачёркнута)"""
+        node = find_node()
+        if not node:
+            self.skipTest('нет node')
+        html = self.pages['ru']
+        cards = json.loads(read('menu/cards.json'))
+        harness = r"""
+const fs = require('fs'), vm = require('vm');
+const { html, cards } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
+const scripts = [...html.matchAll(/<script(?![^>]*\bsrc=)(?![^>]*ld\+json)[^>]*>([\s\S]*?)<\/script>/g)].map(m => m[1]);
+const els = {};
+const el = id => ({ id, innerHTML: '', textContent: '', hidden: true, style: { setProperty() {}, removeProperty() {} }, dataset: {}, scrollTop: 0,
+  offsetHeight: 0, classList: { add() {}, remove() {}, toggle() {}, contains() { return false; } }, addEventListener() {}, removeEventListener() {},
+  appendChild(x) { return x; }, insertAdjacentHTML() {}, contains() { return false; }, getAttribute() { return null; }, scrollIntoView() {},
+  querySelector(sel) { return (this._q = this._q || {})[sel] || (this._q[sel] = el(sel)); }, querySelectorAll() { return []; },
+  getBoundingClientRect() { return { top: 0, bottom: 0 }; }, scrollTo() {}, setAttribute() {}, removeAttribute() {}, focus() {},
+  closest() { return null; }, play() { return Promise.resolve(); }, pause() {} });
+const document = { getElementById: id => els[id] || (els[id] = el(id)), querySelector: () => el('q'), querySelectorAll: () => [],
+  addEventListener() {}, createElement: () => el('x'), body: el('body'), documentElement: el('html'), head: el('head'), readyState: 'loading', activeElement: null };
+const log = [];
+const ctx = { document, console, setTimeout: () => 0, clearTimeout() {}, requestAnimationFrame: () => 0, requestIdleCallback: () => 0,
+  matchMedia: () => ({ matches: false, addEventListener() {}, addListener() {} }), IntersectionObserver: function () { return { observe() {} }; },
+  fetch: () => new Promise(() => {}), localStorage: { getItem() { return null; }, setItem() {} }, navigator: {},
+  location: { hash: '', pathname: '/', search: '' }, history: { replaceState() {} }, addEventListener() {}, scrollTo() {}, Image: function () {} };
+ctx.window = ctx; vm.createContext(ctx);
+scripts.forEach(s => vm.runInContext(s, ctx));
+ctx.__cards = cards;
+const R = code => vm.runInContext(code, ctx);
+const out = {};
+R("openMenu()");
+out.noCards = els['mm-cols'].innerHTML;
+R("CARDS = __cards; renderFeed()");
+out.cafe = els['mm-cols'].innerHTML;
+R("switchMenuMode('togo')");
+out.togo = els['mm-cols'].innerHTML;
+R("switchMenuMode('cafe'); switchMenuLang('kk')");
+out.kk = els['mm-cols'].innerHTML;
+R("switchMenuLang('en')");
+out.en = els['mm-cols'].innerHTML;
+R("switchMenuLang('ru')");
+out.cardOk = R("openCard('Рибай на кости', null, 'Блюда на гриле')");
+out.card = els['mm-card-box'].innerHTML;
+out.cardHidden = els['mm-card'].hidden;
+R("closeCard()");
+out.cap = R("openCard('Капучино', null, 'Классический кофе')") && els['mm-card-box'].innerHTML;
+out.togoCard = R("switchMenuMode('togo'); openCard('Капучино', null, 'Классический кофе')") && els['mm-card-box'].innerHTML;
+console.log(JSON.stringify(out));
+"""
+        with tempfile.TemporaryDirectory() as d:
+            h, data = os.path.join(d, 'm.js'), os.path.join(d, 'data.json')
+            with open(h, 'w', encoding='utf-8') as f:
+                f.write(harness)
+            with open(data, 'w', encoding='utf-8') as f:
+                json.dump({'html': html, 'cards': cards}, f)
+            r = subprocess.run([node, h, data], capture_output=True, text=True, timeout=60)
+        self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+        got = json.loads(r.stdout)
+        self.assertNotIn('mm-th', got['noCards'], 'до загрузки cards.json — строки без превью')
+        thumbs = re.findall(r'<img class="mm-th" src="([^"]+)" width="60" height="60" loading="lazy" decoding="async" alt="">', got['cafe'])
+        self.assertGreater(len(thumbs), 100, 'превью у позиций с фото')
+        for src in thumbs[:20]:
+            self.assertTrue(src.startswith('img/menu/') and os.path.isfile(os.path.join(ROOT, src)), src)
+        rows = re.findall(r'<div class="mm-it([^"]*)"', got['cafe'])
+        self.assertEqual(sum('has-pic' in r for r in rows), len(thumbs))
+        self.assertTrue(all('has-card' in r for r in rows if 'has-pic' in r))
+        self.assertIn('<h3 class="mm-part-h">Кухня</h3>', got['cafe'])
+        nb = '\u00a0'                                                        # fmtP: toLocaleString('ru-RU') — неразрывный пробел
+        self.assertIn('<span class="old">7%s200</span> <span class="sale">3%s990</span>' % (nb, nb), got['cafe'], 'скидка — зачёркнутая старая цена')
+        self.assertIn('<b class="mk mk-new">NEW</b>', got['cafe'])
+        self.assertIn('class="mm-only"', got['cafe'], '«!» с адресами остался')
+        self.assertIn('<h3 class="mm-part-h">Полуфабрикаты</h3>', got['togo'])
+        self.assertNotIn('<h3 class="mm-part-h">Кухня</h3>', got['togo'], 'togo — свои вкладки')
+        self.assertIn('<h3 class="mm-part-h">Тағамдар</h3>', got['kk'])
+        self.assertIn('<h3 class="mm-part-h">Kitchen</h3>', got['en'])
+        self.assertTrue(got['cardOk'])
+        self.assertFalse(got['cardHidden'])
+        card = got['card']
+        self.assertRegex(card, r'^<button type="button" class="mm-card-x" aria-label="[^"]+">×</button><div class="mm-card-pic"')
+        self.assertIn('<h3 class="mm-card-t" id="mm-card-t">Рибай на кости</h3><div class="mm-card-p"><span class="old">7%s200</span> 3%s990 ₸</div>' % (nb, nb), card)
+        self.assertIn('class="mm-card-k"', card)
+        self.assertIn('<div class="mm-card-p">1%s400 / 1%s500 / 1%s700 ₸</div>' % (nb, nb, nb), got['cap'], 'ярусы цены — как в меню')
+        self.assertIn('<div class="mm-card-p">', got['togoCard'], 'карточка в режиме togo — цена из меню bakery')
+
+    def test_menu_overlay_css(self):
+        """этап 2: разделы не капсом и без разрядки, строки без подчёркиваний, NEW пилюлей olive, легенда пилюлями,
+        карточка блюда на белом, крестик круглый, цена пилюлей forest; крема и старых шрифтов нет"""
+        css = re.sub(r'/\*.*?\*/', '', style(self.pages['ru']), flags=re.S)
+        rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
+        for sel in ('.mm-part-h', '.mm-sec h4', '.mm-card-t', '.mm-card-h'):
+            r_ = rule(sel)
+            self.assertIn('text-transform:lowercase', r_, sel)
+            self.assertIn('font-family:var(--font-display)', r_, sel)
+            self.assertNotRegex(r_, r'uppercase|letter-spacing:\.[1-9]', sel)
+        self.assertNotRegex(css, r'\.mm-[\w-]+[^{}]*\{[^}]*text-transform:uppercase', 'в меню ничего капсом')
+        self.assertNotRegex(rule('.nm-t.has-card'), r'underline', 'без подчёркиваний')
+        self.assertIn('border-radius:var(--r-pill);background:var(--c-olive);color:var(--c-on-olive)', rule('.mk-new'))
+        self.assertIn('border-radius:var(--r-pill)', rule('.mm-legend-row span'))
+        self.assertIn('border-radius:var(--r-pill)', rule('.mm-badge'))
+        self.assertIn('width:60px;height:60px', rule('.mm-th'))
+        box = rule('.mm-card-box')
+        self.assertIn('background:var(--c-bg)', box)
+        self.assertIn('border-radius:50%', rule('.mm-card-x'))
+        self.assertIn('background:var(--c-accent);color:var(--c-on-accent)', rule('.mm-card-p'))
+        self.assertIn('border-radius:var(--r-lg)', rule('.mm-card-pic'))
+        self.assertNotRegex(css.replace('--c-brand-cream:#FEF1E7', ''), r'(?i)#FEF1E7|#F7E7D8|#F7EFE2|254,\s*241,\s*231', 'крема в меню нет (кроме токена бренда)')
+        self.assertNotRegex(self.pages['ru'], OLD_FONTS)
+        self.assertIn('<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>', self.pages['ru'])
+        for sig in ('function openMenu(mode){', 'function openCard(name, opener, sec){'):
+            self.assertIn(sig, self.pages['ru'], 'сигнатура прежняя')
+
+    def test_text_menus_on_tokens(self):
+        """этап 2: /menyu, /kk/menyu, /en/menu — токены v5 главной, Geologica + Montserrat, фон белый, без крема; шапка —
+        логотип, «← на главную» пилюлей, язык; соцсети значками внизу; SEO на месте; без JS, кроме аналитики"""
+        main_root = root_vars(self.pages['ru'])
+        back = {'ru': '← на главную', 'kk': '← басты бет', 'en': '← home'}
+        for l, path in (('ru', 'menyu/index.html'), ('kk', 'kk/menyu/index.html'), ('en', 'en/menu/index.html')):
+            page = read(path)
+            css = style(page)
+            v = root_vars(page)
+            for k in ('--c-bg', '--c-surface', '--c-text', '--c-accent', '--font-display', '--font-body', '--r-pill'):
+                self.assertEqual(v.get(k), main_root[k], '%s: %s' % (l, k))
+            self.assertIn('body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body)', css)
+            self.assertIn('h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase', css)
+            self.assertNotRegex(page.replace('--c-brand-cream:#FEF1E7', ''), r'(?i)#FEF1E7|#F7E7D8|' + OLD_FONTS, '%s: без крема и старых шрифтов' % l)
+            self.assertNotIn('var(--c-brand-cream)', css, '%s: крем бренда в текстовом меню не используется' % l)
+            self.assertEqual(sorted(set(re.findall(r"@font-face\{font-family:'([^']+)'", page))), ['Geologica', 'Montserrat'], l)
+            head = re.search(r'<header class="wrap">(.*?)</header>', page).group(1)
+            self.assertIn('<img src="/assets/logo-lockup-128.webp"', head)
+            self.assertIn('<a class="pill" href="%s">%s</a>' % ('/' if l == 'ru' else '/%s/' % l, back[l]), head)
+            self.assertIn('<nav class="lang"', head)
+            self.assertEqual(re.findall(r'<a href="([^"]+)" lang="(\w+)"', head), [('/menyu', 'ru'), ('/kk/menyu', 'kk'), ('/en/menu', 'en')])
+            foot = re.search(r'<footer class="wrap">(.*?)</footer>', page, re.S).group(1)
+            self.assertEqual(re.findall(r'<a href="([^"]+)" target="_blank" rel="noopener" onclick="track\(\'cta_instagram\',\{net:\'(\w+)\'', foot),
+                             [(u, k) for k, _, u, _ in seo.SOCIAL])
+            for sym in ('i-ig', 'i-yt', 'i-th'):
+                self.assertIn('<symbol id="%s"' % sym, page)
+            self.assertNotIn('<img class="mm-th"', page, 'без фото')
+            self.assertEqual(len(re.findall(r'<script\b', page)), 2, '%s: только аналитика (2), меню — текстом без JS' % l)
+            self.assertIn('<link rel="canonical"', page)
+            self.assertEqual(len(re.findall(r'hreflang="(?:ru|kk|en|x-default)" href=', page)), 4)
+            self.assertLessEqual(len(page.encode('utf-8')), 64 * 1024, '%s: лёгкая' % l)
+
     def test_location_names_without_numbers(self):
         for l, html in self.pages.items():
             names = re.findall(r'<div class="loc-card">\n      <small>([^<]+)</small>', html)
@@ -656,7 +800,7 @@ console.log(JSON.stringify(out));
         sizes = {l: len(html.encode('utf-8')) for l, html in self.pages.items()}
         # 1.11: +4 КБ — свой набор значков «Формата» в спрайте; предел 240 КБ (было 230)
         self.assertLessEqual(sizes['ru'], 240 * 1024, 'главная была ~215 КБ — не раздувать')
-        self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 56 * 1024)
+        self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 60 * 1024)   # этап 2 (меню): +1,5 КБ CSS, было 56
         for l in ('kk', 'en'):
             self.assertLessEqual(sizes[l], 75 * 1024, l)   # 1.11: +4 КБ значков, было 70
 
