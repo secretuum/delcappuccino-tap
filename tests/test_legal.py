@@ -85,8 +85,9 @@ class TestLegalLinks(unittest.TestCase):
             self.assertEqual([h for h, _, _ in links], ['/legal/%s.html' % d for d in DOCS], p)
             self.assertEqual([o for _, o, _ in links], ["track('legal_open',{doc:'%s'})" % d for d in DOCS], p)
             self.assertEqual([t for _, _, t in links], DOC_TITLES[p], '%s: названия на языке страницы' % p)
-            # рядом с «Уголком потребителя»: сразу за его ссылкой
-            self.assertRegex(foot, r'<a class="f-ugolok"[^>]*>[^<]*</a>\s*<span class="f-legal">', p)
+            # «Уголок потребителя» — первой ссылкой того же ряда (владелец 31.10: не кнопкой, а как документы)
+            self.assertRegex(m.group(1), r'^<a class="f-ugolok" href="/ugolok/" onclick="track\(\'cta_ugolok\'\)">[^<]+</a> <a href="/legal/offer\.html"', p)
+            self.assertEqual(foot.count('class="f-ugolok"'), 1, p)
             # ссылки только в подвале — ровно по одной на документ на всей странице
             self.assertEqual(len(re.findall(LEGAL_REF, html)), 3, '%s: ссылки на legal/ — только три в подвале' % p)
             self.assertEqual(len(re.findall(LEGAL_REF, foot)), 3, p)
@@ -122,7 +123,8 @@ class TestLegalLinks(unittest.TestCase):
             self.assertIn('.f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;', css, p)
             self.assertIn('max-width:100%', re.search(r'\.f-row \.f-legal\{[^}]*\}', css).group(0), p)
             self.assertNotRegex(css, r'\.f-legal[^{]*\{[^}]*(?:border|background)', '%s: ссылки на документы — не кнопки' % p)
-            self.assertRegex(css, r'@media\(max-width:680px\)\{[^@]*\.f-row \.f-legal\{order:-1', '%s: на телефоне — рядом с «Уголком»' % p)
+            self.assertRegex(css, r'@media\(max-width:680px\)\{[^@]*\.f-row \.f-legal\{order:-1', '%s: на телефоне — первым в колонке' % p)
+            self.assertNotRegex(css, r'\.f-ugolok[^{]*\{[^}]*(?:border|background|padding)', '%s: «Уголок» — не кнопка, как документы' % p)
 
 
 class TestLegalHidden(unittest.TestCase):

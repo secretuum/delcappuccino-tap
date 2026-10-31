@@ -938,8 +938,7 @@ def lang_page(html, lang):
     <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
     <span>%(footer_tag)s</span>
     <a href="%(menu_page)s">%(footer_menu)s</a>
-    <a class="f-ugolok" href="/ugolok/" onclick="track('cta_ugolok')">%(footer_ugolok)s</a>
-    <span class="f-legal"><a href="/legal/offer.html" onclick="track('legal_open',{doc:'offer'})">%(footer_offer)s</a> <a href="/legal/privacy.html" onclick="track('legal_open',{doc:'privacy'})">%(footer_privacy)s</a> <a href="/legal/contacts.html" onclick="track('legal_open',{doc:'contacts'})">%(footer_contacts)s</a></span>
+    <span class="f-legal"><a class="f-ugolok" href="/ugolok/" onclick="track('cta_ugolok')">%(footer_ugolok)s</a> <a href="/legal/offer.html" onclick="track('legal_open',{doc:'offer'})">%(footer_offer)s</a> <a href="/legal/privacy.html" onclick="track('legal_open',{doc:'privacy'})">%(footer_privacy)s</a> <a href="/legal/contacts.html" onclick="track('legal_open',{doc:'contacts'})">%(footer_contacts)s</a></span>
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
