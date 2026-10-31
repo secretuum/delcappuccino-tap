@@ -543,6 +543,9 @@ async function run(name, { url, mode, cache, net, slow }) {   // net: {body, sta
     run('hashed', { url: '/assets/x.1a2b3c4d.webp', mode: 'no-cors', cache: [[R, ORIGIN + '/assets/x.1a2b3c4d.webp', 'old']], net: fresh }),
     run('legal_nav', { url: '/legal/offer.html', mode: 'navigate', cache: [[S, ORIGIN + '/legal/offer.html', 'old']], net: fresh }),
     run('legal_css', { url: '/legal/style.css', mode: 'no-cors', cache: [[R, ORIGIN + '/legal/style.css', 'old']], net: fresh }),
+    run('app_mp4', { url: '/media/app/menu-par.mp4', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/menu-par.mp4', 'old']], net: fresh }),
+    run('app_nav', { url: '/media/app/napitok-moloko.mp4', mode: 'navigate', cache: [], net: fresh }),
+    run('app_other', { url: '/media/app/poster.jpg', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/poster.jpg', 'old']], net: fresh }),
   ]);
   console.log(JSON.stringify(out));
 })();
@@ -637,6 +640,15 @@ class TestServiceWorkerStrategy(unittest.TestCase):
             self.assertTrue(r.get('passthrough'), '%s: /legal/ не перехватывается (fetch-обработчик выходит без respondWith)' % name)
             self.assertEqual((r['fetched'], r['waits']), (0, 0), '%s: SW сам не ходит в сеть и не пишет в кэш' % name)
         self.assertFalse(self.res['nav_fresh'].get('passthrough'), 'обычные страницы SW по-прежнему перехватывает')
+
+    def test_app_media_not_intercepted(self):
+        # /media/app/ (ролики мобильного приложения, 31.10.2026) — мимо SW целиком, не только *.mp4: Range через SW ломает iPhone
+        self.need()
+        for name in ('app_mp4', 'app_nav', 'app_other'):
+            r = self.res[name]
+            self.assertTrue(r.get('passthrough'), '%s: /media/app/ не перехватывается (fetch-обработчик выходит без respondWith)' % name)
+            self.assertEqual((r['fetched'], r['waits']), (0, 0), '%s: SW сам не ходит в сеть и не пишет в кэш' % name)
+        self.assertFalse(self.res['image_swr'].get('passthrough'), 'картинки вне /media/app/ SW по-прежнему перехватывает')
 
 
 if __name__ == '__main__':

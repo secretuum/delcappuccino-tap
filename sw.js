@@ -15,6 +15,8 @@
  *   чужие домены (gtag, 2gis, wa.me, карты) и не-GET — мимо service worker
  *   /legal/* (оферта, политика, контакты мобильного приложения) — мимо service worker: не кэшируются и не
  *                                        перехватываются, браузер всегда берёт их из сети (страницы вне сайта, noindex)
+ *   /media/app/* (ролики мобильного приложения по прямым адресам, 31.10.2026) — мимо service worker: Range-запросы
+ *                                        видео через SW ломают воспроизведение на iPhone; на страницах сайта их нет
  *
  * Кэши: 'dc-shell-<VERSION>' — оболочка (HTML, cards.json, manifest), 'dc-rt-vN' — картинки и шрифты.
  * VERSION — хэш index.html, его ставит tools/sw_version.py (запускать после правки index.html; тест
@@ -110,6 +112,7 @@ self.addEventListener('fetch', function (e) {
   if (url.origin !== self.location.origin) return;
   if (/\.(mp4|webm|m4v)$/.test(url.pathname) || req.headers.get('range')) return;   // видео и Range-запросы — браузеру
   if (url.pathname.indexOf('/legal/') === 0) return;                               // юр. страницы приложения — всегда из сети
+  if (url.pathname.indexOf('/media/app/') === 0) return;                           // ролики приложения — браузеру напрямую (Range, iPhone)
 
   var key = cacheKey(req, url);
   if (req.mode === 'navigate' || isShell(url)) {                                   // страницы, HTML, cards.json, manifest
