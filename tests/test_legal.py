@@ -13,7 +13,7 @@ sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
 
 LEGAL = os.path.join(ROOT, 'legal')
-PAGES = ['offer.html', 'privacy.html', 'contacts.html']
+PAGES = ['%s%s.html' % (d, ext) for d in ('offer', 'privacy', 'contacts') for ext in ('', '.kk', '.en')]   # русская + kk/en (31.10)
 FILES = PAGES + ['style.css']
 SKIP_DIRS = {'legal', 'tests', 'tools', 'docs', 'node_modules', '__pycache__'}   # не страницы сайта
 SKIP_FILES = {'sw.js'}   # service worker сам называет /legal/ — чтобы их пропускать (проверка ниже)
@@ -82,11 +82,12 @@ class TestLegalLinks(unittest.TestCase):
             m = re.search(r'<span class="f-legal">(.*?)</span>', foot, re.S)
             self.assertIsNotNone(m, '%s: в подвале нет блока f-legal' % p)
             links = re.findall(r'<a href="([^"]*)" onclick="([^"]*)">([^<]*)</a>', m.group(1))
-            self.assertEqual([h for h, _, _ in links], ['/legal/%s.html' % d for d in DOCS], p)
+            ext = {'index.html': '', 'kk/index.html': '.kk', 'en/index.html': '.en'}[p]   # подвал /kk/ и /en/ — на свою языковую версию
+            self.assertEqual([h for h, _, _ in links], ['/legal/%s%s.html' % (d, ext) for d in DOCS], p)
             self.assertEqual([o for _, o, _ in links], ["track('legal_open',{doc:'%s'})" % d for d in DOCS], p)
             self.assertEqual([t for _, _, t in links], DOC_TITLES[p], '%s: названия на языке страницы' % p)
             # «Уголок потребителя» — первой ссылкой того же ряда (владелец 31.10: не кнопкой, а как документы)
-            self.assertRegex(m.group(1), r'^<a class="f-ugolok" href="/ugolok/" onclick="track\(\'cta_ugolok\'\)">[^<]+</a> <a href="/legal/offer\.html"', p)
+            self.assertRegex(m.group(1), r'^<a class="f-ugolok" href="/ugolok/" onclick="track\(\'cta_ugolok\'\)">[^<]+</a> <a href="/legal/offer%s\.html"' % re.escape(ext), p)
             self.assertEqual(foot.count('class="f-ugolok"'), 1, p)
             # ссылки только в подвале — ровно по одной на документ на всей странице
             self.assertEqual(len(re.findall(LEGAL_REF, html)), 3, '%s: ссылки на legal/ — только три в подвале' % p)
