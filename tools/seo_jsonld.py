@@ -739,7 +739,7 @@ def css_rules(css):
 def keep_rule(rule):
     pre, body = rule.split('{', 1)
     pre = pre.strip()
-    if pre.startswith('@media'):
+    if pre.startswith(('@media', '@supports')):     # @supports — стекло плавающей кнопки «меню»
         inner = [r for r in (keep_rule(x) for x in css_rules(body[:-1])) if r]
         return pre + '{\n' + '\n'.join(inner) + '\n}' if inner else None
     if pre.startswith('@keyframes'):
@@ -990,7 +990,7 @@ def lang_page(html, lang):
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
-<a class="fab-menu" href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})">%(nav_menu)s</a>
+<a class="fab-menu" href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>%(nav_menu)s</a>
 %(ga_loader)s
 </body>
 </html>
@@ -1197,6 +1197,8 @@ ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="tru
          '<symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="%s"/></symbol></svg>') % (_LUCIDE, _LUCIDE, IG_D, YT_D, TH_D)
 # значки карточек «Место для ваших планов» — свой набор (tools/feature_icons.py), в тот же спрайт
 ICONS = ICONS.replace('</svg>', feature_icons.symbols() + '</svg>')
+# «три полоски» для плавающей кнопки «меню» на телефоне (свой, три линии)
+ICONS = ICONS.replace('</svg>', '<symbol id="i-menu"%s><path d="M4 7h16M4 12h16M4 17h16"/></symbol></svg>' % _LUCIDE)
 
 
 def icon_link(cls, href, label, onclick, icon, blank=True):

@@ -486,6 +486,30 @@ class TestPage(unittest.TestCase):
                 self.assertIn(need, mob, l)
         self.assertEqual(root_vars(self.pages['ru'])['--fs-heading'], '28px')
 
+    def test_fab_menu_glass_pill(self):
+        """плавающая «меню» на телефоне (владелец 1.11): серая прозрачная таблетка — стекло с blur, тонкая рамка, лёгкая тень,
+        высота 44 (≤ 48, касание ≥ 44), длиннее (≥ 160), тёмный текст; без blur — фон плотнее; по центру внизу с safe-area"""
+        for l, html in self.pages.items():
+            css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
+            fab = re.search(r'(?:^|\})\.fab-menu\{([^}]*)\}', css).group(1)
+            h = int(re.search(r'(?:^|;)height:(\d+)px', fab).group(1))
+            self.assertTrue(44 <= h <= 48, '%s: высота %d' % (l, h))
+            self.assertGreaterEqual(int(re.search(r'min-width:(\d+)px', fab).group(1)), 160)
+            for need in ('left:50%', 'transform:translateX(-50%)', 'env(safe-area-inset-bottom)', 'border:1px solid var(--c-border)',
+                         'box-shadow:var(--shadow-floating)', 'color:var(--c-text)', 'font-weight:700', 'font-size:16px'):
+                self.assertIn(need, fab, l)
+            dense = float(re.search(r'background:rgba\(245,245,243,([\d.]+)\)', fab).group(1))
+            glass = re.search(r'@supports \(\(-webkit-backdrop-filter:blur\(1px\)\) or \(backdrop-filter:blur\(1px\)\)\)\{\.fab-menu\{([^}]*)\}\}', css)
+            self.assertIsNotNone(glass, '%s: стекло — только где есть blur' % l)
+            alpha = float(re.search(r'background:rgba\(245,245,243,([\d.]+)\)', glass.group(1)).group(1))
+            self.assertLess(alpha, 1)
+            self.assertLess(alpha, dense, 'без blur фон плотнее')
+            self.assertIn('backdrop-filter:blur(12px) saturate(1.4)', glass.group(1))
+            self.assertIn('-webkit-backdrop-filter:blur(12px) saturate(1.4)', glass.group(1))
+            self.assertNotIn('var(--c-accent)', fab, 'не тёмно-зелёная')
+            self.assertRegex(html, r'class="fab-menu"[^>]*onclick="track\(\'cta_menu\',\{src:\'hbar_m\'\}\)[^"]*"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>', l)
+            self.assertIn('<symbol id="i-menu"', html, l)
+
     def test_location_names_without_numbers(self):
         for l, html in self.pages.items():
             names = re.findall(r'<div class="loc-card">\n      <small>([^<]+)</small>', html)
