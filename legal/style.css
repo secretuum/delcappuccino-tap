@@ -28,11 +28,19 @@ body {
   font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
 }
 
-main, .top {
+main, .top, .langs {
   max-width: 760px;
   margin: 0 auto;
   padding: 0 16px;
 }
+
+/* Переключатель языка — справа над навигацией, неброско */
+.langs { display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px; font-size: 0.9rem; }
+.langs a { color: var(--muted); text-decoration: none; }
+.langs a[aria-current="page"] { color: var(--text); font-weight: 700; }
+
+/* «Перевод для удобства…» на казахской и английской версиях */
+.notice { color: var(--muted); font-size: 0.93rem; border-left: 3px solid var(--line); padding-left: 10px; }
 
 
 .top {
