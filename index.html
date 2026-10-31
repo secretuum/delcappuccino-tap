@@ -511,6 +511,10 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
   .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);box-shadow:var(--shadow-floating)}
   .mm-tab{padding:0 var(--s-12)}
+  /* лупа на узком экране всегда видна: прилипает к правому краю ряда вкладок, вкладки уходят под неё (градиент слева,
+     справа — белая полоса на ширину отступа ряда) */
+  .mm-search-btn{position:sticky;right:0;z-index:1;box-shadow:var(--s-12) 0 0 var(--c-bg)}
+  .mm-search-btn::before{content:'';position:absolute;top:0;bottom:0;right:100%;width:28px;background:linear-gradient(to right,rgba(255,255,255,0),var(--c-bg));pointer-events:none}
   .mm-sec{margin-bottom:40px}
   .mm-sec h4{font-size:20px}
 }

@@ -1050,6 +1050,9 @@ def lang_page(html, lang):
            social=social_row())
 
 
+KK_REVIEW_UI = ('search', 'search_none')       # новые строки MENU_UI.kk — тоже на вычитку
+
+
 def kk_review(html):
     """menu/kk_review.md — все казахские строки из pages_i18n.json со своим местом на сайте, для вычитки носителем"""
     where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
@@ -1068,6 +1071,10 @@ def kk_review(html):
         else:
             rows.append('| `%s` | %s | %s |' % ('.'.join(path), where.get(path[0], path[0]), str(x).replace('|', '\\|')))
     walk(i18n()['kk'], [])
+    # строки интерфейса меню главной, добавленные при редизайне (поиск по меню, 1.11) — живут в MENU_UI.kk в index.html
+    ui_kk = ui_dict(html, 'kk')
+    for key in KK_REVIEW_UI:
+        rows.append('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (key, ui_kk[key].replace('|', '\\|')))
     fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
     for key, lab in facts()['labels'].items():
         rows.append('| `branch_facts.labels.%s` | %s | %s |' % (key, fw['labels'], lab['kk']))

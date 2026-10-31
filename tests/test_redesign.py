@@ -702,6 +702,39 @@ console.log(JSON.stringify(out));
         self.assertEqual(ui, {'ru': ('Поиск по меню', 'Ничего не нашлось'), 'kk': ('Мәзірден іздеу', 'Ештеңе табылмады'),
                               'en': ('Search the menu', 'Nothing found')})
 
+    def test_search_button_visible_on_phone(self):
+        """на 360–390 px ряд вкладок шире экрана (расчёт: Montserrat 600 14 px ≈ 0,62 em на букву, поля 12+12, зазор 6,
+        лупа 38) — лупа прилипает к правому краю ряда (sticky right:0) и видна всегда; на компьютере как была"""
+        html = self.pages['ru']
+        css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
+        mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S))     # все блоки для телефона
+        btn = re.search(r'\.mm-search-btn\{([^}]*)\}', mob)
+        self.assertIsNotNone(btn, 'правило лупы для телефона')
+        self.assertIn('position:sticky;right:0', btn.group(1))
+        self.assertIn('z-index:1', btn.group(1))
+        self.assertIn('.mm-search-btn::before{', mob, 'градиент слева — вкладки уходят под лупу')
+        base = re.search(r'(?:^|\})\.mm-search-btn\{([^}]*)\}', css).group(1)
+        self.assertNotIn('sticky', base, 'на компьютере — как было')
+        ui = {l: re.search(r"  %s:\{to_togo.*?tab_frozen:'([^']+)'.*?tab_kitchen:'([^']+)', tab_bar:'([^']+)', tab_dessert:'([^']+)'" % l, html, re.S).groups()
+              for l in ('ru', 'kk', 'en')}
+        for l, (frozen, kitchen, bar, dessert) in ui.items():
+            tabs = [kitchen, bar, dessert, frozen]
+            row = sum(len(x) * 14 * .62 + 24 for x in tabs) + 6 * len(tabs) + 38 + 2 * 12
+            for vw in (360, 390):
+                # без sticky лупа уехала бы за край (её левый край = row − 38 − 12 > vw); со sticky её правый край — vw − 12
+                if l in ('ru', 'kk'):
+                    self.assertGreater(row, vw, '%s: на %d px ряд шире экрана — нужна липкая лупа' % (l, vw))
+                right = min(row, vw) - 12
+                self.assertLessEqual(right, vw - 12)
+                self.assertGreaterEqual(right - 38, 0, '%s: лупа целиком в экране на %d px' % (l, vw))
+        # лупа — последней в ряду вкладок (после «Полуфабрикаты»)
+        self.assertIn("`<button type=\"button\" class=\"mm-search-btn\"", html)
+
+    def test_kk_review_has_search_strings(self):
+        review = read('menu/kk_review.md')
+        for k, v in (('search', 'Мәзірден іздеу'), ('search_none', 'Ештеңе табылмады')):
+            self.assertIn('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (k, v), review)
+
     def test_menu_overlay_css(self):
         """этап 2: разделы не капсом и без разрядки, строки без подчёркиваний, NEW пилюлей olive, легенда пилюлями,
         карточка блюда на белом, крестик круглый, цена пилюлей forest; крема и старых шрифтов нет"""

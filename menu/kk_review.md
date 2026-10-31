@@ -130,6 +130,8 @@
 | `menu_page.home` | текстовое меню /kk/menyu | Басты бет |
 | `menu_page.faq` | текстовое меню /kk/menyu | Жиі қойылатын сұрақтар |
 | `menu_page.order` | текстовое меню /kk/menyu | Қосымшада тапсырыс беру |
+| `MENU_UI.kk.search` | поиск в меню главной (ҚАЗ) | Мәзірден іздеу |
+| `MENU_UI.kk.search_none` | поиск в меню главной (ҚАЗ) | Ештеңе табылмады |
 | `branch_facts.labels.takeaway` | метка удобства на карточке точки /kk/ | алып кету |
 | `branch_facts.labels.kids` | метка удобства на карточке точки /kk/ | балалар аймағы |
 | `branch_facts.labels.vip_rooms` | метка удобства на карточке точки /kk/ | VIP-залдар |
