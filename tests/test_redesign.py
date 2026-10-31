@@ -345,30 +345,28 @@ class TestPage(unittest.TestCase):
         self.assertIn('position:absolute', cap)
         self.assertIn('bottom:0', cap)
         self.assertIn('linear-gradient(to top', cap, 'затемнение для читаемости')
-        self.assertIn('border-radius:var(--r-pill)', rule('.promo-a'), 'кнопка — пилюлей')
-        # 1.11.: наверху строку перекрывали зубцы пламени — теперь тонкая полоса у низа окна, под кнопкой, над подписью по z
-        tick = rule('.grill-ticker')
-        tb, th = (float(re.search(r'%s:([\d.]+)%%' % k, tick).group(1)) for k in ('bottom', 'height'))
-        pb = float(re.search(r'padding:[\d.]+% [\d.]+% ([\d.]+)%', cap).group(1))       # % ширины окна
-        win_ratio = 485 / 730                                                           # высота / ширина окна (flame_frame WINDOW)
-        self.assertLess((tb + th) * win_ratio, pb, 'подпись и кнопка не налезают на бегущую строку')
-        self.assertIn('z-index:3', tick)
-        # внешний край пламени — по ячейке сетки: габарит OUTER из tools/flame_frame.py
+        # 1.11 (владелец): «смотреть в меню» — простая светлая ссылка, без плашки; подпись — по центру у низа окна
+        link = rule('.promo-a')
+        self.assertNotRegex(link, r'background|border-radius', 'ссылка без плашки-пилюли')
+        self.assertIn('text-decoration:underline', link)
+        self.assertIn('color:#FFFFFF', link)
+        self.assertIn('text-align:center', cap)
+        self.assertIn('align-items:center', cap)
+        self.assertIn('bottom:0', cap)
+        # пламя целиком (с языками) — во весь бокс SVG 910×620, рамка = плитка: края, верх и низ — как у плитки подписки
         sys.path.insert(0, os.path.join(ROOT, 'tools'))
         import flame_frame as ff
         xs = [p[0] for seg in ff.OUTER for p in seg[1:]]
         ys = [p[1] for seg in ff.OUTER for p in seg[1:]]
-        bw = max(xs) - min(xs)
-        fr = rule('.grill-promo .grill-frame')
-        got = {k: float(re.search(r'%s:(-?[\d.]+)%%' % k, fr).group(1)) for k in ('left', 'width', 'bottom')}
-        self.assertIn('position:absolute', fr)
-        self.assertAlmostEqual(got['width'], ff.W / bw * 100, places=1)
-        self.assertAlmostEqual(got['left'], -min(xs) / bw * 100, places=2)
-        self.assertAlmostEqual(got['bottom'], -(ff.H - max(ys)) / ff.H * (ff.W / bw) * 100, places=2)
+        self.assertEqual((min(xs), max(xs), min(ys), max(ys)), (0, ff.W, 0, ff.H), 'габарит пламени = бокс')
+        self.assertNotIn('.grill-promo .grill-frame', css, 'без сдвигов и растяжек рамки — она сама по плитке')
+        self.assertIn('position:relative;aspect-ratio:910/620', rule('.grill-frame'))
+        # кайма прежней толщины: окно отстоит от края пламени на 30 ед. с боков и снизу (как до правки)
+        wx = [p[0] for p in ff.flatten(ff.WINDOW)]
+        wy = [p[1] for p in ff.flatten(ff.WINDOW)]
+        self.assertEqual((round(min(wx)), round(ff.W - max(wx)), round(ff.H - max(wy))), (30, 30, 30))
         for cell in (540, 358):                                                         # 2000 px и 390 px
-            frame_w = cell * got['width'] / 100
-            self.assertAlmostEqual(frame_w * bw / ff.W, cell, places=0)                 # пламя — во всю ячейку
-            self.assertAlmostEqual(cell * got['left'] / 100 + frame_w * min(xs) / ff.W, 0, places=0)   # left — % ширины ячейки
+            self.assertEqual(round(cell * 620 / 910), round(cell * ff.H / ff.W), 'пламя = плитка подписки по высоте')
         mid = re.search(r'@media\(max-width:900px\)\{(.*?)\}\}', css, re.S).group(1)
         self.assertIn('.promo-grid{grid-template-columns:1fr', mid, 'на телефоне и планшете — одна под другой, как hero')
 
@@ -382,7 +380,15 @@ class TestPage(unittest.TestCase):
         for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990 ₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
                      '<a class="promo-a" href="#"', 'смотреть в меню'):
             self.assertIn(need, cap.group(1))
-        self.assertLess(win.index('<div class="grill-ticker"'), win.index('<p class="grill-cap">'))
+        self.assertNotIn('grill-ticker', win, 'бегущая строка — не в огне')
+        # строка — полосой под обеими плитками на всю ширину контейнера, только там, где есть «Курица гриль»
+        promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
+        self.assertRegex(promo, r'</div>\n    <div class="promo-run" onclick="openGrill\(\)"><div class="grill-ticker" aria-hidden="true">')
+        self.assertGreater(promo.index('class="promo-run"'), promo.index('<!-- /подписка -->'))
+        for l in ('kk', 'en'):
+            self.assertNotIn('grill-ticker', self.pages[l])
+        css = style(html)
+        self.assertIn('@media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}', css)
 
     def test_no_247_and_numbers_in_cards_and_modal(self):
         for l, html in self.pages.items():

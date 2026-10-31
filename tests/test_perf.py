@@ -406,9 +406,11 @@ class TestGrillPromo(unittest.TestCase):
         self.assertLess(frame.index('<svg class="grill-fire"'), frame.index('<div class="grill-win">'),
                         'svg пламени должен идти в DOM раньше окна с видео')
         win = inner('<div class="grill-win">')
-        # редизайн 31.10 (владелец): название, цена, адреса и кнопка «смотреть в меню» — тоже внутри окна, поверх видео
-        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<div class="grill-ticker"', '<p class="grill-cap">'):
+        # редизайн 31.10 (владелец): название, цена, адреса и ссылка «смотреть в меню» — тоже внутри окна, поверх видео;
+        # с 1.11 бегущая строка — не в огне, а полосой под плитками акций (её перекрывали зубцы пламени)
+        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<p class="grill-cap">'):
             self.assertIn(part, win, part + ' должен быть внутри окна .grill-win')
+        self.assertNotIn('grill-ticker', win)
         self.assertNotIn('z-index:1', re.search(r'\n\.grill-fire\{([^}]*)\}', self.html).group(1))
         glow = re.search(r'\n\.grill-glow\{([^}]*)\}', self.html).group(1)
         self.assertIn('transparent', glow, 'центр виньетки должен быть прозрачным')
