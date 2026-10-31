@@ -1,6 +1,11 @@
 {
   "_": "Тексты казахской и английской страниц (/kk/, /en/, /kk/menyu, /en/menu) и русского текстового меню /menyu. Собирает tools/seo_jsonld.py. Факты — только с русской главной и из tools/branch_facts.json; подстановки: {часы} {адреса} {точек} {кофеен} {точек_n} {часы_togo} — из BRANCHES, {детские} {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы} {работа} {животные}) — из tools/branch_facts.json. Вопросы FAQ — те же, что в tools/faq.json, в том же порядке. Новые казахские строки уходят на вычитку в menu/kk_review.md.",
   "ru": {
+    "sub": {
+      "title": "кофейная подписка",
+      "soon": "скоро, в приложении",
+      "now": "в приложении:"
+    },
     "menu_page": {
       "title": "Меню и цены — Del Cappuccino, кофейни 24/7 в Алматы",
       "description": "Меню Del Cappuccino с ценами в тенге: кухня, бар, десерты, полуфабрикаты и bakery to go. Кофейни 24/7 в Алматы, завтраки весь день.",
@@ -55,7 +60,6 @@
       "stat_cafes": "{кофеен} кофехана",
       "stat_points": "филиал",
       "stat_breakfast": "таңғы ас",
-      "features_tag": "кофеханадан да көп",
       "features_h2": "<span>Жоспарларыңызға</span><br>арналған орын.",
       "features": [
         ["Тәулік бойы", "{кофеен} кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын {часы_togo}."],
@@ -71,7 +75,6 @@
       "call": "Қоңырау шалу",
       "route": "Бағыт",
       "card_menu": "Мәзір",
-      "faq_tag": "сұрақтар мен жауаптар",
       "faq_h2": "Жиі қойылатын <span>сұрақтар</span>.",
       "faq_p": "Бағалары бар толық мәзір мәтінмен — <a href=\"/kk/menyu\">бөлек бетте</a>.",
       "contact_h2": "<span>Кофеге</span><br>келіңіз.",
@@ -80,7 +83,14 @@
       "footer_ugolok": "Тұтынушы бұрышы",
       "footer_offer": "Жария оферта",
       "footer_privacy": "Құпиялылық саясаты",
-      "footer_contacts": "Байланыс және деректемелер"
+      "footer_contacts": "Байланыс және деректемелер",
+      "pill_b": "{точек}",
+      "pill_s": "кофеханалар 24/7"
+    },
+    "sub": {
+      "title": "кофе жазылымы",
+      "soon": "жақында, қосымшада",
+      "now": "қосымшада:"
     },
     "faq": [
       {"q": "Del Cappuccino кофеханалары қашан жұмыс істейді?", "a": "{часы}"},
@@ -156,7 +166,6 @@
       "stat_cafes": "{кофеен} cafés",
       "stat_points": "locations",
       "stat_breakfast": "breakfast",
-      "features_tag": "more than a café",
       "features_h2": "A place for<br><span>your plans</span>.",
       "features": [
         ["Around the clock", "{кофеен} cafés are open 24/7 — drop in whenever suits you. Bakery to go on Zhandosov St is open daily, {часы_togo}."],
@@ -172,7 +181,6 @@
       "call": "Call",
       "route": "Directions",
       "card_menu": "Menu",
-      "faq_tag": "questions &amp; answers",
       "faq_h2": "Frequently asked <span>questions</span>.",
       "faq_p": "The full menu with prices as text is <a href=\"/en/menu\">on a separate page</a>.",
       "contact_h2": "Come by<br>for <span>coffee</span>.",
@@ -181,7 +189,14 @@
       "footer_ugolok": "Consumer corner",
       "footer_offer": "Public offer",
       "footer_privacy": "Privacy policy",
-      "footer_contacts": "Contacts &amp; legal details"
+      "footer_contacts": "Contacts &amp; legal details",
+      "pill_b": "{точек}",
+      "pill_s": "cafés 24/7"
+    },
+    "sub": {
+      "title": "coffee subscription",
+      "soon": "coming soon, in the app",
+      "now": "in the app:"
     },
     "faq": [
       {"q": "When are Del Cappuccino cafés open?", "a": "{часы}"},

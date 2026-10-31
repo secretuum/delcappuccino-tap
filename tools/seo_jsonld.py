@@ -21,6 +21,11 @@
   подставляются из BRANCHES; {детские}, {намазхана} и ответы «по точкам» ({доставка} {парковка} {wifi} {бронь} {залы}
   {работа} {животные}) — из tools/branch_facts.json (факты владельца 23.10.2026); карточка «Детская зона» на главной
   сверяется с ними. Допустимый HTML в ответах: <a href>, <ul>, <li>.
+- Главная после редизайна (31.10.2026, по приложению): в блоке «акция» — карточка «кофейная подписка — скоро, в приложении»
+  с анимацией кофе (Lottie, плеер грузится лениво; ссылки на сторы — константа APP_LINKS, пока пусто), подписи —
+  tools/pages_i18n.json (sub); та же карточка на /kk/ и /en/. /kk/ и /en/ собираются по тому же макету, что главная:
+  шапка с пилюлей точек и кругом языка, видеозона с логотипом, заставка; стили — правила <style> главной (токены v5,
+  шрифт — --font-display и --font-body её :root).
 - /menyu (menyu/index.html): всё меню текстом — кофейни (вкладки MENU_TABS) и Bakery to go (вкладки режима togo),
   разделы, объёмы, цены ₸, «только: …», старая цена зачёркнута. Путь не /menu/: там папка данных карточек menu/.
 - /llms.txt: короткая справка для ИИ (ru + en) — точки, часы, ссылки; английские названия — из словаря MENU_TR.en.
@@ -332,14 +337,16 @@ def faq(html, lang='ru'):
 
 
 def faq_block(items, head=None):
-    """раздел «Частые вопросы»; head — (метка, заголовок, строка со ссылкой на меню) для /kk/ и /en/"""
-    tag, h2, p = head or ('вопросы и ответы', 'Частые <span>вопросы</span>.',
-                          'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
+    """раздел «Частые вопросы» (правки владельца 31.10): по умолчанию свёрнут — видна плашка-заголовок по центру; по нажатию
+    раскрывается список, каждый вопрос — свой <details>. Без JS, тексты в HTML (тот же текст — FAQPage в JSON-LD).
+    Ссылка на меню текстом — под плашкой, видна и в свёрнутом виде. head — (заголовок, строка со ссылкой) для /kk/ и /en/"""
+    h2, p = head or ('Частые <span>вопросы</span>.', 'Всё меню с ценами текстом — <a href="/menyu">на отдельной странице</a>.')
     rows = '\n'.join('      <details ontoggle="if(this.open)track(\'faq_open\',{q:%d})"><summary>%s</summary><div class="faq-a">%s</div></details>'
                      % (i + 1, H.escape(q, quote=False), a) for i, (q, a) in enumerate(items))
-    return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n    <div class="faq-head">\n'
-            '      <div><p class="tag">%s</p><h2>%s</h2></div>\n      <p>%s</p>\n    </div>\n' % (tag, h2, p) +
-            '    <div class="faq-list">\n' + rows + '\n    </div>\n  </div>\n</section>\n' + ('' if head else '<!-- /faq -->\n'))
+    return (('' if head else FAQ_MARK + '\n') + '<section class="faq" id="faq">\n  <div class="shell">\n'
+            '    <details class="faq-box" ontoggle="if(this.open)track(\'faq_list\')">\n      <summary class="faq-sum"><h2>%s</h2></summary>\n'
+            '    <div class="faq-list">\n' % h2 + rows + '\n    </div>\n    </details>\n    <p class="faq-more">%s</p>\n  </div>\n</section>\n' % p +
+            ('' if head else '<!-- /faq -->\n'))
 
 
 def ui_dict(html, lang):
@@ -536,7 +543,7 @@ def menu_page(html, lang='ru'):
     c = lang_ctx(html, lang)
     ui, ui0, marks, bs, mp = c['ui'], ui_ru(html), mark_names(html, c if lang != 'ru' else None), branches(html), c['d']['menu_page']
     by_num = {re.match(r'\d+', b['n']).group(0): b for b in bs}
-    fonts = '\n'.join(l.replace('url(assets/', 'url(/assets/') for l in re.findall(r"@font-face\{font-family:'Golos Text'[^\n]*", html))
+    fonts = font_faces(html, ('body',))       # шрифт текста главной (--font-body); вид страницы меню — этап 2 редизайна
     allergy = re.sub(r'\s*<br>\s*', ' ', ui['allergy']).rstrip('.') + '.'
     tt = lambda s: T(c, s)
     home = '/' if lang == 'ru' else '/%s/' % lang
@@ -609,9 +616,9 @@ def menu_page(html, lang='ru'):
 %(analytics)s<!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 %(fonts)s
-:root{--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
+:root{--font-body:%(font_body)s;--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--cream);color:var(--ink);font:15px/1.5 'Golos Text',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:var(--cream);color:var(--ink);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
 header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
 a{color:var(--forest);font-weight:600}
@@ -645,6 +652,7 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 </body>
 </html>
 ''' % {'lang': lang, 'url': MENU[lang], 'hreflang': hreflang(MENU), 'locale': LOCALE[lang], 'fonts': fonts, 'toc': toc,
+       'font_body': font_var(html, 'body'),
        'body': '\n'.join(x for x in body if x), 'order': ORDER_URL, 'home': home, 'menu_link': menu_link,
        'title': e(mp['title']), 'description': H.escape(mp['description']), 'og_title': H.escape(mp['og_title']),
        'og_description': H.escape(mp['og_description']), 'back': e(mp['back']), 'photo_menu': e(mp['photo_menu']),
@@ -654,11 +662,16 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
        'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID}
 
 
-# селекторы главной, которые нужны облегчённым /kk/ и /en/: шапка, hero, «О нас», «Формат», точки, вопросы, контакты, подвал
-CSS_KEEP = re.compile(r'^(?::root|\*|html|body|a|h1|header|nav|footer|\.(?:shell|hbar|hbar-m|logo-d|logo-m|btn|tag|lead|actions|'
-                      r'halal-badge|hero|hero-photo|hero-badge|story|story-grid|story-photo|stats|mini-stats|features|f-head|f-grid|'
-                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-head|faq-list|faq-a|contact|contact-actions|'
-                      r'f-row|lang-sw|hide-mobile))(?![\w-])')
+# селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
+# точки (кнопки-значки), вопросы, контакты, подвал (без оверлея меню, модалки, «Курицы гриль» и фото «Фирменный стиль»)
+CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
+                      r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
+                      r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-card|promo-media|promo-t|promo-s|promo-a|row-head|sub-card|sub-anim|'
+                      r'sub-anim-l|icons|ic|ib|pill|'
+                      r'story|story-grid|story-photo|stats|features|f-head|f-grid|'
+                      r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
+                      r'f-row|hide-mobile))(?![\w-])')
+CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out')     # анимации заставки
 
 
 def hreflang(urls):
@@ -726,13 +739,15 @@ def keep_rule(rule):
     if pre.startswith('@media'):
         inner = [r for r in (keep_rule(x) for x in css_rules(body[:-1])) if r]
         return pre + '{\n' + '\n'.join(inner) + '\n}' if inner else None
+    if pre.startswith('@keyframes'):
+        return rule if pre.split()[1] in CSS_KEYFRAMES else None
     if pre.startswith('@'):
         return None
     return rule if any(CSS_KEEP.match(s.strip()) for s in pre.split(',')) else None
 
 
 def css_subset(html):
-    """стили облегчённых страниц — правила из <style> главной (один источник вида), без меню, модалок и акций"""
+    """стили облегчённых страниц — правила из <style> главной (один источник вида: токены v5 в :root), без меню, модалок и акций"""
     css = re.sub(r'/\*.*?\*/', '', html[html.index('<style>') + 7:html.index('</style>')], flags=re.S)
     return '\n'.join(r for r in (keep_rule(x) for x in css_rules(css)) if r)
 
@@ -759,6 +774,38 @@ def lang_jsonld(html, lang, P, items):
     return dumps(data).replace('</', '<\\/')
 
 
+def font_faces(html, which=('display', 'body')):
+    """@font-face главной для семейств из переменных --font-display / --font-body её :root (пути — от корня сайта).
+    Шрифт меняется в одном месте — в :root главной; /kk/, /en/ и текстовые меню берут его оттуда."""
+    root = re.search(r':root\{(.*?)\}', html, re.S).group(1)
+    fams = [re.search(r"--font-%s:'([^']+)'" % w, root).group(1) for w in which]
+    faces = re.findall(r"@font-face\{font-family:'(?:%s)'[^\n]*" % '|'.join(re.escape(f) for f in fams), html)
+    if not faces:
+        sys.exit('seo_jsonld: в <style> главной нет @font-face для %s — шрифт из :root не подключён' % ', '.join(fams))
+    return '\n'.join(root_paths(l) for l in faces)
+
+
+def font_var(html, which):
+    """значение переменной --font-<which> из :root главной: «'Montserrat',system-ui,…»"""
+    return re.search(r'--font-%s:([^;]+);' % which, re.search(r':root\{(.*?)\}', html, re.S).group(1)).group(1).strip()
+
+
+def root_paths(s):
+    """assets/… и img/… главной → /assets/…, /img/… (страницы в подпапках)"""
+    return re.sub(r'(?<=["\s,(])(assets|img)/', r'/\1/', s)
+
+
+INTRO_RE = re.compile(r"<script>\(function\(\)\{try\{if\(matchMedia\('\(prefers-reduced-motion: reduce\)'\).*?</script>")
+
+
+def intro_js(html):
+    """скрипт заставки из <head> главной — тот же на /kk/ и /en/ (раз за сессию: общий ключ sessionStorage)"""
+    m = INTRO_RE.search(html.split('</head>')[0])
+    if not m:
+        sys.exit('seo_jsonld: в <head> главной нет скрипта заставки (intro-on)')
+    return m.group(0) + '\n'
+
+
 def lang_page(html, lang):
     """/kk/ и /en/ — облегчённая главная на своём языке: текст в HTML без JS, вид — стили главной; меню — ссылкой на главную"""
     c = lang_ctx(html, lang)
@@ -769,41 +816,39 @@ def lang_page(html, lang):
     e = lambda s: H.escape(s, quote=False)
     bs = branches(html)
     home, menu_link = '/%s/' % lang, '/' + MENU_HASH[lang]
-    fonts = '\n'.join(l.replace('url(assets/', 'url(/assets/') for l in re.findall(r"@font-face\{font-family:'(?:Golos Text|Comfortaa)'[^\n]*", html))
-    kk_fix = ('\n/* казахские буквы (ә, ғ, қ, ң, ө, ү, һ) есть в Golos (cyrillic-ext), в Comfortaa — нет: заголовки на Golos */\n'
-              "html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.loc-card h3,.f-grid b)"
-              "{font-family:'Golos Text',sans-serif;letter-spacing:-.01em}") if lang == 'kk' else ''
+    fonts = font_faces(html)        # казахские буквы — в cyrillic + cyrillic-ext обоих шрифтов (проверено), отдельный шрифт для kk не нужен
+    cur = {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[lang]
     sw = '\n'.join('      <a href="%s" lang="%s"%s>%s</a>' % ('/' if l == 'ru' else '/%s/' % l, l,
                                                     ' aria-current="page"' if l == lang else
                                                     ' hreflang="%s" onclick="track(\'lang_switch\',{lang:\'%s\'})"' % (l, l),
                                                     {'ru': 'РУС', 'kk': 'ҚАЗ', 'en': 'ENG'}[l]) for l in LANGS)
     logo_d = img_tag(html, r'<img class="logo-d"[^>]*>', 'Del Cappuccino')
-    logo_m = img_tag(html, r'<img class="logo-m"[^>]*>', 'Del Cappuccino')
-    hero_img = img_tag(html, r'(?<=<div class="hero-photo">\n      )<img[^>]*>', P['hero_alt'])
+    logo_art = root_paths(re.search(r'<div class="hero-zone">\n\s*(<div class="logo-art".*?</div>)\n', html).group(1))
+    intro = root_paths(re.search(r'<div class="intro" aria-hidden="true">.*?</div></div>', html).group(0))
+    preload = '\n'.join(root_paths(l) for l in re.findall(r'<link rel="preload" href="assets/fonts/[^>]*>', html))
     story_img = img_tag(html, r'(?<=<div class="story-photo">)<img[^>]*>', P['story_alt'])
     halal_img = img_tag(html, r'<img src="assets/halal-104\.webp"[^>]*>', P['halal_alt'])
     mono = '<img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC">'
 
     def card(b):
-        num = re.match(r'\d+', b['n']).group(0)
         need(c, [short(b), b['addr']] + ([b['note']] if b['note'] and b['note'] not in c['d']['branch_note'] else []))
         note = c['d']['branch_note'].get(b['note'], T(c, b['note'])) if b['note'] else ''
         wa = 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']),
                                            quote((c['d']['wa_togo'] if b['wa'] else c['d']['wa_book']) + T(c, b['addr']), safe="-_.!~*'()"))
         ev = lambda name: ' onclick="track(\'%s\',{branch:\'%s\'})"' % (name, js_attr(b['n']))
-        links = ['<a href="tel:%s"%s>%s</a>' % (b['phone'], ev('loc_call'), e(P['call'])),
-                 '<a href="%s" target="_blank" rel="noopener"%s>%s</a>' % (H.escape(b['route']), ev('loc_route'), e(P['route']))]
+        links = [icon_link('ib route', b['route'], P['route'], ev('loc_route'), 'pin'),
+                 icon_link('ib', 'tel:' + b['phone'], P['call'], ev('loc_call'), 'phone', blank=False),
+                 icon_link('ib wa', wa, 'WhatsApp', ev('loc_wa'), 'wa')]
         if b['menu']:
-            links.append('<a href="/%s-%s"%s>%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, ev('loc_menu'), e(P['card_menu'])))
-        links.append('<a class="wa" href="%s" target="_blank" rel="noopener"%s>WhatsApp</a>' % (H.escape(wa, quote=False).replace('"', '&quot;'), ev('loc_wa')))
-        return ('    <div class="loc-card">\n      <small>%s · %s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
+            links.append('<a class="pill" href="/%s-%s"%s>%s</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', lang, ev('loc_menu'), e(P['card_menu'])))
+        return ('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n      <p class="loc-meta"><b>%s</b>%s</p>\n'
                 '%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                % (num, e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
+                % (e(T(c, short(b))), e(T(c, b['addr'])), e(hours_card(c, b['hours'])), ' · ' + e(note) if note else '',
                    card_extra(html, b, lang), '\n        '.join(links)))
 
     stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b>all day</b><span>%s</span></div>'
              % (P['stat_cafes'], len(bs), P['stat_points'], P['stat_breakfast']))
-    faq_html = faq_block(items, (P['faq_tag'], P['faq_h2'], P['faq_p']))
+    faq_html = faq_block(items, (P['faq_h2'], P['faq_p']))
     insta = instagram(html)
     return '''<!DOCTYPE html>
 <html lang="%(lang)s">
@@ -815,6 +860,7 @@ def lang_page(html, lang):
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="%(url)s">
 %(hreflang)s
+%(preload)s
 <meta name="theme-color" content="#426349">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -824,61 +870,70 @@ def lang_page(html, lang):
 <meta property="og:description" content="%(description)s">
 <meta property="og:locale" content="%(locale)s">
 <meta property="og:image" content="%(site)sassets/photo_01.jpg">
-%(analytics)s<!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
+%(analytics)s%(intro_js)s
+<!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
 %(fonts)s
-%(css)s%(kk_fix)s
+%(css)s
 </style>
 <script type="application/ld+json">
 %(jsonld)s
 </script>
 </head>
 <body>
+
+%(intro)s
+%(icons)s
+
 <header>
   <div class="hbar">
-    <a href="%(home)s" aria-label="%(home_label)s" style="display:inline-flex;align-items:center">
+    <a class="brand" href="%(home)s" aria-label="%(home_label)s">
       %(logo_d)s
-      %(logo_m)s
     </a>
-    <nav>
+    <a class="pill-point" href="#locations" onclick="track('cta_route',{src:'pill'})"><b>%(pill_b)s</b><span> · %(pill_s)s</span><i aria-hidden="true">›</i></a>
+    <nav class="top-nav">
       <a href="%(menu_link)s" onclick="track('cta_menu',{src:'nav'})">%(nav_menu)s</a>
       <a href="#about">%(nav_about)s</a>
       <a href="#features">%(nav_features)s</a>
       <a href="#locations">%(nav_locations)s</a>
       <a href="#faq">%(nav_faq)s</a>
     </nav>
-    <div class="hbar-m">
-      <a href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})">%(nav_menu)s</a>
-    </div>
     <nav class="lang-sw" aria-label="%(lang_label)s">
+      <details class="lang-dd"><summary aria-label="%(lang_label)s">%(cur)s</summary><div class="lang-list">
 %(sw)s
+      </div></details>
     </nav>
   </div>
 </header>
 
-<main>
+<main id="top">
   <section class="hero shell">
-    <div>
+    <div class="hero-zone">
+      %(logo_art)s
+      <div class="hero-badge">
+        <b>24/7</b>
+        <div><span>%(badge_cafes)s</span><span>%(badge_days)s</span></div>
+      </div>
+    </div>
+    <div class="hero-text">
       <p class="tag">%(hero_tag)s</p>
       <h1>%(hero_h1)s</h1>
       <p class="lead">%(hero_lead)s</p>
       <div class="actions">
         <a class="btn olive" href="#locations" onclick="track('cta_book')">%(book)s</a>
-        <a class="btn ghost" href="%(menu_link)s" onclick="track('cta_menu')">%(menu)s</a>
         <a class="btn" href="%(order_url)s" target="_blank" rel="noopener" onclick="track('cta_order')">%(order)s</a>
+        <a class="btn ghost" href="%(menu_link)s" onclick="track('cta_menu')">%(menu)s</a>
       </div>
       <div class="halal-badge">
         %(halal_img)s
         <span>%(halal)s</span>
       </div>
     </div>
-    <div class="hero-photo">
-      %(hero_img)s
-      <div class="hero-badge">
-        <b>24/7</b>
-        <div><span>%(badge_cafes)s</span><span>%(badge_days)s</span></div>
-      </div>
-    </div>
+  </section>
+
+  <section class="promo shell">
+    <div class="promo-grid">
+%(sub)s    </div>
   </section>
 
   <section class="story shell" id="about">
@@ -897,7 +952,6 @@ def lang_page(html, lang):
   <section class="features" id="features">
     <div class="shell">
       <div class="f-head">
-        <p class="tag">%(features_tag)s</p>
         <h2>%(features_h2)s</h2>
       </div>
       <div class="f-grid">
@@ -906,10 +960,6 @@ def lang_page(html, lang):
     </div>
   </section>
 </main>
-
-<div class="mini-stats shell">
-  %(stats)s
-</div>
 
 <section class="locations" id="locations">
   <div class="shell">
@@ -942,19 +992,22 @@ def lang_page(html, lang):
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
+<a class="fab-menu" href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})">%(nav_menu)s</a>
 %(ga_loader)s
 </body>
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
-                               'about_h2', 'about_p', 'features_tag', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
+                               'about_h2', 'about_p', 'features_h2', 'loc_tag', 'loc_h2', 'loc_p', 'contact_h2',
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
-                               'nav_locations', 'nav_faq')},
+                               'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
            locale=LOCALE[lang], site=SITE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
-           kk_fix=kk_fix, jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
-           lang_label=H.escape(P['lang_label']), logo_d=logo_d, logo_m=logo_m, menu_link=menu_link, sw=sw,
-           order_url=ORDER_URL, halal_img=halal_img, hero_img=hero_img, story_img=story_img, stats=stats,
-           features='\n'.join('        <article><b>%02d</b><h3>%s</h3><p>%s</p></article>' % (i + 1, h, p) for i, (h, p) in enumerate(feats)),
+           jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
+           lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
+           preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
+           sub=sub_card(lang), icons=ICONS,
+           order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
+           features='\n'.join('        <article><h3>%s</h3><p>%s</p></article>' % (h, p) for h, p in feats),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
            insta_btn='\n'.join('    <a class="btn ghost" href="%s" target="_blank" rel="noopener" onclick="track(\'cta_instagram\')">@%s</a>'
                                 % (u, u.rstrip('/').rsplit('/', 1)[1]) for u in insta))
@@ -964,7 +1017,7 @@ def kk_review(html):
     """menu/kk_review.md — все казахские строки из pages_i18n.json со своим местом на сайте, для вычитки носителем"""
     where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
              'wa_book': 'текст сообщения WhatsApp из карточек кофеен /kk/', 'wa_togo': 'текст сообщения WhatsApp из карточки bakery to go /kk/',
-             'page': 'страница /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
+             'page': 'страница /kk/', 'sub': 'карточка подписки в блоке «акция» на /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
              }
     rows = []
 
@@ -1113,6 +1166,40 @@ def js_attr(s):
     return H.escape(js_str(s), quote=False).replace('"', '&quot;')
 
 
+# Значки кнопок карточки точки (правки владельца 31.10, вторая порция): метка на карте и трубка — Lucide 0.460.0 (ISC),
+# WhatsApp — Simple Icons 13.21.0 (CC0); один спрайт на страницу, кнопки ссылаются <use href="#i-…">. Лицензии — docs/LICENSES-media.md
+ICONS_MARK = '<!-- значки кнопок (SVG-спрайт: Lucide ISC, Simple Icons CC0) — собирает tools/seo_jsonld.py, руками не править -->'
+ICONS_RE = re.compile(re.escape(ICONS_MARK) + r'\n.*?<!-- /значки -->\n', re.S)
+_LUCIDE = ' viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'
+ICONS = ('<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">'
+         '<symbol id="i-pin"%s><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/>'
+         '<circle cx="12" cy="10" r="3"/></symbol>'
+         '<symbol id="i-phone"%s><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 '
+         '4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 '
+         '2.81.7A2 2 0 0 1 22 16.92z"/></symbol>'
+         '<symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 '
+         '1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 '
+         '0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 '
+         '1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 '
+         '9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 '
+         '11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 '
+         '11.821 0 00-3.48-8.413Z"/></symbol></svg>') % (_LUCIDE, _LUCIDE)
+
+
+def icon_link(cls, href, label, onclick, icon, blank=True):
+    """круглая кнопка-значок карточки точки: aria-label и title на языке страницы, значок — <use> из спрайта ICONS"""
+    a = lambda x: H.escape(x, quote=False).replace('"', '&quot;')
+    return ('<a class="%s" href="%s"%s%s aria-label="%s" title="%s"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-%s"/></svg></a>'
+            % (cls, a(href), ' target="_blank" rel="noopener"' if blank else '', onclick, a(label), a(label), icon))
+
+
+def with_icons(html):
+    m = ICONS_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: на главной нет маркеров спрайта значков «%s … <!-- /значки -->»' % ICONS_MARK[:40])
+    return html[:m.start()] + ICONS_MARK + '\n' + ICONS + '\n<!-- /значки -->\n' + html[m.end():]
+
+
 LOC_MARK = '<!-- Точки: из BRANCHES собирает tools/seo_jsonld.py — видны без JS поисковикам и ИИ, руками не править -->'
 LOC_RE = re.compile(re.escape(LOC_MARK) + r'\n.*?<!-- /точки -->\n', re.S)
 
@@ -1127,20 +1214,22 @@ def wa_link(html, b):
 
 
 def loc_cards(html):
-    """карточки точек — разметка один в один с бывшим renderLocations (класс, порядок ссылок, onclick-и для аналитики)"""
+    """карточки точек: название (без номера — номер нужен только данным), адрес, часы, удобства; кнопки-значки — маршрут
+    (главная, forest), звонок, WhatsApp; у bakery ещё текстовая пилюля «Меню»"""
     a = lambda s: H.escape(s, quote=False).replace('"', '&quot;')     # атрибут в "…": одинарные кавычки onclick оставляем как есть
     t = lambda s: H.escape(s, quote=False)
     out = []
     for b in branches(html):
         n = js_str(b['n'])
-        links = ['<a href="tel:%s" onclick="%s">Позвонить</a>' % (a(b['phone']), a("track('loc_call',{branch:'%s'})" % n)),
-                 '<a href="%s" target="_blank" rel="noopener" onclick="%s">Маршрут</a>' % (a(b['route']), a("track('loc_route',{branch:'%s'})" % n))]
+        ev = lambda name: ' onclick="%s"' % a("track('%s',{branch:'%s'})" % (name, n))
+        links = [icon_link('ib route', b['route'], 'Маршрут', ev('loc_route'), 'pin'),
+                 icon_link('ib', 'tel:' + b['phone'], 'Позвонить', ev('loc_call'), 'phone', blank=False),
+                 icon_link('ib wa', wa_link(html, b), 'WhatsApp', ev('loc_wa'), 'wa')]
         if b['menu']:
-            links.append('<a href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
-        links.append('<a class="wa" href="%s" target="_blank" rel="noopener" onclick="%s">WhatsApp</a>' % (a(wa_link(html, b)), a("track('loc_wa',{branch:'%s'})" % n)))
+            links.append('<a class="pill" href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
         out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
                    '      <p class="loc-meta"><b>%s</b>%s</p>\n%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
-                   % (t(b['n']), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),
+                   % (t(short(b)), t(b['addr']), t(b['hours']), ' · ' + t(b['note']) if b['note'] else '', card_extra(html, b, 'ru'),
                       '\n        '.join(links)))
     return LOC_MARK + '\n' + '\n'.join(out) + '\n<!-- /точки -->\n'
 
@@ -1152,6 +1241,57 @@ def with_loc(html):
     return html[:m.start()] + loc_cards(html) + html[m.end():]
 
 
+# ── Карточка подписки в блоке «акция» (редизайн, правки владельца 31.10.2026): анимация «кофе наливается в чашку» ──
+# Анимация — Lottie «Brewing coffee», автор CAROLINA SALAZAR, LottieFiles (Lottie Simple License, бесплатно, коммерция
+# разрешена): https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR; перекрашена под бренд tools/lottie_brand.py.
+# Плеер — lottie-web 5.12.2, сборка light (Airbnb, MIT), грузится лениво: после load и когда карточка на экране.
+# Без JS и при reduced-motion — статичный постер. Источники и лицензии — docs/LICENSES-media.md.
+# Подписи — tools/pages_i18n.json (раздел sub у ru/kk/en).
+
+# Мобильное приложение: ссылок на сторы пока нет (аккаунты ждут D-U-N-S, выпуск — примерно середина ноября 2026).
+# Появятся — вписать сюда (одна правка) и пересобрать: вместо «скоро, в приложении» встанут ссылки, событие app_store {store}.
+APP_LINKS = {'App Store': None, 'Google Play': None}
+COFFEE_ANIM = {'src': '/assets/brewing-coffee.2e74c5d9.json', 'poster': '/assets/brewing-coffee-poster.f762aef7.webp',
+               'player': '/assets/lottie_light.23cd2c01.js'}
+SUB_MARK = '<!-- Карточка подписки (анимация кофе) — собирает tools/seo_jsonld.py, руками не править -->'
+SUB_RE = re.compile(re.escape(SUB_MARK) + r'\n.*?<!-- /подписка -->\n', re.S)
+# загрузчик плеера: после load, по IntersectionObserver (вне экрана — пауза); reduced-motion, нет IO или ошибка — остаётся постер
+SUB_JS = ("<script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;"
+          "try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
+          "var anim=null,asked=false;function start(){new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;"
+          "if(anim){on?anim.play():anim.pause();return}if(!on||asked)return;asked=true;var s=document.createElement('script');"
+          "s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{anim=lottie.loadAnimation({container:"
+          "box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:true,path:box.getAttribute('data-src')});"
+          "anim.addEventListener('DOMLoaded',function(){box.classList.add('on')})}catch(e){}};document.head.appendChild(s)},"
+          "{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
+
+
+def sub_card(lang):
+    """карточка «кофейная подписка — скоро, в приложении» с анимацией кофе (постер без JS) и загрузчиком плеера"""
+    S = i18n()[lang]['sub']
+    e = lambda x: H.escape(x, quote=False)
+    links = [(n, u) for n, u in APP_LINKS.items() if u]
+    # карточка того же вида, что «Курица гриль» рядом: поле-картинка той же пропорции, ниже заголовок, строка, ссылка
+    line = ('<span class="promo-s">%s</span>' % e(S['soon']) if not links else
+            '<span class="promo-s">%s</span> <span class="promo-a">%s</span>' % (e(S['now']), ' · '.join(
+                '<a href="%s" target="_blank" rel="noopener" onclick="track(\'app_store\',{store:\'%s\'})">%s</a>' % (H.escape(u), js_str(n), e(n))
+                for n, u in links)))
+    return ('    <div class="promo-card sub-card">\n'
+            '      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License '
+            '(https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->\n'
+            '      <div class="promo-media"><div class="sub-anim" data-src="%s" data-player="%s"><img src="%s" width="256" height="256" loading="lazy" '
+            'decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div></div>\n'
+            '      <p><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
+            % (COFFEE_ANIM['src'], COFFEE_ANIM['player'], COFFEE_ANIM['poster'], e(S['title']), line, SUB_JS))
+
+
+def with_sub(html):
+    m = SUB_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: в блоке «акция» главной нет маркеров «%s … <!-- /подписка -->»' % SUB_MARK[:40])
+    return html[:m.start()] + SUB_MARK + '\n' + sub_card('ru') + '<!-- /подписка -->\n' + html[m.end():]
+
+
 def with_jsonld(html):
     new = block(html)
     m = BLOCK_RE.search(html)
@@ -1160,7 +1300,7 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_faq(html)))))
+    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_icons(with_sub(with_faq(html)))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
     for lang in LANGS:

@@ -11,6 +11,8 @@
 <link rel="alternate" hreflang="kk" href="https://tap.delcappuccino.kz/kk/">
 <link rel="alternate" hreflang="en" href="https://tap.delcappuccino.kz/en/">
 <link rel="alternate" hreflang="x-default" href="https://tap.delcappuccino.kz/">
+<link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -24,306 +26,311 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
+<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('dc_intro'))return;sessionStorage.setItem('dc_intro','1');var d=document.documentElement;d.classList.add('intro-on');setTimeout(function(){d.classList.remove('intro-on')},1500)}catch(e){}})();</script>
+
 <!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
-@font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-latin.ed9f328c.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic-ext.70cf502d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic.17d048ca.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-latin.9a69d0aa.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic.646d6acf.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-latin.7f7f79c5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-tenge.b368a258.woff2) format('woff2');unicode-range:U+20B8}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
 :root{
-  --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
-  --olive:#849E29; --sage:#738E5B; --moss:#B4B86C;
-  --ink:#241C15; --ink-2:#5C5245; --line:rgba(66,99,73,.18);
-  --surface:#FFFFFF; --r:14px;
-  --sale:#C2140F;
+  --font-display:'Geologica',system-ui,sans-serif;
+  --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
+  --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);
+  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;
+  --c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);
+  
+  --c-brand-cream:#FEF1E7;
+  --c-input-border:#8C7E6E;   
+  --r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;
+  --s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
+  --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
+  --h-button:56px; --h-touch:48px;
+  --shadow-floating:0 6px 24px rgba(49,73,47,.16);
+  
+  --forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);
+  --olive:var(--c-olive); --sage:#738E5B; --moss:#B4B86C;
+  --ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);
+  --surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  background:var(--cream);color:var(--ink);
-  font-family:'Golos Text',-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);font-size:var(--fs-body);line-height:1.5;-webkit-font-smoothing:antialiased}
+.disp{font-family:var(--font-display)}
 a{color:inherit}
-.shell{max-width:1160px;margin:0 auto;padding:0 28px}
-header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--cream) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.hbar{display:flex;align-items:center;gap:26px;padding:12px 28px}
-.logo-d{height:42px;width:auto;display:block;border-radius:10px}
-.logo-m{display:none;height:34px;width:auto;border-radius:0}
-nav{display:flex;gap:22px;margin-left:8px}
-nav a{font-size:13.5px;text-decoration:none;color:var(--ink-2);font-weight:500}
-nav a:hover{color:var(--forest)}
-.lang-sw{display:flex;gap:2px;margin-left:auto}
-.lang-sw a{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-2);text-decoration:none;padding:6px 7px}
-.lang-sw a:hover{color:var(--forest)}
-.lang-sw a[aria-current]{color:var(--forest);box-shadow:inset 0 -2px 0 var(--olive)}
-@media(max-width:680px){
-.lang-sw{margin-left:0;gap:0}
-.lang-sw a{display:inline-flex;align-items:center;min-height:40px;padding:0 5px;font-size:12px}
-.lang-sw a[aria-current]{display:none}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
+h2 span,h1 span{color:var(--c-accent)}
+.shell{max-width:1160px;margin:0 auto;padding:0 var(--s-24)}
+:focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
+.intro{display:none}
+.intro-on .intro{display:flex;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center;background:var(--c-accent);pointer-events:none;animation:intro-out .35s ease 1.1s both}
+.intro .logo-art{width:min(72vw,340px)}
+.intro-on .intro .logo-art-moped{animation:moped-in .8s cubic-bezier(.2,.75,.25,1) both}
+.intro-on .intro .logo-art-text{animation:fade-in .35s ease .55s both}
+@keyframes moped-in{from{transform:translateX(-110vw)}to{transform:none}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes intro-out{to{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){
+.intro{display:none!important}
 }
-@media(max-width:359px){
-.hbar .hbar-m a,.hbar .hbar-m button{padding:0 10px}
-.hbar .lang-sw a{padding:0 3px}
-}
-.hbar-m{display:none}
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--forest);color:var(--cream);
-  padding:11px 20px;border-radius:99px;text-decoration:none;
-  font-size:13.5px;font-weight:700;white-space:nowrap;border:0;cursor:pointer;
-  transition:transform .15s, background .15s;font-family:'Golos Text';
-}
-.btn:hover{background:var(--forest-dk);transform:translateY(-1px)}
-.btn.ghost{background:transparent;color:var(--forest);border:1.5px solid var(--forest)}
-.btn.ghost:hover{background:var(--forest);color:var(--cream)}
-.btn.olive{background:var(--olive);color:#1D2408}
-.btn.olive:hover{background:#6E8420}
-.halal-badge{display:flex;align-items:center;gap:12px;margin-top:22px}
-.halal-badge img{height:52px;width:52px;object-fit:contain;mix-blend-mode:multiply;flex:none}
-.halal-badge span{font-size:12px;color:var(--ink-2);line-height:1.55}
-.hero{padding:16px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:flex-start;position:relative}
-.tag{
-  font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--olive);
-  font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;
-}
-.tag::before{content:'';width:18px;height:2px;background:var(--olive);border-radius:2px}
-h1{font-family:Comfortaa;font-weight:700;font-size:54px;line-height:1.05;letter-spacing:-.02em;color:var(--forest-dk);margin-bottom:16px}
-h1 span{color:var(--olive)}
-.lead{font-size:16px;color:var(--ink-2);max-width:440px;line-height:1.65;margin-bottom:22px}
-.actions{display:flex;gap:12px;flex-wrap:wrap}
-.hero-photo{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 24px 60px -20px rgba(49,73,47,.45)}
-.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.hero-badge{
-  position:absolute;left:18px;bottom:18px;background:var(--forest);color:var(--cream);
-  border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;
-  box-shadow:0 12px 30px -8px rgba(0,0,0,.4);
-}
-.hero-badge b{font-family:Comfortaa;font-size:22px;line-height:1}
-.hero-badge span{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;display:block;margin-top:2px}
-.story{padding:16px 0 56px}
-.story-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}
-.story-photo{border-radius:20px;overflow:hidden;aspect-ratio:1/1.15}
+.logo-art{position:relative;aspect-ratio:317.47/129.73}
+.logo-art img{position:absolute;display:block}
+.logo-art-text{inset:0;width:100%;height:100%}
+.logo-art-moped{left:39.53%;top:0;width:32.37%;height:49.49%}
+header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hbar{display:flex;align-items:center;gap:var(--s-12);max-width:1160px;margin:0 auto;padding:var(--s-8) var(--s-24);min-height:64px}
+.brand{display:inline-flex;align-items:center;flex:none}
+.logo-d{height:40px;width:auto;display:block;border-radius:10px}
+.pill-point{flex:0 1 auto;min-width:0;max-width:440px;display:flex;align-items:center;gap:var(--s-4);min-height:var(--h-touch);padding:0 var(--s-16);border:0;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font:inherit;font-size:var(--fs-small);line-height:1.2;text-align:left;text-decoration:none;cursor:pointer}
+.pill-point b{font-weight:700;white-space:nowrap}
+.pill-point span{color:var(--c-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pill-point i{font-style:normal;color:var(--c-muted);margin-left:auto;padding-left:var(--s-8)}
+.pill-point:hover{background:var(--c-raised)}
+.top-nav{display:flex;gap:var(--s-4);margin-left:auto}
+.top-nav a{display:inline-flex;align-items:center;min-height:var(--h-touch);padding:0 var(--s-12);border-radius:var(--r-pill);font-size:var(--fs-small);font-weight:600;color:var(--c-muted);text-decoration:none}
+.top-nav a:hover{color:var(--c-text);background:var(--c-surface)}
+.lang-sw{position:relative;flex:none;margin-left:var(--s-4)}
+.top-nav+.lang-sw{margin-left:0}
+.pill-point+.lang-sw{margin-left:auto}
+.lang-dd summary{list-style:none;display:flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;background:var(--c-surface);color:var(--c-text);font-size:var(--fs-caption);font-weight:700;letter-spacing:.02em;cursor:pointer;user-select:none}
+.lang-dd summary::-webkit-details-marker{display:none}
+.lang-dd[open] summary{background:var(--c-accent);color:var(--c-on-accent)}
+.lang-list{position:absolute;right:0;top:calc(100% + var(--s-8));z-index:60;display:flex;flex-direction:column;min-width:136px;padding:var(--s-8);background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--r-md);box-shadow:var(--shadow-floating)}
+.lang-list a{display:flex;align-items:center;gap:var(--s-8);min-height:var(--h-touch);padding:0 var(--s-12);border-radius:var(--r-sm);font-size:var(--fs-small);font-weight:600;text-decoration:none;color:var(--c-text)}
+.lang-list a:hover{background:var(--c-surface)}
+.lang-list a[aria-current]{color:var(--c-accent)}
+.lang-list a[aria-current]::after{content:'✓';margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--h-button);padding:var(--s-8) var(--s-24);border:0;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-size:var(--fs-body);font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;text-align:center;cursor:pointer;transition:background .15s,transform .15s}
+.btn:hover{background:var(--c-accent-dk)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--c-surface);color:var(--c-text)}
+.btn.ghost:hover{background:var(--c-raised)}
+.btn.olive{background:var(--c-olive);color:var(--c-on-olive)}
+.btn.olive:hover{background:color-mix(in srgb,var(--c-olive) 86%,#000)}
+.fab-menu{display:none;position:fixed;left:50%;bottom:calc(var(--s-16) + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;align-items:center;justify-content:center;min-height:var(--h-button);padding:0 var(--s-32);border:0;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-size:var(--fs-body);font-weight:700;text-transform:lowercase;text-decoration:none;white-space:nowrap;box-shadow:var(--shadow-floating);cursor:pointer}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center;padding:var(--s-16) var(--s-24) var(--s-32)}
+.hero-zone{order:2;position:relative;width:100%;aspect-ratio:4/5;max-height:600px;border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent);display:flex;align-items:center;justify-content:center}
+.hero-zone::before{content:'';position:absolute;inset:0;opacity:.08;background-image:radial-gradient(circle at 20% 30%,var(--c-brand-cream) 1.5px,transparent 1.5px),radial-gradient(circle at 70% 65%,var(--c-brand-cream) 1.5px,transparent 1.5px);background-size:120px 120px,170px 170px}
+.hero-zone .logo-art{width:min(74%,380px)}
+.hero-badge{position:absolute;left:var(--s-16);bottom:var(--s-16);display:flex;align-items:center;gap:var(--s-12);padding:var(--s-12) var(--s-16);border-radius:var(--r-md);background:var(--c-glass);color:var(--c-accent-dk)}
+.hero-badge b{font-family:var(--font-display);font-size:var(--fs-title);line-height:1}
+.hero-badge span{display:block;font-size:var(--fs-caption);line-height:1.3;color:var(--c-muted)}
+.tag{font-size:var(--fs-small);font-weight:600;color:var(--c-muted);margin-bottom:var(--s-8)}
+h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)}
+.lead{font-size:var(--fs-body);line-height:1.6;color:var(--c-muted);max-width:480px;margin-bottom:var(--s-24)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--s-8)}
+.halal-badge{display:flex;align-items:center;gap:var(--s-12);margin-top:var(--s-24)}
+.halal-badge img{height:48px;width:48px;object-fit:contain;mix-blend-mode:multiply;flex:none}
+.halal-badge span{font-size:var(--fs-caption);color:var(--c-muted);line-height:1.5}
+.promo{padding:var(--s-8) var(--s-24) var(--s-24)}
+.promo-grid{display:flex;justify-content:center;align-items:stretch;gap:var(--s-24)}
+.promo-card{flex:0 1 440px;min-width:0;display:flex;flex-direction:column;padding:var(--s-16);border-radius:var(--r-lg);background:var(--c-surface)}
+.promo-media{position:relative;aspect-ratio:910/620}
+.promo-card>p{display:flex;flex-direction:column;gap:var(--s-4);margin-top:var(--s-12)}
+.promo-t{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
+.promo-s{font-size:var(--fs-small);line-height:1.5;color:var(--c-muted)}
+.promo-s .sale{color:var(--c-text);font-weight:600;white-space:nowrap}
+.promo-a,.promo-a a{font-size:var(--fs-small);font-weight:600;color:var(--c-accent);text-decoration:none}
+.row-head{display:flex;align-items:center;justify-content:center;gap:var(--s-12);margin:var(--s-24) 0 var(--s-12)}
+.row-head h2{font-size:var(--fs-title);line-height:1.2}
+.sub-anim{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);height:100%;aspect-ratio:1;overflow:hidden}
+.sub-anim img{display:block;width:100%;height:100%}
+.sub-anim-l{position:absolute;width:142.86%;height:142.86%;left:-21.43%;top:-8.57%}
+.sub-anim.on img{visibility:hidden}
+.story{padding-top:var(--s-32);padding-bottom:var(--s-32)}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center}
+.story-photo{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:1/1.1}
 .story-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.story h2{font-family:Comfortaa;font-weight:700;font-size:34px;line-height:1.12;color:var(--forest-dk);margin-bottom:16px}
-.story h2 span{color:var(--olive)}
-.story p{color:var(--ink-2);line-height:1.75;max-width:480px;margin-bottom:26px;font-size:14.5px}
-.stats{display:flex;gap:36px}
-.stats b{display:block;font-family:Comfortaa;font-size:26px;font-weight:700;color:var(--forest)}
-.stats span{display:block;font-size:11.5px;color:var(--ink-2);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
-.features{padding:60px 0;background:var(--forest);color:var(--cream);position:relative;overflow:hidden}
-.features::before{
-  content:'';position:absolute;inset:0;opacity:.07;
-  background-image:radial-gradient(circle at 20% 30%, var(--cream) 1.5px, transparent 1.5px),
-                    radial-gradient(circle at 70% 65%, var(--cream) 1.5px, transparent 1.5px),
-                    radial-gradient(circle at 45% 85%, var(--cream) 1.5px, transparent 1.5px);
-  background-size:140px 140px, 190px 190px, 160px 160px;
-}
-.features .shell{position:relative}
-.f-head{margin-bottom:40px}
-.f-head .tag{color:var(--moss)}
-.f-head .tag::before{background:var(--moss)}
-.f-head h2{font-family:Comfortaa;font-weight:700;font-size:34px}
-.f-head h2 span{color:var(--moss)}
-.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.f-grid article{background:color-mix(in srgb, var(--cream) 8%, transparent);border:1px solid color-mix(in srgb, var(--cream) 16%, transparent);border-radius:var(--r);padding:24px 22px;min-height:150px}
-.f-grid b{font-family:Comfortaa;color:var(--moss);font-size:13px;display:block;margin-bottom:12px}
-.f-grid h3{font-size:15.5px;margin-bottom:7px;font-weight:700}
-.f-grid p{font-size:13px;color:color-mix(in srgb, var(--cream) 72%, transparent);line-height:1.55}
-.locations{padding:56px 0;background:var(--cream-2)}
-.loc-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px}
-.loc-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
-.loc-head h2 span{color:var(--olive)}
-.loc-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
-.faq{padding:56px 0}
-.faq-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:26px;gap:20px}
-.faq-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
-.faq-head h2 span{color:var(--olive)}
-.faq-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
-.faq a{color:var(--forest);font-weight:600}
-.faq-list{max-width:780px}
-.faq details{border-top:1px solid var(--line)}
-.faq details:last-child{border-bottom:1px solid var(--line)}
-.faq summary{list-style:none;cursor:pointer;position:relative;padding:16px 40px 16px 0;font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink)}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:'+';content:'+' / '';position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;line-height:1;color:var(--forest);transition:transform .2s}
-.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
-.faq-a{padding:0 40px 18px 0;color:var(--ink-2);font-size:14.5px;line-height:1.65}
-.faq-a ul{margin:6px 0 0 18px}
-@media(max-width:680px){
-.faq{padding:28px 0}
-.faq-head{flex-direction:column;align-items:flex-start;margin-bottom:12px;gap:6px}
-.faq-head h2{font-size:22px}
-.faq summary{font-size:14.5px;padding:14px 34px 14px 0}
-.faq-a{padding-right:0;font-size:14px}
-}
-.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.loc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column}
-.loc-card small{font-family:Comfortaa;font-size:11px;color:var(--olive);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
-.loc-card h3{font-family:Comfortaa;font-size:20px;font-weight:700;margin:8px 0 14px;color:var(--forest-dk)}
-.loc-card h3:has(+.loc-meta){margin-bottom:6px}
-.loc-meta{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin:0 0 14px}
-.loc-meta b{color:var(--forest);font-weight:700}
-.loc-about{font-size:13px;color:var(--ink);line-height:1.5;margin:-6px 0 10px}
-.loc-amen{font-size:12px;color:var(--forest);line-height:1.5;margin:-6px 0 14px}
+.story h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-12)}
+.story p{color:var(--c-muted);line-height:1.65;max-width:520px;margin-bottom:var(--s-24)}
+.stats{display:flex;gap:var(--s-8)}
+.stats>div{flex:1;padding:var(--s-12) var(--s-16);border-radius:var(--r-md);background:var(--c-surface)}
+.stats b{display:block;font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;color:var(--c-accent)}
+.stats span{display:block;font-size:var(--fs-caption);color:var(--c-muted);margin-top:var(--s-2)}
+.features{padding:var(--s-8) 0 var(--s-32)}
+.f-head{margin-bottom:var(--s-16)}
+.f-head h2{font-size:var(--fs-heading);line-height:1.15}
+.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-12)}
+.f-grid article{padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-surface)}
+.f-grid h3{font-size:var(--fs-body);margin:0 0 var(--s-4)}
+.f-grid p{font-size:var(--fs-small);line-height:1.55;color:var(--c-muted)}
+.locations{padding:var(--s-32) 0;background:var(--c-raised)}
+.loc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-16);margin-bottom:var(--s-16)}
+.loc-head h2{font-size:var(--fs-heading);line-height:1.15}
+.loc-head p{color:var(--c-muted);max-width:340px;font-size:var(--fs-small);line-height:1.55}
+.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-12)}
+.loc-card{display:flex;flex-direction:column;padding:var(--s-16);border-radius:var(--r-lg);background:var(--c-bg)}
+.loc-card small{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
+.loc-card h3{font-family:var(--font-body);font-size:var(--fs-body);font-weight:500;text-transform:none;letter-spacing:0;color:var(--c-muted);margin:var(--s-4) 0 var(--s-2)}
+.loc-meta{font-size:var(--fs-small);color:var(--c-muted);line-height:1.5;margin:0 0 var(--s-8)}
+.loc-meta b{color:var(--c-text);font-weight:600}
+.loc-about{font-size:var(--fs-small);line-height:1.5;margin:0 0 var(--s-8)}
+.loc-amen{font-size:var(--fs-caption);color:var(--c-accent);line-height:1.5;margin:0 0 var(--s-16)}
 .loc-amen span{white-space:nowrap}
 .loc-card:last-child:nth-child(odd){grid-column:1/-1}
-.loc-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}
-.loc-links a{font-size:12.5px;padding:8px 13px;border-radius:99px;border:1px solid var(--line);text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-weight:600}
-.loc-links a:hover{background:var(--forest);color:var(--cream);border-color:var(--forest)}
-.loc-links a.wa{border-color:var(--olive);color:var(--olive)}
-.loc-links a.wa:hover{background:var(--olive);color:#fff}
-.contact{padding:56px 0;text-align:center}
-.contact img{height:64px;width:auto;margin-bottom:24px;border-radius:12px}
-.contact h2{font-family:Comfortaa;font-size:36px;font-weight:700;color:var(--forest-dk);margin-bottom:26px}
-.contact h2 span{color:var(--olive)}
-.contact-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.mini-stats{display:none}
-footer{border-top:1px solid var(--line);padding:24px 0}
-.f-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2);flex-wrap:wrap;gap:10px}
-.f-row img{height:24px;width:auto;border-radius:5px}
-.f-row a{color:var(--forest);font-weight:600;text-decoration:none}
+.icons{position:absolute;width:0;height:0;overflow:hidden}
+.loc-links{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s-8);margin-top:auto}
+.ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;background:var(--c-surface);color:var(--c-text);transition:background .15s}
+.ib:hover{background:var(--c-raised)}
+.ib.route{background:var(--c-accent);color:var(--c-on-accent)}
+.ib.route:hover{background:var(--c-accent-dk)}
+.ic{display:block;width:22px;height:22px}
+.pill{display:inline-flex;align-items:center;min-height:var(--h-touch);padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+.pill:hover{background:var(--c-raised)}
+.faq{padding:var(--s-32) 0}
+.faq a{color:var(--c-accent);font-weight:600}
+.faq-box{max-width:760px;margin:0 auto;border-radius:var(--r-lg);background:var(--c-surface)}
+.faq-sum{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:var(--s-12);min-height:var(--h-button);padding:var(--s-16) var(--s-24);text-align:center}
+.faq-sum::-webkit-details-marker{display:none}
+.faq-sum h2{font-size:var(--fs-title);line-height:1.2}
+.faq-sum::after{content:'';flex:none;width:9px;height:9px;margin-top:-5px;border-right:2px solid var(--c-accent);border-bottom:2px solid var(--c-accent);transform:rotate(45deg);transition:transform .2s}
+.faq-box[open]>.faq-sum::after{transform:rotate(-135deg);margin-top:5px}
+.faq-list{display:flex;flex-direction:column;gap:var(--s-8);padding:0 var(--s-12) var(--s-12)}
+.faq-list details{border-radius:var(--r-md);background:var(--c-bg)}
+.faq-list summary{list-style:none;cursor:pointer;position:relative;display:flex;align-items:center;min-height:var(--h-touch);padding:var(--s-12) 48px var(--s-12) var(--s-16);font-size:var(--fs-body);font-weight:600;line-height:1.4;color:var(--c-text)}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:'+';content:'+' / '';position:absolute;right:var(--s-16);top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;line-height:1;color:var(--c-accent);transition:transform .2s}
+.faq-list details[open]>summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq-a{padding:0 var(--s-16) var(--s-16);color:var(--c-muted);font-size:var(--fs-small);line-height:1.65}
+.faq-a ul{margin:6px 0 0 18px}
+.faq-more{max-width:760px;margin:var(--s-12) auto 0;text-align:center;font-size:var(--fs-small);color:var(--c-muted)}
+.contact{padding:var(--s-32) var(--s-24);text-align:center}
+.contact img{height:64px;width:auto;margin-bottom:var(--s-16);border-radius:var(--r-md)}
+.contact h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-16)}
+.contact-actions{display:flex;gap:var(--s-8);justify-content:center;flex-wrap:wrap}
+footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
+.f-row{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-caption);color:var(--c-muted);flex-wrap:wrap;gap:var(--s-12)}
+.f-row img{height:28px;width:auto;border-radius:6px}
+.f-row a{color:var(--c-accent);font-weight:600;text-decoration:none}
 .f-row a:hover{text-decoration:underline}
-.f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:2px 14px;max-width:100%}
-.f-row .f-legal a{color:var(--ink-2);font-weight:500;white-space:nowrap}
-.f-row .f-legal a:hover{color:var(--forest)}
+.f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:var(--s-2) var(--s-12);max-width:100%}
+.f-row .f-legal a{color:var(--c-muted);font-weight:500;white-space:nowrap}
+.f-row .f-legal a:hover{color:var(--c-accent)}
 .hbar a{cursor:pointer}
 @media(max-width:900px){
-.hero{grid-template-columns:1fr;gap:32px;padding:40px 0 52px}
+.hero{grid-template-columns:1fr;gap:var(--s-24)}
+.hero-zone{order:-1;aspect-ratio:5/4;max-height:none}
 h1{font-size:36px}
-.quick,.f-grid,.loc-grid{grid-template-columns:1fr}
-.story-grid{grid-template-columns:1fr}
-nav{display:none}
+.story-grid{grid-template-columns:1fr;gap:var(--s-16)}
+.f-grid,.loc-grid{grid-template-columns:1fr}
+.top-nav{display:none}
 .f-head,.loc-head,.sc-head{flex-direction:column;align-items:flex-start}
 }
 @media(max-width:680px){
-.shell{padding:0 16px}
-nav{display:none}
-.hbar{padding:10px 16px;gap:10px}
-.logo-d{display:none}
-.logo-m{display:block}
-.hbar > a:first-child{min-height:44px;min-width:44px}
-.hbar-m{display:flex;gap:8px;margin-left:auto}
-.hbar-m a,.hbar-m button{min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;border:1.5px solid var(--forest);background:transparent;color:var(--forest);font:inherit;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer}
-.hbar-m button{background:var(--forest);color:var(--cream)}
-.hero{grid-template-columns:1fr;padding:16px 20px 28px;gap:16px}
-.hero-photo{display:block;order:-1;aspect-ratio:16/9;border-radius:16px}
-.tag{font-size:11px;margin-bottom:8px}
-h1{font-size:28px;line-height:1.12;margin-bottom:10px}
-.lead{font-size:14.5px;line-height:1.6;margin-bottom:20px}
-.actions{flex-direction:column;gap:10px}
-.actions .btn{
-    width:100%;justify-content:center;
-    padding:17px 20px;font-size:16px;border-radius:14px;
-  }
-.story{display:none}
-.features{padding:30px 0 28px}
-.f-head{margin-bottom:16px}
-.f-head h2{font-size:22px}
-.f-grid,.sc-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:16px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.shell{padding:0 var(--s-16)}
+.hbar{padding:var(--s-8) var(--s-16);gap:var(--s-8);min-height:60px}
+.brand{display:none}
+.pill-point{flex:1 1 auto;max-width:none}
+.hero{padding:var(--s-4) var(--s-16) var(--s-24);gap:var(--s-16)}
+.hero-badge{left:var(--s-12);bottom:var(--s-12);padding:var(--s-8) var(--s-12)}
+h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
+.lead{font-size:var(--fs-small);margin-bottom:var(--s-16)}
+.actions{flex-direction:column}
+.actions .btn{width:100%}
+.promo{padding:var(--s-8) var(--s-16) var(--s-16)}
+.promo-grid{flex-direction:column;gap:var(--s-16)}
+.promo-card{flex:none}
+.story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
+.story h2,.f-head h2,.loc-head h2,.contact h2{font-size:var(--fs-title)}
+.f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
 .f-grid::-webkit-scrollbar,.sc-row::-webkit-scrollbar{display:none}
-.f-grid article{flex:0 0 76%;scroll-snap-align:start;min-height:0;padding:18px}
-.f-grid b{margin-bottom:8px}
-.f-grid h3{font-size:15px}
-.f-grid p{font-size:13.5px}
-.locations{padding:24px 0}
-.loc-head{flex-direction:column;align-items:flex-start;margin-bottom:14px;gap:6px}
-.loc-head h2{font-size:22px}
+.f-grid article{flex:0 0 76%;scroll-snap-align:start;padding:var(--s-16)}
+.locations,.faq{padding:var(--s-24) 0}
 .loc-head p{display:none}
-.loc-grid{grid-template-columns:1fr;gap:10px}
-.loc-card{padding:16px}
-.loc-card small{font-size:10.5px}
-.loc-card h3{font-size:18px;margin:5px 0 10px}
-.loc-meta{font-size:13px;margin-bottom:12px}
-.contact{padding:28px 16px}
-.contact img{height:38px;margin-bottom:10px;border-radius:0}
-.contact > a:first-child{display:inline-flex;min-height:44px;min-width:44px;align-items:center;justify-content:center}
-.contact h2{font-size:20px;margin-bottom:14px}
-footer{padding:16px 0}
+.faq-list summary{font-size:var(--fs-small)}
+.contact{padding:var(--s-24) var(--s-16)}
+.contact img{height:40px;margin-bottom:var(--s-12);border-radius:0}
+.contact-actions .btn{flex:1}
+.fab-menu{display:inline-flex}
+footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 .f-row{flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:11px;gap:10px}
 .f-row img{display:none}
 .f-row .f-legal{order:-1;gap:0 4px;margin-top:0}
 .f-row .f-legal a{display:inline-block;padding:6px 6px}
 .f-row span+span{margin-top:-4px}
 .hide-mobile{display:none}
-.mini-stats{
-    display:flex;justify-content:space-around;
-    padding:20px 16px 4px;
-  }
-.mini-stats b{display:block;font-family:Comfortaa;font-size:22px;font-weight:700;color:var(--forest);text-align:center}
-.mini-stats span{display:block;font-size:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em;text-align:center;margin-top:3px}
-.loc-links{flex-direction:row;flex-wrap:wrap;gap:8px}
-.loc-links a:not(.wa){flex:1;min-width:0}
-.loc-links a.wa{width:100%}
-.loc-links a{
-    font-size:14px;padding:12px 10px;
-    justify-content:center;border-radius:12px;
-    text-align:center;
-  }
-.contact-actions{flex-direction:row}
-.contact-actions .btn{flex:1;justify-content:center;min-height:48px;padding:14px 10px;font-size:14px;border-radius:14px}
 }
-/* казахские буквы (ә, ғ, қ, ң, ө, ү, һ) есть в Golos (cyrillic-ext), в Comfortaa — нет: заголовки на Golos */
-html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.loc-card h3,.f-grid b){font-family:'Golos Text',sans-serif;letter-spacing:-.01em}
+@media(max-width:359px){
+.hbar{padding:var(--s-8) var(--s-12)}
+.pill-point{padding:0 var(--s-12)}
+}
 </style>
 <script type="application/ld+json">
 {"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://tap.delcappuccino.kz/kk/#webpage","url":"https://tap.delcappuccino.kz/kk/","name":"Del Cappuccino — Алматыдағы 24/7 кофеханалар және bakery to go","description":"Del Cappuccino — Алматыдағы тәулік бойы жұмыс істейтін 4 кофехана және bakery to go (күн сайын 07:00–22:00). Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе.","inLanguage":"kk","about":{"@id":"https://tap.delcappuccino.kz/#org"},"isPartOf":{"@type":"WebSite","@id":"https://tap.delcappuccino.kz/#website","url":"https://tap.delcappuccino.kz/","name":"Del Cappuccino"}},{"@type":"Organization","@id":"https://tap.delcappuccino.kz/#org","name":"Del Cappuccino","url":"https://tap.delcappuccino.kz/","sameAs":["https://instagram.com/del.cappuccino"]},{"@type":"FAQPage","@id":"https://tap.delcappuccino.kz/kk/#faq","inLanguage":"kk","mainEntity":[{"@type":"Question","name":"Del Cappuccino кофеханалары қашан жұмыс істейді?","acceptedAnswer":{"@type":"Answer","text":"4 кофехана тәулік бойы, 24/7 жұмыс істейді: «Вавилон» ТК (Розыбакиев көшесі, 247/8), «Комфорт Сити» ТК (Серкебаев көшесі, 146), Promenade бизнес-паркі (Абай даңғылы, 44А), Del Cappuccino (Төле би көшесі, 64). Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00."}},{"@type":"Question","name":"Алматыда Del Cappuccino кофеханалары қайда орналасқан?","acceptedAnswer":{"@type":"Answer","text":"Алматыда 5 филиал:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8) — тәулік бойы (24/7)<\/li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146) — тәулік бойы (24/7)<\/li><li>Promenade бизнес-паркі (Абай даңғылы, 44А) — тәулік бойы (24/7)<\/li><li>Del Cappuccino (Төле би көшесі, 64) — тәулік бойы (24/7)<\/li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00<\/li><\/ul>"}},{"@type":"Question","name":"Del Cappuccino өнімдері халал ма?","acceptedAnswer":{"@type":"Answer","text":"Иә, өнімдер ҚМДБ Halal сертификатынан өткен (halaldamu.kz)."}},{"@type":"Question","name":"Таңғы ас тек таңертең бе?","acceptedAnswer":{"@type":"Answer","text":"Жоқ, таңғы ас күні бойы беріледі — сүйікті таңғы ас сағатқа қарамастан."}},{"@type":"Question","name":"Үстелді қалай брондауға болады?","acceptedAnswer":{"@type":"Answer","text":"Мекенжайлар тізімінен филиалды таңдап, WhatsApp-қа жазыңыз немесе қоңырау шалыңыз."}},{"@type":"Question","name":"Брондау үшін алдын ала төлем керек пе?","acceptedAnswer":{"@type":"Answer","text":"Филиалға байланысты:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): VIP-кабиналарға алдын ала төлем алынады<\/li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): әдеттегі брондау — алдын ала төлемсіз<\/li><li>Del Cappuccino (Төле би көшесі, 64): мәзір бойынша алдын ала тапсырыс болмаса, үстел алдын ала төлемсіз брондалады<\/li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): брондау — алдын ала төлемсіз<\/li><\/ul>"}},{"@type":"Question","name":"Тағамды үйге жеткізуге қалай тапсырыс беруге болады?","acceptedAnswer":{"@type":"Answer","text":"«Қосымшада тапсырыс беру» батырмасы арқылы — <a href=\"https://delcappuccino.kz/\">delcappuccino.kz<\/a> сайтында онлайн тапсырыс. Алып кетуге филиалдың WhatsApp-ы арқылы да тапсырыс беруге болады."}},{"@type":"Question","name":"Жеткізу бар ма?","acceptedAnswer":{"@type":"Answer","text":"Онлайн тапсырысты сайттағы «Қосымшада тапсырыс беру» арқылы беруге болады. Филиалдар бойынша жеткізу:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): барлық жеткізу агрегаторлары арқылы<\/li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): «Комфорт Сити» ТК ішінде өз жеткізуіміз, сондай-ақ Glovo, Яндекс Еда, Choco және Wolt<\/li><li>Del Cappuccino (Төле би көшесі, 64): 800 м радиуста өз қызметкерлеріміз жеткізеді<\/li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): ТК аумағында жеткізу<\/li><\/ul>"}},{"@type":"Question","name":"Автотұрақ бар ма?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): автотұрақ бар<\/li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): кафе жанында қоғамдық автотұрақ<\/li><li>Del Cappuccino (Төле би көшесі, 64): қалалық автотұрақ, VIP-қонақтарға — ішкі аулада автотұрақ<\/li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): ТК ішінде автотұрақ<\/li><\/ul>"}},{"@type":"Question","name":"Wi-Fi бар ма?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): Wi-Fi бар<\/li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): тегін Wi-Fi<\/li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): Wi-Fi бар<\/li><\/ul>"}},{"@type":"Question","name":"Балалар аймағы бар ма?","acceptedAnswer":{"@type":"Answer","text":"Иә, балалар аймағы бар жер: «Вавилон» ТК."}},{"@type":"Question","name":"Қандай VIP-залдар мен банкет залдары бар?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): 10–15 және 20–25 адамға арналған VIP-залдар, жабық VIP-кабиналар, банкетке арналған 30–35 адамдық зал<\/li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146): VIP-кабина<\/li><li>Promenade бизнес-паркі (Абай даңғылы, 44А): конференция, семинар, банкет және іскерлік кездесулерге арналған 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету; 60 адамға дейінгі ортақ зал; 20–70 адамға кофе-брейк<\/li><\/ul>"}},{"@type":"Question","name":"Сіздерде банкет өткізуге бола ма?","acceptedAnswer":{"@type":"Answer","text":"Иә, 40 адамға дейінгі топқа іс-шараңызды өткіземіз. VIP-залдар іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына ыңғайлы."}},{"@type":"Question","name":"Қай жерде жұмыс істеуге немесе іскерлік кездесу өткізуге болады?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Promenade бизнес-паркі (Абай даңғылы, 44А): фрилансерлерге арналған аймақ; іскерлік тамақтану — бизнес-ланчтар, іскерлік түскі және кешкі ас; 20 адамға дейінгі VIP-зал; теледидарларда бейне көрсету<\/li><\/ul>"}},{"@type":"Question","name":"Намазхана қай жерде бар?","acceptedAnswer":{"@type":"Answer","text":"Намазхана бар жерлер: «Комфорт Сити» ТК (Серкебаев көшесі, 146) және Promenade бизнес-паркі (Абай даңғылы, 44А)."}},{"@type":"Question","name":"Жануарлармен келуге бола ма?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8): жануарлармен — тек жазғы алаңда, үлкен ит тұмылдырықпен болуы керек<\/li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12): алып кетуге жануармен кіруге болады<\/li><\/ul>"}},{"@type":"Question","name":"Мәзір қазақ және ағылшын тілдерінде бар ма?","acceptedAnswer":{"@type":"Answer","text":"Иә, сайттағы мәзірде тілді ауыстыруға болады: ҚАЗ, РУС немесе ENG."}},{"@type":"Question","name":"Мәзір мен бағаларды қайдан көруге болады?","acceptedAnswer":{"@type":"Answer","text":"Фотосы мен құрамы бар мәзір — <a href=\"https://tap.delcappuccino.kz/#menu-kk\">сайттағы мәзірде<\/a>, бағалары бар толық мәзір мәтінмен — <a href=\"https://tap.delcappuccino.kz/kk/menyu\">tap.delcappuccino.kz/kk/menyu<\/a>."}}]}]}
 </script>
 </head>
 <body>
+
+<div class="intro" aria-hidden="true"><div class="logo-art"><img class="logo-art-text" src="/assets/logo-text.73de0587.svg" width="317" height="130" loading="lazy" decoding="async" alt=""><img class="logo-art-moped" src="/assets/moped-side.5c84289d.svg" width="103" height="64" loading="lazy" decoding="async" alt=""></div></div>
+<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol></svg>
+
 <header>
   <div class="hbar">
-    <a href="/kk/" aria-label="Del Cappuccino — басты бет" style="display:inline-flex;align-items:center">
-      <img class="logo-d" src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="85px" width="256" height="127" alt="Del Cappuccino">
-      <img class="logo-m" src="/assets/logo-mono-192.webp" width="192" height="192" alt="Del Cappuccino">
+    <a class="brand" href="/kk/" aria-label="Del Cappuccino — басты бет">
+      <img class="logo-d" src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino">
     </a>
-    <nav>
+    <a class="pill-point" href="#locations" onclick="track('cta_route',{src:'pill'})"><b>5 филиал</b><span> · кофеханалар 24/7</span><i aria-hidden="true">›</i></a>
+    <nav class="top-nav">
       <a href="/#menu-kk" onclick="track('cta_menu',{src:'nav'})">Мәзір</a>
       <a href="#about">Біз туралы</a>
       <a href="#features">Формат</a>
       <a href="#locations">Мекенжайлар</a>
       <a href="#faq">Сұрақтар</a>
     </nav>
-    <div class="hbar-m">
-      <a href="/#menu-kk" onclick="track('cta_menu',{src:'hbar_m'})">Мәзір</a>
-    </div>
     <nav class="lang-sw" aria-label="Сайт тілі">
+      <details class="lang-dd"><summary aria-label="Сайт тілі">ҚАЗ</summary><div class="lang-list">
       <a href="/" lang="ru" hreflang="ru" onclick="track('lang_switch',{lang:'ru'})">РУС</a>
       <a href="/kk/" lang="kk" aria-current="page">ҚАЗ</a>
       <a href="/en/" lang="en" hreflang="en" onclick="track('lang_switch',{lang:'en'})">ENG</a>
+      </div></details>
     </nav>
   </div>
 </header>
 
-<main>
+<main id="top">
   <section class="hero shell">
-    <div>
-      <p class="tag">Алматыдағы кофеханалар · coffee &amp; food</p>
-      <h1><span>Жақындарды</span><br>біріктіретін<br>дәм.</h1>
-      <p class="lead">Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе. Кофеханаларымыз тәулік бойы жұмыс істейді — дәмді үзіліс әрқашан жаныңызда, ал bakery to go-да — десерттер мен алып кететін кофе.</p>
-      <div class="actions">
-        <a class="btn olive" href="#locations" onclick="track('cta_book')">Үстел брондау</a>
-        <a class="btn ghost" href="/#menu-kk" onclick="track('cta_menu')">Мәзірді қарау</a>
-        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_order')">Қосымшада тапсырыс беру</a>
-      </div>
-      <div class="halal-badge">
-        <img src="/assets/halal-104.webp" srcset="/assets/halal-104.webp 104w, /assets/halal-156.webp 156w" sizes="52px" width="104" height="104" decoding="async" alt="ҚМДБ Halal">
-        <span>Өнімдер сертификатталған<br>ҚМДБ · halaldamu.kz</span>
-      </div>
-    </div>
-    <div class="hero-photo">
-      <img src="/assets/photo_01-1200.webp" srcset="/assets/photo_01-480.webp 480w, /assets/photo_01-800.webp 800w, /assets/photo_01-1200.webp 1200w, /assets/photo_01-1600.webp 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:900px) calc(100vw - 56px), 520px" width="1600" height="1023" fetchpriority="high" decoding="async" alt="Del Cappuccino маңдайшасы">
+    <div class="hero-zone">
+      <div class="logo-art" role="img" aria-label="del Cappuccino · coffee &amp; food"><img class="logo-art-text" src="/assets/logo-text.73de0587.svg" width="317" height="130" fetchpriority="high" alt=""><img class="logo-art-moped" src="/assets/moped-side.5c84289d.svg" width="103" height="64" alt=""></div>
       <div class="hero-badge">
         <b>24/7</b>
         <div><span>кофехана</span><span>демалыссыз</span></div>
       </div>
     </div>
+    <div class="hero-text">
+      <p class="tag">Алматыдағы кофеханалар · coffee &amp; food</p>
+      <h1><span>Жақындарды</span><br>біріктіретін<br>дәм.</h1>
+      <p class="lead">Күні бойы таңғы ас, сүйікті тағамдар мен жақсы кофе. Кофеханаларымыз тәулік бойы жұмыс істейді — дәмді үзіліс әрқашан жаныңызда, ал bakery to go-да — десерттер мен алып кететін кофе.</p>
+      <div class="actions">
+        <a class="btn olive" href="#locations" onclick="track('cta_book')">Үстел брондау</a>
+        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_order')">Қосымшада тапсырыс беру</a>
+        <a class="btn ghost" href="/#menu-kk" onclick="track('cta_menu')">Мәзірді қарау</a>
+      </div>
+      <div class="halal-badge">
+        <img src="/assets/halal-104.webp" srcset="/assets/halal-104.webp 104w, /assets/halal-156.webp 156w" sizes="48px" width="104" height="104" decoding="async" alt="ҚМДБ Halal">
+        <span>Өнімдер сертификатталған<br>ҚМДБ · halaldamu.kz</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="promo shell">
+    <div class="promo-grid">
+    <div class="promo-card sub-card">
+      <!-- анимация: «Brewing coffee» — CAROLINA SALAZAR, LottieFiles, Lottie Simple License (https://lottiefiles.com/free-animation/brewing-coffee-0nUzAZmeIR), перекрашена; плеер lottie-web light — MIT; docs/LICENSES-media.md -->
+      <div class="promo-media"><div class="sub-anim" data-src="/assets/brewing-coffee.2e74c5d9.json" data-player="/assets/lottie_light.23cd2c01.js"><img src="/assets/brewing-coffee-poster.f762aef7.webp" width="256" height="256" loading="lazy" decoding="async" alt=""><div class="sub-anim-l" aria-hidden="true"></div></div></div>
+      <p><b class="promo-t">кофе жазылымы</b> <span class="promo-s">жақында, қосымшада</span></p>
+    </div>
+<script>(function(){var box=document.querySelector('.sub-anim');if(!box||!('IntersectionObserver'in window))return;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}var anim=null,asked=false;function start(){new IntersectionObserver(function(es){var on=es[es.length-1].isIntersecting;if(anim){on?anim.play():anim.pause();return}if(!on||asked)return;asked=true;var s=document.createElement('script');s.src=box.getAttribute('data-player');s.async=true;s.onload=function(){try{anim=lottie.loadAnimation({container:box.querySelector('.sub-anim-l'),renderer:'svg',loop:true,autoplay:true,path:box.getAttribute('data-src')});anim.addEventListener('DOMLoaded',function(){box.classList.add('on')})}catch(e){}};document.head.appendChild(s)},{rootMargin:'100px'}).observe(box)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>
+    </div>
   </section>
 
   <section class="story shell" id="about">
     <div class="story-grid">
-      <div class="story-photo"><img src="/assets/photo_10-900.webp" srcset="/assets/photo_10-480.webp 480w, /assets/photo_10-900.webp 900w, /assets/photo_10-1600.webp 1600w" sizes="(max-width:900px) calc(100vw - 56px), 440px" width="1600" height="1066" loading="lazy" decoding="async" alt="Del Cappuccino командасы"></div>
+      <div class="story-photo"><img src="/assets/photo_10-900.webp" srcset="/assets/photo_10-480.webp 480w, /assets/photo_10-900.webp 900w, /assets/photo_10-1600.webp 1600w" sizes="(max-width:680px) calc(100vw - 32px), (max-width:900px) calc(100vw - 48px), 540px" width="1600" height="1066" loading="lazy" decoding="async" alt="Del Cappuccino командасы"></div>
       <div>
         <h2>Кофе, тағам<br>және <span>қамқорлық</span>.</h2>
         <p>Жол-жөнекей кіріп, кездесу өткізіп, кеш таңғы ас ішіп немесе сүйікті тағамдарды үйге тапсырыс беріп алыңыз. Отбасымен келгендерге — балалар аймағы («Вавилон» ТК), тыныш кездесулерге — VIP-залдар, ал намаз оқуға — намазхана бар.</p>
@@ -339,26 +346,19 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
   <section class="features" id="features">
     <div class="shell">
       <div class="f-head">
-        <p class="tag">кофеханадан да көп</p>
         <h2><span>Жоспарларыңызға</span><br>арналған орын.</h2>
       </div>
       <div class="f-grid">
-        <article><b>01</b><h3>Тәулік бойы</h3><p>4 кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын 07:00–22:00.</p></article>
-        <article><b>02</b><h3>Күні бойы таңғы ас</h3><p>Сүйікті таңғы ас — сағатқа қарамастан.</p></article>
-        <article><b>03</b><h3>Балалар аймағы</h3><p>Ойын аймағы бар жер: «Вавилон» ТК.</p></article>
-        <article><b>04</b><h3>VIP-залдар</h3><p>Іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына арналған.</p></article>
-        <article><b>05</b><h3>Банкеттер</h3><p>40 адамға дейінгі топқа іс-шараңызды өткіземіз.</p></article>
-        <article><b>06</b><h3>Намазхана</h3><p>Намаз оқуға арналған жайлы, бөлек орын.</p></article>
+        <article><h3>Тәулік бойы</h3><p>4 кофехана 24/7 жұмыс істейді — өзіңізге ыңғайлы уақытта келіңіз. Жандосов көшесіндегі bakery to go — күн сайын 07:00–22:00.</p></article>
+        <article><h3>Күні бойы таңғы ас</h3><p>Сүйікті таңғы ас — сағатқа қарамастан.</p></article>
+        <article><h3>Балалар аймағы</h3><p>Ойын аймағы бар жер: «Вавилон» ТК.</p></article>
+        <article><h3>VIP-залдар</h3><p>Іскерлік таңғы асқа, шағын кездесулер мен шеберлік сабақтарына арналған.</p></article>
+        <article><h3>Банкеттер</h3><p>40 адамға дейінгі топқа іс-шараңызды өткіземіз.</p></article>
+        <article><h3>Намазхана</h3><p>Намаз оқуға арналған жайлы, бөлек орын.</p></article>
       </div>
     </div>
   </section>
 </main>
-
-<div class="mini-stats shell">
-  <div><b>24/7</b><span>4 кофехана</span></div>
-  <div><b>5</b><span>филиал</span></div>
-  <div><b>all day</b><span>таңғы ас</span></div>
-</div>
 
 <section class="locations" id="locations">
   <div class="shell">
@@ -368,60 +368,60 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
     </div>
     <div class="loc-grid">
     <div class="loc-card">
-      <small>01 · «Вавилон» ТК</small>
+      <small>«Вавилон» ТК</small>
       <h3>Розыбакиев көшесі, 247/8</h3>
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>балалар аймағы</span> · <span>VIP-залдар</span> · <span>VIP-кабиналар</span> · <span>банкет залы</span> · <span>Wi-Fi</span> · <span>автотұрақ</span></p>
       <div class="loc-links">
-        <a href="tel:+77025672332" onclick="track('loc_call',{branch:'01 · ЖК Вавилон'})">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})">Бағыт</a>
-        <a class="wa" href="https://wa.me/77025672332?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'01 · ЖК Вавилон'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})" aria-label="Бағыт" title="Бағыт"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77025672332" onclick="track('loc_call',{branch:'01 · ЖК Вавилон'})" aria-label="Қоңырау шалу" title="Қоңырау шалу"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77025672332?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'01 · ЖК Вавилон'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>02 · «Комфорт Сити» ТК</small>
+      <small>«Комфорт Сити» ТК</small>
       <h3>Серкебаев көшесі, 146</h3>
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>VIP-кабина</span> · <span>намазхана</span> · <span>тегін Wi-Fi</span> · <span>автотұрақ</span></p>
       <div class="loc-links">
-        <a href="tel:+77053673232" onclick="track('loc_call',{branch:'02 · ЖК Комфорт Сити'})">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})">Бағыт</a>
-        <a class="wa" href="https://wa.me/77053673232?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20146" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'02 · ЖК Комфорт Сити'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})" aria-label="Бағыт" title="Бағыт"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77053673232" onclick="track('loc_call',{branch:'02 · ЖК Комфорт Сити'})" aria-label="Қоңырау шалу" title="Қоңырау шалу"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77053673232?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%20146" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'02 · ЖК Комфорт Сити'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>03 · Promenade бизнес-паркі</small>
+      <small>Promenade бизнес-паркі</small>
       <h3>Абай даңғылы, 44А</h3>
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-about">Жұмыс, кездесу және демалыс кеңістігі. Жанында — «Балуан Шолақ» спорт кешені мен Орталық стадион.</p>
       <p class="loc-amen"><span>VIP-зал</span> · <span>60 адамға дейінгі зал</span> · <span>фрилансерлерге арналған аймақ</span> · <span>намазхана</span> · <span>жазғы алаң</span></p>
       <div class="loc-links">
-        <a href="tel:+77770355617" onclick="track('loc_call',{branch:'03 · БП Promenade'})">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'03 · БП Promenade'})">Бағыт</a>
-        <a class="wa" href="https://wa.me/77770355617?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B4%D0%B0%D2%A3%D2%93%D1%8B%D0%BB%D1%8B%2C%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'03 · БП Promenade'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'03 · БП Promenade'})" aria-label="Бағыт" title="Бағыт"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77770355617" onclick="track('loc_call',{branch:'03 · БП Promenade'})" aria-label="Қоңырау шалу" title="Қоңырау шалу"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77770355617?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%90%D0%B1%D0%B0%D0%B9%20%D0%B4%D0%B0%D2%A3%D2%93%D1%8B%D0%BB%D1%8B%2C%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'03 · БП Promenade'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>04 · Del Cappuccino</small>
+      <small>Del Cappuccino</small>
       <h3>Төле би көшесі, 64</h3>
       <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>800 м-ге дейін жеткізу</span> · <span>автотұрақ</span></p>
       <div class="loc-links">
-        <a href="tel:+77769079070" onclick="track('loc_call',{branch:'04 · Del Cappuccino'})">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})">Бағыт</a>
-        <a class="wa" href="https://wa.me/77769079070?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A2%D3%A9%D0%BB%D0%B5%20%D0%B1%D0%B8%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2064" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'04 · Del Cappuccino'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})" aria-label="Бағыт" title="Бағыт"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77769079070" onclick="track('loc_call',{branch:'04 · Del Cappuccino'})" aria-label="Қоңырау шалу" title="Қоңырау шалу"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77769079070?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20Del%20Cappuccino-%D0%B4%D0%B0%20%D2%AF%D1%81%D1%82%D0%B5%D0%BB%20%D0%B1%D1%80%D0%BE%D0%BD%D0%B4%D0%B0%D2%93%D1%8B%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%A2%D3%A9%D0%BB%D0%B5%20%D0%B1%D0%B8%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2064" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'04 · Del Cappuccino'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>05 · Bakery to go · «Rams City» ТК</small>
+      <small>Bakery to go · «Rams City» ТК</small>
       <h3>Жандосов көшесі, 94/12</h3>
       <p class="loc-meta"><b>күн сайын 07:00–22:00</b> · Десерттер, жартылай фабрикаттар және алып кететін кофе</p>
       <p class="loc-amen"><span>алып кету</span> · <span>екі адамдық 3 үстел</span> · <span>Wi-Fi</span> · <span>ТК ішінде автотұрақ</span> · <span>жануармен — алып кетуге</span></p>
       <div class="loc-links">
-        <a href="tel:+77773278566" onclick="track('loc_call',{branch:'05 · Bakery to go · ЖК Rams City'})">Қоңырау шалу</a>
-        <a href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'05 · Bakery to go · ЖК Rams City'})">Бағыт</a>
-        <a href="/#menu-togo-kk" onclick="track('loc_menu',{branch:'05 · Bakery to go · ЖК Rams City'})">Мәзір</a>
-        <a class="wa" href="https://wa.me/77773278566?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20delCappuccino%20bakery%20to%20go-%D0%B4%D0%B0%D0%BD%20%D0%B0%D0%BB%D1%8B%D0%BF%20%D0%BA%D0%B5%D1%82%D1%83%D0%B3%D0%B5%20%D1%82%D0%B0%D0%BF%D1%81%D1%8B%D1%80%D1%8B%D1%81%20%D0%B1%D0%B5%D1%80%D0%B3%D1%96%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%96%D0%B0%D0%BD%D0%B4%D0%BE%D1%81%D0%BE%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2094%2F12" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'05 · Bakery to go · ЖК Rams City'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'05 · Bakery to go · ЖК Rams City'})" aria-label="Бағыт" title="Бағыт"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77773278566" onclick="track('loc_call',{branch:'05 · Bakery to go · ЖК Rams City'})" aria-label="Қоңырау шалу" title="Қоңырау шалу"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77773278566?text=%D0%A1%D3%99%D0%BB%D0%B5%D0%BC%D0%B5%D1%82%D1%81%D1%96%D0%B7%20%D0%B1%D0%B5!%20delCappuccino%20bakery%20to%20go-%D0%B4%D0%B0%D0%BD%20%D0%B0%D0%BB%D1%8B%D0%BF%20%D0%BA%D0%B5%D1%82%D1%83%D0%B3%D0%B5%20%D1%82%D0%B0%D0%BF%D1%81%D1%8B%D1%80%D1%8B%D1%81%20%D0%B1%D0%B5%D1%80%D0%B3%D1%96%D0%BC%20%D0%BA%D0%B5%D0%BB%D0%B5%D0%B4%D1%96%2C%20%D0%96%D0%B0%D0%BD%D0%B4%D0%BE%D1%81%D0%BE%D0%B2%20%D0%BA%D3%A9%D1%88%D0%B5%D1%81%D1%96%2C%2094%2F12" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'05 · Bakery to go · ЖК Rams City'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
+        <a class="pill" href="/#menu-togo-kk" onclick="track('loc_menu',{branch:'05 · Bakery to go · ЖК Rams City'})">Мәзір</a>
       </div>
     </div>
     </div>
@@ -430,10 +430,8 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
 
 <section class="faq" id="faq">
   <div class="shell">
-    <div class="faq-head">
-      <div><p class="tag">сұрақтар мен жауаптар</p><h2>Жиі қойылатын <span>сұрақтар</span>.</h2></div>
-      <p>Бағалары бар толық мәзір мәтінмен — <a href="/kk/menyu">бөлек бетте</a>.</p>
-    </div>
+    <details class="faq-box" ontoggle="if(this.open)track('faq_list')">
+      <summary class="faq-sum"><h2>Жиі қойылатын <span>сұрақтар</span>.</h2></summary>
     <div class="faq-list">
       <details ontoggle="if(this.open)track('faq_open',{q:1})"><summary>Del Cappuccino кофеханалары қашан жұмыс істейді?</summary><div class="faq-a">4 кофехана тәулік бойы, 24/7 жұмыс істейді: «Вавилон» ТК (Розыбакиев көшесі, 247/8), «Комфорт Сити» ТК (Серкебаев көшесі, 146), Promenade бизнес-паркі (Абай даңғылы, 44А), Del Cappuccino (Төле би көшесі, 64). Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00.</div></details>
       <details ontoggle="if(this.open)track('faq_open',{q:2})"><summary>Алматыда Del Cappuccino кофеханалары қайда орналасқан?</summary><div class="faq-a">Алматыда 5 филиал:<ul><li>«Вавилон» ТК (Розыбакиев көшесі, 247/8) — тәулік бойы (24/7)</li><li>«Комфорт Сити» ТК (Серкебаев көшесі, 146) — тәулік бойы (24/7)</li><li>Promenade бизнес-паркі (Абай даңғылы, 44А) — тәулік бойы (24/7)</li><li>Del Cappuccino (Төле би көшесі, 64) — тәулік бойы (24/7)</li><li>Bakery to go · «Rams City» ТК (Жандосов көшесі, 94/12) — күн сайын 07:00–22:00</li></ul></div></details>
@@ -454,6 +452,8 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
       <details ontoggle="if(this.open)track('faq_open',{q:17})"><summary>Мәзір қазақ және ағылшын тілдерінде бар ма?</summary><div class="faq-a">Иә, сайттағы мәзірде тілді ауыстыруға болады: ҚАЗ, РУС немесе ENG.</div></details>
       <details ontoggle="if(this.open)track('faq_open',{q:18})"><summary>Мәзір мен бағаларды қайдан көруге болады?</summary><div class="faq-a">Фотосы мен құрамы бар мәзір — <a href="https://tap.delcappuccino.kz/#menu-kk">сайттағы мәзірде</a>, бағалары бар толық мәзір мәтінмен — <a href="https://tap.delcappuccino.kz/kk/menyu">tap.delcappuccino.kz/kk/menyu</a>.</div></details>
     </div>
+    </details>
+    <p class="faq-more">Бағалары бар толық мәзір мәтінмен — <a href="/kk/menyu">бөлек бетте</a>.</p>
   </div>
 </section>
 
@@ -475,6 +475,7 @@ html[lang=kk] :is(h1,h2,.stats b,.mini-stats b,.hero-badge b,.loc-card small,.lo
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
+<a class="fab-menu" href="/#menu-kk" onclick="track('cta_menu',{src:'hbar_m'})">Мәзір</a>
 <script>
 /* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
 (function(){

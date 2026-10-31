@@ -21,22 +21,22 @@
  * tests/test_perf.py предупреждает, если забыли). Новый SW ставится сразу (skipWaiting), при активации
  * удаляет старые dc-shell-* и dc-rt-*; кэш картинок между версиями страницы переживает.
  */
-var VERSION = '3226aa1cb8';
+var VERSION = 'e5f831e332';
 var SHELL = 'dc-shell-' + VERSION;
 var RT = 'dc-rt-v1';
 var PRECACHE = [
   './',
   'manifest.webmanifest',
   'menu/cards.json',
-  'assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2',
-  'assets/fonts/comfortaa-700-latin.ed9f328c.woff2',
-  'assets/fonts/golos-400-800-cyrillic.17d048ca.woff2',
-  'assets/fonts/golos-400-800-latin.9a69d0aa.woff2',
+  'assets/fonts/geologica-700-cyrillic.646d6acf.woff2',
+  'assets/fonts/geologica-700-latin.7f7f79c5.woff2',
+  'assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2',
+  'assets/fonts/montserrat-400-700-latin.06b16db7.woff2',
+  'assets/logo-text.73de0587.svg',
+  'assets/moped-side.5c84289d.svg',
   'assets/logo-lockup-256.webp',
   'assets/logo-mono-192.webp',
-  'assets/halal-104.webp',
-  'assets/photo_01-800.webp',
-  'assets/photo_01-1200.webp'
+  'assets/halal-104.webp'
 ];
 var HASHED = new RegExp('\\.[0-9a-f]{8}\\.(woff2|webp|png|jpg|svg|js|css)$');
 var NET_TIMEOUT = 3000;   // мс: дольше ждать сеть для страницы не стоит — отдаём из кэша, свежее допишется в кэш в фоне
