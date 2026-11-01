@@ -31,6 +31,34 @@ JSON-LD ссылок на них нет; service worker их не перехва
 
 Все три: H.264 High, yuv420p, 1280×720, без звука, `+faststart`, CRF 20.
 
+### v2 — ролики напитков и групп, `/media/app/v2/` (01.11.2026)
+
+Заказ kofe-app. Готовые файлы «дизайна» (`~/kofe-design-export/media/video-v2/`, там же `manifest.json` со ссылками на
+исходники и авторами) скопированы байт в байт, без перекодирования; постеры, json, `_staroe`, `zapas` не брали.
+Исходники — стоковые ролики Pexels ([лицензия Pexels](https://www.pexels.com/license/): коммерция можно, раздавать как
+сток нельзя), кроме `latte.mp4`. Правила те же, что для трёх выше: ссылок со страниц, `sitemap.xml`, `llms.txt` и JSON-LD
+нет, service worker не перехватывает (выход по префиксу `/media/app/`). Все: H.264 High, yuv420p, 720×1280 (вертикаль),
+без звука, `+faststart`, ≤ ~1,5 МБ. Охраняет `tests/test_app_media.py`.
+
+| Адрес | Что | Длит. |
+|---|---|---|
+| `/media/app/v2/espresso.mp4` | эспрессо | 7 с |
+| `/media/app/v2/espresso-dvoinoi.mp4` | двойной эспрессо — тот же файл, что `espresso.mp4` (решение заказчика) | 7 с |
+| `/media/app/v2/amerikano.mp4` | американо | 7 с |
+| `/media/app/v2/kapuchino.mp4` | капучино | 7 с |
+| `/media/app/v2/latte.mp4` | латте — **файл владельца, см. ниже** | 7 с |
+| `/media/app/v2/flet-uait.mp4` | флэт уайт | 7 с |
+| `/media/app/v2/raf-klassicheskii.mp4` | раф классический | 5 с |
+| `/media/app/v2/raf-medovyi.mp4` | раф медовый (монтаж: фото чашки + ковш с мёдом из ролика) | 2,4 с |
+| `/media/app/v2/gruppa-moloko.mp4` | группа «Молоко» | 7 с |
+| `/media/app/v2/gruppa-siropy.mp4` | группа «Сиропы» | 7 с |
+| `/media/app/v2/gruppa-mod-kofe.mp4` | группа «Мод кофе» | 7 с |
+| `/media/app/v2/gruppa-dopolnitelno.mp4` | группа «Дополнительно» | 7 с |
+| `/media/app/v2/gruppa-podacha.mp4` | группа «Подача» | 5,2 с |
+
+**`latte.mp4` — файл владельца, права не проверены.** Нарезка из ролика из «Загрузок» владельца, источник и лицензия
+не выяснены. Лежит только на время тестов приложения; к релизу заказчик заменит его на том же адресе.
+
 ## Журнал приёмки
 
 | Дата | Задача | Ветка | PR | Итог |
