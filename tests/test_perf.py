@@ -546,6 +546,8 @@ async function run(name, { url, mode, cache, net, slow }) {   // net: {body, sta
     run('app_mp4', { url: '/media/app/menu-par.mp4', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/menu-par.mp4', 'old']], net: fresh }),
     run('app_nav', { url: '/media/app/napitok-moloko.mp4', mode: 'navigate', cache: [], net: fresh }),
     run('app_other', { url: '/media/app/poster.jpg', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/poster.jpg', 'old']], net: fresh }),
+    run('app_v2_mp4', { url: '/media/app/v2/latte.mp4', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/v2/latte.mp4', 'old']], net: fresh }),
+    run('app_v2_nav', { url: '/media/app/v2/espresso.mp4', mode: 'navigate', cache: [], net: fresh }),
   ]);
   console.log(JSON.stringify(out));
 })();
@@ -644,7 +646,7 @@ class TestServiceWorkerStrategy(unittest.TestCase):
     def test_app_media_not_intercepted(self):
         # /media/app/ (ролики мобильного приложения, 31.10.2026) — мимо SW целиком, не только *.mp4: Range через SW ломает iPhone
         self.need()
-        for name in ('app_mp4', 'app_nav', 'app_other'):
+        for name in ('app_mp4', 'app_nav', 'app_other', 'app_v2_mp4', 'app_v2_nav'):   # v2/ — подпапка, тот же префикс
             r = self.res[name]
             self.assertTrue(r.get('passthrough'), '%s: /media/app/ не перехватывается (fetch-обработчик выходит без respondWith)' % name)
             self.assertEqual((r['fetched'], r['waits']), (0, 0), '%s: SW сам не ходит в сеть и не пишет в кэш' % name)

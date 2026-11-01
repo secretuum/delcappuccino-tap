@@ -4,6 +4,8 @@
 и JSON-LD (его собирает tools/seo_jsonld.py) на /media/app/ не ссылаются; service worker их не перехватывает (Range-запросы
 видео через SW ломают iPhone). Подробности и точки вырезки — docs/COORDINATION.md, раздел «Медиа мобильного приложения».
 Правило test_perf «имя видео с хэшем» касается только <video> на странице — эти файлы туда не попадают (проверка ниже).
+v2 (01.11.2026): 13 роликов напитков и групп в /media/app/v2/ — готовые файлы «дизайна» (~/kofe-design-export/media/video-v2/),
+скопированы байт в байт; те же правила (без звука, H.264, +faststart, ссылок со страниц нет, SW не трогает), бюджет ~1,5 МБ.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import os, re, struct, unittest
 
@@ -11,7 +13,12 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(ROOT, 'media', 'app')
 FILES = ['menu-par.mp4', 'napitok-kapuchino.mp4', 'napitok-moloko.mp4']
 MAX_BYTES = 3500 * 1024          # ~3,5 МБ на файл — для приложения по мобильной сети
-REF = r'media/app'
+V2 = os.path.join(APP, 'v2')
+FILES_V2 = ['amerikano.mp4', 'espresso.mp4', 'espresso-dvoinoi.mp4', 'flet-uait.mp4', 'kapuchino.mp4', 'latte.mp4',
+            'raf-klassicheskii.mp4', 'raf-medovyi.mp4', 'gruppa-dopolnitelno.mp4', 'gruppa-mod-kofe.mp4',
+            'gruppa-moloko.mp4', 'gruppa-podacha.mp4', 'gruppa-siropy.mp4']
+MAX_BYTES_V2 = 1536 * 1024       # ~1,5 МБ на ролик v2 (сейчас 0,14–0,8 МБ)
+REF = r'media/app'               # подпапку media/app/v2/ ловит тот же шаблон
 SKIP_DIRS = {'tests', 'docs', 'media', 'node_modules', '__pycache__'}   # не страницы сайта (docs описывает адреса)
 SKIP_FILES = {'sw.js'}           # service worker сам называет /media/app/ — чтобы их пропускать (проверка ниже)
 
@@ -59,9 +66,17 @@ class TestAppMediaFiles(unittest.TestCase):
             self.assertGreater(size, 100 * 1024, 'media/app/%s подозрительно мал' % f)
             self.assertLessEqual(size, MAX_BYTES, 'media/app/%s: %d байт > ~3,5 МБ' % (f, size))
 
+    def test_v2_present_and_small(self):
+        self.assertEqual(sorted(os.listdir(V2)), sorted(FILES_V2), 'media/app/v2/: только 13 роликов (без постеров, json, _staroe, zapas)')
+        for f in FILES_V2:
+            p = os.path.join(V2, f)
+            size = os.path.getsize(p)
+            self.assertGreater(size, 50 * 1024, 'media/app/v2/%s подозрительно мал' % f)
+            self.assertLessEqual(size, MAX_BYTES_V2, 'media/app/v2/%s: %d байт > ~1,5 МБ' % (f, size))
+
     def test_mp4_faststart_video_only(self):
         # moov до mdat (+faststart: iPhone начинает играть, не дожидаясь конца файла); дорожка видео есть, звука нет
-        for f in FILES:
+        for f in FILES + ['v2/' + x for x in FILES_V2]:
             with open(os.path.join(APP, f), 'rb') as fh:
                 data = fh.read()
             top = atoms(data)
@@ -99,12 +114,18 @@ class TestAppMediaHidden(unittest.TestCase):
         self.assertLess(m.start(), handler.index('respondWith'), 'выход для /media/app/ — до любого respondWith')
         precache = src[src.index('var PRECACHE'):src.index('];', src.index('var PRECACHE'))]
         self.assertNotIn('media/app', precache, 'media/app/ не в PRECACHE')
+        # v2 — подпапка: выход по префиксу '/media/app/' (indexOf === 0) покрывает и её; поведение в node — test_perf, app_v2_*
+        self.assertNotRegex(src, r'media/app/v2', 'sw.js: для v2/ отдельных правил не нужно')
 
     def test_documented(self):
         doc = read('docs', 'COORDINATION.md')
         self.assertIn('mixkit.co/license', doc)
         for f in FILES:
             self.assertIn('`/media/app/%s`' % f, doc, 'адрес %s не описан в docs/COORDINATION.md' % f)
+        for f in FILES_V2:
+            self.assertIn('`/media/app/v2/%s`' % f, doc, 'адрес v2/%s не описан в docs/COORDINATION.md' % f)
+        self.assertIn('latte.mp4', doc)
+        self.assertIn('права не проверены', doc, 'latte.mp4 v2 — пометка «права не проверены»')
 
 
 if __name__ == '__main__':
