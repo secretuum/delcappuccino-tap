@@ -24,42 +24,65 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
 <!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic-ext.70cf502d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic.17d048ca.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-latin.9a69d0aa.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-:root{--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic.646d6acf.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-latin.7f7f79c5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-tenge.b368a258.woff2) format('woff2');unicode-range:U+20B8}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
+:root{--font-display:'Geologica',system-ui,sans-serif;--font-body:'Montserrat',system-ui,-apple-system,sans-serif;--c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);--c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;--c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);--c-brand-cream:#FEF1E7;--c-whatsapp:#25D366;--c-input-border:#8C7E6E;--r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;--s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;--fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;--h-button:56px; --h-touch:48px;--shadow-floating:0 6px 24px rgba(49,73,47,.16);--forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);--olive:var(--c-olive); --sage:#738E5B; --moss:#B4B86C;--ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);--surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;}
+/* меню текстом (этап 2 редизайна): токены v5 главной, Geologica — заголовки, Montserrat — текст, фон белый; без JS и фото */
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--cream);color:var(--ink);font:15px/1.5 'Golos Text',-apple-system,sans-serif;-webkit-font-smoothing:antialiased}
+body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
-header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
-a{color:var(--forest);font-weight:600}
-header a{text-decoration:none}
-h1{font-size:28px;line-height:1.15;color:var(--forest-dk);margin:22px 0 8px}
-.lead{color:var(--ink-2)}
-.toc{margin:12px 0 4px;font-size:14px;line-height:1.9}
-h2{font-size:22px;color:var(--forest-dk);margin:30px 0 6px;padding-top:10px;border-top:2px solid var(--forest)}
-h3{font-size:18px;color:var(--olive);margin:22px 0 2px}
-h4{display:flex;justify-content:space-between;gap:12px;font-size:15px;margin:16px 0 2px}
-.note{font-size:13px;color:var(--ink-2);margin:2px 0}
+a{color:var(--c-accent);font-weight:600}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
+.logo{display:inline-flex;margin-right:4px}
+.logo img{display:block;height:36px;width:auto;border-radius:8px}
+.pill,.toc a,.lang a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+.lang{display:flex;gap:4px;margin-left:auto}
+.lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption);font-weight:700}
+.lang a[aria-current]{background:var(--c-accent);color:var(--c-on-accent)}
+h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase;line-height:1.2}
+h1{font-size:var(--fs-heading);margin:16px 0 8px}
+.lead{color:var(--c-muted)}
+.toc{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 8px}
+h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
+h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
+h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:0 0 6px}
+.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
+h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-bg);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
+.note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
-li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:7px 0;border-bottom:1px solid var(--line)}
-small,li i,li em{font-size:12.5px;color:var(--ink-2);font-style:normal;font-weight:400}
-.p{white-space:nowrap;font-weight:600;font-variant-numeric:tabular-nums}
-.p s{font-weight:400;color:var(--ink-2);margin-right:2px}
-footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font-size:13px;color:var(--ink-2);line-height:1.9}
+li{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:6px 0;border-bottom:1px solid rgba(36,28,21,.06);font-size:15px;line-height:1.4}
+li:last-child{border-bottom:0}
+@media(min-width:700px){.sec{padding:20px 24px}}
+li .n{font-weight:500}
+small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
+.p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}
+.p s{font-weight:400;color:var(--c-muted)}
+footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
+.social{display:flex;justify-content:center;gap:12px;margin:12px 0}
+.social a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--c-surface);color:var(--c-text)}
+.social svg{display:block;width:22px;height:22px}
+.icons{position:absolute;width:0;height:0;overflow:hidden}
 @media(min-width:700px){h1{font-size:34px}}
 </style>
 </head>
 <body>
-<header class="wrap"><a href="/en/">← Del Cappuccino</a><a href="/#menu-en" onclick="track('cta_menu',{src:'menu_page'})">Menu with photos</a></header>
+<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></symbol><symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol><symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></symbol></svg>
+<header class="wrap"><a class="logo" href="/en/" aria-label="Del Cappuccino"><img src="/assets/logo-lockup-128.webp" width="128" height="63" alt="Del Cappuccino"></a><a class="pill" href="/en/">← home</a><a class="pill" href="/#menu-en" onclick="track('cta_menu',{src:'menu_page'})">Menu with photos</a><nav class="lang" aria-label="Site language"><a href="/menyu" lang="ru" hreflang="ru" onclick="track('lang_switch',{lang:'ru',src:'menu_page'})">РУС</a><a href="/kk/menyu" lang="kk" hreflang="kk" onclick="track('lang_switch',{lang:'kk',src:'menu_page'})">ҚАЗ</a><a href="/en/menu" lang="en" aria-current="page">ENG</a></nav></header>
 <main class="wrap">
 <h1>Del Cappuccino menu</h1>
 <p class="lead">Prices in tenge (₸). The menu with photos and ingredients is <a href="/#menu-en">on the home page</a>, online ordering at <a href="https://delcappuccino.kz/">delcappuccino.kz</a>.</p>
-<nav class="toc"><a href="#kitchen">Kitchen</a> · <a href="#bar">Bar</a> · <a href="#dessert">Desserts</a> · <a href="#frozen">Ready to cook</a> · <a href="#togo">Bakery to go</a></nav>
+<nav class="toc"><a href="#kitchen">Kitchen</a> <a href="#bar">Bar</a> <a href="#dessert">Desserts</a> <a href="#frozen">Ready to cook</a> <a href="#togo">Bakery to go</a></nav>
 <h2 id="cafe">Café menu</h2>
 <p class="note">4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St).</p>
 <p class="note">A 10% service charge is added to the bill. Please tell your server about any food allergies.</p>
 <h3 id="kitchen">Kitchen</h3>
+<section class="sec">
 <h4><span>Breakfast <small>all day</small></span></h4>
 <ul>
 <li><span class="n">Oatmeal with granola and peach</span><b class="p">2 000 ₸</b></li>
@@ -78,6 +101,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Steak omelette <i>· new item</i></span><b class="p">4 000 ₸</b></li>
 <li><span class="n">Salmon breakfast <i>· popular</i></span><b class="p">4 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Sweet breakfasts</span></h4>
 <ul>
 <li><span class="n">Crêpes with sour cream and honey</span><b class="p">1 700 ₸</b></li>
@@ -86,6 +111,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Belgian waffles</span><b class="p">2 500 ₸</b></li>
 <li><span class="n">Syrniki (cottage cheese pancakes) <i>· highly recommended</i></span><b class="p">2 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Salads</span></h4>
 <ul>
 <li><span class="n">Greek salad</span><b class="p">2 700 ₸</b></li>
@@ -94,12 +121,16 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Teriyaki baked salmon salad <i>· popular</i></span><b class="p">3 200 ₸</b></li>
 <li><span class="n">Steak salad <i>· new item</i></span><b class="p">4 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Bowls</span></h4>
 <ul>
 <li><span class="n">Chicken bowl <i>· highly recommended, healthy choice</i></span><b class="p">3 000 ₸</b></li>
 <li><span class="n">Shrimp bowl <i>· healthy choice</i></span><b class="p">3 100 ₸</b></li>
 <li><span class="n">Salmon bowl <i>· popular, healthy choice</i></span><b class="p">3 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Soups</span></h4>
 <ul>
 <li><span class="n">Chicken noodle soup <i>· highly recommended</i></span><b class="p">1 800 ₸</b></li>
@@ -109,6 +140,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Beef borscht with Borodinsky rye bread</span><b class="p">2 100 ₸</b></li>
 <li><span class="n">Chuchvara (beef dumplings) <i>· new item, spicy</i></span><b class="p">2 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Sandwiches &amp; Snacks</span></h4>
 <ul>
 <li><span class="n">Flatbread stuffed with mashed potato and cheese <i>· new item</i></span><b class="p">1 800 ₸</b></li>
@@ -120,6 +153,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Chicken club sandwich with fries <i>· popular</i></span><b class="p">3 300 ₸</b></li>
 <li><span class="n">Classic burger with fries <i>· popular</i></span><b class="p">3 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Pizza</span></h4>
 <ul>
 <li><span class="n">Margherita</span><b class="p">3 100 ₸</b></li>
@@ -128,6 +163,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Bolognese <i>· popular, spicy</i></span><b class="p">3 600 ₸</b></li>
 <li><span class="n">Quattro Stagioni <i>· highly recommended</i></span><b class="p">3 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Pan-Asian</span></h4>
 <ul>
 <li><span class="n">Thai-style chicken with rice</span><b class="p">2 900 ₸</b></li>
@@ -138,6 +175,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Tom Yum with chicken <i>· highly recommended, spicy</i></span><b class="p">3 300 ₸</b></li>
 <li><span class="n">Tom Yum with shrimp <i>· spicy</i></span><b class="p">3 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Fresh pasta</span></h4>
 <p class="note">our pasta is made with semola flour</p>
 <ul>
@@ -147,6 +186,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Farfalle with braised beef <i>· highly recommended</i></span><b class="p">3 700 ₸</b></li>
 <li><span class="n">Farfalle with salmon</span><b class="p">4 100 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Mains</span></h4>
 <ul>
 <li><span class="n">Chicken in creamy mushroom sauce with rice <i>· highly recommended</i></span><b class="p">3 000 ₸</b></li>
@@ -160,6 +201,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Beef schnitzel <i>· new item</i></span><b class="p">4 200 ₸</b></li>
 <li><span class="n">Braised ribs</span><b class="p">4 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Homestyle dishes</span></h4>
 <ul>
 <li><span class="n">Chicken samsa <small>1 pc</small></span><b class="p">395 ₸</b></li>
@@ -170,6 +213,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Manti with hand-chopped beef and pumpkin <small>5 pcs</small> <i>· cooking time from 30 min</i></span><b class="p">2 490 ₸</b></li>
 <li><span class="n">Meat platter <i>· cooking time from 30 min</i></span><b class="p">15 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Grill</span></h4>
 <ul>
 <li><span class="n">Beef lula kebab with salad and pita <i>· new item</i></span><b class="p">3 200 ₸</b></li>
@@ -179,12 +224,16 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">T-bone steak with baby potatoes <small>300 g</small> <i>· cooking time from 30 min</i></span><b class="p">3 990 ₸ <small>instead of <s>7 200</s></small></b></li>
 <li><span class="n">Salmon steak with baby potatoes <small>250 g</small> <i>· cooking time from 30 min</i></span><b class="p">7 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Bread</span></h4>
 <ul>
 <li><span class="n">Baguette</span><b class="p">1 000 ₸</b></li>
 <li><span class="n">Garlic bread</span><b class="p">1 000 ₸</b></li>
 <li><span class="n">Bread basket</span><b class="p">1 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Sides</span></h4>
 <ul>
 <li><span class="n">Rice</span><b class="p">1 300 ₸</b></li>
@@ -194,6 +243,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Hash brown with sour cream</span><b class="p">1 700 ₸</b></li>
 <li><span class="n">Grilled vegetables</span><b class="p">2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Sauces</span></h4>
 <ul>
 <li><span class="n">Ketchup</span><b class="p">500 ₸</b></li>
@@ -204,6 +255,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Sriracha</span><b class="p">500 ₸</b></li>
 <li><span class="n">Sweet chili</span><b class="p">500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Sharing platters</span></h4>
 <ul>
 <li><span class="n">Sausage platter for 4–5</span><b class="p">21 000 ₸</b></li>
@@ -212,7 +265,9 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Beshbarmak — boiled meat with hand-cut noodles, for 4–5 (pre-order only)</span><b class="p">30 000 ₸</b></li>
 <li><span class="n">Kuyrdak — pan-fried meat and offal, for 4–5 (pre-order only)</span><b class="p">30 000 ₸</b></li>
 </ul>
+</section>
 <h3 id="bar">Bar</h3>
+<section class="sec">
 <h4><span>Classic coffee</span></h4>
 <p class="note">choice of beans — 100% Arabica: Brazil Sul de Minas (nuts, cocoa, caramel) or Ethiopia Yirgacheffe (floral, berries, grapefruit)</p>
 <ul>
@@ -225,6 +280,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Batch brew <small>200/300 ml</small> <i>· new item</i> <em>· only at: Promenade Business Park (44A Abay Ave), Vavilon Residential Complex (247/8 Rozybakiev St)</em></span><b class="p">1 200 / 1 300 ₸</b></li>
 <li><span class="n">Cappuccino (0.3 L) + cinnamon roll <i>· highly recommended</i></span><b class="p">1 890 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Iced coffee <small>330 ml</small></span></h4>
 <ul>
 <li><span class="n">Iced Americano</span><b class="p">1 400 ₸</b></li>
@@ -235,6 +292,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Bumble coffee with juice or fresh-squeezed juice</span><b class="p">2 100 ₸</b></li>
 <li><span class="n">Frappuccino: caramel, chocolate</span><b class="p">2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Loose-leaf teas</span></h4>
 <p class="note">cup 330 ml / pot 1 L</p>
 <ul>
@@ -242,6 +301,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Jasmine</span><b class="p">1 300 / 2 400 ₸</b></li>
 <li><span class="n">Milk oolong</span><b class="p">1 300 / 2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Signature teas</span></h4>
 <p class="note">cup 330 ml / pot 900 ml</p>
 <ul>
@@ -254,6 +315,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Raspberry, rosemary &amp; lemon <i>· new item</i></span><b class="p">1 500 / 2 700 ₸</b></li>
 <li><span class="n">Passion fruit, pineapple &amp; orange <i>· new item</i></span><b class="p">1 500 / 2 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Iced tea <small>330 ml</small></span></h4>
 <ul>
 <li><span class="n">Classic</span><b class="p">1 500 ₸</b></li>
@@ -261,6 +324,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Jasmine &amp; apple <i>· highly recommended</i></span><b class="p">1 500 ₸</b></li>
 <li><span class="n">Strawberry oolong <i>· highly recommended</i></span><b class="p">1 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Lemonades</span></h4>
 <p class="note">glass 330 ml / carafe 900 ml</p>
 <ul>
@@ -271,18 +336,24 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Kiwi &amp; apple</span><b class="p">1 400 / 2 700 ₸</b></li>
 <li><span class="n">Pineapple &amp; blueberry</span><b class="p">1 400 / 2 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Milkshakes <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Vanilla</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Oreo</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Strawberry</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Fresh-squeezed juices <small>300 ml</small></span></h4>
 <ul>
 <li><span class="n">Apple</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Grapefruit</span><b class="p">2 600 ₸</b></li>
 <li><span class="n">Orange</span><b class="p">2 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Raf coffee <small>375 ml</small></span></h4>
 <p class="note">*any raf can be served iced</p>
 <ul>
@@ -290,6 +361,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Honey <i>· contains honey</i></span><b class="p">2 000 ₸</b></li>
 <li><span class="n">Salted caramel</span><b class="p">2 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Specialty drinks <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Cookie latte <small>300 ml</small> <i>· new item</i></span><b class="p">2 400 ₸</b></li>
@@ -303,12 +376,16 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Cola float</span><b class="p">2 600 ₸</b></li>
 <li><span class="n">Hot chocolate <small>200/300 ml</small></span><b class="p">1 500 / 1 800 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Non-alcoholic mulled wine <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Apple</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Cherry</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Orange &amp; sea buckthorn</span><b class="p">1 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Smoothies <small>350 ml</small></span></h4>
 <ul>
 <li><span class="n">Green</span><b class="p">2 300 ₸</b></li>
@@ -316,6 +393,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Raspberry &amp; banana</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Blueberry &amp; banana</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Soft drinks</span></h4>
 <ul>
 <li><span class="n">Cranberry mors (traditional berry drink) <small>300 ml / 1 L</small></span><b class="p">800 / 2 300 ₸</b></li>
@@ -330,6 +409,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Piko mini <small>200 ml</small></span><b class="p">800 ₸</b></li>
 <li><span class="n">Schweppes <small>450 ml</small></span><b class="p">1 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Add-ons</span></h4>
 <ul>
 <li><span class="n">Lemon</span><b class="p">400 ₸</b></li>
@@ -341,7 +422,9 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Plant-based milk</span><b class="p">500 ₸</b></li>
 <li><span class="n">Lactose-free milk</span><b class="p">500 ₸</b></li>
 </ul>
+</section>
 <h3 id="dessert">Desserts</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Cookie</span><b class="p">300 ₸</b></li>
 <li><span class="n">Kartoshka (chocolate truffle cake)</span><b class="p">400 ₸</b></li>
@@ -362,6 +445,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Pistachio &amp; raspberry</span><b class="p">1 200 ₸</b></li>
 <li><span class="n">Dubai chocolate cake</span><b class="p">1 450 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Whole cakes</span></h4>
 <ul>
 <li><span class="n">Meringue roll</span><b class="p">6 700 ₸</b></li>
@@ -376,7 +461,9 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Pistachio roll</span><b class="p">9 000 ₸</b></li>
 <li><span class="n">Dubai chocolate cake</span><b class="p">13 000 ₸</b></li>
 </ul>
+</section>
 <h3 id="frozen">Ready to cook</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Vareniki <small>500 g</small></span><b class="p">1 550 ₸</b></li>
 <li><span class="n">Chicken samsa <small>8 pcs</small></span><b class="p">1 700 ₸</b></li>
@@ -387,6 +474,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Beef pelmeni <small>500 g</small></span><b class="p">2 900 ₸</b></li>
 <li><span class="n">Beef manti <small>10 pcs</small></span><b class="p">3 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Meat</span><b class="p">3 596 ₸</b></h4>
 <ul>
 <li><span class="n">Boneless meat <small>500 g</small></span></li>
@@ -394,10 +483,12 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Ribeye <small>1 pc (~300 g)</small></span></li>
 <li><span class="n">T-bone <small>1 pc (~300 g)</small></span></li>
 </ul>
+</section>
 <h2 id="togo">Bakery to go · Rams City Residential Complex</h2>
 <p class="note">94/12 Zhandosov St — daily 07:00–22:00</p>
 <p class="note">Please tell your server about any food allergies.</p>
 <h3 id="togo-dessert">Desserts</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Cookie</span><b class="p">300 ₸</b></li>
 <li><span class="n">Kartoshka (chocolate truffle cake)</span><b class="p">350 ₸</b></li>
@@ -418,6 +509,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Pistachio &amp; raspberry</span><b class="p">1 200 ₸</b></li>
 <li><span class="n">Dubai chocolate cake</span><b class="p">1 450 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Whole cakes</span></h4>
 <ul>
 <li><span class="n">Meringue roll</span><b class="p">6 700 ₸</b></li>
@@ -432,11 +525,15 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Pistachio roll</span><b class="p">9 000 ₸</b></li>
 <li><span class="n">Dubai chocolate cake</span><b class="p">12 700 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Sandwiches</span></h4>
 <ul>
 <li><span class="n">Assorted sandwiches</span><b class="p">990 ₸</b></li>
 </ul>
+</section>
 <h3 id="togo-frozen">Ready to cook</h3>
+<section class="sec">
 <ul>
 <li><span class="n">Vareniki <small>500 g</small></span><b class="p">1 550 ₸</b></li>
 <li><span class="n">Beef patties <small>4 pcs</small></span><b class="p">3 300 ₸</b></li>
@@ -448,6 +545,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Syrniki (cottage cheese pancakes) <small>6 pcs</small></span><b class="p">1 900 ₸</b></li>
 <li><span class="n">Syrniki with irimshik (Kazakh dried curd) <small>6 pcs</small></span><b class="p">2 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Meat</span><b class="p">3 596 ₸</b></h4>
 <ul>
 <li><span class="n">Boneless meat <small>500 g</small></span></li>
@@ -455,7 +554,9 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Ribeye <small>1 pc (~300 g)</small></span></li>
 <li><span class="n">T-bone <small>1 pc (~300 g)</small></span></li>
 </ul>
+</section>
 <h3 id="togo-bar">Bar</h3>
+<section class="sec">
 <h4><span>Classic coffee</span></h4>
 <p class="note">beans — 100% Arabica, Brazil Sul de Minas (nuts, cocoa, caramel)</p>
 <ul>
@@ -466,6 +567,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Flat white <small>200 ml</small></span><b class="p">1 800 ₸</b></li>
 <li><span class="n">Cappuccino (0.3 L) + cinnamon roll <i>· highly recommended</i></span><b class="p">1 890 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Iced coffee <small>330 ml</small></span></h4>
 <ul>
 <li><span class="n">Iced Americano</span><b class="p">1 400 ₸</b></li>
@@ -476,12 +579,16 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Bumble coffee with juice or fresh-squeezed juice</span><b class="p">2 100 ₸</b></li>
 <li><span class="n">Frappuccino: caramel, chocolate</span><b class="p">2 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Loose-leaf teas <small>400 ml</small></span></h4>
 <ul>
 <li><span class="n">Assam</span><b class="p">1 300 ₸</b></li>
 <li><span class="n">Jasmine</span><b class="p">1 300 ₸</b></li>
 <li><span class="n">Milk oolong</span><b class="p">1 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Signature teas <small>400 ml</small></span></h4>
 <ul>
 <li><span class="n">Kazakh-style tea (navat, irimshik) <i>· popular, contains honey</i></span><b class="p">1 500 ₸</b></li>
@@ -493,6 +600,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Raspberry &amp; lemon <i>· new item</i></span><b class="p">1 500 ₸</b></li>
 <li><span class="n">Passion fruit, orange &amp; honey <i>· new item, contains honey</i></span><b class="p">1 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Iced tea <small>330 ml</small></span></h4>
 <ul>
 <li><span class="n">Classic</span><b class="p">1 500 ₸</b></li>
@@ -500,6 +609,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Jasmine &amp; apple <i>· highly recommended</i></span><b class="p">1 500 ₸</b></li>
 <li><span class="n">Strawberry oolong <i>· highly recommended</i></span><b class="p">1 500 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Lemonades <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Sorrel &amp; lime <i>· new item</i></span><b class="p">1 400 ₸</b></li>
@@ -510,18 +621,24 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Kiwi &amp; apple</span><b class="p">1 400 ₸</b></li>
 <li><span class="n">Pineapple &amp; blueberry</span><b class="p">1 400 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Milkshakes <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Vanilla</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Oreo</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Strawberry</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Fresh-squeezed juices <small>300 ml</small></span></h4>
 <ul>
 <li><span class="n">Apple</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Grapefruit</span><b class="p">2 600 ₸</b></li>
 <li><span class="n">Orange</span><b class="p">2 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Raf coffee <small>375 ml</small></span></h4>
 <p class="note">*any raf can be served iced</p>
 <ul>
@@ -529,6 +646,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Honey <i>· contains honey</i></span><b class="p">2 000 ₸</b></li>
 <li><span class="n">Salted caramel</span><b class="p">2 000 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Specialty drinks <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Kiwi tonic</span><b class="p">2 400 ₸</b></li>
@@ -539,12 +658,16 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Iced strawberry cappuccino</span><b class="p">2 400 ₸</b></li>
 <li><span class="n">Hot chocolate <small>200/300 ml</small></span><b class="p">1 500 / 1 800 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Non-alcoholic mulled wine <small>375 ml</small></span></h4>
 <ul>
 <li><span class="n">Apple</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Cherry</span><b class="p">1 600 ₸</b></li>
 <li><span class="n">Orange &amp; sea buckthorn</span><b class="p">1 600 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Smoothies <small>350 ml</small></span></h4>
 <ul>
 <li><span class="n">Green</span><b class="p">2 300 ₸</b></li>
@@ -552,6 +675,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Raspberry &amp; banana</span><b class="p">2 300 ₸</b></li>
 <li><span class="n">Blueberry &amp; banana</span><b class="p">2 300 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Soft drinks</span></h4>
 <ul>
 <li><span class="n">Cranberry mors (traditional berry drink) <small>300 ml</small></span><b class="p">800 ₸</b></li>
@@ -565,6 +690,8 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">AVA lemonade citrus <small>450 ml</small></span><b class="p">1 200 ₸</b></li>
 <li><span class="n">Gracio: cherry, apple, orange <small>250 ml</small></span><b class="p">1 200 ₸</b></li>
 </ul>
+</section>
+<section class="sec">
 <h4><span>Add-ons</span></h4>
 <ul>
 <li><span class="n">Lemon</span><b class="p">400 ₸</b></li>
@@ -575,8 +702,11 @@ footer{margin:34px 0 26px;padding-top:14px;border-top:1px solid var(--line);font
 <li><span class="n">Plant-based milk</span><b class="p">600 ₸</b></li>
 <li><span class="n">Lactose-free milk</span><b class="p">500 ₸</b></li>
 </ul>
+</section>
 </main>
-<footer class="wrap"><a href="/en/">Home</a> · <a href="/en/#faq">FAQ</a> · <a href="https://delcappuccino.kz/" onclick="track('cta_order',{src:'menu_page'})">Order in the app</a> · <a href="https://instagram.com/del.cappuccino" onclick="track('cta_instagram',{src:'menu_page'})">Instagram</a> · © 2026 Del Cappuccino</footer>
+<footer class="wrap">
+<div class="social"><a href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'instagram',src:'menu_page'})" aria-label="Instagram" title="Instagram"><svg aria-hidden="true" focusable="false"><use href="#i-ig"/></svg></a><a href="https://www.youtube.com/@DelCappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'youtube',src:'menu_page'})" aria-label="YouTube" title="YouTube"><svg aria-hidden="true" focusable="false"><use href="#i-yt"/></svg></a><a href="https://www.threads.com/@del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'threads',src:'menu_page'})" aria-label="Threads" title="Threads"><svg aria-hidden="true" focusable="false"><use href="#i-th"/></svg></a></div>
+<a href="/en/">Home</a> · <a href="/en/#faq">FAQ</a> · <a href="https://delcappuccino.kz/" onclick="track('cta_order',{src:'menu_page'})">Order in the app</a> · © 2026 Del Cappuccino</footer>
 <script>
 /* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
 (function(){

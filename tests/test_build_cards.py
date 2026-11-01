@@ -247,6 +247,36 @@ class TestCalc(Base):
         self.assertEqual(cards['Тест: омлет']['img'], rel)
 
 
+    def test_cutout_kept_while_source_same(self):
+        """вырезка menu/cutout_photos.py («+cut1» / «+fb1» в sources.json) не перезаписывается исходником, пока источник тот же"""
+        try:
+            from PIL import Image
+        except ImportError:
+            self.skipTest('нет PIL')
+        src = os.path.join(self.d, 'cut.png')
+        Image.new('RGB', (1200, 800), (200, 150, 100)).save(src)
+        item = [{"key": "c", "name": "Тест: вырезка", "photo": src, "portion": {"value": 100, "unit": "г"},
+                 "per_portion": {"kcal": 1, "protein": 1, "fat": 1, "carbs": 1}}]
+        iiko = self.w('iiko-cut.json', export(item))
+        self.build(iiko=iiko, no_photos=False)
+        man = os.path.join(self.img, 'sources.json')
+        with open(man, encoding='utf-8') as f:
+            sources = json.load(f)
+        sl = 'test-vyrezka'
+        sign = sources[sl].split(' [', 1)[0]
+        sources[sl] = sign + '+cut1 [960, 960]'                       # как пишет cutout_photos.py
+        with open(man, 'w', encoding='utf-8') as f:
+            json.dump(sources, f, ensure_ascii=False)
+        dst = os.path.join(self.img, sl + '.webp')
+        Image.new('RGBA', (960, 960), (0, 0, 0, 0)).save(dst, 'WEBP')   # «вырезка» с прозрачным фоном
+        before = open(dst, 'rb').read()
+        cards, rep = self.build(iiko=iiko, no_photos=False)
+        self.assertEqual(open(dst, 'rb').read(), before, 'вырезку не перезаписали')
+        self.assertEqual(cards['Тест: вырезка']['ar'], [960, 960], 'ar — от холста вырезки')
+        with open(man, encoding='utf-8') as f:
+            self.assertTrue(json.load(f)[sl].endswith('+cut1 [960, 960]'))
+
+
 class TestRealRef(unittest.TestCase):
     """настоящий справочник: структура и грубая физика (ккал ≈ 4·б + 9·ж + 4·у, у сухих специй расходится из-за клетчатки)"""
     def test_ref_shape(self):

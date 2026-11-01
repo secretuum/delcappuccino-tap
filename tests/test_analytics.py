@@ -189,7 +189,8 @@ class TestAnalytics(unittest.TestCase):
             'nav_menu': ([pick("track('cta_menu',{src:'nav'})")], ['menu_open']),
             'hbar_menu': ([pick("track('cta_menu',{src:'hbar_m'})")], ['menu_open']),
             'card_menu': ([pick("track('loc_menu'")], ['menu_open']),
-            'contact_wa_then_branch': ([pick("track('cta_wa_contact')"), 'MODAL:modal_wa'], ['whatsapp']),
+            # 31.10: кнопки WhatsApp в «загляните на кофе» больше нет (владелец) — окно выбора филиала открывает пилюля в шапке
+            'pill_then_wa': ([pick("track('cta_route',{src:'pill'})"), 'MODAL:modal_wa'], ['whatsapp']),
             'route_then_branch': ([pick("track('cta_route')"), 'MODAL:modal_route'], ['route']),
             'picker_then_menu': ([pick("track('cta_route')"), 'MODAL:modal_menu'], ['menu_open']),
             'picker_then_call': ([pick("track('cta_route')"), 'MODAL:modal_call'], ['call']),
@@ -198,7 +199,7 @@ class TestAnalytics(unittest.TestCase):
             'card_call': ([pick("track('loc_call'")], ['call']),
             'card_route': ([pick("track('loc_route'")], ['route']),
             'order': ([pick("track('cta_order')")], ['order_app']),
-            'instagram': ([pick("track('cta_instagram')")], ['instagram']),
+            'instagram': ([pick("track('cta_instagram',{net:'instagram'})")], ['instagram']),   # соцсети значками, параметр net
             'lang_kk': ([pick("track('lang_switch',{lang:'kk'})")], ['lang_switch']),
             'faq': ([pick("if(this.open)track('faq_open'")], ['faq_open']),
             'ugolok': ([pick("track('cta_ugolok')")], ['ugolok']),
@@ -231,7 +232,7 @@ class TestAnalytics(unittest.TestCase):
             page = self.pages[p]
             for ev in ('loc_call', 'loc_route', 'loc_wa'):
                 self.assertEqual(page.count("track('%s'" % ev), n, '%s: %s на каждой точке' % (p, ev))
-            for ev in ('cta_book', 'cta_order', 'cta_menu', 'cta_wa_contact', 'cta_instagram', 'cta_ugolok', 'loc_menu'):
+            for ev in ('cta_book', 'cta_order', 'cta_menu', 'cta_instagram', 'cta_ugolok', 'loc_menu'):   # cta_wa_contact убран 31.10
                 self.assertIn("track('%s'" % ev, page, p)
             self.assertEqual(page.count("track('lang_switch'"), 2, '%s: два других языка; у текущего события нет' % p)
             self.assertEqual(page.count("track('faq_open'"), faq_n, '%s: раскрытие каждого вопроса' % p)

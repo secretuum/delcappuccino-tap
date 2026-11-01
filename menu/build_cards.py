@@ -36,6 +36,8 @@
   • фото: drive_file из name_map.json (папка menu/menu_photos/, приоритет) или photo из iiko (url)
     → img/menu/<slug>.webp через PIL, ≤100 КБ, ≤960 px; img/menu/sources.json помнит источник
     каждого webp — перекодируем, когда источник сменился или по --refresh-photos; без PIL — без фото;
+    вырезанные menu/cutout_photos.py (прозрачный фон, единый цвет, по центру; в sources.json «+cut1» / «+fb1»)
+    сохраняются как есть, пока источник тот же — --refresh-photos их перезапишет исходником;
   • записи старого cards.json с "_stub": true сохраняются, пока выгрузка не даст такое же название;
     у собранных записей _stub нет.
 
@@ -599,6 +601,13 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
     cur = sources.get(sl) or ''
     if have and not refresh and cur.startswith(sign + ' '):   # манифест: «<источник>:<формат> [w, h]»
         return rel, rel480, json.loads(cur[len(sign) + 1:])
+    # вырезка menu/cutout_photos.py: «<источник>:<формат>+cut1 [w, h]» (или +fb1 — фолбэк без вырезки) — готовый файл
+    # с прозрачным фоном и выровненным цветом; оставляем, пока источник тот же (rembg для сборки не нужен)
+    cut = re.match(re.escape(sign) + r'\+(?:cut|fb)\d+ (\[.*\])$', cur)
+    if have and not refresh and cut:
+        return rel, rel480, json.loads(cut.group(1))
+    if have and cut is None and re.search(r'\+(?:cut|fb)\d+ ', cur):
+        rep.add(f'  источник фото сменился — вырезку перезаписываем исходником, запустите menu/cutout_photos.py: {item["name"]}')
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
         return (rel, rel480, json.loads(cur.split(' ', 1)[1]) if have and ' ' in cur else None) if have else (None, None, None)

@@ -11,6 +11,8 @@
 <link rel="alternate" hreflang="kk" href="https://tap.delcappuccino.kz/kk/">
 <link rel="alternate" hreflang="en" href="https://tap.delcappuccino.kz/en/">
 <link rel="alternate" hreflang="x-default" href="https://tap.delcappuccino.kz/">
+<link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
 <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
@@ -24,306 +26,347 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
+<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('dc_intro'))return;sessionStorage.setItem('dc_intro','1');var d=document.documentElement;d.classList.add('intro-on');setTimeout(function(){d.classList.remove('intro-on')},1500)}catch(e){}})();</script>
+
 <!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
-@font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-latin.ed9f328c.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic-ext.70cf502d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic.17d048ca.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-latin.9a69d0aa.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic.646d6acf.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-latin.7f7f79c5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-tenge.b368a258.woff2) format('woff2');unicode-range:U+20B8}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
 :root{
-  --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
-  --olive:#849E29; --sage:#738E5B; --moss:#B4B86C;
-  --ink:#241C15; --ink-2:#5C5245; --line:rgba(66,99,73,.18);
-  --surface:#FFFFFF; --r:14px;
-  --sale:#C2140F;
+  --font-display:'Geologica',system-ui,sans-serif;
+  --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
+  --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);
+  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;
+  --c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);
+  
+  --c-brand-cream:#FEF1E7;
+  --c-whatsapp:#25D366;       
+  --c-input-border:#8C7E6E;   
+  --r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;
+  --s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
+  --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
+  --h-button:56px; --h-touch:48px;
+  --shadow-floating:0 6px 24px rgba(49,73,47,.16);
+  
+  --forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);
+  --olive:var(--c-olive); --sage:#738E5B; --moss:#B4B86C;
+  --ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);
+  --surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
-body{
-  background:var(--cream);color:var(--ink);
-  font-family:'Golos Text',-apple-system,sans-serif;
-  -webkit-font-smoothing:antialiased;
-}
+body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);font-size:var(--fs-body);line-height:1.5;-webkit-font-smoothing:antialiased}
+.disp{font-family:var(--font-display)}
 a{color:inherit}
-.shell{max-width:1160px;margin:0 auto;padding:0 28px}
-header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--cream) 92%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
-.hbar{display:flex;align-items:center;gap:26px;padding:12px 28px}
-.logo-d{height:42px;width:auto;display:block;border-radius:10px}
-.logo-m{display:none;height:34px;width:auto;border-radius:0}
-nav{display:flex;gap:22px;margin-left:8px}
-nav a{font-size:13.5px;text-decoration:none;color:var(--ink-2);font-weight:500}
-nav a:hover{color:var(--forest)}
-.lang-sw{display:flex;gap:2px;margin-left:auto}
-.lang-sw a{font-size:12.5px;font-weight:700;letter-spacing:.04em;color:var(--ink-2);text-decoration:none;padding:6px 7px}
-.lang-sw a:hover{color:var(--forest)}
-.lang-sw a[aria-current]{color:var(--forest);box-shadow:inset 0 -2px 0 var(--olive)}
-@media(max-width:680px){
-.lang-sw{margin-left:0;gap:0}
-.lang-sw a{display:inline-flex;align-items:center;min-height:40px;padding:0 5px;font-size:12px}
-.lang-sw a[aria-current]{display:none}
+h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
+h2 span,h1 span{color:var(--c-accent)}
+.shell{max-width:1160px;margin:0 auto;padding:0 var(--s-24)}
+:focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
+.intro{display:none}
+.intro-on .intro{display:flex;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center;background:var(--c-accent);pointer-events:none;animation:intro-out .35s ease 1.1s both}
+.intro .logo-art{width:min(72vw,340px)}
+.intro-on .intro .logo-art-moped{animation:moped-in .8s cubic-bezier(.2,.75,.25,1) both}
+.intro-on .intro .logo-art-text{animation:fade-in .35s ease .55s both}
+@keyframes moped-in{from{transform:translateX(-110vw)}to{transform:none}}
+@keyframes fade-in{from{opacity:0}to{opacity:1}}
+@keyframes intro-out{to{opacity:0;visibility:hidden}}
+@media(prefers-reduced-motion:reduce){
+.intro{display:none!important}
 }
-@media(max-width:359px){
-.hbar .hbar-m a,.hbar .hbar-m button{padding:0 10px}
-.hbar .lang-sw a{padding:0 3px}
+.logo-art{position:relative;aspect-ratio:317.47/129.73}
+.logo-art img{position:absolute;display:block}
+.logo-art-text{inset:0;width:100%;height:100%}
+.logo-art-moped{left:39.53%;top:0;width:32.37%;height:49.49%}
+header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hbar{display:flex;align-items:center;gap:var(--s-12);max-width:1160px;margin:0 auto;padding:var(--s-8) var(--s-24);min-height:64px}
+.brand{display:inline-flex;align-items:center;flex:none}
+.logo-d{height:40px;width:auto;display:block;border-radius:10px}
+.pill-point{flex:0 1 auto;min-width:0;max-width:440px;display:flex;align-items:center;gap:var(--s-4);min-height:var(--h-touch);padding:0 var(--s-16);border:0;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font:inherit;font-size:var(--fs-small);line-height:1.2;text-align:left;text-decoration:none;cursor:pointer}
+.pill-point b{font-weight:700;white-space:nowrap}
+.pill-point span{color:var(--c-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pill-point i{font-style:normal;color:var(--c-muted);margin-left:auto;padding-left:var(--s-8)}
+.pill-point:hover{background:var(--c-raised)}
+.top-nav{display:flex;gap:var(--s-4);margin-left:auto}
+.top-nav a{display:inline-flex;align-items:center;min-height:var(--h-touch);padding:0 var(--s-12);border-radius:var(--r-pill);font-size:var(--fs-small);font-weight:600;color:var(--c-muted);text-decoration:none}
+.top-nav a:hover{color:var(--c-text);background:var(--c-surface)}
+.lang-sw{position:relative;flex:none;margin-left:var(--s-4)}
+.top-nav+.lang-sw{margin-left:0}
+.pill-point+.lang-sw{margin-left:auto}
+.lang-dd summary{list-style:none;display:flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;background:var(--c-surface);color:var(--c-text);font-size:var(--fs-caption);font-weight:700;letter-spacing:.02em;cursor:pointer;user-select:none}
+.lang-dd summary::-webkit-details-marker{display:none}
+.lang-dd[open] summary{background:var(--c-accent);color:var(--c-on-accent)}
+.lang-list{position:absolute;right:0;top:calc(100% + var(--s-8));z-index:60;display:flex;flex-direction:column;min-width:136px;padding:var(--s-8);background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--r-md);box-shadow:var(--shadow-floating)}
+.lang-list a{display:flex;align-items:center;gap:var(--s-8);min-height:var(--h-touch);padding:0 var(--s-12);border-radius:var(--r-sm);font-size:var(--fs-small);font-weight:600;text-decoration:none;color:var(--c-text)}
+.lang-list a:hover{background:var(--c-surface)}
+.lang-list a[aria-current]{color:var(--c-accent)}
+.lang-list a[aria-current]::after{content:'✓';margin-left:auto}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--h-button);padding:var(--s-8) var(--s-24);border:0;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-size:var(--fs-body);font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;text-align:center;cursor:pointer;transition:background .15s,transform .15s}
+.btn:hover{background:var(--c-accent-dk)}
+.btn:active{transform:scale(.98)}
+.btn.ghost{background:var(--c-surface);color:var(--c-text)}
+.btn.ghost:hover{background:var(--c-raised)}
+.btn.olive{background:var(--c-olive);color:var(--c-on-olive)}
+.btn.olive:hover{background:color-mix(in srgb,var(--c-olive) 86%,#000)}
+.fab-menu{display:none;position:fixed;left:50%;bottom:calc(var(--s-16) + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;align-items:center;justify-content:center;gap:var(--s-8);min-width:176px;height:44px;padding:0 var(--s-24);border:1px solid var(--c-border);border-radius:var(--r-pill);background:rgba(245,245,243,.94);color:var(--c-text);font-family:var(--font-body);font-size:16px;font-weight:700;line-height:1;text-transform:lowercase;text-decoration:none;white-space:nowrap;box-shadow:var(--shadow-floating);cursor:pointer}
+@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){
+.fab-menu{background:rgba(245,245,243,.72);-webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4)}
 }
-.hbar-m{display:none}
-.btn{
-  display:inline-flex;align-items:center;gap:6px;
-  background:var(--forest);color:var(--cream);
-  padding:11px 20px;border-radius:99px;text-decoration:none;
-  font-size:13.5px;font-weight:700;white-space:nowrap;border:0;cursor:pointer;
-  transition:transform .15s, background .15s;font-family:'Golos Text';
-}
-.btn:hover{background:var(--forest-dk);transform:translateY(-1px)}
-.btn.ghost{background:transparent;color:var(--forest);border:1.5px solid var(--forest)}
-.btn.ghost:hover{background:var(--forest);color:var(--cream)}
-.btn.olive{background:var(--olive);color:#1D2408}
-.btn.olive:hover{background:#6E8420}
-.halal-badge{display:flex;align-items:center;gap:12px;margin-top:22px}
-.halal-badge img{height:52px;width:52px;object-fit:contain;mix-blend-mode:multiply;flex:none}
-.halal-badge span{font-size:12px;color:var(--ink-2);line-height:1.55}
-.hero{padding:16px 0 48px;display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:flex-start;position:relative}
-.tag{
-  font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--olive);
-  font-weight:700;margin-bottom:16px;display:flex;align-items:center;gap:8px;
-}
-.tag::before{content:'';width:18px;height:2px;background:var(--olive);border-radius:2px}
-h1{font-family:Comfortaa;font-weight:700;font-size:54px;line-height:1.05;letter-spacing:-.02em;color:var(--forest-dk);margin-bottom:16px}
-h1 span{color:var(--olive)}
-.lead{font-size:16px;color:var(--ink-2);max-width:440px;line-height:1.65;margin-bottom:22px}
-.actions{display:flex;gap:12px;flex-wrap:wrap}
-.hero-photo{position:relative;border-radius:22px;overflow:hidden;aspect-ratio:4/5;box-shadow:0 24px 60px -20px rgba(49,73,47,.45)}
-.hero-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.hero-badge{
-  position:absolute;left:18px;bottom:18px;background:var(--forest);color:var(--cream);
-  border-radius:14px;padding:14px 18px;display:flex;align-items:center;gap:12px;
-  box-shadow:0 12px 30px -8px rgba(0,0,0,.4);
-}
-.hero-badge b{font-family:Comfortaa;font-size:22px;line-height:1}
-.hero-badge span{font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;opacity:.75;display:block;margin-top:2px}
-.story{padding:16px 0 56px}
-.story-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:56px;align-items:center}
-.story-photo{border-radius:20px;overflow:hidden;aspect-ratio:1/1.15}
+.fab-menu .ic{width:18px;height:18px}
+.hero{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center;padding:var(--s-16) var(--s-24) var(--s-32)}
+.hero-zone{order:2;position:relative;width:100%;aspect-ratio:4/5;max-height:600px;border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent);display:flex;align-items:center;justify-content:center}
+.hero-zone::before{content:'';position:absolute;inset:0;opacity:.08;background-image:radial-gradient(circle at 20% 30%,var(--c-brand-cream) 1.5px,transparent 1.5px),radial-gradient(circle at 70% 65%,var(--c-brand-cream) 1.5px,transparent 1.5px);background-size:120px 120px,170px 170px}
+.hero-zone .logo-art{width:min(74%,380px)}
+.hero-badge{position:absolute;left:var(--s-16);bottom:var(--s-16);display:flex;align-items:center;gap:var(--s-12);padding:var(--s-12) var(--s-16);border-radius:var(--r-md);background:var(--c-glass);color:var(--c-accent-dk)}
+.hero-badge b{font-family:var(--font-display);font-size:var(--fs-title);line-height:1}
+.hero-badge span{display:block;font-size:var(--fs-caption);line-height:1.3;color:var(--c-muted)}
+.tag{font-size:var(--fs-small);font-weight:600;color:var(--c-muted);margin-bottom:var(--s-8)}
+h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)}
+.lead{font-size:var(--fs-body);line-height:1.6;color:var(--c-muted);max-width:480px;margin-bottom:var(--s-24)}
+.actions{display:flex;flex-wrap:wrap;gap:var(--s-8)}
+.halal-badge{display:flex;align-items:center;gap:var(--s-12);margin-top:var(--s-24)}
+.halal-badge img{height:48px;width:48px;object-fit:contain;mix-blend-mode:multiply;flex:none}
+.halal-badge span{font-size:var(--fs-caption);color:var(--c-muted);line-height:1.5}
+.promo{padding:var(--s-8) var(--s-24) var(--s-24)}
+.promo-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:start}
+.promo-tile{position:relative;min-width:0;aspect-ratio:910/620}
+.row-head{display:flex;align-items:center;gap:var(--s-12);margin:var(--s-24) 0 var(--s-16)}
+.row-head h2{font-size:var(--fs-heading);line-height:1.15}
+.promo-t{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.15;text-transform:lowercase;color:#FFFFFF}
+.promo-s{font-size:var(--fs-small);line-height:1.4;color:rgba(255,255,255,.88)}
+.promo-s s{color:rgba(255,255,255,.7)}
+.promo-s .sale{color:#FFFFFF;font-weight:700;white-space:nowrap;text-decoration-color:#FFE500}
+.promo-a{display:inline-block;margin-top:var(--s-4);padding:var(--s-4) 0;color:#FFFFFF;font-size:var(--fs-small);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;white-space:nowrap}
+.promo-a:hover{text-decoration-thickness:2px}
+.sub-tile{border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent)}
+.tile-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;flex-direction:column;align-items:center;gap:var(--s-2);padding:var(--s-32) var(--s-24) var(--s-16);text-align:center;background:linear-gradient(to top,rgba(20,14,10,.82),rgba(20,14,10,.5) 55%,rgba(20,14,10,0))}
+.tile-cap .promo-t{color:var(--c-brand-cream)}
+.sub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
+.promo-grid>.promo-tile:only-child{grid-column:1/-1;justify-self:center;width:calc((100% - var(--s-32)) / 2)}
+.story{padding-top:var(--s-32);padding-bottom:var(--s-32)}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center}
+.story-photo{border-radius:var(--r-lg);overflow:hidden;aspect-ratio:1/1.1}
 .story-photo img{width:100%;height:100%;object-fit:cover;display:block}
-.story h2{font-family:Comfortaa;font-weight:700;font-size:34px;line-height:1.12;color:var(--forest-dk);margin-bottom:16px}
-.story h2 span{color:var(--olive)}
-.story p{color:var(--ink-2);line-height:1.75;max-width:480px;margin-bottom:26px;font-size:14.5px}
-.stats{display:flex;gap:36px}
-.stats b{display:block;font-family:Comfortaa;font-size:26px;font-weight:700;color:var(--forest)}
-.stats span{display:block;font-size:11.5px;color:var(--ink-2);margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
-.features{padding:60px 0;background:var(--forest);color:var(--cream);position:relative;overflow:hidden}
-.features::before{
-  content:'';position:absolute;inset:0;opacity:.07;
-  background-image:radial-gradient(circle at 20% 30%, var(--cream) 1.5px, transparent 1.5px),
-                    radial-gradient(circle at 70% 65%, var(--cream) 1.5px, transparent 1.5px),
-                    radial-gradient(circle at 45% 85%, var(--cream) 1.5px, transparent 1.5px);
-  background-size:140px 140px, 190px 190px, 160px 160px;
-}
-.features .shell{position:relative}
-.f-head{margin-bottom:40px}
-.f-head .tag{color:var(--moss)}
-.f-head .tag::before{background:var(--moss)}
-.f-head h2{font-family:Comfortaa;font-weight:700;font-size:34px}
-.f-head h2 span{color:var(--moss)}
-.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.f-grid article{background:color-mix(in srgb, var(--cream) 8%, transparent);border:1px solid color-mix(in srgb, var(--cream) 16%, transparent);border-radius:var(--r);padding:24px 22px;min-height:150px}
-.f-grid b{font-family:Comfortaa;color:var(--moss);font-size:13px;display:block;margin-bottom:12px}
-.f-grid h3{font-size:15.5px;margin-bottom:7px;font-weight:700}
-.f-grid p{font-size:13px;color:color-mix(in srgb, var(--cream) 72%, transparent);line-height:1.55}
-.locations{padding:56px 0;background:var(--cream-2)}
-.loc-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:34px;gap:20px}
-.loc-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
-.loc-head h2 span{color:var(--olive)}
-.loc-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
-.faq{padding:56px 0}
-.faq-head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:26px;gap:20px}
-.faq-head h2{font-family:Comfortaa;font-weight:700;font-size:32px;color:var(--forest-dk)}
-.faq-head h2 span{color:var(--olive)}
-.faq-head p{color:var(--ink-2);max-width:270px;font-size:13px;line-height:1.6}
-.faq a{color:var(--forest);font-weight:600}
-.faq-list{max-width:780px}
-.faq details{border-top:1px solid var(--line)}
-.faq details:last-child{border-bottom:1px solid var(--line)}
-.faq summary{list-style:none;cursor:pointer;position:relative;padding:16px 40px 16px 0;font-weight:600;font-size:15.5px;line-height:1.4;color:var(--ink)}
-.faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:'+';content:'+' / '';position:absolute;right:6px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;line-height:1;color:var(--forest);transition:transform .2s}
-.faq details[open] summary::after{transform:translateY(-50%) rotate(45deg)}
-.faq-a{padding:0 40px 18px 0;color:var(--ink-2);font-size:14.5px;line-height:1.65}
-.faq-a ul{margin:6px 0 0 18px}
-@media(max-width:680px){
-.faq{padding:28px 0}
-.faq-head{flex-direction:column;align-items:flex-start;margin-bottom:12px;gap:6px}
-.faq-head h2{font-size:22px}
-.faq summary{font-size:14.5px;padding:14px 34px 14px 0}
-.faq-a{padding-right:0;font-size:14px}
-}
-.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-.loc-card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column}
-.loc-card small{font-family:Comfortaa;font-size:11px;color:var(--olive);text-transform:uppercase;letter-spacing:.05em;font-weight:700}
-.loc-card h3{font-family:Comfortaa;font-size:20px;font-weight:700;margin:8px 0 14px;color:var(--forest-dk)}
-.loc-card h3:has(+.loc-meta){margin-bottom:6px}
-.loc-meta{font-size:12.5px;color:var(--ink-2);line-height:1.5;margin:0 0 14px}
-.loc-meta b{color:var(--forest);font-weight:700}
-.loc-about{font-size:13px;color:var(--ink);line-height:1.5;margin:-6px 0 10px}
-.loc-amen{font-size:12px;color:var(--forest);line-height:1.5;margin:-6px 0 14px}
+.story h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-12)}
+.story p{color:var(--c-muted);line-height:1.65;max-width:520px;margin-bottom:var(--s-24)}
+.stats{display:flex;gap:var(--s-8)}
+.stats>div{flex:1;padding:var(--s-12) var(--s-16);border-radius:var(--r-md);background:var(--c-surface)}
+.stats b{display:block;font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;color:var(--c-accent)}
+.stats span{display:block;font-size:var(--fs-caption);color:var(--c-muted);margin-top:var(--s-2)}
+.features{padding:var(--s-8) 0 var(--s-32)}
+.f-head{margin-bottom:var(--s-16)}
+.f-head h2{font-size:var(--fs-heading);line-height:1.15}
+.f-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-12)}
+.f-grid article{padding:var(--s-24) var(--s-24) var(--s-32);border-radius:var(--r-lg);background:var(--c-surface)}
+.f-ic{display:block;width:60px;height:60px;margin-bottom:var(--s-12);color:var(--c-accent)}
+.f-grid h3{font-size:var(--fs-heading);line-height:1.15;margin:0 0 var(--s-8)}
+.f-grid p{font-size:20px;line-height:1.5;color:var(--c-muted)}
+.locations{padding:var(--s-32) 0;background:var(--c-bg)}
+.loc-head{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s-16);margin-bottom:var(--s-16)}
+.loc-head h2{font-size:var(--fs-heading);line-height:1.15}
+.loc-head p{color:var(--c-muted);max-width:340px;font-size:var(--fs-small);line-height:1.55}
+.loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-12)}
+.loc-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-24) var(--s-16);border-radius:var(--r-lg);background:var(--c-bg);box-shadow:var(--shadow-floating)}
+.loc-card small{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
+.loc-card h3{font-family:var(--font-body);font-size:var(--fs-body);font-weight:500;text-transform:none;letter-spacing:0;color:var(--c-muted);margin:var(--s-4) 0 var(--s-2)}
+.loc-meta{font-size:var(--fs-small);color:var(--c-muted);line-height:1.5;margin:0 0 var(--s-8)}
+.loc-meta b{color:var(--c-text);font-weight:600}
+.loc-about{font-size:var(--fs-small);line-height:1.5;margin:0 0 var(--s-8)}
+.loc-amen{font-size:var(--fs-caption);color:var(--c-accent);line-height:1.5;margin:0 0 var(--s-16)}
 .loc-amen span{white-space:nowrap}
 .loc-card:last-child:nth-child(odd){grid-column:1/-1}
-.loc-links{display:flex;gap:9px;flex-wrap:wrap;margin-top:auto}
-.loc-links a{font-size:12.5px;padding:8px 13px;border-radius:99px;border:1px solid var(--line);text-decoration:none;display:inline-flex;align-items:center;gap:5px;font-weight:600}
-.loc-links a:hover{background:var(--forest);color:var(--cream);border-color:var(--forest)}
-.loc-links a.wa{border-color:var(--olive);color:var(--olive)}
-.loc-links a.wa:hover{background:var(--olive);color:#fff}
-.contact{padding:56px 0;text-align:center}
-.contact img{height:64px;width:auto;margin-bottom:24px;border-radius:12px}
-.contact h2{font-family:Comfortaa;font-size:36px;font-weight:700;color:var(--forest-dk);margin-bottom:26px}
-.contact h2 span{color:var(--olive)}
-.contact-actions{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
-.mini-stats{display:none}
-footer{border-top:1px solid var(--line);padding:24px 0}
-.f-row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--ink-2);flex-wrap:wrap;gap:10px}
-.f-row img{height:24px;width:auto;border-radius:5px}
-.f-row a{color:var(--forest);font-weight:600;text-decoration:none}
+.icons{position:absolute;width:0;height:0;overflow:hidden}
+.loc-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s-8);margin-top:auto}
+.ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;background:var(--c-surface);color:var(--c-text);transition:background .15s}
+.ib:hover{background:var(--c-raised)}
+.ib.route{background:var(--c-accent);color:var(--c-on-accent)}
+.ib.route:hover{background:var(--c-accent-dk)}
+.ib.wa{background:var(--c-whatsapp);color:#FFFFFF}
+.ib.wa:hover{background:color-mix(in srgb,var(--c-whatsapp) 85%,#000)}
+.ic{display:block;width:22px;height:22px}
+.pill{display:inline-flex;align-items:center;min-height:var(--h-touch);border:0;font:inherit;cursor:pointer;padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+.pill:hover{background:var(--c-raised)}
+.faq{padding:var(--s-32) 0}
+.faq a{color:var(--c-accent);font-weight:600}
+.faq-box{max-width:760px;margin:0 auto;border-radius:var(--r-lg);background:var(--c-surface)}
+.faq-sum{list-style:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:var(--s-12);min-height:var(--h-button);padding:var(--s-16) var(--s-24);text-align:center}
+.faq-sum::-webkit-details-marker{display:none}
+.faq-sum h2{font-size:var(--fs-title);line-height:1.2}
+.faq-sum::after{content:'';flex:none;width:9px;height:9px;margin-top:-5px;border-right:2px solid var(--c-accent);border-bottom:2px solid var(--c-accent);transform:rotate(45deg);transition:transform .2s}
+.faq-box[open]>.faq-sum::after{transform:rotate(-135deg);margin-top:5px}
+.faq-list{display:flex;flex-direction:column;gap:var(--s-8);padding:0 var(--s-12) var(--s-12)}
+.faq-list details{border-radius:var(--r-md);background:var(--c-bg)}
+.faq-list summary{list-style:none;cursor:pointer;position:relative;display:flex;align-items:center;min-height:var(--h-touch);padding:var(--s-12) 48px var(--s-12) var(--s-16);font-size:var(--fs-body);font-weight:600;line-height:1.4;color:var(--c-text)}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:'+';content:'+' / '';position:absolute;right:var(--s-16);top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;line-height:1;color:var(--c-accent);transition:transform .2s}
+.faq-list details[open]>summary::after{transform:translateY(-50%) rotate(45deg)}
+.faq-a{padding:0 var(--s-16) var(--s-16);color:var(--c-muted);font-size:var(--fs-small);line-height:1.65}
+.faq-a ul{margin:6px 0 0 18px}
+.faq-more{max-width:760px;margin:var(--s-12) auto 0;text-align:center;font-size:var(--fs-small);color:var(--c-muted)}
+.contact{padding:var(--s-32) var(--s-24);text-align:center}
+.contact h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-16)}
+.social{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s-12)}
+footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
+.f-row{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-caption);color:var(--c-muted);flex-wrap:wrap;gap:var(--s-12)}
+.f-row img{height:28px;width:auto;border-radius:6px}
+.f-row a{color:var(--c-accent);font-weight:600;text-decoration:none}
 .f-row a:hover{text-decoration:underline}
-.f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:2px 14px;max-width:100%}
-.f-row .f-legal a{color:var(--ink-2);font-weight:500;white-space:nowrap}
-.f-row .f-legal a:hover{color:var(--forest)}
+.f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:var(--s-2) var(--s-12);max-width:100%}
+.f-row .f-legal a{color:var(--c-muted);font-weight:500;white-space:nowrap}
+.f-row .f-legal a:hover{color:var(--c-accent)}
 .hbar a{cursor:pointer}
 @media(max-width:900px){
-.hero{grid-template-columns:1fr;gap:32px;padding:40px 0 52px}
+.hero{grid-template-columns:1fr;gap:var(--s-24)}
+.hero-zone{order:-1;aspect-ratio:5/4;max-height:none}
+.promo-grid{grid-template-columns:1fr;gap:var(--s-16)}
+.promo-grid>.promo-tile:only-child{width:100%}
 h1{font-size:36px}
-.quick,.f-grid,.loc-grid{grid-template-columns:1fr}
-.story-grid{grid-template-columns:1fr}
-nav{display:none}
+.story-grid{grid-template-columns:1fr;gap:var(--s-16)}
+.f-grid,.loc-grid{grid-template-columns:1fr}
+.top-nav{display:none}
 .f-head,.loc-head,.sc-head{flex-direction:column;align-items:flex-start}
 }
 @media(max-width:680px){
-.shell{padding:0 16px}
-nav{display:none}
-.hbar{padding:10px 16px;gap:10px}
-.logo-d{display:none}
-.logo-m{display:block}
-.hbar > a:first-child{min-height:44px;min-width:44px}
-.hbar-m{display:flex;gap:8px;margin-left:auto}
-.hbar-m a,.hbar-m button{min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;border:1.5px solid var(--forest);background:transparent;color:var(--forest);font:inherit;font-size:14px;font-weight:700;text-decoration:none;cursor:pointer}
-.hbar-m button{background:var(--forest);color:var(--cream)}
-.hero{grid-template-columns:1fr;padding:16px 20px 28px;gap:16px}
-.hero-photo{display:block;order:-1;aspect-ratio:16/9;border-radius:16px}
-.tag{font-size:11px;margin-bottom:8px}
-h1{font-size:28px;line-height:1.12;margin-bottom:10px}
-.lead{font-size:14.5px;line-height:1.6;margin-bottom:20px}
-.actions{flex-direction:column;gap:10px}
-.actions .btn{
-    width:100%;justify-content:center;
-    padding:17px 20px;font-size:16px;border-radius:14px;
-  }
-.story{display:none}
-.features{padding:30px 0 28px}
-.f-head{margin-bottom:16px}
-.f-head h2{font-size:22px}
-.f-grid,.sc-row{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:16px;margin:0 -16px;padding:0 16px 6px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.shell{padding:0 var(--s-16)}
+.hbar{padding:var(--s-8) var(--s-16);gap:var(--s-8);min-height:60px}
+.brand{display:none}
+.pill-point{flex:1 1 auto;max-width:none}
+.hero{padding:var(--s-4) var(--s-16) var(--s-24);gap:var(--s-16)}
+.hero-badge{left:var(--s-12);bottom:var(--s-12);padding:var(--s-8) var(--s-12)}
+h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
+.lead{font-size:var(--fs-small);margin-bottom:var(--s-16)}
+.actions{flex-direction:column}
+.actions .btn{width:100%}
+.promo{padding:var(--s-8) var(--s-16) var(--s-16)}
+.promo-t{font-size:18px}
+.promo-s{font-size:var(--fs-caption)}
+.promo-a{font-size:13px}
+.tile-cap{padding:var(--s-24) var(--s-16) var(--s-12)}
+.story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
+.story h2,.f-head h2,.loc-head h2,.contact h2,.row-head h2{font-size:var(--fs-title)}
+.f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
 .f-grid::-webkit-scrollbar,.sc-row::-webkit-scrollbar{display:none}
-.f-grid article{flex:0 0 76%;scroll-snap-align:start;min-height:0;padding:18px}
-.f-grid b{margin-bottom:8px}
-.f-grid h3{font-size:15px}
-.f-grid p{font-size:13.5px}
-.locations{padding:24px 0}
-.loc-head{flex-direction:column;align-items:flex-start;margin-bottom:14px;gap:6px}
-.loc-head h2{font-size:22px}
+.f-grid article{flex:0 0 80%;scroll-snap-align:start;padding:var(--s-16) var(--s-16) var(--s-24)}
+.f-ic{width:48px;height:48px;margin-bottom:var(--s-8)}
+.f-grid h3{font-size:var(--fs-title)}
+.f-grid p{font-size:17px}
+.locations,.faq{padding:var(--s-24) 0}
 .loc-head p{display:none}
-.loc-grid{grid-template-columns:1fr;gap:10px}
-.loc-card{padding:16px}
-.loc-card small{font-size:10.5px}
-.loc-card h3{font-size:18px;margin:5px 0 10px}
-.loc-meta{font-size:13px;margin-bottom:12px}
-.contact{padding:28px 16px}
-.contact img{height:38px;margin-bottom:10px;border-radius:0}
-.contact > a:first-child{display:inline-flex;min-height:44px;min-width:44px;align-items:center;justify-content:center}
-.contact h2{font-size:20px;margin-bottom:14px}
-footer{padding:16px 0}
+.faq-list summary{font-size:var(--fs-small)}
+.contact{padding:var(--s-24) var(--s-16)}
+.fab-menu{display:inline-flex}
+footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 .f-row{flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:11px;gap:10px}
 .f-row img{display:none}
 .f-row .f-legal{order:-1;gap:0 4px;margin-top:0}
 .f-row .f-legal a{display:inline-block;padding:6px 6px}
 .f-row span+span{margin-top:-4px}
 .hide-mobile{display:none}
-.mini-stats{
-    display:flex;justify-content:space-around;
-    padding:20px 16px 4px;
-  }
-.mini-stats b{display:block;font-family:Comfortaa;font-size:22px;font-weight:700;color:var(--forest);text-align:center}
-.mini-stats span{display:block;font-size:10px;color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em;text-align:center;margin-top:3px}
-.loc-links{flex-direction:row;flex-wrap:wrap;gap:8px}
-.loc-links a:not(.wa){flex:1;min-width:0}
-.loc-links a.wa{width:100%}
-.loc-links a{
-    font-size:14px;padding:12px 10px;
-    justify-content:center;border-radius:12px;
-    text-align:center;
-  }
-.contact-actions{flex-direction:row}
-.contact-actions .btn{flex:1;justify-content:center;min-height:48px;padding:14px 10px;font-size:14px;border-radius:14px}
+}
+@media(max-width:359px){
+.hbar{padding:var(--s-8) var(--s-12)}
+.pill-point{padding:0 var(--s-12)}
+}
+.rv{opacity:0;transform:translate3d(0,20px,0)}
+.rv.rv-in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms),transform .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms)}
+.rv-fast{transform:translate3d(0,16px,0)}
+.rv-fast.rv-in{transition-duration:.35s}
+.px-on .hero-zone .logo-art{transform:translate3d(0,var(--py,0px),0);will-change:transform}
+.px-on .story-photo img{transform:translate3d(0,var(--py,0px),0) scale(1.12);will-change:transform}
+@media(hover:hover){
+.promo-tile,.f-grid article,.loc-card,.stats>div,.sc-row img{transition:transform .2s ease,box-shadow .2s ease}
+.promo-tile:hover,.f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{transform:translateY(-4px)}
+.f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{box-shadow:0 10px 30px rgba(49,73,47,.2)}
+.ib{transition:transform .2s ease,background .15s}
+.ib:hover{transform:scale(1.05)}
+}
+@media(prefers-reduced-motion:reduce){
+.rv{opacity:1!important;transform:none!important}
+.px-on .hero-zone .logo-art,.px-on .story-photo img{transform:none!important}
 }
 </style>
 <script type="application/ld+json">
-{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://tap.delcappuccino.kz/en/#webpage","url":"https://tap.delcappuccino.kz/en/","name":"Del Cappuccino — 24/7 cafés in Almaty and bakery to go","description":"Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily 07:00–22:00). Breakfast all day, favourite dishes and good coffee.","inLanguage":"en","about":{"@id":"https://tap.delcappuccino.kz/#org"},"isPartOf":{"@type":"WebSite","@id":"https://tap.delcappuccino.kz/#website","url":"https://tap.delcappuccino.kz/","name":"Del Cappuccino"}},{"@type":"Organization","@id":"https://tap.delcappuccino.kz/#org","name":"Del Cappuccino","url":"https://tap.delcappuccino.kz/","sameAs":["https://instagram.com/del.cappuccino"]},{"@type":"FAQPage","@id":"https://tap.delcappuccino.kz/en/#faq","inLanguage":"en","mainEntity":[{"@type":"Question","name":"When are Del Cappuccino cafés open?","acceptedAnswer":{"@type":"Answer","text":"4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00."}},{"@type":"Question","name":"Where are Del Cappuccino cafés in Almaty?","acceptedAnswer":{"@type":"Answer","text":"5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7<\/li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7<\/li><li>Promenade Business Park (44A Abay Ave) — open 24/7<\/li><li>Del Cappuccino (64 Tole Bi St) — open 24/7<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00<\/li><\/ul>"}},{"@type":"Question","name":"Is Del Cappuccino food halal?","acceptedAnswer":{"@type":"Answer","text":"Yes, our products are halal-certified by KMDB (halaldamu.kz)."}},{"@type":"Question","name":"Do you serve breakfast only in the morning?","acceptedAnswer":{"@type":"Answer","text":"No, breakfast is served all day — your favourite breakfasts, whatever the clock says."}},{"@type":"Question","name":"How do I book a table?","acceptedAnswer":{"@type":"Answer","text":"Pick a café in the list of locations and message it on WhatsApp or give it a call."}},{"@type":"Question","name":"Do I need to prepay a booking?","acceptedAnswer":{"@type":"Answer","text":"It depends on the café:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP booths need a prepayment<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a standard booking needs no prepayment<\/li><li>Del Cappuccino (64 Tole Bi St): tables need no prepayment unless you pre-order from the menu<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): bookings need no prepayment<\/li><\/ul>"}},{"@type":"Question","name":"Can I order food for delivery?","acceptedAnswer":{"@type":"Answer","text":"Yes — tap “Order in the app” to order online at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz<\/a>. You can also order takeaway via the café's WhatsApp."}},{"@type":"Question","name":"Do you deliver?","acceptedAnswer":{"@type":"Answer","text":"You can order online with “Order in the app” on the website. Delivery by location:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): through all the delivery apps<\/li><li>Komfort City Residential Complex (146 Serkebaev St): our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt<\/li><li>Del Cappuccino (64 Tole Bi St): delivered by our own staff within 800 m<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): delivery within the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there parking?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): parking available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): public parking next to the café<\/li><li>Del Cappuccino (64 Tole Bi St): city parking; VIP guests can park in the inner courtyard<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): parking inside the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there Wi-Fi?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): Wi-Fi available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): free Wi-Fi<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): Wi-Fi available<\/li><\/ul>"}},{"@type":"Question","name":"Do you have a kids' area?","acceptedAnswer":{"@type":"Answer","text":"Yes, there's a kids' area at Vavilon Residential Complex."}},{"@type":"Question","name":"What VIP rooms and banquet halls do you have?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a VIP booth<\/li><li>Promenade Business Park (44A Abay Ave): a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people<\/li><\/ul>"}},{"@type":"Question","name":"Can I hold a banquet at your café?","acceptedAnswer":{"@type":"Answer","text":"Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."}},{"@type":"Question","name":"Where can I work or hold a business meeting?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Promenade Business Park (44A Abay Ave): a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens<\/li><\/ul>"}},{"@type":"Question","name":"Where is there a prayer room?","acceptedAnswer":{"@type":"Answer","text":"There's a namazkhana (prayer room) at Komfort City Residential Complex (146 Serkebaev St) and Promenade Business Park (44A Abay Ave)."}},{"@type":"Question","name":"Can I bring my pet?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): pets only on the summer terrace; large dogs must wear a muzzle<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): you can come with pets to pick up takeaway<\/li><\/ul>"}},{"@type":"Question","name":"Is the menu available in Kazakh and English?","acceptedAnswer":{"@type":"Answer","text":"Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG."}},{"@type":"Question","name":"Where can I see the menu and prices?","acceptedAnswer":{"@type":"Answer","text":"The menu with photos and ingredients is <a href=\"https://tap.delcappuccino.kz/#menu-en\">on the website<\/a>, and the full menu with prices as text is at <a href=\"https://tap.delcappuccino.kz/en/menu\">tap.delcappuccino.kz/en/menu<\/a>."}}]}]}
+{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://tap.delcappuccino.kz/en/#webpage","url":"https://tap.delcappuccino.kz/en/","name":"Del Cappuccino — 24/7 cafés in Almaty and bakery to go","description":"Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily 07:00–22:00). Breakfast all day, favourite dishes and good coffee.","inLanguage":"en","about":{"@id":"https://tap.delcappuccino.kz/#org"},"isPartOf":{"@type":"WebSite","@id":"https://tap.delcappuccino.kz/#website","url":"https://tap.delcappuccino.kz/","name":"Del Cappuccino"}},{"@type":"Organization","@id":"https://tap.delcappuccino.kz/#org","name":"Del Cappuccino","url":"https://tap.delcappuccino.kz/","sameAs":["https://instagram.com/del.cappuccino","https://www.youtube.com/@DelCappuccino","https://www.threads.com/@del.cappuccino"]},{"@type":"FAQPage","@id":"https://tap.delcappuccino.kz/en/#faq","inLanguage":"en","mainEntity":[{"@type":"Question","name":"When are Del Cappuccino cafés open?","acceptedAnswer":{"@type":"Answer","text":"4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00."}},{"@type":"Question","name":"Where are Del Cappuccino cafés in Almaty?","acceptedAnswer":{"@type":"Answer","text":"5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7<\/li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7<\/li><li>Promenade Business Park (44A Abay Ave) — open 24/7<\/li><li>Del Cappuccino (64 Tole Bi St) — open 24/7<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00<\/li><\/ul>"}},{"@type":"Question","name":"Is Del Cappuccino food halal?","acceptedAnswer":{"@type":"Answer","text":"Yes, our products are halal-certified by KMDB (halaldamu.kz)."}},{"@type":"Question","name":"Do you serve breakfast only in the morning?","acceptedAnswer":{"@type":"Answer","text":"No, breakfast is served all day — your favourite breakfasts, whatever the clock says."}},{"@type":"Question","name":"How do I book a table?","acceptedAnswer":{"@type":"Answer","text":"Pick a café in the list of locations and message it on WhatsApp or give it a call."}},{"@type":"Question","name":"Do I need to prepay a booking?","acceptedAnswer":{"@type":"Answer","text":"It depends on the café:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP booths need a prepayment<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a standard booking needs no prepayment<\/li><li>Del Cappuccino (64 Tole Bi St): tables need no prepayment unless you pre-order from the menu<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): bookings need no prepayment<\/li><\/ul>"}},{"@type":"Question","name":"Can I order food for delivery?","acceptedAnswer":{"@type":"Answer","text":"Yes — tap “Order in the app” to order online at <a href=\"https://delcappuccino.kz/\">delcappuccino.kz<\/a>. You can also order takeaway via the café's WhatsApp."}},{"@type":"Question","name":"Do you deliver?","acceptedAnswer":{"@type":"Answer","text":"You can order online with “Order in the app” on the website. Delivery by location:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): through all the delivery apps<\/li><li>Komfort City Residential Complex (146 Serkebaev St): our own delivery within Komfort City Residential Complex, plus Glovo, Yandex Eats, Choco and Wolt<\/li><li>Del Cappuccino (64 Tole Bi St): delivered by our own staff within 800 m<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): delivery within the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there parking?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): parking available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): public parking next to the café<\/li><li>Del Cappuccino (64 Tole Bi St): city parking; VIP guests can park in the inner courtyard<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): parking inside the residential complex<\/li><\/ul>"}},{"@type":"Question","name":"Is there Wi-Fi?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): Wi-Fi available<\/li><li>Komfort City Residential Complex (146 Serkebaev St): free Wi-Fi<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): Wi-Fi available<\/li><\/ul>"}},{"@type":"Question","name":"Do you have a kids' area?","acceptedAnswer":{"@type":"Answer","text":"Yes, there's a kids' area at Vavilon Residential Complex."}},{"@type":"Question","name":"What VIP rooms and banquet halls do you have?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): VIP rooms for 10–15 and 20–25 people, private VIP booths and a banquet hall for 30–35 people<\/li><li>Komfort City Residential Complex (146 Serkebaev St): a VIP booth<\/li><li>Promenade Business Park (44A Abay Ave): a VIP room for up to 20 people for conferences, seminars, banquets and business meetings; video on the TV screens; a main hall for up to 60; coffee breaks for 20–70 people<\/li><\/ul>"}},{"@type":"Question","name":"Can I hold a banquet at your café?","acceptedAnswer":{"@type":"Answer","text":"Yes, we'll host your event for a group of up to 40 people. VIP rooms work well for business breakfasts, small meetings and workshops."}},{"@type":"Question","name":"Where can I work or hold a business meeting?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Promenade Business Park (44A Abay Ave): a space for freelancers; business dining — business lunches, working lunches and dinners; a VIP room for up to 20; video on the TV screens<\/li><\/ul>"}},{"@type":"Question","name":"Where is there a prayer room?","acceptedAnswer":{"@type":"Answer","text":"There's a namazkhana (prayer room) at Komfort City Residential Complex (146 Serkebaev St) and Promenade Business Park (44A Abay Ave)."}},{"@type":"Question","name":"Can I bring my pet?","acceptedAnswer":{"@type":"Answer","text":"<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St): pets only on the summer terrace; large dogs must wear a muzzle<\/li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St): you can come with pets to pick up takeaway<\/li><\/ul>"}},{"@type":"Question","name":"Is the menu available in Kazakh and English?","acceptedAnswer":{"@type":"Answer","text":"Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG."}},{"@type":"Question","name":"Where can I see the menu and prices?","acceptedAnswer":{"@type":"Answer","text":"The menu with photos and ingredients is <a href=\"https://tap.delcappuccino.kz/#menu-en\">on the website<\/a>, and the full menu with prices as text is at <a href=\"https://tap.delcappuccino.kz/en/menu\">tap.delcappuccino.kz/en/menu<\/a>."}}]}]}
 </script>
 </head>
 <body>
+
+<div class="intro" aria-hidden="true"><div class="logo-art"><img class="logo-art-text" src="/assets/logo-text.73de0587.svg" width="317" height="130" loading="lazy" decoding="async" alt=""><img class="logo-art-moped" src="/assets/moped-side.5c84289d.svg" width="103" height="64" loading="lazy" decoding="async" alt=""></div></div>
+<svg class="icons" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><symbol id="i-pin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/><circle cx="12" cy="10" r="3"/></symbol><symbol id="i-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></symbol><symbol id="i-wa" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></symbol><symbol id="i-ig" viewBox="0 0 24 24" fill="currentColor"><path d="M7.0301.084c-1.2768.0602-2.1487.264-2.911.5634-.7888.3075-1.4575.72-2.1228 1.3877-.6652.6677-1.075 1.3368-1.3802 2.127-.2954.7638-.4956 1.6365-.552 2.914-.0564 1.2775-.0689 1.6882-.0626 4.947.0062 3.2586.0206 3.6671.0825 4.9473.061 1.2765.264 2.1482.5635 2.9107.308.7889.72 1.4573 1.388 2.1228.6679.6655 1.3365 1.0743 2.1285 1.38.7632.295 1.6361.4961 2.9134.552 1.2773.056 1.6884.069 4.9462.0627 3.2578-.0062 3.668-.0207 4.9478-.0814 1.28-.0607 2.147-.2652 2.9098-.5633.7889-.3086 1.4578-.72 2.1228-1.3881.665-.6682 1.0745-1.3378 1.3795-2.1284.2957-.7632.4966-1.636.552-2.9124.056-1.2809.0692-1.6898.063-4.948-.0063-3.2583-.021-3.6668-.0817-4.9465-.0607-1.2797-.264-2.1487-.5633-2.9117-.3084-.7889-.72-1.4568-1.3876-2.1228C21.2982 1.33 20.628.9208 19.8378.6165 19.074.321 18.2017.1197 16.9244.0645 15.6471.0093 15.236-.005 11.977.0014 8.718.0076 8.31.0215 7.0301.0839m.1402 21.6932c-1.17-.0509-1.8053-.2453-2.2287-.408-.5606-.216-.96-.4771-1.3819-.895-.422-.4178-.6811-.8186-.9-1.378-.1644-.4234-.3624-1.058-.4171-2.228-.0595-1.2645-.072-1.6442-.079-4.848-.007-3.2037.0053-3.583.0607-4.848.05-1.169.2456-1.805.408-2.2282.216-.5613.4762-.96.895-1.3816.4188-.4217.8184-.6814 1.3783-.9003.423-.1651 1.0575-.3614 2.227-.4171 1.2655-.06 1.6447-.072 4.848-.079 3.2033-.007 3.5835.005 4.8495.0608 1.169.0508 1.8053.2445 2.228.408.5608.216.96.4754 1.3816.895.4217.4194.6816.8176.9005 1.3787.1653.4217.3617 1.056.4169 2.2263.0602 1.2655.0739 1.645.0796 4.848.0058 3.203-.0055 3.5834-.061 4.848-.051 1.17-.245 1.8055-.408 2.2294-.216.5604-.4763.96-.8954 1.3814-.419.4215-.8181.6811-1.3783.9-.4224.1649-1.0577.3617-2.2262.4174-1.2656.0595-1.6448.072-4.8493.079-3.2045.007-3.5825-.006-4.848-.0608M16.953 5.5864A1.44 1.44 0 1 0 18.39 4.144a1.44 1.44 0 0 0-1.437 1.4424M5.8385 12.012c.0067 3.4032 2.7706 6.1557 6.173 6.1493 3.4026-.0065 6.157-2.7701 6.1506-6.1733-.0065-3.4032-2.771-6.1565-6.174-6.1498-3.403.0067-6.156 2.771-6.1496 6.1738M8 12.0077a4 4 0 1 1 4.008 3.9921A3.9996 3.9996 0 0 1 8 12.0077"/></symbol><symbol id="i-yt" viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></symbol><symbol id="i-th" viewBox="0 0 24 24" fill="currentColor"><path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.472 12.01v-.017c.03-3.579.879-6.43 2.525-8.482C5.845 1.205 8.6.024 12.18 0h.014c2.746.02 5.043.725 6.826 2.098 1.677 1.29 2.858 3.13 3.509 5.467l-2.04.569c-1.104-3.96-3.898-5.984-8.304-6.015-2.91.022-5.11.936-6.54 2.717C4.307 6.504 3.616 8.914 3.589 12c.027 3.086.718 5.496 2.057 7.164 1.43 1.783 3.631 2.698 6.54 2.717 2.623-.02 4.358-.631 5.8-2.045 1.647-1.613 1.618-3.593 1.09-4.798-.31-.71-.873-1.3-1.634-1.75-.192 1.352-.622 2.446-1.284 3.272-.886 1.102-2.14 1.704-3.73 1.79-1.202.065-2.361-.218-3.259-.801-1.063-.689-1.685-1.74-1.752-2.964-.065-1.19.408-2.285 1.33-3.082.88-.76 2.119-1.207 3.583-1.291a13.853 13.853 0 0 1 3.02.142c-.126-.742-.375-1.332-.75-1.757-.513-.586-1.308-.883-2.359-.89h-.029c-.844 0-1.992.232-2.721 1.32L7.734 7.847c.98-1.454 2.568-2.256 4.478-2.256h.044c3.194.02 5.097 1.975 5.287 5.388.108.046.216.094.321.142 1.49.7 2.58 1.761 3.154 3.07.797 1.82.871 4.79-1.548 7.158-1.85 1.81-4.094 2.628-7.277 2.65Zm1.003-11.69c-.242 0-.487.007-.739.021-1.836.103-2.98.946-2.916 2.143.067 1.256 1.452 1.839 2.784 1.767 1.224-.065 2.818-.543 3.086-3.71a10.5 10.5 0 0 0-2.215-.221z"/></symbol><symbol id="f-247" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M34.9 8.44A19 19 0 1 1 15.97 6.78"/><path d="M11.14 5.49L15.97 6.78L13.86 11.31"/><path d="M12.35 21.4Q12.35 19 14.85 19Q17.35 19 17.35 21.6Q17.35 23.6 12.35 29L17.35 29"/><path d="M22.55 29L22.55 19L18.95 25.6L23.95 25.6"/><path d="M29.05 18.5L25.55 29.5"/><path d="M30.65 19L35.65 19L32.4 29"/></symbol><symbol id="f-breakfast" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="21"/><path d="M10.5 20C10 14.5 15 11 19.5 12.5C22 10.5 27.5 12 27.5 16.5C30.5 19.5 29 25 25 25.5C23 29 16 29.5 13.5 26.5C10.5 25.5 9.5 22.5 10.5 20Z"/><circle cx="19.5" cy="19.5" r="3.6" fill="currentColor"/><path d="M17.5 35Q21 32.5 24.5 34.5Q28 36.5 31.5 33.5Q34 31.5 36.5 32"/><path d="M18.5 39Q22 36.5 25.5 38.5Q29 40.5 32.5 37.5Q35 35.5 37.5 36"/><path d="M17.5 35L18.5 39M36.5 32L37.5 36"/></symbol><symbol id="f-kids" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 37Q24 47 44 37"/><path d="M12 22Q20 23.5 27 20L31 11Q32 8 35 8.5L41.5 12Q43.5 13.5 42 15.5Q41 16.8 38.5 16L36 15.5Q35 19 35 23Q35 27 31 27L16 27Q12 27 12 22Z"/><path d="M32.5 9L32 4.5L35.5 8.4"/><path d="M30.5 12.5L27.5 14M29.3 15.8L26.3 17.3"/><path d="M12 23Q6 22.5 7 30"/><path d="M16 27L11.5 39.5M31 27L35.5 39.5"/><circle cx="37.5" cy="11.5" r="1.2" fill="currentColor"/></symbol><symbol id="f-vip" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 16.5L20.5 16.5Q22 16.5 21.6 18.5L20 27Q19.5 29.5 17 29.5L9.5 29.5Q7 29.5 6.4 27L4 18.5Q3.8 16.5 4.5 16.5Z"/><path d="M43.5 16.5L27.5 16.5Q26 16.5 26.4 18.5L28 27Q28.5 29.5 31 29.5L38.5 29.5Q41 29.5 41.6 27L44 18.5Q44.2 16.5 43.5 16.5Z"/><path d="M21.8 19Q24 16.8 26.2 19"/><path d="M4.5 16.5L1.5 15"/><path d="M43.5 16.5L46.5 15"/><path d="M8.5 20.5L11.5 25.5M12.5 20.5L14 23"/><path d="M39.5 20.5L36.5 25.5M35.5 20.5L34 23"/></symbol><symbol id="f-banquet" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="11.5"/><circle cx="24" cy="24" r="7"/><path d="M5.5 7L5.5 14Q5.5 18 8.5 18Q11.5 18 11.5 14L11.5 7M8.5 7L8.5 14M8.5 18L8.5 41"/><ellipse cx="39.5" cy="12" rx="3.5" ry="5.5"/><path d="M39.5 18.5L39.5 41"/></symbol><symbol id="f-namaz" viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M37.57 28.8A17 17 0 1 1 22.78 8.09L22.78 8.09A13 13 0 1 0 37.57 28.8Z"/><path d="M35.5 11.8L36.79 15.22L40.45 15.39L37.59 17.68L38.56 21.21L35.5 19.2L32.44 21.21L33.41 17.68L30.55 15.39L34.21 15.22Z"/></symbol><symbol id="i-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16M4 12h16M4 17h16"/></symbol><symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5 20 20"/></symbol><symbol id="i-photo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5.5" width="18" height="14" rx="3"/><circle cx="12" cy="12.5" r="3.5"/><path d="M8.5 5.5 10 3.5h4l1.5 2"/></symbol></svg>
+
 <header>
   <div class="hbar">
-    <a href="/en/" aria-label="Del Cappuccino — home" style="display:inline-flex;align-items:center">
-      <img class="logo-d" src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="85px" width="256" height="127" alt="Del Cappuccino">
-      <img class="logo-m" src="/assets/logo-mono-192.webp" width="192" height="192" alt="Del Cappuccino">
+    <a class="brand" href="/en/" aria-label="Del Cappuccino — home">
+      <img class="logo-d" src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino">
     </a>
-    <nav>
+    <a class="pill-point" href="#locations" onclick="track('cta_route',{src:'pill'})"><b>5 locations</b><span> · cafés 24/7</span><i aria-hidden="true">›</i></a>
+    <nav class="top-nav">
       <a href="/#menu-en" onclick="track('cta_menu',{src:'nav'})">Menu</a>
       <a href="#about">About</a>
       <a href="#features">What we offer</a>
       <a href="#locations">Locations</a>
       <a href="#faq">FAQ</a>
     </nav>
-    <div class="hbar-m">
-      <a href="/#menu-en" onclick="track('cta_menu',{src:'hbar_m'})">Menu</a>
-    </div>
     <nav class="lang-sw" aria-label="Site language">
+      <details class="lang-dd"><summary aria-label="Site language">ENG</summary><div class="lang-list">
       <a href="/" lang="ru" hreflang="ru" onclick="track('lang_switch',{lang:'ru'})">РУС</a>
       <a href="/kk/" lang="kk" hreflang="kk" onclick="track('lang_switch',{lang:'kk'})">ҚАЗ</a>
       <a href="/en/" lang="en" aria-current="page">ENG</a>
+      </div></details>
     </nav>
   </div>
 </header>
 
-<main>
+<main id="top">
   <section class="hero shell">
-    <div>
-      <p class="tag">cafés in Almaty · coffee &amp; food</p>
-      <h1>Flavour<br>that brings<br><span>loved ones</span> together.</h1>
-      <p class="lead">Breakfast all day, favourite dishes and good coffee. Our cafés are open around the clock, so a tasty break is always close by, and bakery to go has desserts and coffee to take away.</p>
-      <div class="actions">
-        <a class="btn olive" href="#locations" onclick="track('cta_book')">Book a table</a>
-        <a class="btn ghost" href="/#menu-en" onclick="track('cta_menu')">See the menu</a>
-        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_order')">Order in the app</a>
-      </div>
-      <div class="halal-badge">
-        <img src="/assets/halal-104.webp" srcset="/assets/halal-104.webp 104w, /assets/halal-156.webp 156w" sizes="52px" width="104" height="104" decoding="async" alt="KMDB Halal">
-        <span>Halal-certified products<br>KMDB · halaldamu.kz</span>
-      </div>
-    </div>
-    <div class="hero-photo">
-      <img src="/assets/photo_01-1200.webp" srcset="/assets/photo_01-480.webp 480w, /assets/photo_01-800.webp 800w, /assets/photo_01-1200.webp 1200w, /assets/photo_01-1600.webp 1600w" sizes="(max-width:680px) calc(100vw - 40px), (max-width:900px) calc(100vw - 56px), 520px" width="1600" height="1023" fetchpriority="high" decoding="async" alt="Del Cappuccino sign">
+    <div class="hero-zone">
+      <div class="logo-art" role="img" aria-label="del Cappuccino · coffee &amp; food"><img class="logo-art-text" src="/assets/logo-text.73de0587.svg" width="317" height="130" fetchpriority="high" alt=""><img class="logo-art-moped" src="/assets/moped-side.5c84289d.svg" width="103" height="64" alt=""></div>
       <div class="hero-badge">
         <b>24/7</b>
         <div><span>cafés</span><span>every day</span></div>
       </div>
     </div>
+    <div class="hero-text">
+      <p class="tag">cafés in Almaty · coffee &amp; food</p>
+      <h1>Flavour<br>that brings<br><span>loved ones</span> together</h1>
+      <p class="lead">Breakfast all day, favourite dishes and good coffee. Our cafés are open around the clock, so a tasty break is always close by, and bakery to go has desserts and coffee to take away.</p>
+      <div class="actions">
+        <a class="btn olive" href="#locations" onclick="track('cta_book')">Book a table</a>
+        <a class="btn" href="https://delcappuccino.kz/" target="_blank" rel="noopener" onclick="track('cta_order')">Order in the app</a>
+        <a class="btn ghost" href="/#menu-en" onclick="track('cta_menu')">See the menu</a>
+      </div>
+      <div class="halal-badge">
+        <img src="/assets/halal-104.webp" srcset="/assets/halal-104.webp 104w, /assets/halal-156.webp 156w" sizes="48px" width="104" height="104" decoding="async" alt="KMDB Halal">
+        <span>Halal-certified products<br>KMDB · halaldamu.kz</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="promo shell" aria-labelledby="promo-h">
+    <div class="row-head"><h2 id="promo-h">offers</h2></div>
+    <div class="promo-grid">
+    <div class="promo-tile sub-tile">
+      <!-- видео: Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License; клип — tools/build_sub_video.py; docs/LICENSES-media.md -->
+      <video class="sub-video" poster="/assets/latte-pour-poster.eace987c.webp" width="960" height="654" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">
+        <source src="/assets/latte-pour.0aa34e2d.webm" type="video/webm">
+        <source src="/assets/latte-pour.eaff9eed.mp4" type="video/mp4">
+      </video>
+      <p class="tile-cap"><b class="promo-t">coffee subscription</b> <span class="promo-s">coming soon, in the app</span></p>
+    </div>
+<script>(function(){var v=document.querySelector('.sub-video');if(!v||!('IntersectionObserver'in window))return;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}v.muted=true;function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>
+    </div>
   </section>
 
   <section class="story shell" id="about">
     <div class="story-grid">
-      <div class="story-photo"><img src="/assets/photo_10-900.webp" srcset="/assets/photo_10-480.webp 480w, /assets/photo_10-900.webp 900w, /assets/photo_10-1600.webp 1600w" sizes="(max-width:900px) calc(100vw - 56px), 440px" width="1600" height="1066" loading="lazy" decoding="async" alt="The Del Cappuccino team"></div>
+      <div class="story-photo"><img src="/assets/photo_10-900.webp" srcset="/assets/photo_10-480.webp 480w, /assets/photo_10-900.webp 900w, /assets/photo_10-1600.webp 1600w" sizes="(max-width:680px) calc(100vw - 32px), (max-width:900px) calc(100vw - 48px), 540px" width="1600" height="1066" loading="lazy" decoding="async" alt="The Del Cappuccino team"></div>
       <div>
-        <h2>Coffee, food<br>and <span>care</span>.</h2>
+        <h2>Coffee, food<br>and <span>care</span></h2>
         <p>Drop in on your way, hold a meeting, have a late breakfast or order your favourite dishes for delivery. There's a kids' area at Vavilon Residential Complex for family visits, VIP rooms for quiet meetings and a namazkhana (prayer room).</p>
         <div class="stats">
   <div><b>24/7</b><span>4 cafés</span></div>
@@ -337,89 +380,78 @@ footer{padding:16px 0}
   <section class="features" id="features">
     <div class="shell">
       <div class="f-head">
-        <p class="tag">more than a café</p>
-        <h2>A place for<br><span>your plans</span>.</h2>
+        <h2>A place for<br><span>your plans</span></h2>
       </div>
       <div class="f-grid">
-        <article><b>01</b><h3>Around the clock</h3><p>4 cafés are open 24/7 — drop in whenever suits you. Bakery to go on Zhandosov St is open daily, 07:00–22:00.</p></article>
-        <article><b>02</b><h3>Breakfast all day</h3><p>Your favourite breakfasts, whatever the clock says.</p></article>
-        <article><b>03</b><h3>Kids' area</h3><p>Play area at Vavilon Residential Complex.</p></article>
-        <article><b>04</b><h3>VIP rooms</h3><p>For business breakfasts, small meetings and workshops.</p></article>
-        <article><b>05</b><h3>Banquets</h3><p>We'll host your event for a group of up to 40 people.</p></article>
-        <article><b>06</b><h3>Prayer room</h3><p>A separate, comfortable space for prayer (namazkhana).</p></article>
+        <article><svg class="f-ic" aria-hidden="true" focusable="false"><use href="#f-247"/></svg><h3>Around the clock</h3><p>4 cafés are open 24/7 — drop in whenever suits you. Bakery to go on Zhandosov St is open daily, 07:00–22:00.</p></article>
+        <article><svg class="f-ic" aria-hidden="true" focusable="false"><use href="#f-breakfast"/></svg><h3>Breakfast all day</h3><p>Your favourite breakfasts, whatever the clock says.</p></article>
+        <article><svg class="f-ic" aria-hidden="true" focusable="false"><use href="#f-kids"/></svg><h3>Kids' area</h3><p>Play area at Vavilon Residential Complex.</p></article>
+        <article><svg class="f-ic" aria-hidden="true" focusable="false"><use href="#f-vip"/></svg><h3>VIP rooms</h3><p>For business breakfasts, small meetings and workshops.</p></article>
+        <article><svg class="f-ic" aria-hidden="true" focusable="false"><use href="#f-banquet"/></svg><h3>Banquets</h3><p>We'll host your event for a group of up to 40 people.</p></article>
+        <article><svg class="f-ic" aria-hidden="true" focusable="false"><use href="#f-namaz"/></svg><h3>Prayer room</h3><p>A separate, comfortable space for prayer (namazkhana).</p></article>
       </div>
     </div>
   </section>
 </main>
 
-<div class="mini-stats shell">
-  <div><b>24/7</b><span>4 cafés</span></div>
-  <div><b>5</b><span>locations</span></div>
-  <div><b>all day</b><span>breakfast</span></div>
-</div>
-
 <section class="locations" id="locations">
   <div class="shell">
     <div class="loc-head">
-      <div><p class="tag">almaty · 5 locations</p><h2>Choose<br><span>your café</span>.</h2></div>
+      <div><h2>Choose<br><span>your café</span></h2></div>
       <p>Call us directly, get directions in 2GIS — or message us on WhatsApp to book a table or order takeaway.</p>
     </div>
     <div class="loc-grid">
     <div class="loc-card">
-      <small>01 · Vavilon Residential Complex</small>
+      <small>Vavilon Residential Complex</small>
       <h3>247/8 Rozybakiev St</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>kids' area</span> · <span>VIP rooms</span> · <span>VIP booths</span> · <span>banquet hall</span> · <span>Wi-Fi</span> · <span>parking</span></p>
       <div class="loc-links">
-        <a href="tel:+77025672332" onclick="track('loc_call',{branch:'01 · ЖК Вавилон'})">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})">Directions</a>
-        <a class="wa" href="https://wa.me/77025672332?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20247%2F8%20Rozybakiev%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'01 · ЖК Вавилон'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A0%D0%BE%D0%B7%D1%8B%D0%B1%D0%B0%D0%BA%D0%B8%D0%B5%D0%B2%D0%B0%20247%2F8" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'01 · ЖК Вавилон'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77025672332" onclick="track('loc_call',{branch:'01 · ЖК Вавилон'})" aria-label="Call" title="Call"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77025672332?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20247%2F8%20Rozybakiev%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'01 · ЖК Вавилон'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>02 · Komfort City Residential Complex</small>
+      <small>Komfort City Residential Complex</small>
       <h3>146 Serkebaev St</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>VIP booth</span> · <span>prayer room</span> · <span>free Wi-Fi</span> · <span>parking</span></p>
       <div class="loc-links">
-        <a href="tel:+77053673232" onclick="track('loc_call',{branch:'02 · ЖК Комфорт Сити'})">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})">Directions</a>
-        <a class="wa" href="https://wa.me/77053673232?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20146%20Serkebaev%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'02 · ЖК Комфорт Сити'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A1%D0%B5%D1%80%D0%BA%D0%B5%D0%B1%D0%B0%D0%B5%D0%B2%D0%B0%20146" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'02 · ЖК Комфорт Сити'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77053673232" onclick="track('loc_call',{branch:'02 · ЖК Комфорт Сити'})" aria-label="Call" title="Call"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77053673232?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%20146%20Serkebaev%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'02 · ЖК Комфорт Сити'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>03 · Promenade Business Park</small>
+      <small>Promenade Business Park</small>
       <h3>44A Abay Ave</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-about">A space for work, meetings and downtime, next to the Baluan Sholak sports complex and the Central Stadium.</p>
       <p class="loc-amen"><span>VIP room</span> · <span>hall for up to 60</span> · <span>space for freelancers</span> · <span>prayer room</span> · <span>summer terrace</span></p>
       <div class="loc-links">
-        <a href="tel:+77770355617" onclick="track('loc_call',{branch:'03 · БП Promenade'})">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'03 · БП Promenade'})">Directions</a>
-        <a class="wa" href="https://wa.me/77770355617?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2044A%20Abay%20Ave" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'03 · БП Promenade'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%90%D0%B1%D0%B0%D1%8F%2044%D0%90" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'03 · БП Promenade'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77770355617" onclick="track('loc_call',{branch:'03 · БП Promenade'})" aria-label="Call" title="Call"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77770355617?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2044A%20Abay%20Ave" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'03 · БП Promenade'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>04 · Del Cappuccino</small>
+      <small>Del Cappuccino</small>
       <h3>64 Tole Bi St</h3>
-      <p class="loc-meta"><b>24/7</b></p>
       <p class="loc-amen"><span>delivery within 800 m</span> · <span>parking</span></p>
       <div class="loc-links">
-        <a href="tel:+77769079070" onclick="track('loc_call',{branch:'04 · Del Cappuccino'})">Call</a>
-        <a href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})">Directions</a>
-        <a class="wa" href="https://wa.me/77769079070?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2064%20Tole%20Bi%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'04 · Del Cappuccino'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/search/%D0%A2%D0%BE%D0%BB%D0%B5%20%D0%91%D0%B8%2064" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'04 · Del Cappuccino'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77769079070" onclick="track('loc_call',{branch:'04 · Del Cappuccino'})" aria-label="Call" title="Call"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77769079070?text=Hello!%20I'd%20like%20to%20book%20a%20table%20at%20Del%20Cappuccino%2C%2064%20Tole%20Bi%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'04 · Del Cappuccino'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
       </div>
     </div>
     <div class="loc-card">
-      <small>05 · Bakery to go · Rams City Residential Complex</small>
+      <small>Bakery to go · Rams City Residential Complex</small>
       <h3>94/12 Zhandosov St</h3>
       <p class="loc-meta"><b>daily 07:00–22:00</b> · Desserts, ready-to-cook food and coffee to go</p>
       <p class="loc-amen"><span>takeaway</span> · <span>3 tables for two</span> · <span>Wi-Fi</span> · <span>parking in the complex</span> · <span>pets OK for takeaway</span></p>
       <div class="loc-links">
-        <a href="tel:+77773278566" onclick="track('loc_call',{branch:'05 · Bakery to go · ЖК Rams City'})">Call</a>
-        <a href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'05 · Bakery to go · ЖК Rams City'})">Directions</a>
-        <a href="/#menu-togo-en" onclick="track('loc_menu',{branch:'05 · Bakery to go · ЖК Rams City'})">Menu</a>
-        <a class="wa" href="https://wa.me/77773278566?text=Hello!%20I'd%20like%20to%20order%20takeaway%20from%20delCappuccino%20bakery%20to%20go%2C%2094%2F12%20Zhandosov%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'05 · Bakery to go · ЖК Rams City'})">WhatsApp</a>
+        <a class="ib route" href="https://2gis.kz/almaty/firm/70000001116068964" target="_blank" rel="noopener" onclick="track('loc_route',{branch:'05 · Bakery to go · ЖК Rams City'})" aria-label="Directions" title="Directions"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-pin"/></svg></a>
+        <a class="ib" href="tel:+77773278566" onclick="track('loc_call',{branch:'05 · Bakery to go · ЖК Rams City'})" aria-label="Call" title="Call"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-phone"/></svg></a>
+        <a class="ib wa" href="https://wa.me/77773278566?text=Hello!%20I'd%20like%20to%20order%20takeaway%20from%20delCappuccino%20bakery%20to%20go%2C%2094%2F12%20Zhandosov%20St" target="_blank" rel="noopener" onclick="track('loc_wa',{branch:'05 · Bakery to go · ЖК Rams City'})" aria-label="WhatsApp" title="WhatsApp"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-wa"/></svg></a>
+        <a class="pill" href="/#menu-togo-en" onclick="track('loc_menu',{branch:'05 · Bakery to go · ЖК Rams City'})">Menu</a>
       </div>
     </div>
     </div>
@@ -428,10 +460,8 @@ footer{padding:16px 0}
 
 <section class="faq" id="faq">
   <div class="shell">
-    <div class="faq-head">
-      <div><p class="tag">questions &amp; answers</p><h2>Frequently asked <span>questions</span>.</h2></div>
-      <p>The full menu with prices as text is <a href="/en/menu">on a separate page</a>.</p>
-    </div>
+    <details class="faq-box" ontoggle="if(this.open)track('faq_list')">
+      <summary class="faq-sum"><h2>Frequently asked <span>questions</span></h2></summary>
     <div class="faq-list">
       <details ontoggle="if(this.open)track('faq_open',{q:1})"><summary>When are Del Cappuccino cafés open?</summary><div class="faq-a">4 cafés are open 24/7: Vavilon Residential Complex (247/8 Rozybakiev St), Komfort City Residential Complex (146 Serkebaev St), Promenade Business Park (44A Abay Ave), Del Cappuccino (64 Tole Bi St). Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00.</div></details>
       <details ontoggle="if(this.open)track('faq_open',{q:2})"><summary>Where are Del Cappuccino cafés in Almaty?</summary><div class="faq-a">5 locations in Almaty:<ul><li>Vavilon Residential Complex (247/8 Rozybakiev St) — open 24/7</li><li>Komfort City Residential Complex (146 Serkebaev St) — open 24/7</li><li>Promenade Business Park (44A Abay Ave) — open 24/7</li><li>Del Cappuccino (64 Tole Bi St) — open 24/7</li><li>Bakery to go · Rams City Residential Complex (94/12 Zhandosov St) — daily 07:00–22:00</li></ul></div></details>
@@ -452,15 +482,17 @@ footer{padding:16px 0}
       <details ontoggle="if(this.open)track('faq_open',{q:17})"><summary>Is the menu available in Kazakh and English?</summary><div class="faq-a">Yes, you can switch the menu language on the website: ҚАЗ, РУС or ENG.</div></details>
       <details ontoggle="if(this.open)track('faq_open',{q:18})"><summary>Where can I see the menu and prices?</summary><div class="faq-a">The menu with photos and ingredients is <a href="https://tap.delcappuccino.kz/#menu-en">on the website</a>, and the full menu with prices as text is at <a href="https://tap.delcappuccino.kz/en/menu">tap.delcappuccino.kz/en/menu</a>.</div></details>
     </div>
+    </details>
+    <p class="faq-more">The full menu with prices as text is <a href="/en/menu">on a separate page</a>.</p>
   </div>
 </section>
 
 <section class="contact shell" id="contacts">
-  <a href="/en/" aria-label="Del Cappuccino — home"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
-  <h2>Come by<br>for <span>coffee</span>.</h2>
-  <div class="contact-actions">
-    <a class="btn olive" href="#locations" onclick="track('cta_wa_contact')">WhatsApp</a>
-    <a class="btn ghost" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram')">@del.cappuccino</a>
+  <h2>Come by<br>for <span>coffee</span></h2>
+  <div class="social">
+    <a class="ib so" href="https://instagram.com/del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'instagram'})" aria-label="Instagram" title="Instagram"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-ig"/></svg></a>
+    <a class="ib so" href="https://www.youtube.com/@DelCappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'youtube'})" aria-label="YouTube" title="YouTube"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-yt"/></svg></a>
+    <a class="ib so" href="https://www.threads.com/@del.cappuccino" target="_blank" rel="noopener" onclick="track('cta_instagram',{net:'threads'})" aria-label="Threads" title="Threads"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-th"/></svg></a>
   </div>
 </section>
 
@@ -473,6 +505,8 @@ footer{padding:16px 0}
     <span>© 2026 Del Cappuccino</span>
   </div>
 </footer>
+<a class="fab-menu" href="/#menu-en" onclick="track('cta_menu',{src:'hbar_m'})"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>Menu</a>
+<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}if(!('IntersectionObserver'in window))return;var d=document,SEL='.promo-tile,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact';function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);el.classList.add('rv-in');setTimeout(function(){el.classList.remove('rv','rv-in',cls);el.style.removeProperty('--rv-d')},1000)})},{root:root||null,threshold:.15,rootMargin:'0px 0px -10% 0px'});els.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vh*.9)return;var i=0,s=el.previousElementSibling;while(s){if(s.matches&&s.matches(el.parentNode&&el.parentNode.matches&&el.parentNode.matches('.mm-cols')?'.mm-sec':SEL))i++;s=s.previousElementSibling}el.style.setProperty('--rv-d',(i%max)*step+'ms');el.classList.add('rv');if(cls)el.classList.add(cls);io.observe(el)})}prep([].slice.call(d.querySelectorAll(SEL)),'',null,75,4);window.revealMenu=function(){var m=d.getElementById('menu-modal');if(!m)return;prep([].slice.call(m.querySelectorAll('.mm-sec')),'rv-fast',m,60,3)};if(!matchMedia('(min-width:901px)').matches)return;var px=[].slice.call(d.querySelectorAll('.hero-zone .logo-art,.story-photo img')),on=[],tick=false;if(!px.length)return;d.documentElement.classList.add('px-on');function upd(){tick=false;px.forEach(function(el,k){if(!on[k])return;var f=el.parentNode.getBoundingClientRect();var p=Math.max(-1,Math.min(1,(f.top+f.height/2-window.innerHeight/2)/window.innerHeight));el.style.setProperty('--py',(p*-.06*f.height).toFixed(1)+'px')})}var pio=new IntersectionObserver(function(es){es.forEach(function(e){on[px.indexOf(e.target)]=e.isIntersecting})});px.forEach(function(el){pio.observe(el)});addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});upd()})();</script>
 <script>
 /* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
 (function(){

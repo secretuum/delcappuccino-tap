@@ -392,12 +392,25 @@ class TestGrillPromo(unittest.TestCase):
             zi = re.search(r'z-index:(-?\d+)', m.group(1))
             return int(zi.group(1)) if zi else 0
         self.assertGreater(z('.grill-win'), z('.grill-fire'), 'окно .grill-win должно быть над svg .grill-fire')
-        frame = re.search(r'<div class="grill-frame">(.*?)<p class="grill-cap">', self.html, re.S).group(1)
+        def inner(tag_start):
+            # содержимое <div …> до парного </div> (с 31.10 в окне ещё и подпись <p class="grill-cap"> — по уровню вложенности,
+            # а не по отступам)
+            i = self.html.index(tag_start) + len(tag_start)
+            depth, j = 1, i
+            while depth:
+                m = re.compile(r'<div\b|</div>').search(self.html, j)
+                depth += 1 if m.group(0) == '<div' else -1
+                j = m.end()
+            return self.html[i:m.start()]
+        frame = inner('<div class="grill-frame">')
         self.assertLess(frame.index('<svg class="grill-fire"'), frame.index('<div class="grill-win">'),
                         'svg пламени должен идти в DOM раньше окна с видео')
-        win = re.search(r'<div class="grill-win">(.*?)\n\s*</div>\n\s*</div>', frame, re.S).group(1)
-        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<div class="grill-ticker"'):
+        win = inner('<div class="grill-win">')
+        # редизайн 31.10 (владелец): название, цена, адреса и ссылка «смотреть в меню» — тоже внутри окна, поверх видео;
+        # с 1.11 бегущая строка — не в огне, а полосой под плитками акций (её перекрывали зубцы пламени)
+        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<p class="grill-cap">'):
             self.assertIn(part, win, part + ' должен быть внутри окна .grill-win')
+        self.assertNotIn('grill-ticker', win)
         self.assertNotIn('z-index:1', re.search(r'\n\.grill-fire\{([^}]*)\}', self.html).group(1))
         glow = re.search(r'\n\.grill-glow\{([^}]*)\}', self.html).group(1)
         self.assertIn('transparent', glow, 'центр виньетки должен быть прозрачным')
