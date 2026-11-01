@@ -4724,8 +4724,8 @@
     "img": "img/menu/vupi-paj-deserty.webp",
     "img480": "img/menu/vupi-paj-deserty-480.webp",
     "ar": [
-      640,
-      640
+      960,
+      960
     ],
     "w": "125 г",
     "kbju": {
@@ -5099,8 +5099,8 @@
     "img": "img/menu/vupi-paj-torty-celikom.webp",
     "img480": "img/menu/vupi-paj-torty-celikom-480.webp",
     "ar": [
-      640,
-      640
+      960,
+      960
     ],
     "w": "1000 г",
     "kbju": {
@@ -5375,8 +5375,8 @@
     "img": "img/menu/myakot.webp",
     "img480": "img/menu/myakot-480.webp",
     "ar": [
-      640,
-      640
+      960,
+      960
     ],
     "w": "500 г",
     "kbju": {
