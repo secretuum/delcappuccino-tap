@@ -12,6 +12,7 @@
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
 <link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
@@ -21,122 +22,128 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <meta property="og:title" content="Тұтынушы бұрышы — Del Cappuccino">
 <meta property="og:description" content="Салық төлеушінің паспорттары, тұтынушыға ақпарат және дауларды реттеу тәртібі.">
 <style>
-/* Шрифт self-host (assets/fonts, tools/fetch_fonts.py): Montserrat 400–700, latin+cyrillic+cyrillic-ext (казахский) */
+/* Шрифты self-host — те же файлы и подмножества, что у главной (tools/fetch_fonts.py geologica montserrat): latin, cyrillic,
+   cyrillic-ext (казахские буквы), ₸ */
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic.646d6acf.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-latin.7f7f79c5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-tenge.b368a258.woff2) format('woff2');unicode-range:U+20B8}
 @font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
 @font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
 @font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
+/* ── ТОКЕНЫ v5 — копия токенов главной (index.html, тема приложения kofe-app v5; этап 3 редизайна, 1.11.2026):
+   белый фон, мягкие подложки surface, скругления и пилюли — как на главной. Меняются вместе с главной. ── */
 :root{
-  --forest:#426349; --forest-dk:#31492F; --cream:#FEF1E7; --cream-2:#F7E7D8;
-  --olive:#849E29; --sage:#738E5B; --moss:#B4B86C;
-  --ink:#241C15; --ink-2:#5C5245; --line:rgba(66,99,73,.18);
-  --surface:#FFFFFF; --r:14px;
+  --font-display:'Geologica',system-ui,sans-serif;
+  --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
+  --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-border:rgba(66,99,73,.18);
+  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29;
+  --r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;
+  --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
+  --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
+  --h-button:56px; --h-touch:48px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{
-  background:var(--cream);color:var(--ink);
-  font-family:Montserrat,-apple-system,sans-serif;
+  background:var(--c-bg);color:var(--c-text);
+  font-family:var(--font-body);
   -webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden;
 }
 a{color:inherit}
+/* заголовки — строчными, шрифтом заголовков, как на главной */
+h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
 .shell{max-width:960px;margin:0 auto;padding:0 24px}
+:focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
 
-/* ── TOP BAR + LANG SWITCH ─────────────── */
-.topbar{position:sticky;top:0;z-index:100;background:var(--forest-dk);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px}
-.tb-brand{font-family:Montserrat,sans-serif;font-weight:600;font-size:15px;letter-spacing:.22em;text-transform:uppercase;color:color-mix(in srgb,var(--cream) 72%,transparent)}
-.lang-switch{display:flex;gap:3px;background:rgba(255,255,255,.12);border-radius:99px;padding:3px}
-.lang-btn{border:0;background:transparent;color:color-mix(in srgb,var(--cream) 82%,transparent);font-family:Montserrat,sans-serif;font-weight:700;font-size:12px;letter-spacing:.03em;padding:6px 12px;border-radius:99px;cursor:pointer;transition:background .15s,color .15s}
-.lang-btn:hover{color:var(--cream)}
-.lang-btn.on{background:var(--cream);color:var(--forest-dk)}
+/* ── ШАПКА (как на главной): белое стекло, «← на главную» пилюлей · логотип · языки пилюлями ── */
+.topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
+.tb-brand{display:inline-flex;align-items:center;flex:none}
+.tb-brand img{height:40px;width:auto;display:block;border-radius:10px}
+.lang-switch{display:flex;gap:3px;background:var(--c-surface);border-radius:var(--r-pill);padding:3px}
+.lang-btn{border:0;background:transparent;color:var(--c-muted);font-family:var(--font-body);font-weight:700;font-size:12px;letter-spacing:.03em;padding:6px 12px;min-height:38px;border-radius:var(--r-pill);cursor:pointer;transition:background .15s,color .15s}
+.lang-btn:hover{color:var(--c-text)}
+.lang-btn.on{background:var(--c-accent);color:var(--c-on-accent)}
 /* «← На главную» вверху: всегда на виду (шапка липкая); подпись — та же строка back словаря, что внизу */
-.tb-back{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;white-space:nowrap;min-height:32px;padding:6px 13px 6px 10px;border-radius:99px;background:rgba(255,255,255,.12);color:var(--cream);font-family:Montserrat,sans-serif;font-weight:600;font-size:13px;line-height:1;text-decoration:none;transition:background .15s,color .15s}
-.tb-back:hover{background:var(--cream);color:var(--forest-dk)}
+.tb-back{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;white-space:nowrap;min-height:44px;padding:6px 13px 6px 10px;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body);font-weight:600;font-size:13px;line-height:1.2;text-decoration:none;transition:background .15s}
+.tb-back:hover{background:var(--c-raised)}
 .tb-back svg{flex:none}
 .tb-back span{min-width:0;overflow:hidden;text-overflow:ellipsis}   /* запас: если не влезет — многоточие, а не прокрутка вбок */
 .lang-switch{flex:none}
 
-/* ── HERO ──────────────────────────────── */
-.uk-hero{background:var(--forest);color:var(--cream);position:relative;overflow:hidden;padding:32px 0 30px}
-.uk-hero::before{
-  content:'';position:absolute;inset:0;opacity:.07;
-  background-image:radial-gradient(circle at 20% 30%, var(--cream) 1.5px, transparent 1.5px),
-                    radial-gradient(circle at 70% 65%, var(--cream) 1.5px, transparent 1.5px),
-                    radial-gradient(circle at 45% 85%, var(--cream) 1.5px, transparent 1.5px);
-  background-size:140px 140px, 190px 190px, 160px 160px;
-}
-.uk-hero .shell{position:relative}
-.uk-logo{height:40px;width:auto;border-radius:9px;display:block;margin-bottom:18px}
-.uk-hero .eyebrow{color:var(--moss)}
-.uk-hero .eyebrow::before{background:var(--moss)}
-.uk-hero h1{font-family:Montserrat;font-weight:700;font-size:34px;line-height:1.08;letter-spacing:-.01em;margin-top:4px}
-.uk-sub{margin-top:14px;font-size:13px;color:color-mix(in srgb,var(--cream) 82%,transparent);line-height:1.5}
-.uk-sub .dot{display:inline-block;width:6px;height:6px;border-radius:99px;background:var(--moss);margin-right:7px;vertical-align:middle}
+/* ── ЗАГОЛОВОК СТРАНИЦЫ — на белом, как разделы главной ── */
+.uk-hero{padding:32px 0 8px}
+.uk-hero h1{font-size:34px;line-height:1.08;margin-top:4px}
+.uk-sub{margin-top:12px;font-size:var(--fs-small);color:var(--c-muted);line-height:1.5}
+.uk-sub .dot{display:inline-block;width:8px;height:8px;border-radius:var(--r-pill);background:var(--c-olive);margin-right:8px;vertical-align:middle}
 
-/* ── SECTIONS ──────────────────────────── */
-main{padding:40px 0 20px}
-.eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--olive);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:6px}
-.eyebrow::before{content:'';width:16px;height:2px;background:var(--olive);border-radius:2px;flex:none}
-.sec-title{font-family:Montserrat;font-weight:700;font-size:23px;color:var(--forest-dk);line-height:1.15}
-.sec{margin-bottom:44px}
-.sec > .sec-head{margin-bottom:18px}
+/* ── РАЗДЕЛЫ ── */
+main{padding:24px 0 20px}
+.eyebrow{font-size:var(--fs-caption);text-transform:lowercase;color:var(--c-olive);font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.sec-title{font-size:var(--fs-title);color:var(--c-text);line-height:1.15}
+.sec{margin-bottom:40px}
+.sec > .sec-head{margin-bottom:16px}
 
-/* ── PASSPORT CARDS ────────────────────── */
+/* ── ПАСПОРТА: карточки на мягкой подложке (как точки и разделы меню главной) ── */
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.pass{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:22px 22px 20px;display:flex;flex-direction:column}
+.pass{background:var(--c-surface);border-radius:var(--r-lg);padding:24px 22px 22px;display:flex;flex-direction:column}
 .pass-top{display:flex;align-items:flex-start;gap:12px;margin-bottom:4px}
-.pass-num{font-family:Montserrat;font-weight:700;font-size:13px;color:var(--cream);background:var(--forest);border-radius:9px;padding:6px 10px;flex:none;line-height:1}
-.pass-place small{display:block;font-family:Montserrat;font-size:10.5px;color:var(--olive);text-transform:uppercase;letter-spacing:.06em;font-weight:700}
-.pass-place h3{font-family:Montserrat;font-size:18px;font-weight:700;color:var(--forest-dk);line-height:1.12;margin-top:3px}
-.pass-kicker{font-family:Montserrat,sans-serif;font-weight:600;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--sage);margin:14px 0 10px;padding-top:12px;border-top:1px solid var(--line)}
-.pass-name{font-weight:700;font-size:14.5px;color:var(--ink);margin-bottom:12px}
+.pass-num{font-family:var(--font-display);font-weight:700;font-size:13px;color:var(--c-on-accent);background:var(--c-accent);border-radius:var(--r-pill);padding:7px 11px;flex:none;line-height:1}
+.pass-place small{display:block;font-size:var(--fs-caption);color:var(--c-olive);font-weight:700}
+.pass-place h3{font-size:19px;color:var(--c-text);line-height:1.15;margin-top:3px}
+.pass-kicker{font-family:var(--font-display);font-weight:700;font-size:13px;text-transform:lowercase;color:var(--c-muted);margin:14px 0 10px;padding-top:12px;border-top:1px solid var(--c-border)}
+.pass-name{font-weight:700;font-size:14.5px;color:var(--c-text);margin-bottom:12px}
 .rows{display:flex;flex-direction:column;gap:9px;flex:1}
-.row .k{font-size:10.5px;text-transform:uppercase;letter-spacing:.03em;color:var(--olive);font-weight:600;display:block;margin-bottom:1px}
-.row .v{font-size:13px;color:var(--ink-2);line-height:1.45}
-.row .v a{color:var(--forest);font-weight:600;text-decoration:none}
+.row .k{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--c-olive);font-weight:600;display:block;margin-bottom:1px}
+.row .v{font-size:var(--fs-small);color:var(--c-muted);line-height:1.45;overflow-wrap:anywhere}
+.row .v a{color:var(--c-accent);font-weight:600;text-decoration:none}
 .row .v a:hover{text-decoration:underline}
-.talon-line{font-size:11.5px;color:var(--ink-2);line-height:1.5;margin-top:2px;overflow-wrap:anywhere}
-.talon-line b{color:var(--ink);font-weight:600;font-variant-numeric:tabular-nums}
-.pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;background:var(--forest);color:var(--cream);border-radius:12px;padding:13px 16px;text-decoration:none;font-weight:700;font-size:13.5px;line-height:1.3;text-align:center;transition:background .15s,transform .15s}
-.pass-btn:hover{background:var(--forest-dk);transform:translateY(-1px)}
+.talon-line{font-size:12px;color:var(--c-muted);line-height:1.5;margin-top:2px;overflow-wrap:anywhere}
+.talon-line b{color:var(--c-text);font-weight:600;font-variant-numeric:tabular-nums}
+/* кнопка талона — как кнопки главной: высота 56, пилюля, Geologica строчными */
+.pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:var(--h-button);background:var(--c-accent);color:var(--c-on-accent);border-radius:var(--r-pill);padding:8px 20px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.25;text-transform:lowercase;text-align:center;transition:background .15s,transform .15s}
+.pass-btn:hover{background:var(--c-accent-dk);transform:translateY(-1px)}
 .pass-btn svg{width:16px;height:16px;flex:none}
 
-/* ── INFO BLOCKS ───────────────────────── */
-.info{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:24px}
+/* ── ИНФОРМАЦИЯ — на той же подложке ── */
+.info{background:var(--c-surface);border-radius:var(--r-lg);padding:24px}
 .info ul{list-style:none;display:flex;flex-direction:column;gap:14px}
-.info li{padding-left:22px;position:relative;font-size:14px;color:var(--ink);line-height:1.55}
-.info li::before{content:'';position:absolute;left:0;top:8px;width:8px;height:8px;border-radius:99px;background:var(--moss)}
+.info li{padding-left:22px;position:relative;font-size:var(--fs-small);color:var(--c-text);line-height:1.55}
+.info li::before{content:'';position:absolute;left:0;top:7px;width:8px;height:8px;border-radius:var(--r-pill);background:var(--c-olive)}
 .contact-grid{display:flex;flex-direction:column;gap:12px}
-.contact-grid .row .v a{color:var(--forest);font-weight:600;text-decoration:none}
+.contact-grid .row .v a{color:var(--c-accent);font-weight:600;text-decoration:none}
 .contact-grid .row .v a:hover{text-decoration:underline}
-.disp-intro{font-size:14px;color:var(--ink);line-height:1.6;margin-bottom:16px}
+.disp-intro{font-size:var(--fs-small);color:var(--c-text);line-height:1.6;margin-bottom:16px}
 .steps{counter-reset:st;display:flex;flex-direction:column;gap:12px;margin-top:4px}
-.steps li{list-style:none;padding-left:38px;position:relative;font-size:14px;color:var(--ink);line-height:1.5}
-.steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:-2px;width:26px;height:26px;border-radius:99px;background:var(--cream-2);color:var(--forest);font-family:Montserrat;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
-.perechen{margin-top:16px;background:var(--cream-2);border-radius:12px;padding:14px 16px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
-.perechen b{color:var(--forest-dk)}
-.note{display:flex;gap:12px;align-items:flex-start;background:var(--cream-2);border-radius:14px;padding:16px 18px;font-size:12.5px;color:var(--ink-2);line-height:1.55}
+.steps li{list-style:none;padding-left:38px;position:relative;font-size:var(--fs-small);color:var(--c-text);line-height:1.5}
+.steps li::before{counter-increment:st;content:counter(st);position:absolute;left:0;top:-3px;width:26px;height:26px;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center}
+.perechen{margin-top:16px;background:var(--c-bg);border-radius:var(--r-md);padding:14px 16px;font-size:13px;color:var(--c-muted);line-height:1.55}
+.perechen b{color:var(--c-text)}
+.note{display:flex;gap:12px;align-items:flex-start;background:var(--c-surface);border-radius:var(--r-lg);padding:16px 18px;font-size:13px;color:var(--c-muted);line-height:1.55}
 .note .ic{flex:none;font-size:18px;line-height:1.3}
 
-/* ── FOOTER ────────────────────────────── */
-footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
-.f-row{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--ink-2)}
-.f-row a.back{display:inline-flex;align-items:center;gap:7px;color:var(--forest);font-weight:600;text-decoration:none}
+/* ── ПОДВАЛ — как на главной: логотип, подпись, «← на главную», © ── */
+footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
+.f-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:var(--fs-caption);color:var(--c-muted)}
+.f-row img{height:28px;width:auto;border-radius:6px;display:block}
+.f-row a.back{display:inline-flex;align-items:center;gap:7px;color:var(--c-accent);font-weight:600;text-decoration:none}
 .f-row a.back:hover{text-decoration:underline}
 
 @media(max-width:720px){
   .shell{padding:0 16px}
   .topbar{padding:7px 14px}
-  .tb-brand{font-size:13px;letter-spacing:.16em}
-  .uk-hero{padding:26px 0 24px}
-  .uk-hero h1{font-size:26px}
-  main{padding:28px 0 12px}
-  .sec{margin-bottom:34px}
+  .uk-hero{padding:24px 0 4px}
+  .uk-hero h1{font-size:28px}
+  main{padding:20px 0 12px}
+  .sec{margin-bottom:32px}
   .sec-title{font-size:20px}
   .cards{grid-template-columns:1fr;gap:12px}
   .info{padding:20px 18px}
-  .pass{padding:18px 18px 18px}
+  .pass{padding:20px 18px 18px}
+  .f-row{justify-content:center;text-align:center}
 }
-/* шапка: «← На главную» · название · языки; на узком экране название убираем (логотип — сразу под шапкой), остаются ссылка слева и языки справа */
+/* шапка: «← На главную» · логотип · языки; на узком экране логотип убираем (он есть в подвале), остаются ссылка слева и языки справа */
 @media(max-width:560px){
   .tb-brand{display:none}
 }
@@ -154,7 +161,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     <span data-i18n="back">Басты бетке</span>
   </a>
-  <span class="tb-brand">Del Cappuccino</span>
+  <a class="tb-brand" href="/" aria-label="Del Cappuccino"><img src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino"></a>
   <div class="lang-switch" role="group" aria-label="Тіл / Язык / Language">
     <button class="lang-btn on" data-lang="kk" onclick="setLang('kk')">ҚАЗ</button>
     <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">РУС</button>
@@ -164,7 +171,6 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
 
 <header class="uk-hero">
   <div class="shell">
-    <a href="/" aria-label="Del Cappuccino — басты бет"><img class="uk-logo" src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="80px" width="256" height="127" alt="Del Cappuccino"></a>
     <p class="eyebrow" data-i18n="hero_eyebrow">Ресми ақпарат</p>
     <h1 data-i18n="title">Тұтынушы бұрышы</h1>
     <div class="uk-sub">
@@ -386,6 +392,7 @@ footer{border-top:1px solid var(--line);padding:26px 0 40px;margin-top:20px}
 
 <footer class="shell">
   <div class="f-row">
+    <a href="/" aria-label="Del Cappuccino"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
     <a class="back" href="/">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       <span data-i18n="back">Басты бетке</span>

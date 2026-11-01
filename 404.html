@@ -4,7 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Страница не найдена — Del Cappuccino</title>
-<link rel="preload" href="/assets/fonts/golos-400-800-cyrillic.17d048ca.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
 <link rel="manifest" href="/manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="/assets/icon-192.png">
@@ -15,32 +16,66 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}
 track('page_not_found',{path:location.pathname});</script>
 <!-- /аналитика -->
 <style>
-/* Шрифты self-host (assets/fonts, tools/fetch_fonts.py): Comfortaa 700, Golos Text 400–800 */
-@font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-cyrillic.52a4b41d.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Comfortaa';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/comfortaa-700-latin.ed9f328c.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-cyrillic.17d048ca.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
-@font-face{font-family:'Golos Text';font-style:normal;font-weight:400 800;font-display:swap;src:url(/assets/fonts/golos-400-800-latin.9a69d0aa.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
-:root{--forest:#426349;--forest-dk:#31492F;--cream:#FEF1E7;--olive:#849E29;--ink:#241C15;--ink-2:#5C5245;--line:rgba(66,99,73,.18)}
+/* Шрифты self-host — те же файлы и подмножества, что у главной (tools/fetch_fonts.py geologica montserrat) */
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic.646d6acf.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-latin.7f7f79c5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-tenge.b368a258.woff2) format('woff2');unicode-range:U+20B8}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
+/* ── ТОКЕНЫ v5 — как на главной (тема приложения kofe-app v5; этап 3 редизайна, 1.11.2026) ── */
+:root{
+  --font-display:'Geologica',system-ui,sans-serif;
+  --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
+  --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-border:rgba(66,99,73,.18);
+  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29;
+  --r-lg:22px; --r-pill:999px; --h-button:56px; --h-touch:48px;
+}
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--cream);color:var(--ink);font-family:'Golos Text',-apple-system,sans-serif;-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;text-align:center}
-img{height:48px;width:auto;margin-bottom:32px}
-p.tag{font-size:11.5px;text-transform:uppercase;letter-spacing:.14em;color:var(--olive);font-weight:700;margin-bottom:16px;display:flex;align-items:center;justify-content:center;gap:8px}
-p.tag::before{content:'';width:18px;height:2px;background:var(--olive);border-radius:2px}
-h1{font-family:Comfortaa;font-weight:700;font-size:42px;line-height:1.1;color:var(--forest-dk);margin-bottom:12px}
-h1 span{color:var(--olive)}
-p.lead{font-size:15px;color:var(--ink-2);line-height:1.65;max-width:340px;margin:0 auto 32px}
-a.btn{display:inline-flex;align-items:center;gap:6px;background:var(--forest);color:var(--cream);padding:13px 26px;border-radius:99px;text-decoration:none;font-size:14px;font-weight:700;transition:background .15s}
-a.btn:hover{background:var(--forest-dk)}
-footer{position:fixed;bottom:20px;font-size:12px;color:var(--ink-2)}
+body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+:focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
+/* шапка — как на главной: белое стекло, логотип ссылкой на главную */
+header{position:sticky;top:0;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+.hbar{display:flex;align-items:center;max-width:1160px;margin:0 auto;padding:8px 24px;min-height:64px}
+.hbar img{height:40px;width:auto;display:block;border-radius:10px}
+/* текст — на мягкой подложке со скруглением, по центру экрана */
+main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.box{background:var(--c-surface);border-radius:var(--r-lg);padding:40px 28px;max-width:520px;width:100%;text-align:center}
+p.tag{font-size:12px;text-transform:lowercase;color:var(--c-olive);font-weight:700;margin-bottom:12px}
+h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;color:var(--c-text);margin-bottom:12px}
+h1 span{color:var(--c-accent)}
+p.lead{font-size:15px;color:var(--c-muted);line-height:1.65;max-width:340px;margin:0 auto 28px}
+/* кнопка — как на главной: высота 56, пилюля, Geologica строчными */
+a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-button);padding:8px 28px;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-size:16px;font-weight:700;text-transform:lowercase;text-decoration:none;transition:background .15s}
+a.btn:hover{background:var(--c-accent-dk)}
+/* подвал — как на главной */
+footer{border-top:1px solid var(--c-border);padding:24px}
+.f-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1112px;margin:0 auto;font-size:12px;color:var(--c-muted)}
+.f-row img{height:28px;width:auto;border-radius:6px;display:block}
+@media(max-width:680px){.hbar{padding:8px 16px}h1{font-size:30px}.box{padding:32px 20px}.f-row{justify-content:center;text-align:center}}
 </style>
 </head>
 <body>
-  <img src="/assets/logo-mono-192.webp" width="192" height="192" alt="Del Cappuccino">
-  <p class="tag">ошибка 404</p>
-  <h1>Такой страницы<br>нет <span>в меню</span>.</h1>
-  <p class="lead">Возможно, ссылка устарела или была удалена. Зато у нас есть кофе.</p>
-  <a class="btn" href="/">На главную</a>
-  <footer>coffee & food · Алматы</footer>
+<header>
+  <div class="hbar"><a href="/" aria-label="Del Cappuccino — на главную"><img src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino"></a></div>
+</header>
+<main>
+  <div class="box">
+    <p class="tag">ошибка 404</p>
+    <h1>Такой страницы<br>нет <span>в меню</span>.</h1>
+    <p class="lead">Возможно, ссылка устарела или была удалена. Зато у нас есть кофе.</p>
+    <a class="btn" href="/">На главную</a>
+  </div>
+</main>
+<footer>
+  <div class="f-row">
+    <a href="/" aria-label="На главную"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
+    <span>coffee &amp; food · Алматы</span>
+    <span>© 2026 Del Cappuccino</span>
+  </div>
+</footer>
 <script>
 /* Аналитика — после load, в простое; service worker общий с главной (правила — в /sw.js) */
 (function(){

@@ -1,20 +1,33 @@
-/* Общий стиль юридических страниц: читаемо на телефоне, без внешних шрифтов и скриптов. */
-:root {
-  --bg: #ffffff;
-  --text: #1f1f1f;
-  --muted: #5f5f5f;
-  --line: #e2e2e2;
-  --accent: #6b4226;
-}
+/* Общий стиль юридических страниц приложения — в стиле сайта tap.delcappuccino.kz (тема v5, этап 3 редизайна).
+   Без скриптов; шрифты сайта по абсолютным ссылкам /assets/fonts/, без них страница читается системным шрифтом. */
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #161412;
-    --text: #ece8e4;
-    --muted: #a8a19a;
-    --line: #34302c;
-    --accent: #d8a77c;
-  }
+/* Шрифты: Geologica (заголовки) и Montserrat (текст), подмножества latin, cyrillic, cyrillic-ext (казахские буквы), тенге */
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic.646d6acf.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-latin.7f7f79c5.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-tenge.b368a258.woff2) format('woff2');unicode-range:U+20B8}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic-ext.0f7f5f2f.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
+@font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
+
+/* Токены темы v5 — как на главной сайта */
+:root {
+  --font-display: 'Geologica', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --font-body: 'Montserrat', system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  --bg: #FFFFFF;
+  --surface: #F5F5F3;
+  --raised: #ECEBE8;
+  --text: #241C15;
+  --muted: #5C5245;
+  --line: rgba(66, 99, 73, .18);
+  --accent: #426349;
+  --accent-dk: #31492F;
+  --on-accent: #FFFFFF;
+  --olive: #849E29;
+  --r-md: 16px;
+  --r-lg: 22px;
+  --r-pill: 999px;
 }
 
 * { box-sizing: border-box; }
@@ -25,71 +38,163 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: break-word;
 }
 
-main, .top, .langs {
-  max-width: 760px;
-  margin: 0 auto;
-  padding: 0 16px;
+:focus-visible { outline: 2px solid var(--olive); outline-offset: 2px; }
+
+main, .top, .langs, footer {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
-/* Переключатель языка — справа над навигацией, неброско */
-.langs { display: flex; justify-content: flex-end; gap: 12px; padding-top: 10px; font-size: 0.9rem; }
-.langs a { color: var(--muted); text-decoration: none; }
-.langs a[aria-current="page"] { color: var(--text); font-weight: 700; }
+/* Переключатель языка — пилюли справа, текущий язык залит зелёным (как на главной) */
+.langs {
+  display: flex;
+  justify-content: flex-end;
+  gap: 4px;
+  padding: 12px 16px 0;
+}
+.langs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0 14px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .03em;
+  text-decoration: none;
+}
+.langs a:hover { color: var(--text); background: var(--raised); }
+.langs a[aria-current="page"] { background: var(--accent); color: var(--on-accent); }
 
-/* «Перевод для удобства…» на казахской и английской версиях */
-.notice { color: var(--muted); font-size: 0.93rem; border-left: 3px solid var(--line); padding-left: 10px; }
-
-
-.top {
+/* Документы — ряд пилюль; «← На главную» — отдельной строкой над ними */
+.top, .bottom {
   display: flex;
   flex-wrap: wrap;
-  gap: 4px 16px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--line);
+  gap: 8px;
+}
+.top { padding: 12px 16px 16px; }
+.top a, .bottom a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: var(--r-pill);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-decoration: none;
+}
+.top a:hover, .bottom a:hover { background: var(--raised); }
+.top a[aria-current="page"], .bottom a[aria-current="page"] { background: var(--accent); color: var(--on-accent); }
+.top a.home, .bottom a.home {
+  flex-basis: 100%;
+  min-height: 32px;
+  padding: 0;
+  background: transparent;
+  color: var(--accent);
+}
+.top a.home:hover, .bottom a.home:hover { background: transparent; text-decoration: underline; }
+
+/* Текст документа — на мягкой подложке со скруглением, как разделы меню на сайте */
+main {
+  background: var(--surface);
+  border-radius: var(--r-lg);
+  padding: 8px 28px 24px;
 }
 
-.top a, .bottom a { color: var(--accent); text-decoration: none; }
-.top a[aria-current="page"], .bottom a[aria-current="page"] { font-weight: 700; text-decoration: underline; }
+/* «Перевод для удобства…» на казахской и английской версиях */
+.notice {
+  color: var(--muted);
+  font-size: 14px;
+  background: var(--bg);
+  border-radius: var(--r-md);
+  padding: 12px 14px;
+}
 
-/* «← На главную» — неброско, отдельной строкой над документами */
-.top a.home, .bottom a.home { flex-basis: 100%; color: var(--muted); font-size: 0.9rem; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em; color: var(--text); }
+h1 { font-size: 30px; line-height: 1.15; margin: 20px 0 6px; text-transform: lowercase; }
+h2 { font-size: 21px; line-height: 1.25; margin: 28px 0 8px; padding-top: 16px; border-top: 1px solid var(--line); }
+h3 { font-size: 17px; line-height: 1.3; margin: 18px 0 6px; }
 
-.bottom { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-bottom: 8px; }
-footer p { margin: 0; }
-
-h1 { font-size: 1.6rem; line-height: 1.25; margin: 24px 0 4px; }
-h2 { font-size: 1.2rem; margin: 28px 0 8px; padding-top: 8px; border-top: 1px solid var(--line); }
-h3 { font-size: 1.05rem; margin: 18px 0 6px; }
-
-.edition { color: var(--muted); margin: 0 0 16px; }
+.edition { color: var(--muted); font-size: 14px; margin: 0 0 16px; }
 
 a { color: var(--accent); overflow-wrap: anywhere; }
+a:hover { color: var(--accent-dk); }
 
 p, li { overflow-wrap: break-word; }
 
 ol, ul { padding-left: 1.4em; }
 li { margin: 4px 0; }
 
-
-table { width: 100%; border-collapse: collapse; margin: 8px 0 16px; }
-th, td { text-align: left; vertical-align: top; padding: 8px 6px; border-bottom: 1px solid var(--line); }
-th { width: 42%; font-weight: 600; }
-
-@media (max-width: 480px) {
-  h1 { font-size: 1.35rem; }
-  th, td { display: block; width: 100%; padding: 4px 0; }
-  th { padding-top: 10px; border-bottom: 0; }
+/* Реквизиты — белые карточки-строки на подложке; длинные адреса и почта переносятся */
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin: 8px 0 16px;
+  background: var(--bg);
+  border-radius: var(--r-md);
+  overflow: hidden;
+  table-layout: fixed;
 }
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--line);
+  overflow-wrap: anywhere;
+}
+tr:last-child th, tr:last-child td { border-bottom: 0; }
+th { width: 40%; font-weight: 600; color: var(--muted); font-size: 14px; }
 
 footer {
-  max-width: 760px;
-  margin: 32px auto 0;
-  padding: 16px;
+  margin-top: 24px;
+  padding: 16px 16px 32px;
   border-top: 1px solid var(--line);
   color: var(--muted);
-  font-size: 0.9rem;
+  font-size: 13px;
+}
+.bottom { margin-bottom: 12px; }
+footer p { margin: 0; }
+
+/* Между телефоном и шириной текста — подложка с полями от краёв экрана */
+@media (max-width: 832px) {
+  main { margin-left: 16px; margin-right: 16px; }
+}
+
+/* Телефон: поля уже, строки реквизитов — подпись над значением, без прокрутки вбок */
+@media (max-width: 560px) {
+  main { margin-left: 0; margin-right: 0; border-radius: 0; padding: 4px 16px 20px; }
+  h1 { font-size: 25px; }
+  h2 { font-size: 19px; }
+  .top a, .bottom a { padding: 0 14px; font-size: 13px; }
+  table { table-layout: auto; }
+  th, td { display: block; width: 100%; }
+  th { padding: 10px 14px 0; border-bottom: 0; font-size: 13px; }
+  td { padding: 2px 14px 10px; }
+}
+
+/* Печать: без подложек и теней, чёрный текст, адреса ссылок видны */
+@media print {
+  body { background: #fff; color: #000; font-size: 12pt; }
+  main { background: none; border-radius: 0; padding: 0; max-width: none; }
+  .langs, .top, .bottom { display: none; }
+  table, .notice { background: none; }
+  th, td { border-bottom: 1px solid #999; color: #000; }
+  h1, h2, h3, .edition, .notice, footer { color: #000; }
+  a { color: #000; text-decoration: underline; }
+  main a[href^="http"]::after { content: " (" attr(href) ")"; }
+  footer { border-top: 1px solid #999; }
 }
