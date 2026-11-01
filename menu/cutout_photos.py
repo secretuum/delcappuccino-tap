@@ -19,7 +19,7 @@
 
 Что делает для каждого фото из img/menu/sources.json, у которого есть карточка (источник — файл из папки Диска или ссылка
 iiko, как в build_cards.py):
-  0. Крошечный исходник (короче UPSCALE_BELOW = 300 px по короткой стороне) — Real-ESRGAN ×4 (морс, нават).
+  0. Исходник короче UPSCALE_BELOW = 960 px по короткой стороне (около 40 фото) — Real-ESRGAN ×4, потом уменьшение до холста.
   0б. Предмет срезан краем кадра уже в исходнике (пиццы 603×450, тарелки, лотки п/ф, блюдце капучино) — LaMa дорисовывает
      поле за краем (маска — только новое поле, исходник вставляется как был), дорисованная часть предмета выравнивается
      по тону с полосой у шва (корж пиццы не бледнее остального). Решение владельца 1.11.2026: пиццы — до целого круга.
@@ -62,7 +62,7 @@ WB_LIMIT = 0.08
 TARGET_MED = 0.62       # общая медиана яркости предмета (эталон «света»), только вверх
 TARGET_SAT = 0.32       # общая средняя насыщенность предмета, только вверх
 WEBP_Q = 85             # качество webp без потолка веса (владелец 1.11.2026); альфа — без потерь
-UPSCALE_BELOW = 300     # исходник короче по короткой стороне — Real-ESRGAN ×4 (--esrgan)
+UPSCALE_BELOW = 960     # исходник короче по короткой стороне — Real-ESRGAN ×4 (--esrgan), потом уменьшение до холста (владелец 1.11.2026)
 EXTEND_FRAC = 0.22      # дорисовка LaMa (--lama): поле за срезанным краем кадра, доля стороны
 PLATE_EATEN = 0.12      # «не фона» сверх маски модели больше 12 % — модель съела тарелку → фолбэк
 # фолбэк без поиска рамки: квадрат во всю узкую сторону кадра по центру блюда. Для снимков, где белая тарелка на
@@ -88,11 +88,15 @@ FALLBACK = {
     'shashlychki-iz-govyadiny-s-pitoj', 'sinnabon-klassicheskij', 'snikers-deserty', 'stejk-lososya-s-molodym-kartofelem',
     'stejk-omlet', 'syrniki-klassicheskie-sladkie-zavtraki', 'tartaletka-banofi-paj', 'teplyj-salat-iz-baklazhana-s-sousom-assaj',
     'tomlenaya-govyadina-s-kartofelnym-pyure', 'vafli-iz-cukini-s-malosolnym-lososem', 'vareniki-domashnie-blyuda',
-    'yaichnica-glazunya-s-sosiskami-i-sousom-relish', 'zavtrak-s-lososem', 'zharenyj-ris-s-hrustyaschej-kurochkoj'}
-# вырезать, хотя признак «съеденной тарелки» срабатывает (лотки, стакан молока — проверено глазами)
-FORCE_CUT = {'kotlety-govyazhi', 'moloko', 'samsa-s-govyadinoj-domashnie-blyuda', 'samsa-s-govyadinoj-polufabrikaty',
-             'samsa-s-kuricej-domashnie-blyuda', 'samsa-s-kuricej-polufabrikaty', 'syrniki-klassicheskie-polufabrikaty',
-             'syrniki-s-irimshikom'}
+    'yaichnica-glazunya-s-sosiskami-i-sousom-relish', 'zavtrak-s-lososem', 'zharenyj-ris-s-hrustyaschej-kurochkoj',
+    # упаковка и лотки (замечание владельца 1.11.2026: «часть упаковки пропала»): вырезка съедает прозрачную плёнку,
+    # блики и тонкие борта чёрного лотка, этикетку — только без вырезки
+    'syrniki-klassicheskie-polufabrikaty', 'syrniki-s-irimshikom', 'samsa-s-govyadinoj-domashnie-blyuda',
+    'samsa-s-govyadinoj-polufabrikaty', 'samsa-s-kuricej-domashnie-blyuda', 'samsa-s-kuricej-polufabrikaty', 'kotlety-govyazhi',
+    'kotlety-kurinye', 'pelmeni-s-govyadinoj', 'vareniki-polufabrikaty', 'manty-s-govyadinoj', 'farsh', 'myakot',
+    'mini-samsa-iz-pelmenej', 'ti-bon'}
+# вырезать, хотя признак «съеденной тарелки» срабатывает (стакан молока — проверено глазами; лотки с 1.11 — фолбэк)
+FORCE_CUT = {'moloko'}
 # «вкуснее» (вариант T2 из пробы 1.11.2026: теплее + объём) — только чизкейк, на другие десерты не распространяем
 TASTY = {'chizkejk-po-kazahski-deserty'}
 # стороны для дорисовки сверх найденных автоматически (край тарелки срезан, но признак его не ловит — по листам 1.11.2026)
