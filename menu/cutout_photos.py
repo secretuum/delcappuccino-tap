@@ -2,37 +2,47 @@
 """Фото карточек блюд: вырезка фона, единая цветокоррекция и центровка (правка владельца 1.11.2026: «разная цветокоррекция —
 выровняй; лаконичная карточка с прозрачным фоном; блюдо или напиток — по центру карточки»).
 
-Разовый инструмент обработки фото, тестами не гоняется. Нужны onnxruntime, numpy, Pillow и модель вырезки rembg
-isnet-general-use (ONNX, https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx) — всё в
-отдельном venv вне репозитория; модель запускается напрямую через onnxruntime с той же подготовкой, что в rembg (сам пакет
-rembg тянет ещё ~200 МБ зависимостей, для вырезки они не нужны). Например:
+Разовый инструмент обработки фото, тестами не гоняется. Нужны onnxruntime, numpy, Pillow и модели — все ВНЕ репозитория
+(сотни МБ), пути только параметрами:
+  --model   rembg isnet-general-use (вырезка): https://github.com/danielgatis/rembg/releases/download/v0.0.0/isnet-general-use.onnx
+  --esrgan  Real-ESRGAN x4plus (апскейл крошечных исходников): Qualcomm AI Hub, real_esrgan_x4plus-onnx-float.zip
+            (https://huggingface.co/qualcomm/Real-ESRGAN-x4plus → release_assets.json), файлы .onnx и .data рядом
+  --lama    LaMa (дорисовка поля за срезанным краем кадра): https://huggingface.co/Carve/LaMa-ONNX lama_fp32.onnx
+Всё в отдельном venv вне репозитория, модели запускаются напрямую через onnxruntime на CPU (видеокарта не нужна). Например:
     python3 -m venv /tmp/…/venv-img && /tmp/…/venv-img/bin/pip install onnxruntime numpy pillow
 Запуск из корня репозитория:
     /tmp/…/venv-img/bin/python menu/cutout_photos.py --photos /путь/к/menu/menu_photos --model /путь/isnet-general-use.onnx
+        --esrgan /путь/real_esrgan_x4plus.onnx --lama /путь/lama_fp32.onnx
         [--only slug,…] [--fallback slug,…] [--cut slug,…]
         [--sheets папка]       # листы «до / после» для проверки глазами (до | после на белом | после на тёмном)
+Полный прогон 219 фото на CPU — около часа.
 
-Что делает для каждого фото из img/menu/sources.json (источник — файл из папки Диска или ссылка iiko, как в build_cards.py):
+Что делает для каждого фото из img/menu/sources.json, у которого есть карточка (источник — файл из папки Диска или ссылка
+iiko, как в build_cards.py):
+  0. Крошечный исходник (короче UPSCALE_BELOW = 300 px по короткой стороне) — Real-ESRGAN ×4 (морс, нават).
+  0б. Предмет срезан краем кадра уже в исходнике (пиццы 603×450, тарелки, лотки п/ф, блюдце капучино) — LaMa дорисовывает
+     поле за краем (маска — только новое поле, исходник вставляется как был), дорисованная часть предмета выравнивается
+     по тону с полосой у шва (корж пиццы не бледнее остального). Решение владельца 1.11.2026: пиццы — до целого круга.
   1. Вырезка: модель rembg isnet-general-use (сегментация, а не порог по белому — белые тарелки и чашки остаются);
      края — мягкая маска модели, подтянутая по контрасту и размытая на 1 px, без белой каймы (цвет кромки — от предмета).
      Белые тарелки на белом фоне модель иногда «съедает» — это ловит recover_plates (фон — область от краёв кадра по
      плавным переходам цвета; кромка тарелки её обрывает) — и такое фото идёт в фолбэк, а не обрезается без тарелки.
-     Признак грубый: окончательно решают листы «до / после» (--fallback — в фолбэк, --cut — вырезать вопреки признаку).
-  2. Цвет по единому эталону: баланс белого — по нейтральным участкам (светлые малонасыщенные пиксели предмета: тарелка,
-     чашка; нет таких — фон до вырезки), сдвиг не больше ±6 %; светлое — мягкие уровни (99-й перцентиль предмета на 35 %
-     к 0,98, чёрная точка не трогается); тёмные снимки (медиана яркости ниже 0,56) — гамма на 30 % к ней, светлые не
-     гасятся; насыщенность — на четверть к общей средней, в пределах 0,94–1,03. Цель — выровнять, а не перекрасить.
+     Признак грубый: окончательно решают листы «до / после» — списки FALLBACK и FORCE_CUT ниже (и --fallback / --cut).
+  2. Цвет по единому эталону (вариант B пробы 1.11.2026, correct): светлый нейтральный фон — эталон белого, иначе
+     нейтральные участки предмета, ±8 %; экспозиция и насыщенность — только вверх (к 0,62 и 0,32), насыщенное не трогаем.
+     Чизкейк по-казахски — ещё «вкуснее» (TASTY, вариант T2). Свет и тень для плоских фото — не делаем (проба отклонена).
   3. Центровка: рамка по маске → квадратный холст, предмет по центру, поля 8 % по большей стороне (все предметы одного
      визуального масштаба, высокие стаканы — по высоте, без обрезки); под предметом — едва заметная тень-эллипс.
      Предмет, обрезанный краем уже в исходнике (пиццы 603×450 — низ), не висит срезом посреди холста: эта сторона
-     прижата к краю холста без поля, срез идёт по краю карточки (frame); срезанный снизу — без тени. Не дорисовываем.
+     прижата к краю холста без поля, срез идёт по краю карточки (frame); срезанный снизу — без тени. Это запасной путь,
+     когда дорисовки нет (без --lama) или поля за краем не хватило.
   4. Фолбэк: модель «съела» белую тарелку (PLATE_EATEN) или фото в списке --fallback (брак по листам «до / после») —
      исходник без вырезки, тот же цвет; рамка — по всему, что не фон (тарелка целиком), по центру квадрата с теми же
      полями, обрезанная в исходнике сторона — к краю холста; поля цветом фона; светлый студийный
      фон с оттенком доводится до белого (сдвиг ≤ 15 %), чтобы на белой карточке не было видно квадрата.
-Результат пишется прямо в img/menu/<slug>.webp и <slug>-480.webp (webp с альфой, ≤ 90 и ≤ 35 КБ), в sources.json к подписи
-источника добавляется «+cut1» или «+fb1» — build_cards.py оставляет такие файлы как есть, пока источник тот же (нужен
-только PIL, rembg не нужен). ar в menu/cards.json — под новый квадратный холст.
+Результат пишется прямо в img/menu/<slug>.webp и <slug>-480.webp (webp q85 без потолка веса, альфа без потерь), в
+sources.json к подписи источника добавляется «+cut2» или «+fb2» (2 — прогон 1.11.2026) — build_cards.py оставляет такие
+файлы как есть, пока источник тот же (ему нужен только PIL, модели не нужны). ar в menu/cards.json — под новый квадратный холст.
 """
 import argparse, io, json, os, re, sys
 
@@ -44,13 +54,16 @@ import build_cards as bc  # noqa: E402  fetch_bytes, encode_webp, SIZES
 IMG_DIR = os.path.join(ROOT, 'img', 'menu')
 SOURCES = os.path.join(IMG_DIR, 'sources.json')
 CARDS = os.path.join(HERE, 'cards.json')
-CUT_VER, FB_VER = 'cut1', 'fb1'
+CUT_VER, FB_VER = 'cut2', 'fb2'      # 2 — прогон 1.11.2026: цвет B, q85, апскейл, дорисовка края
 WORK_PX = 1600          # рабочий размер для вырезки и цвета
 CANVAS = 960            # квадратный холст итогового фото (и 480 для телефона)
 MARGIN = 0.08           # поля по большей стороне предмета
-WB_LIMIT = 0.06
-TARGET_MED = 0.56       # общая медиана яркости предмета (эталон «света»)
-TARGET_SAT = 0.30       # общая средняя насыщенность предмета
+WB_LIMIT = 0.08
+TARGET_MED = 0.62       # общая медиана яркости предмета (эталон «света»), только вверх
+TARGET_SAT = 0.32       # общая средняя насыщенность предмета, только вверх
+WEBP_Q = 85             # качество webp без потолка веса (владелец 1.11.2026); альфа — без потерь
+UPSCALE_BELOW = 300     # исходник короче по короткой стороне — Real-ESRGAN ×4 (--esrgan)
+EXTEND_FRAC = 0.22      # дорисовка LaMa (--lama): поле за срезанным краем кадра, доля стороны
 PLATE_EATEN = 0.12      # «не фона» сверх маски модели больше 12 % — модель съела тарелку → фолбэк
 # фолбэк без поиска рамки: квадрат во всю узкую сторону кадра по центру блюда. Для снимков, где белая тарелка на
 # градиентном серо-голубом фоне почти не отличается от фона и рамка по «не фону» режет тарелку (листы «до / после», 1.11.2026)
@@ -59,7 +72,33 @@ FULL_FRAME = {'farfalle-s-tomlenoj-govyadinoj'}
 # из вариантов A/B/C/D на листе выбран C)
 CLOSE_UP = {'margarita', 'pepperoni', 'chetyre-sezona', 'syrniki-klassicheskie-sladkie-zavtraki',
             'tomlenaya-govyadina-s-kartofelnym-pyure', 'zharenyj-ris-s-hrustyaschej-kurochkoj'}
-CLOSE_UP_ZOOM = 1.25
+CLOSE_UP_ZOOM = 1.25    # 1.11.2026: только если дорисовки нет (без --lama); дорисованным крупный план снят
+# без вырезки (фолбэк): решения по листам «до / после» 1.11.2026 — модель съедает белую тарелку, мраморную тарелку
+# (английский завтрак), низкоконтрастные кадры; держим здесь, а не в командной строке, чтобы прогон повторялся
+FALLBACK = {
+    'almatinskij-zavtrak', 'anglijskij-zavtrak', 'belgijskie-vafli', 'bliny-so-smetanoj-i-medom', 'boul-s-krevetkami',
+    'boul-s-kuricej', 'boul-s-semgoj', 'chebureki-s-farshem', 'chechevichnyj-krem-sup', 'chetyre-sezona',
+    'chizkejk-po-kazahski-deserty', 'dubajskij-torty-celikom', 'farfalle-s-lososem', 'farfalle-s-tomlenoj-govyadinoj',
+    'grecheskij-salat', 'kartofelnye-draniki-s-lososem-i-sousom-gollandez', 'kasha-risovaya-s-granoloj-i-bananom',
+    'kotlety-govyazhi-po-domashnemu-s-pyure', 'kruassan-spajsi-s-krevetkami-i-skremblom', 'kukis',
+    'kurinyj-rulet-s-mocarelloj-i-risom-v-souse-teriyaki', 'kurochka-v-slivochnom-souse-s-gribami-i-risom',
+    'lyulya-iz-govyadiny-s-salatom-i-pitoj', 'margarita', 'med', 'medovik-deserty', 'molochnaya-devochka-deserty', 'naggetsy',
+    'ovoschi-na-grile', 'pasta-s-krevetkami', 'pepperoni', 'ribaj', 'ris', 'salat-s-cyplenkom-gril',
+    'salat-s-zapechennoj-semgoj-v-souse-teriyaki', 'salat-so-stejkom', 'sendvich-s-kurinym-shnicelem',
+    'shashlychki-iz-govyadiny-s-pitoj', 'sinnabon-klassicheskij', 'snikers-deserty', 'stejk-lososya-s-molodym-kartofelem',
+    'stejk-omlet', 'syrniki-klassicheskie-sladkie-zavtraki', 'tartaletka-banofi-paj', 'teplyj-salat-iz-baklazhana-s-sousom-assaj',
+    'tomlenaya-govyadina-s-kartofelnym-pyure', 'vafli-iz-cukini-s-malosolnym-lososem', 'vareniki-domashnie-blyuda',
+    'yaichnica-glazunya-s-sosiskami-i-sousom-relish', 'zavtrak-s-lososem', 'zharenyj-ris-s-hrustyaschej-kurochkoj'}
+# вырезать, хотя признак «съеденной тарелки» срабатывает (лотки, стакан молока — проверено глазами)
+FORCE_CUT = {'kotlety-govyazhi', 'moloko', 'samsa-s-govyadinoj-domashnie-blyuda', 'samsa-s-govyadinoj-polufabrikaty',
+             'samsa-s-kuricej-domashnie-blyuda', 'samsa-s-kuricej-polufabrikaty', 'syrniki-klassicheskie-polufabrikaty',
+             'syrniki-s-irimshikom'}
+# «вкуснее» (вариант T2 из пробы 1.11.2026: теплее + объём) — только чизкейк, на другие десерты не распространяем
+TASTY = {'chizkejk-po-kazahski-deserty'}
+# стороны для дорисовки сверх найденных автоматически (край тарелки срезан, но признак его не ловит — по листам 1.11.2026)
+EXTEND_SIDES = {'anglijskij-zavtrak': {'T', 'B'}}
+# дорисовка хуже исходника (по листу 1.11.2026): LaMa смазывает этикетку или поле, градиентный фон — срез к краю, как раньше
+EXTEND_SKIP = {'ribaj', 'pasta-s-krevetkami', 'farfalle-s-tomlenoj-govyadinoj'}
 
 
 def base_sign(val):
@@ -91,39 +130,131 @@ def load(src):
 
 
 def correct(rgb, mask):
-    """rgb float32 [h,w,3] 0..1, mask float32 [h,w] 0..1 → скорректированный rgb"""
+    """rgb float32 [h,w,3] 0..1, mask float32 [h,w] 0..1 → скорректированный rgb (вариант B пробы 1.11.2026).
+    Баланс белого: светлый нейтральный фон снимка — эталон белого (фон → белый, кадр тем же множителем: тарелка не
+    уходит в розовый или голубой), иначе нейтральные светлые участки предмета; сдвиг ≤ ±8 %. Светлое — к 0,98.
+    Экспозиция — только вверх к общей медиане 0,62 и мягкий подъём средних тонов: «нет света» лечим подъёмом, светлые
+    тарелки не гасим. Насыщенность — только вверх (≤ +15 %), вибрансом: насыщенное (борщ, ягоды) почти не трогается"""
     import numpy as np
+    lw = np.array([.2126, .7152, .0722], dtype=np.float32)
     mx, mn = rgb.max(2), rgb.min(2)
     sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
     subj = mask > 0.5
-    # баланс белого: нейтральные светлые участки предмета (тарелка, чашка), иначе фон
-    neutral = subj & (sat < 0.10) & (mx > 0.65)
-    if neutral.sum() < 0.01 * max(subj.sum(), 1):
-        neutral = (~subj) & (sat < 0.08) & (mx > 0.70)
-    if neutral.sum() > 500:
-        mean = rgb[neutral].mean(0)
-        gains = np.clip(mean.mean() / np.maximum(mean, 1e-6), 1 - WB_LIMIT, 1 + WB_LIMIT)
-        rgb = np.clip(rgb * gains, 0, 1)
-    lum = rgb @ np.array([.2126, .7152, .0722], dtype=np.float32)
-    vals = lum[subj] if subj.sum() > 1000 else lum.ravel()
-    lo, hi = np.percentile(vals, 1), np.percentile(vals, 99)
-    # мягкие уровни: только светлое — на 35 % к 0.98 (вытянуть сероватые снимки); чёрную точку не трогаем, иначе
-    # светлые блюда темнеют и пестрят (капучино в белой чашке)
-    lo_t, hi_t = lo, hi + (0.98 - hi) * 0.35
-    if hi - lo > 0.05:
-        rgb = np.clip((rgb - lo) / (hi - lo) * (hi_t - lo_t) + lo_t, 0, 1)
-    lum = rgb @ np.array([.2126, .7152, .0722], dtype=np.float32)
-    med = float(np.median(lum[subj] if subj.sum() > 1000 else lum))
-    if 0.05 < med < TARGET_MED:                     # только высветлить тёмное: белые чашки и тарелки не «гасим»
-        g = np.log(TARGET_MED) / np.log(med)
-        g = 1 + (g - 1) * 0.3                           # к общей медиане — на 30 %, без «пересвета» тёмного кофе
-        rgb = np.clip(rgb, 1e-6, 1) ** np.clip(g, 0.85, 1.18)
+    if subj.sum() < 1000:
+        subj = np.ones_like(subj)
+    border = np.concatenate([rgb[:4].reshape(-1, 3), rgb[-4:].reshape(-1, 3), rgb[:, :4].reshape(-1, 3), rgb[:, -4:].reshape(-1, 3)])
+    bref = np.median(border, 0)
+    if bref.min() > 0.80 and (bref.max() - bref.min()) / bref.max() < 0.08:
+        rgb = np.clip(rgb * np.clip(bref.max() / np.maximum(bref, 1e-6), 1 - WB_LIMIT, 1 + WB_LIMIT) * min(1.0 / bref.max(), 1.10), 0, 1)
+    else:
+        neutral = subj & (sat < 0.10) & (mx > 0.65)
+        if neutral.sum() < 0.01 * subj.sum():
+            neutral = (~subj) & (sat < 0.08) & (mx > 0.70)
+        if neutral.sum() > 500:
+            mean = rgb[neutral].mean(0)
+            rgb = np.clip(rgb * np.clip(mean.mean() / np.maximum(mean, 1e-6), 1 - WB_LIMIT, 1 + WB_LIMIT), 0, 1)
+    hi = np.percentile((rgb @ lw)[subj], 99.5)
+    if hi < 0.98:
+        rgb = np.clip(rgb * (1 + (0.98 / max(hi, 0.3) - 1) * 0.5), 0, 1)
+    med = float(np.median((rgb @ lw)[subj]))
+    if 0.05 < med < TARGET_MED:
+        g = 1 + (np.log(TARGET_MED) / np.log(med) - 1) * 0.6
+        rgb = np.clip(rgb, 1e-6, 1) ** np.clip(g, 0.80, 1.0)
+    rgb = np.clip(rgb + 0.06 * rgb * (1 - rgb) * 2, 0, 1)
     mx, mn = rgb.max(2), rgb.min(2)
     sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
-    s_mean = float(sat[subj].mean()) if subj.sum() > 1000 else float(sat.mean())
-    k = np.clip(1 + (TARGET_SAT / max(s_mean, 1e-3) - 1) * 0.25, 0.94, 1.03)
-    gray = (rgb @ np.array([.2126, .7152, .0722], dtype=np.float32))[..., None]
-    return np.clip(gray + (rgb - gray) * k, 0, 1)
+    k = float(np.clip(1 + (TARGET_SAT / max(float(sat[subj].mean()), 1e-3) - 1) * 0.5, 1.0, 1.15))
+    f = (1 + (k - 1) * (1 - sat) ** 1.5)[..., None]
+    gray = (rgb @ lw)[..., None]
+    return np.clip(gray + (rgb - gray) * f, 0, 1)
+
+
+def tasty(img):
+    """«вкуснее» (T2): теплее, мягкая насыщенность, локальный контраст и лёгкая S-кривая — только на еде (насыщенное и не
+    белое), фон и белая тарелка не окрашиваются. img — RGBA холста"""
+    import numpy as np
+    from PIL import Image, ImageFilter
+    rgba = np.asarray(img.convert('RGBA'), dtype=np.float32) / 255
+    a = rgba[..., :3]
+    mx, mn = a.max(2), a.min(2)
+    sat = np.where(mx > 0, (mx - mn) / np.maximum(mx, 1e-6), 0)
+    w = np.clip((sat - 0.06) / 0.20, 0, 1) * np.clip((0.99 - mn) / 0.15, 0, 1)
+    w = np.asarray(Image.fromarray((w * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(6)), dtype=np.float32)[..., None] / 255
+    lw = np.array([.2126, .7152, .0722], dtype=np.float32)
+    v = np.clip(a * np.array([1.04, 1.012, 0.96], dtype=np.float32), 0, 1)                    # теплее
+    g = (v @ lw)[..., None]
+    v = np.clip(g + (v - g) * (1 + 0.25 * (1 - (v.max(2) - v.min(2))[..., None])), 0, 1)   # вибранс
+    bl = np.asarray(Image.fromarray((v * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(18)), dtype=np.float32) / 255
+    v = np.clip(v + (v - bl) * 0.35, 0, 1)                                                    # объём
+    v = np.clip(v + 0.10 * (v - 0.5) * (1 - np.abs(2 * v - 1)), 0, 1)                         # S-кривая
+    rgba[..., :3] = a * (1 - w) + v * w
+    return Image.fromarray((rgba * 255 + 0.5).astype('uint8'), 'RGBA')
+
+
+def esrgan(im, session):
+    """Real-ESRGAN x4plus (ONNX, вход 1×3×128×128, 0..1) тайлами с перекрытием → в 4 раза больше. Для крошечных исходников"""
+    import numpy as np
+    from PIL import Image
+    inp = session.get_inputs()[0]
+    th = tw = 128
+    pad = 8
+    a = np.asarray(im.convert('RGB'), dtype=np.float32) / 255
+    h, w = a.shape[:2]
+    out = np.zeros((h * 4, w * 4, 3), dtype=np.float32)
+    sy, sx = th - 2 * pad, tw - 2 * pad
+    ap = np.pad(a, ((pad, th + pad), (pad, tw + pad), (0, 0)), mode='reflect')
+    for y in range(0, h, sy):
+        for x in range(0, w, sx):
+            r = session.run(None, {inp.name: ap[y:y + th, x:x + tw].transpose(2, 0, 1)[None]})[0][0].transpose(1, 2, 0)
+            r = r[pad * 4:pad * 4 + sy * 4, pad * 4:pad * 4 + sx * 4]
+            hh, ww = min(sy * 4, (h - y) * 4), min(sx * 4, (w - x) * 4)
+            out[y * 4:y * 4 + hh, x * 4:x * 4 + ww] = r[:hh, :ww]
+    return Image.fromarray((np.clip(out, 0, 1) * 255 + 0.5).astype('uint8'))
+
+
+def lama_extend(im, sides, session, bg, match_tone=True):
+    """дорисовка LaMa (ONNX 512×512): холст шире на EXTEND_FRAC по срезанным сторонам, маска — только новое поле за краем
+    кадра, исходник вставляется обратно как был. Дорисованная часть предмета (корж пиццы, край тарелки) выравнивается по
+    тону с полосой исходника у шва — иначе выходит бледнее. → (новый кадр, маска поля)"""
+    import numpy as np
+    from PIL import Image, ImageFilter
+    w, h = im.size
+    l = int(w * EXTEND_FRAC) if 'L' in sides else 0
+    r = int(w * EXTEND_FRAC) if 'R' in sides else 0
+    t = int(h * EXTEND_FRAC) if 'T' in sides else 0
+    b = int(h * EXTEND_FRAC) if 'B' in sides else 0
+    W, H = w + l + r, h + t + b
+    a = np.asarray(im.convert('RGB'))
+    big = np.pad(a, ((t, b), (l, r), (0, 0)), mode='edge')
+    pad = np.ones((H, W), dtype=bool)
+    pad[t:t + h, l:l + w] = False
+    k = 512 / max(W, H)
+    sw, sh = int(round(W * k)), int(round(H * k))
+    x = np.zeros((512, 512, 3), dtype=np.float32)
+    x[:sh, :sw] = np.asarray(Image.fromarray(big).resize((sw, sh), Image.LANCZOS), dtype=np.float32) / 255
+    mm = np.ones((512, 512), dtype=np.float32)
+    mm[:sh, :sw] = np.asarray(Image.fromarray((pad * 255).astype('uint8')).resize((sw, sh), Image.NEAREST)) > 127
+    names = [i.name for i in session.get_inputs()]
+    res = session.run(None, {names[0]: x.transpose(2, 0, 1)[None], names[1]: mm[None, None]})[0][0].transpose(1, 2, 0)
+    if res.max() <= 1.5:
+        res = res * 255
+    res = np.asarray(Image.fromarray(np.clip(res[:sh, :sw], 0, 255).astype('uint8')).resize((W, H), Image.LANCZOS), dtype=np.float32)
+    res[~pad] = a.reshape(-1, 3)
+    # тон: предмет в поле ↔ предмет в полосе исходника у шва той же ширины
+    bgv = np.asarray(bg, dtype=np.float32)
+    obj = np.abs(res - bgv).max(2) > 30
+    band = np.zeros((H, W), dtype=bool)
+    if t: band[t:t + 2 * t, l:l + w] = True
+    if b: band[t + h - 2 * b:t + h, l:l + w] = True
+    if l: band[t:t + h, l:l + 2 * l] = True
+    if r: band[t:t + h, l + w - 2 * r:l + w] = True
+    src_px, new_px = res[band & obj & ~pad], res[pad & obj]
+    if match_tone and len(src_px) > 200 and len(new_px) > 200:
+        gain = np.clip(src_px.mean(0) / np.maximum(new_px.mean(0), 1), 0.85, 1.25)
+        wgt = np.asarray(Image.fromarray(((pad & obj) * 255).astype('uint8')).filter(ImageFilter.GaussianBlur(3)), dtype=np.float32)[..., None] / 255
+        wgt = wgt * pad[..., None]
+        res = res * (1 - wgt) + np.clip(res * gain, 0, 255) * wgt
+    return Image.fromarray(np.clip(res, 0, 255).astype('uint8')), pad
 
 
 def new_session(model):
@@ -380,19 +511,18 @@ def fallback(im, obj=None, bg=None, margin=MARGIN, zoom=1.0, full=False):
 
 
 def save(img, sl):
+    """webp q85 без потолка веса (1.11.2026), 960 и 480; альфа — без потерь (с потерями — кольца на тени)"""
+    from PIL import Image
     out = {}
-    for px, limit, suf in bc.SIZES:
+    for px, suf in ((CANVAS, ''), (480, '-480')):
         dst = os.path.join(IMG_DIR, f'{sl}{suf}.webp')
-        im = img.copy()
-        if px < CANVAS:
-            im = im.resize((px, px), __import__('PIL.Image', fromlist=['Image']).LANCZOS)
-        data, q = bc.encode_webp(im, px, limit)
+        im = img if px == img.width else img.resize((px, px), Image.LANCZOS)
+        buf = io.BytesIO()
+        im.save(buf, 'WEBP', quality=WEBP_Q, method=6)
         with open(dst, 'wb') as f:
-            f.write(data)
-        out[suf or '960'] = (len(data), q)
-        if not suf:                                  # encode_webp мог уменьшить сторону, чтобы влезть в лимит
-            from PIL import Image
-            out['size'] = list(Image.open(io.BytesIO(data)).size)
+            f.write(buf.getvalue())
+        out[suf or '960'] = (buf.tell(), WEBP_Q)
+    out['size'] = [img.width, img.height]
     return out
 
 
@@ -420,48 +550,77 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--photos', required=True, help='папка исходников с Диска (menu/menu_photos)')
     ap.add_argument('--only', default='', help='slug,… — только эти')
-    ap.add_argument('--fallback', default='', help='slug,… — без вырезки (фолбэк)')
-    ap.add_argument('--cut', default='', help='slug,… — вырезать, даже если признак «съеденной тарелки» сработал (проверено глазами)')
+    ap.add_argument('--fallback', default='', help='slug,… — без вырезки (фолбэк), в добавок к FALLBACK')
+    ap.add_argument('--cut', default='', help='slug,… — вырезать, даже если признак «съеденной тарелки» сработал (к FORCE_CUT)')
     ap.add_argument('--sheets', default='', help='папка для листов «до / после»')
-    ap.add_argument('--model', required=True, help='путь к isnet-general-use.onnx (модель rembg)')
+    # модели — вне репозитория (сотни МБ), пути только параметрами
+    ap.add_argument('--model', required=True, help='isnet-general-use.onnx (модель rembg), вне репо')
+    ap.add_argument('--esrgan', default='', help='real_esrgan_x4plus.onnx (Qualcomm AI Hub), вне репо; без него апскейла нет')
+    ap.add_argument('--lama', default='', help='lama_fp32.onnx (Carve/LaMa-ONNX), вне репо; без него дорисовки нет')
     ap.add_argument('--no-shadow', action='store_true')
     a = ap.parse_args()
     import numpy as np
+    from PIL import Image, ImageOps
     session = new_session(a.model)
+    es = new_session(a.esrgan) if a.esrgan else None
+    lm = new_session(a.lama) if a.lama else None
     with open(SOURCES, encoding='utf-8') as f:
         sources = json.load(f)
     with open(CARDS, encoding='utf-8') as f:
         cards = json.load(f)
+    used = {m.group(1) for c in cards.values() for m in [re.match(r'img/menu/(.+)\.webp$', c.get('img') or '')] if m}
     only = [x for x in a.only.split(',') if x]
-    fb = set(x for x in a.fallback.split(',') if x)
-    force_cut = set(x for x in a.cut.split(',') if x)
+    fb = FALLBACK | set(x for x in a.fallback.split(',') if x)
+    force_cut = FORCE_CUT | set(x for x in a.cut.split(',') if x)
     rows, report = [], {}
     for sl in sorted(sources):
-        if only and sl not in only:
+        if (only and sl not in only) or sl not in used:   # фото без карточки (сироп) не трогаем
             continue
         sign = base_sign(sources[sl])
         try:
-            im = load(source_of(sign, a.photos))
+            raw = Image.open(io.BytesIO(bc.fetch_bytes(source_of(sign, a.photos))))
+            raw = ImageOps.exif_transpose(raw)
+            if raw.mode in ('RGBA', 'LA', 'P'):
+                raw = raw.convert('RGBA'); b0 = Image.new('RGBA', raw.size, (255, 255, 255, 255)); b0.alpha_composite(raw); raw = b0
+            raw = raw.convert('RGB')
         except Exception as e:                           # сеть или файл: это фото оставляем как было, остальные — дальше
             print('%-50s ОШИБКА %s — не тронуто' % (sl, e), flush=True)
             continue
+        steps = []
+        if es is not None and min(raw.size) < UPSCALE_BELOW:
+            raw = esrgan(raw, es); steps.append('апскейл')
+        im = raw.copy(); im.thumbnail((WORK_PX, WORK_PX))
         alpha = np.asarray(get_mask(im, session), dtype=np.float32) / 255
         plate, union, bg = recover_plates(im, alpha)
-        if sl in fb or (plate > PLATE_EATEN and sl not in force_cut):                 # ручной список или модель съела тарелку
-            img, mode = fallback(im, union, bg, full=sl in FULL_FRAME, zoom=CLOSE_UP_ZOOM if sl in CLOSE_UP else 1.0), 'fb'
+        mode = 'fb' if sl in fb or (plate > PLATE_EATEN and sl not in force_cut) else 'cut'
+        cut = touches(alpha > 0.5) if mode == 'cut' else touches(not_bg(im, bg))
+        cut = set(cut) | EXTEND_SIDES.get(sl, set())
+        if lm is not None and cut and sl not in EXTEND_SKIP:
+            # тон выравниваем только у фолбэков (корж пиццы); у вырезок он даёт видимую границу на белом блюдце
+            im, _ = lama_extend(im, cut, lm, bg, match_tone=mode == 'fb'); steps.append('дорисовка ' + ''.join(sorted(cut)))
+            im.thumbnail((WORK_PX, WORK_PX))
+            alpha = np.asarray(get_mask(im, session), dtype=np.float32) / 255
+            plate, union, bg = recover_plates(im, alpha)
+        extended = any(x.startswith('дорисовка') for x in steps)
+        if mode == 'fb':
+            zoom = CLOSE_UP_ZOOM if (sl in CLOSE_UP and not extended) else 1.0
+            img = fallback(im, union, bg, full=sl in FULL_FRAME, zoom=zoom)
         else:
             rgb = np.asarray(im, dtype=np.float32) / 255
             rgb = correct(rgb, alpha)
             rgb = defringe(rgb, alpha)
-            img, mode = compose(rgb, alpha, shadow=not a.no_shadow), 'cut'
+            img = compose(rgb, alpha, shadow=not a.no_shadow)
+        if sl in TASTY:
+            img = tasty(img); steps.append('T2')
         sizes = save(img, sl)
         dims = sizes.pop('size')
         sources[sl] = '%s+%s %s' % (sign, CUT_VER if mode == 'cut' else FB_VER, json.dumps(dims))
-        report[sl] = {'mode': mode, 'size': dims, 'kb': {k: round(v[0] / 1024, 1) for k, v in sizes.items()}, 'plate': round(plate, 2), 'why': 'список' if sl in fb else ('тарелка' if mode == 'fb' else '')}
+        report[sl] = {'mode': mode, 'size': dims, 'kb': {k: round(v[0] / 1024, 1) for k, v in sizes.items()}, 'plate': round(plate, 2),
+                      'why': 'список' if sl in fb else ('тарелка' if mode == 'fb' else ''), 'steps': steps}
         b, t = im.copy(), img.copy()                   # для листа хватит миниатюр: 220 полных кадров не держим в памяти
         b.thumbnail((240, 240)); t.thumbnail((240, 240))
         rows.append((sl, b, t, mode))
-        print('%-50s %s %s' % (sl, mode, report[sl]['kb']), flush=True)
+        print('%-50s %s %s %s' % (sl, mode, report[sl]['kb'], ' · '.join(steps)), flush=True)
     for key, c in cards.items():
         m = re.match(r'img/menu/(.+)\.webp$', c.get('img') or '')
         if m and m.group(1) in report:

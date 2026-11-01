@@ -1,4 +1,5 @@
-"""Фото карточек блюд после menu/cutout_photos.py: все img/menu/*.webp из cards.json — webp в лимитах (≤90 КБ, -480 ≤35 КБ),
+"""Фото карточек блюд после menu/cutout_photos.py: все img/menu/*.webp из cards.json — webp в разумных пределах
+(q85 без потолка с 1.11.2026: ≤250 КБ, -480 ≤100 КБ — защита от случайного PNG-веса),
 квадратные, ar в cards.json совпадает с размером файла, у каждого фото в sources.json отметка обработки («+cut1» —
 вырезано, «+fb1» — фолбэк без вырезки). Вырезанные — с альфа-каналом и прозрачным фоном (углы холста); фолбэк непрозрачен
 по определению (фон снимка доведён до белого), libwebp сохраняет его без альфы.
@@ -35,7 +36,7 @@ class TestMenuPhotos(unittest.TestCase):
         bad = []
         for key, c in self.cards.items():
             cut = '+cut' in self.sources.get(self.slug(c), '')
-            for rel, limit in ((c['img'], 90 * 1024), (c['img'][:-5] + '-480.webp', 35 * 1024)):
+            for rel, limit in ((c['img'], 250 * 1024), (c['img'][:-5] + '-480.webp', 100 * 1024)):
                 p = os.path.join(ROOT, rel)
                 if not os.path.isfile(p):
                     bad.append(f'{key}: нет {rel}')
