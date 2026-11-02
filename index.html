@@ -64,6 +64,22 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
   --h-button:56px; --h-touch:48px;
   --shadow-floating:0 6px 24px rgba(49,73,47,.16);
+  /* стекло зелёной кнопки — kofe-app 9206813 app/src/theme/glass.ts (владелец 02.11); основа по фону: photo, light-photo, plain — белый */
+  --glass-rgb:66 99 73; --glass-rgb-pressed:58 90 64;
+  --glass-base-photo:0.74; --glass-base-light-photo:0.80; --glass-base-plain:0.94;
+  --glass-pressed-photo:0.85; --glass-pressed-light-photo:0.90; --glass-pressed-plain:0.96;
+  --glass-hl-top:rgba(127,168,134,0.45); --glass-hl-mid:rgba(107,150,114,0.15); --glass-highlight-pressed:0.36;
+  --glass-highlight:linear-gradient(180deg,var(--glass-hl-top) 0%,var(--glass-hl-mid) 45%,transparent 55%);
+  --glass-highlight-dim:linear-gradient(180deg,color-mix(in srgb,var(--glass-hl-top) calc(var(--glass-highlight-pressed)*100%),transparent) 0%,color-mix(in srgb,var(--glass-hl-mid) calc(var(--glass-highlight-pressed)*100%),transparent) 45%,transparent 55%);
+  --glass-bottom:linear-gradient(180deg,transparent 50%,rgba(14,26,16,0.22) 100%);
+  --glass-edge:rgba(158,195,164,0.35);
+  --glass-shadow:0px 10px 24px rgba(14,26,16,0.28),0px 2px 4px rgba(14,26,16,0.16);
+  --glass-inset:inset 0px 1px 0px rgba(169,203,174,0.55),inset 0px -2px 3px rgba(14,26,16,0.22);
+  --glass-shadow-pressed:0px 3px 8px rgba(14,26,16,0.22);
+  --glass-inset-pressed:inset 0px 3px 6px rgba(0,0,0,0.25),inset 0px 1px 0px rgba(255,255,255,0.25);
+  --glass-press-scale:0.97; --glass-press-in:90ms; --glass-press-out:300ms; --glass-press-spring:cubic-bezier(.3,1.3,.5,1);
+  --h-glass:52px; --h-glass-small:44px;
+  --btn-font:var(--font-display);
   /* прежние имена — для оверлея меню (этап 2 редизайна); значения — из токенов выше. --forest и --sale записаны
      числом: их читают manifest (theme_color) и тест цвета скидки; что они равны --c-accent и --c-danger — проверяет tests/test_redesign.py */
   --forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);
@@ -125,18 +141,22 @@ header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg)
 .lang-list a[aria-current]{color:var(--c-accent)}
 .lang-list a[aria-current]::after{content:'✓';margin-left:auto}
 
-/* ── КНОПКИ: высота 56, пилюля, подпись строчными; ширина — по тексту ── */
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--h-button);padding:var(--s-8) var(--s-24);border:0;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-size:var(--fs-body);font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;text-align:center;cursor:pointer;transition:background .15s,transform .15s}
-.btn:hover{background:var(--c-accent-dk)}
-.btn:active{transform:scale(.98)}
-.btn.ghost{background:var(--c-surface);color:var(--c-text)}
-.btn.ghost:hover{background:var(--c-raised)}
-.btn.olive{background:var(--c-olive);color:var(--c-on-olive)}
-.btn.olive:hover{background:color-mix(in srgb,var(--c-olive) 86%,#000)}
-/* меню — плавающей стеклянной таблеткой внизу (правка владельца 1.11: серая прозрачная, ниже и длиннее); только телефон */
-.fab-menu{display:none;position:fixed;left:50%;bottom:calc(var(--s-16) + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;align-items:center;justify-content:center;gap:var(--s-8);min-width:176px;height:44px;padding:0 var(--s-24);border:1px solid var(--c-border);border-radius:var(--r-pill);background:rgba(245,245,243,.94);color:var(--c-text);font-family:var(--font-body);font-size:16px;font-weight:700;line-height:1;text-transform:lowercase;text-decoration:none;white-space:nowrap;box-shadow:var(--shadow-floating);cursor:pointer}
-/* стекло, как в приложении: где есть blur — фон прозрачнее; без blur — плотный (выше), текст читается */
-@supports ((-webkit-backdrop-filter:blur(1px)) or (backdrop-filter:blur(1px))){.fab-menu{background:rgba(245,245,243,.72);-webkit-backdrop-filter:blur(12px) saturate(1.4);backdrop-filter:blur(12px) saturate(1.4)}}
+/* ── КНОПКИ: высота 52, пилюля, подпись строчными (--btn-font); главная — стекло --glass-* вариант plain (на белом) ── */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--h-glass);padding:var(--s-8) var(--s-24);border-radius:var(--r-pill);font-size:var(--fs-body);font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;text-align:center;cursor:pointer}
+.btn,.fab-menu{--glass-a:var(--glass-base-plain);--glass-ap:var(--glass-pressed-plain);border:1px solid var(--glass-edge);background-color:rgb(var(--glass-rgb) / var(--glass-a));background-image:var(--glass-highlight),var(--glass-bottom);background-origin:border-box;box-shadow:var(--glass-shadow),var(--glass-inset);color:var(--c-on-accent);font-family:var(--btn-font);-webkit-tap-highlight-color:transparent;transition:scale var(--glass-press-out) var(--glass-press-spring),background-color .09s,box-shadow .09s}
+.btn:active,.fab-menu:active{background-color:rgb(var(--glass-rgb-pressed) / var(--glass-ap));background-image:var(--glass-highlight-dim),var(--glass-bottom);box-shadow:var(--glass-shadow-pressed),var(--glass-inset-pressed);scale:var(--glass-press-scale);transition:scale var(--glass-press-in) ease-out,background-color .09s,box-shadow .09s}
+/* на будущее: над фото и светлым фото */
+.btn.on-photo{--glass-a:var(--glass-base-photo);--glass-ap:var(--glass-pressed-photo)}
+.btn.on-light-photo{--glass-a:var(--glass-base-light-photo);--glass-ap:var(--glass-pressed-light-photo)}
+/* ghost и olive — плоские, как в приложении */
+.btn.ghost,.btn.olive{border-color:transparent;background-image:none;box-shadow:none;transition:scale .15s,background-color .15s}
+.btn.ghost{background-color:var(--c-surface);color:var(--c-text)}
+.btn.ghost:hover{background-color:var(--c-raised)}
+.btn.olive{background-color:var(--c-olive);color:var(--c-on-olive)}
+.btn.olive:hover{background-color:color-mix(in srgb,var(--c-olive) 86%,#000)}
+/* меню — плавающая стеклянная таблетка, только телефон; над любым фоном — основа photo */
+.fab-menu{--glass-a:var(--glass-base-photo);--glass-ap:var(--glass-pressed-photo);display:none;position:fixed;left:50%;bottom:calc(var(--s-16) + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:90;align-items:center;justify-content:center;gap:var(--s-8);min-width:176px;height:var(--h-glass-small);padding:0 var(--s-24);border-radius:var(--r-pill);font-size:16px;font-weight:700;line-height:1;text-transform:lowercase;text-decoration:none;white-space:nowrap;cursor:pointer}
+@media(prefers-reduced-motion:reduce){.btn:active,.fab-menu:active{scale:none}}
 .fab-menu .ic{width:18px;height:18px}
 
 /* ── HERO: видеозона (пока фирменный зелёный и логотип — видео владелец ещё не утвердил) + заголовок и кнопки ── */
@@ -265,7 +285,9 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .ib.wa{background:var(--c-whatsapp);color:#FFFFFF}
 .ib.wa:hover{background:color-mix(in srgb,var(--c-whatsapp) 85%,#000)}
 .ic{display:block;width:22px;height:22px}
-.pill{display:inline-flex;align-items:center;min-height:var(--h-touch);border:0;font:inherit;cursor:pointer;padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+/* чип = Chip.tsx: 40, касание 48 */
+.pill{position:relative;display:inline-flex;align-items:center;min-height:calc(var(--h-touch) - var(--s-8));border:0;font:inherit;cursor:pointer;padding:0 var(--s-16);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:500;text-decoration:none;white-space:nowrap}
+.pill::after{content:'';position:absolute;inset:calc(var(--s-8) / -2) 0}
 .pill:hover{background:var(--c-raised)}
 
 /* ── FAQ — частые вопросы (#faq): разметку собирает tools/seo_jsonld.py из tools/faq.json; <details> без JS, раскрытие — событие faq_open ── */
@@ -395,6 +417,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{box-shadow:0 10px 30px rgba(49,73,47,.2)}
 .ib{transition:transform .2s ease,background .15s}
 .ib:hover{transform:scale(1.05)}
+.btn:hover,.fab-menu:hover{background-color:rgb(var(--glass-rgb-pressed) / var(--glass-ap))}
 }
 @media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}.px-on .hero-zone .logo-art,.px-on .story-photo img{transform:none!important}}
 
@@ -404,18 +427,18 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 /* шапка меню в духе приложения: одна строка «режим · язык · закрыть», ниже вкладки и разделы — пилюли как чипы приложения
    (заливка surface, активная — forest с белым текстом, без обводок, по ширине текста) */
 .mm-head{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--c-bg) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--c-border)}
-.mm-top{display:flex;align-items:center;gap:var(--s-8);max-width:1150px;margin:0 auto;padding:var(--s-8) var(--s-24)}
-.mm-tabs,.mm-cats{position:relative;display:flex;gap:var(--s-8);overflow-x:auto;scrollbar-width:none;max-width:1150px;margin:0 auto;padding:0 var(--s-24) var(--s-8)}
+.mm-top{display:flex;align-items:center;gap:var(--s-8);max-width:1150px;margin:0 auto;padding:var(--s-8) var(--s-24) var(--s-4)}
+.mm-tabs,.mm-cats{position:relative;display:flex;align-items:center;gap:var(--s-8);overflow-x:auto;scrollbar-width:none;max-width:1150px;margin:0 auto;padding:var(--s-4) var(--s-24)}
+.mm-cats{padding-bottom:var(--s-8)}
 .mm-tabs::-webkit-scrollbar,.mm-cats::-webkit-scrollbar{display:none}
-.mm-tab,.mm-cat{flex:none;display:inline-flex;align-items:center;border:0;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body);font-weight:600;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s}
-.mm-tab{height:38px;padding:0 var(--s-16);font-size:var(--fs-small)}
-.mm-cat{height:36px;padding:0 var(--s-12);font-size:var(--fs-small)}
+.mm-tab,.mm-cat{position:relative;flex:none;display:inline-flex;align-items:center;height:calc(var(--h-touch) - var(--s-8));padding:0 var(--s-16);border:0;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-family:var(--font-body);font-size:var(--fs-small);font-weight:500;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s}
+.mm-tab::after,.mm-cat::after{content:'';position:absolute;inset:calc(var(--s-8) / -2) 0}
 .mm-tab:hover,.mm-cat:hover{background:var(--c-raised)}
 /* поиск: круглая кнопка-лупа после вкладок; в режиме поиска ряд вкладок — поле ввода с крестиком */
 .mm-search-btn{flex:none;display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;padding:0;border:0;border-radius:50%;background:var(--c-surface);color:var(--c-text);cursor:pointer}
 .mm-search-btn:hover{background:var(--c-raised)}
 .mm-search-btn .ic,.mm-search .ic{display:block;width:18px;height:18px}
-.mm-search{flex:1;display:flex;align-items:center;gap:var(--s-8);height:40px;padding:0 var(--s-4) 0 var(--s-12);border:1px solid var(--c-input-border);border-radius:var(--r-pill);background:var(--c-bg);color:var(--c-muted)}
+.mm-search{flex:1;display:flex;align-items:center;gap:var(--s-8);height:40px;margin-bottom:var(--s-4);padding:0 var(--s-4) 0 var(--s-12);border:1px solid var(--c-input-border);border-radius:var(--r-pill);background:var(--c-bg);color:var(--c-muted)}
 .mm-search input{flex:1;min-width:0;height:100%;border:0;outline:0;background:transparent;color:var(--c-text);font:inherit;font-size:15px;-webkit-appearance:none;appearance:none}
 .mm-search input::-webkit-search-cancel-button{display:none}
 .mm-search-x{position:relative;flex:none;width:32px;height:32px;border:0;border-radius:50%;background:var(--c-surface);color:var(--c-text);font-size:0;cursor:pointer}
@@ -424,10 +447,11 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .mm-search-x::after{transform:rotate(-45deg)}
 .mm-search-none{padding:var(--s-32) 0;text-align:center;color:var(--c-muted)}
 .mm-tab.on,.mm-cat.on{background:var(--c-accent);color:var(--c-on-accent)}
-.mm-mode,.mm-lang{display:flex;gap:2px;flex:none;padding:3px;border-radius:var(--r-pill);background:var(--c-surface)}
-.mm-mode-btn,.mm-lang-btn{height:36px;border:0;border-radius:var(--r-pill);background:transparent;color:var(--c-muted);font-family:var(--font-body);font-weight:600;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s}
-.mm-mode-btn{padding:0 var(--s-16);font-size:13px}
-.mm-lang-btn{min-width:44px;padding:0 var(--s-8);font-size:var(--fs-caption);font-weight:700;letter-spacing:.02em}
+/* рамка 2px прозрачная: видно 40, касание 44 */
+.mm-mode,.mm-lang{display:flex;gap:0;flex:none;padding:0;border-radius:var(--r-pill);background:var(--c-surface)}
+.mm-mode-btn,.mm-lang-btn{height:44px;border:2px solid transparent;border-radius:var(--r-pill);background:transparent;background-clip:padding-box;color:var(--c-muted);font-family:var(--font-body);font-weight:500;white-space:nowrap;cursor:pointer;transition:background .15s,color .15s}
+.mm-mode-btn{padding:0 var(--s-16);font-size:var(--fs-small)}
+.mm-lang-btn{min-width:48px;padding:0 var(--s-8);font-size:var(--fs-caption);letter-spacing:.02em}
 .mm-mode-btn:hover,.mm-lang-btn:hover{color:var(--c-text)}
 .mm-mode-btn.on,.mm-lang-btn.on{background:var(--c-accent);color:var(--c-on-accent)}
 .mm-lang-wrap{margin-left:auto;position:relative;flex:none}
@@ -485,7 +509,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 /* ── крестики закрытия (модалка филиалов, шапка меню, карточка): один размер, центр без привязки к базовой линии шрифта ── */
 .sheet .x,.mm-x,.mm-card-x{position:absolute;display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;margin:0;line-height:1;font-size:0;box-sizing:border-box}
 .mm-x{position:relative}
-.mm-top .mm-x{width:42px;height:42px}
+.mm-top .mm-x{width:44px;height:44px}
 .sheet .x::before,.sheet .x::after,.mm-x::before,.mm-x::after,.mm-card-x::before,.mm-card-x::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:1.5px;margin:-0.75px 0 0 -7px;background:currentColor;border-radius:1px}
 .sheet .x::before,.mm-x::before,.mm-card-x::before{transform:rotate(45deg)}
 .sheet .x::after,.mm-x::after,.mm-card-x::after{transform:rotate(-45deg)}
@@ -520,16 +544,16 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
   .mm-body{padding:20px 16px 48px}
   .mm-head{transition:transform .25s ease}
   .mm-head.compact{transform:translateY(calc(-1 * var(--mm-top-h,0px)))}
-  .mm-top{padding:var(--s-8) var(--s-12);gap:6px}
-  .mm-tabs,.mm-cats{padding:0 var(--s-12) var(--s-8);gap:6px;scroll-behavior:smooth}
-  .mm-cats{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent)}
+  .mm-top{padding:var(--s-8) var(--s-12) var(--s-4);gap:6px}
+  .mm-tabs,.mm-cats{padding:var(--s-4) var(--s-12);gap:6px;scroll-behavior:smooth}
+  .mm-cats{padding-bottom:var(--s-8);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent)}
   .mm-mode{flex:1;min-width:0}
-  .mm-mode-btn{flex:1;min-width:0;padding:0 var(--s-8);overflow:hidden;text-overflow:ellipsis}
-  .mm-lang-wrap{width:50px;height:42px}
+  /* 13px: на 360 px «Кофеханалар» в 14px не влезает */
+  .mm-mode-btn{flex:1;min-width:0;padding:0 var(--s-8);font-size:13px;overflow:hidden;text-overflow:ellipsis}
+  .mm-lang-wrap{width:48px;height:44px}
   .mm-lang{position:absolute;top:0;right:0;flex-direction:column;z-index:10}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
   .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);box-shadow:var(--shadow-floating)}
-  .mm-tab{padding:0 var(--s-12)}
   /* лупа на узком экране всегда видна: прилипает к правому краю ряда вкладок, вкладки уходят под неё (градиент слева,
      справа — белая полоса на ширину отступа ряда) */
   .mm-search-btn{position:sticky;right:0;z-index:1;box-shadow:var(--s-12) 0 0 var(--c-bg)}

@@ -32,6 +32,29 @@ track('page_not_found',{path:location.pathname});</script>
   --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-border:rgba(66,99,73,.18);
   --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29;
   --r-lg:22px; --r-pill:999px; --h-button:56px; --h-touch:48px;
+  /* стекло зелёной кнопки — копия токенов из :root главной (kofe-app 9206813, glass.ts; вариант plain — кнопка на светлом);
+     что они равны главной — проверяет tests/test_redesign.py */
+  --glass-rgb:66 99 73;
+  --glass-rgb-pressed:58 90 64;
+  --glass-base-plain:0.94;
+  --glass-pressed-plain:0.96;
+  --glass-hl-top:rgba(127,168,134,0.45);
+  --glass-hl-mid:rgba(107,150,114,0.15);
+  --glass-highlight-pressed:0.36;
+  --glass-highlight:linear-gradient(180deg,var(--glass-hl-top) 0%,var(--glass-hl-mid) 45%,transparent 55%);
+  --glass-highlight-dim:linear-gradient(180deg,color-mix(in srgb,var(--glass-hl-top) calc(var(--glass-highlight-pressed)*100%),transparent) 0%,color-mix(in srgb,var(--glass-hl-mid) calc(var(--glass-highlight-pressed)*100%),transparent) 45%,transparent 55%);
+  --glass-bottom:linear-gradient(180deg,transparent 50%,rgba(14,26,16,0.22) 100%);
+  --glass-edge:rgba(158,195,164,0.35);
+  --glass-shadow:0px 10px 24px rgba(14,26,16,0.28),0px 2px 4px rgba(14,26,16,0.16);
+  --glass-inset:inset 0px 1px 0px rgba(169,203,174,0.55),inset 0px -2px 3px rgba(14,26,16,0.22);
+  --glass-shadow-pressed:0px 3px 8px rgba(14,26,16,0.22);
+  --glass-inset-pressed:inset 0px 3px 6px rgba(0,0,0,0.25),inset 0px 1px 0px rgba(255,255,255,0.25);
+  --glass-press-scale:0.97;
+  --glass-press-in:90ms;
+  --glass-press-out:300ms;
+  --glass-press-spring:cubic-bezier(.3,1.3,.5,1);
+  --h-glass:52px;
+  --btn-font:var(--font-display);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
@@ -47,9 +70,11 @@ p.tag{font-size:12px;text-transform:lowercase;color:var(--c-olive);font-weight:7
 h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;color:var(--c-text);margin-bottom:12px}
 h1 span{color:var(--c-accent)}
 p.lead{font-size:15px;color:var(--c-muted);line-height:1.65;max-width:340px;margin:0 auto 28px}
-/* кнопка — как на главной: высота 56, пилюля, Geologica строчными */
-a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-button);padding:8px 28px;border-radius:var(--r-pill);background:var(--c-accent);color:var(--c-on-accent);font-family:var(--font-display);font-size:16px;font-weight:700;text-transform:lowercase;text-decoration:none;transition:background .15s}
-a.btn:hover{background:var(--c-accent-dk)}
+/* кнопка — как на главной: зелёное стекло (plain), высота 52, пилюля, Geologica строчными; без backdrop-filter */
+a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-glass);padding:8px 28px;border:1px solid var(--glass-edge);border-radius:var(--r-pill);background-color:rgb(var(--glass-rgb) / var(--glass-base-plain));background-image:var(--glass-highlight),var(--glass-bottom);background-origin:border-box;box-shadow:var(--glass-shadow),var(--glass-inset);color:var(--c-on-accent);font-family:var(--btn-font);font-size:16px;font-weight:700;text-transform:lowercase;text-decoration:none;-webkit-tap-highlight-color:transparent;transition:scale var(--glass-press-out) var(--glass-press-spring),background-color .09s,box-shadow .09s}
+@media(hover:hover){a.btn:hover{background-color:rgb(var(--glass-rgb-pressed) / var(--glass-pressed-plain))}}
+a.btn:active{background-color:rgb(var(--glass-rgb-pressed) / var(--glass-pressed-plain));background-image:var(--glass-highlight-dim),var(--glass-bottom);box-shadow:var(--glass-shadow-pressed),var(--glass-inset-pressed);scale:var(--glass-press-scale);transition:scale var(--glass-press-in) ease-out,background-color .09s,box-shadow .09s}
+@media(prefers-reduced-motion:reduce){a.btn:active{scale:none}}
 /* подвал — как на главной */
 footer{border-top:1px solid var(--c-border);padding:24px}
 .f-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1112px;margin:0 auto;font-size:12px;color:var(--c-muted)}
