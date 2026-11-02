@@ -85,8 +85,9 @@ class TestTokensAndFonts(unittest.TestCase):
             css = re.sub(r'@font-face\{[^}]*\}', '', re.sub(r'/\*.*?\*/', '', style(html), flags=re.S))
             fams = re.findall(r'font-family:\s*([^;}]+)', css)
             self.assertTrue(fams)
+            self.assertEqual(v['--btn-font'], 'var(--font-display)', '%s: подпись кнопок — шрифтом заголовков' % l)
             for f in fams:
-                self.assertIn(f.strip(), ('var(--font-display)', 'var(--font-body)'), '%s: font-family:%s — только через переменные' % (l, f))
+                self.assertIn(f.strip(), ('var(--font-display)', 'var(--font-body)', 'var(--btn-font)'), '%s: font-family:%s — только через переменные' % (l, f))
             for f in re.findall(r'(?<![\w-])font:\s*([^;}]+)', css):
                 self.assertRegex(f, r'^(inherit|[\d./a-z ]+var\(--font-body\))$', '%s: font:%s' % (l, f))
             self.assertEqual(sorted(set(re.findall(r"@font-face\{font-family:'([^']+)'", html))), ['Geologica', 'Montserrat'], l)
@@ -487,26 +488,22 @@ class TestPage(unittest.TestCase):
         self.assertEqual(root_vars(self.pages['ru'])['--fs-heading'], '28px')
 
     def test_fab_menu_glass_pill(self):
-        """плавающая «меню» на телефоне (владелец 1.11): серая прозрачная таблетка — стекло с blur, тонкая рамка, лёгкая тень,
-        высота 44 (≤ 48, касание ≥ 44), длиннее (≥ 160), тёмный текст; без blur — фон плотнее; по центру внизу с safe-area"""
+        """плавающая «меню» на телефоне (решение владельца 02.11): зелёное стекло, как главная кнопка (токены --glass-*), основа photo —
+        плавает над любым содержимым; текст белый, высота 44 = smallHeight, длиннее (≥ 160); без backdrop-filter и прежнего @supports"""
         for l, html in self.pages.items():
             css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
             fab = re.search(r'(?:^|\})\.fab-menu\{([^}]*)\}', css).group(1)
-            h = int(re.search(r'(?:^|;)height:(\d+)px', fab).group(1))
-            self.assertTrue(44 <= h <= 48, '%s: высота %d' % (l, h))
+            self.assertIn('height:var(--h-glass-small)', fab, l)
+            self.assertEqual(root_vars(html)['--h-glass-small'], '44px', l)
             self.assertGreaterEqual(int(re.search(r'min-width:(\d+)px', fab).group(1)), 160)
-            for need in ('left:50%', 'transform:translateX(-50%)', 'env(safe-area-inset-bottom)', 'border:1px solid var(--c-border)',
-                         'box-shadow:var(--shadow-floating)', 'color:var(--c-text)', 'font-weight:700', 'font-size:16px'):
+            for need in ('left:50%', 'transform:translateX(-50%)', 'env(safe-area-inset-bottom)', 'font-weight:700', 'font-size:16px',
+                         '--glass-a:var(--glass-base-photo);--glass-ap:var(--glass-pressed-photo)'):
                 self.assertIn(need, fab, l)
-            dense = float(re.search(r'background:rgba\(245,245,243,([\d.]+)\)', fab).group(1))
-            glass = re.search(r'@supports \(\(-webkit-backdrop-filter:blur\(1px\)\) or \(backdrop-filter:blur\(1px\)\)\)\{\.fab-menu\{([^}]*)\}\}', css)
-            self.assertIsNotNone(glass, '%s: стекло — только где есть blur' % l)
-            alpha = float(re.search(r'background:rgba\(245,245,243,([\d.]+)\)', glass.group(1)).group(1))
-            self.assertLess(alpha, 1)
-            self.assertLess(alpha, dense, 'без blur фон плотнее')
-            self.assertIn('backdrop-filter:blur(12px) saturate(1.4)', glass.group(1))
-            self.assertIn('-webkit-backdrop-filter:blur(12px) saturate(1.4)', glass.group(1))
-            self.assertNotIn('var(--c-accent)', fab, 'не тёмно-зелёная')
+            shared = re.search(r'(?:^|\})\.btn,\.fab-menu\{([^}]*)\}', css).group(1)
+            self.assertIn('color:var(--c-on-accent)', shared, 'текст белый')
+            self.assertIn('font-family:var(--btn-font)', shared)
+            self.assertNotIn('@supports', css, '%s: прежнего светлого матового стекла нет' % l)
+            self.assertNotRegex(css, r'rgba\(245,245,243', l)
             self.assertRegex(html, r'class="fab-menu"[^>]*onclick="track\(\'cta_menu\',\{src:\'hbar_m\'\}\)[^"]*"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>', l)
             self.assertIn('<symbol id="i-menu"', html, l)
 
@@ -873,9 +870,9 @@ console.log(JSON.stringify(out));
         self.assertIn('margin-bottom:var(--s-24)', rule('.mm-sec'), 'между подложками разделов 24 px (с 1.11 — подложки)')
         self.assertIn('font-size:21px', rule('.mm-sec h4'))
         self.assertIn('font-size:30px', rule('.mm-part-h'))
-        for sel, h in (('.mm-tab', 38), ('.mm-cat', 36)):
-            self.assertIn('height:%dpx' % h, rule(sel))
-            self.assertIn('font-size:var(--fs-small)', rule(sel))
+        chip = rule('.mm-tab,.mm-cat')     # Chip.tsx (02.11): 48 − 8 = 40, поля 16, Montserrat 500 14px
+        for need in ('height:calc(var(--h-touch) - var(--s-8))', 'padding:0 var(--s-16)', 'font-size:var(--fs-small)', 'font-weight:500'):
+            self.assertIn(need, chip)
         self.assertNotRegex(css, r'\.mm-th\b', 'превью-картинок нет')
         self.assertIn('border-radius:var(--r-pill)', rule('.mm-badge'))
         box = rule('.mm-card-box')
@@ -1067,9 +1064,10 @@ console.log(JSON.stringify(out));
         sizes = {l: len(html.encode('utf-8')) for l, html in self.pages.items()}
         # 1.11: +4 КБ — свой набор значков «Формата»; этап 2 — поиск по меню и стиль списка, +5 КБ; предел 250 КБ (было 230)
         self.assertLessEqual(sizes['ru'], 250 * 1024, 'главная была ~215 КБ — не раздувать')
-        self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 60 * 1024)   # этап 2 (меню): +1,5 КБ CSS, было 56
+        # этап 2 (меню): +1,5 КБ CSS, было 56; 2.11 стекло кнопок (токены glass.ts в :root, правила .btn/.fab-menu): +0,9 КБ, было 60
+        self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 61 * 1024)
         for l in ('kk', 'en'):
-            self.assertLessEqual(sizes[l], 75 * 1024, l)   # 1.11: +4 КБ значков, было 70
+            self.assertLessEqual(sizes[l], 78 * 1024, l)   # 1.11: +4 КБ значков, было 70; 2.11: +2,4 КБ стекла кнопок, было 75
 
     def test_scripts_in_node(self):
         """пилюля точки и заметка меню — на заглушке DOM: скрипты главной целиком"""

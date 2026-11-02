@@ -653,9 +653,11 @@ a{color:var(--c-accent);font-weight:600}
 header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
 .logo{display:inline-flex;margin-right:4px}
 .logo img{display:block;height:36px;width:auto;border-radius:8px}
-.pill,.toc a,.lang a{display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:600;text-decoration:none;white-space:nowrap}
+/* чипы как в приложении (Chip.tsx): 40, поля 16, Montserrat 500 14px; касание 48 — псевдоэлементом по 4px сверху и снизу */
+.pill,.toc a,.lang a{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:var(--fs-small);font-weight:500;text-decoration:none;white-space:nowrap}
+.pill::after,.toc a::after,.lang a::after{content:'';position:absolute;inset:-4px 0}
 .lang{display:flex;gap:4px;margin-left:auto}
-.lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption);font-weight:700}
+.lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption)}
 .lang a[aria-current]{background:var(--c-accent);color:var(--c-on-accent)}
 h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase;line-height:1.2}
 h1{font-size:var(--fs-heading);margin:16px 0 8px}
@@ -784,7 +786,7 @@ def css_rules(css):
 def keep_rule(rule):
     pre, body = rule.split('{', 1)
     pre = pre.strip()
-    if pre.startswith(('@media', '@supports')):     # @supports — стекло плавающей кнопки «меню»
+    if pre.startswith(('@media', '@supports')):     # @media — телефон, hover, reduced-motion (стекло кнопок); @supports — на будущее
         inner = [r for r in (keep_rule(x) for x in css_rules(body[:-1])) if r]
         return pre + '{\n' + '\n'.join(inner) + '\n}' if inner else None
     if pre.startswith('@keyframes'):
