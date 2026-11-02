@@ -1,8 +1,11 @@
-"""Объёмное зелёное «стекло» главной кнопки и чипы — как в мобильном приложении (решение владельца 02.11.2026).
-Источник правды — kofe-app, коммит 9206813: app/src/theme/glass.ts (GLASS_BUTTON), app/src/ui/Button.tsx (порядок слоёв),
-app/src/ui/Chip.tsx (чип 48 − 8 = 40, поля 16, Montserrat 500 14px). Значения glass.ts переписаны ниже (GLASS) — сверяем с :root
-главной (единственное место токенов), с собранными /kk/ и /en/ и с копией в 404.html.
-Под зелёной кнопкой и плавающей «меню» размытия (backdrop-filter) нет: на образце его нет, в приложении убирают.
+"""Объёмное «стекло» всех кнопок сайта — как главная кнопка мобильного приложения (решения владельца 02.11.2026: сначала
+зелёная кнопка, затем «все кнопки — стекло своего цвета», включая меню и переключатели).
+Источник правды — kofe-app, коммит 9206813: app/src/theme/glass.ts (GLASS_BUTTON), app/src/ui/Button.tsx (порядок слоёв:
+основа, низ, блик, кромка 1px с внутренними тенями), app/src/ui/Chip.tsx (чип 48 − 8 = 40, поля 16, Montserrat 500 14px).
+Значения glass.ts переписаны ниже (GLASS) — сверяем с :root главной (единственное место токенов), /kk/, /en/, текстовыми
+меню и копиями в 404.html и /ugolok. Тона: зелёный (glass.ts), олива, WhatsApp, светлое (значения сайта — в приложении
+светлого объёмного стекла нет, там матовая панель с размытием). Слои — одно правило :where(…) на все кнопки, элемент задаёт
+только тон --tone-*. Размытия (backdrop-filter) под кнопками нет.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import os, re, sys, unittest
 
@@ -26,6 +29,22 @@ GLASS = {   # kofe-app 9206813, app/src/theme/glass.ts — GLASS_BUTTON
 }
 VARIANT = {'photo': 'photo', 'lightPhoto': 'light-photo', 'plain': 'plain'}
 PAGES = {'ru': 'index.html', 'kk': 'kk/index.html', 'en': 'en/index.html'}
+TEXT_MENUS = ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html')
+
+# кнопка → тон (главная). Зелёный — по умолчанию у слоёв (.btn, .fab-menu)
+TONES = {
+    'light': ['.btn.ghost', '.ib', '.pill', '.pill-point', '.lang-dd summary', '.mm-tab', '.mm-cat', '.mm-mode-btn', '.mm-lang-btn',
+              '.mm-search-btn', '.mm-search-x', '.mm-x', '.mm-card-x', '.sheet .x', '.mm-only'],
+    'green': ['.ib.route', '.lang-dd[open] summary', '.mm-tab.on', '.mm-cat.on', '.mm-mode-btn.on', '.mm-lang-btn.on', '.mm-only:hover',
+              '.mm-only[aria-expanded="true"]'],
+    'wa': ['.ib.wa'],
+    'olive': ['.btn.olive'],
+}
+LAYERED = ['.btn', '.fab-menu', '.ib', '.pill', '.pill-point', '.lang-dd summary', '.mm-tab', '.mm-cat', '.mm-mode-btn', '.mm-lang-btn',
+           '.mm-search-btn', '.mm-search-x', '.mm-x', '.mm-card-x', '.sheet .x', '.mm-only']
+TONE_VARS = {'green': 'glass', 'light': 'glass-light', 'wa': 'glass-wa', 'olive': 'glass-olive'}
+BASE = ('background-color:rgb(var(--tone-rgb) / var(--tone-a))', 'background-image:linear-gradient(180deg,var(--tone-hl1) 0%,var(--tone-hl2) 45%,transparent 55%),var(--tone-bot)',
+        'box-shadow:var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge)', 'transition:scale var(--glass-press-out) var(--glass-press-spring)')
 
 
 def read(p):
@@ -44,7 +63,6 @@ def root_vars(html):
 
 
 def resolve(v, value):
-    """подставить var(--x) из :root (рекурсивно)"""
     for _ in range(10):
         value = re.sub(r'var\((--[\w-]+)\)', lambda m: v[m.group(1)], value)
     return value
@@ -71,6 +89,30 @@ def rule(css, sel):
     return m.group(1) if m else None
 
 
+def split_sel(pre):
+    return [s.strip() for s in pre.split(',')]
+
+
+def layer_rules(css):
+    """{'' | ':active' | ':hover' | 'reduce': (список селекторов, тело)} — правила :where(…) слоёв стекла"""
+    out = {}
+    for pre, body in rules(css):
+        m = re.match(r'(@media\([^)]*\) )?:where\((.*)\)(:\w+)?$', pre)
+        if m:
+            key = 'reduce' if m.group(1) and 'reduced-motion' in m.group(1) else (m.group(3) or '')
+            out[key] = (split_sel(m.group(2)), body)
+    return out
+
+
+def tone_of(css, sel):
+    """тон селектора: правило, где он в списке и задан --tone-rgb"""
+    hit = [b for p, b in rules(css) if ':where(' not in p and sel in split_sel(p) and '--tone-rgb:' in b]
+    if not hit:
+        return None
+    rgb = re.search(r'--tone-rgb:var\(--([\w-]+)-rgb\)', hit[-1]).group(1)
+    return {v: k for k, v in TONE_VARS.items()}[rgb]
+
+
 class TestGlassTokens(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -83,9 +125,10 @@ class TestGlassTokens(unittest.TestCase):
             for key, name in VARIANT.items():
                 self.assertEqual('rgba(%s,%s)' % (','.join(rgb), v['--glass-base-' + name]), GLASS['base'][key], '%s: основа %s' % (l, key))
                 self.assertEqual('rgba(%s,%s)' % (','.join(rgbp), v['--glass-pressed-' + name]), GLASS['basePressed'][key], '%s: нажатая %s' % (l, key))
-            for var, key in (('--glass-highlight', 'highlight'), ('--glass-bottom', 'bottom'), ('--glass-edge', 'edge'),
-                             ('--glass-shadow', 'shadow'), ('--glass-inset', 'inset'), ('--glass-shadow-pressed', 'shadowPressed'),
-                             ('--glass-inset-pressed', 'insetPressed')):
+            hl = 'linear-gradient(180deg,%s 0%%,%s 45%%,transparent 55%%)' % (v['--glass-hl-top'], v['--glass-hl-mid'])
+            self.assertEqual(norm(hl), norm(GLASS['highlight']), '%s: блик' % l)
+            for var, key in (('--glass-bottom', 'bottom'), ('--glass-edge', 'edge'), ('--glass-shadow', 'shadow'), ('--glass-inset', 'inset'),
+                             ('--glass-shadow-pressed', 'shadowPressed'), ('--glass-inset-pressed', 'insetPressed')):
                 self.assertEqual(norm(resolve(v, v[var])), norm(GLASS[key]), '%s: %s' % (l, var))
             self.assertEqual(float(v['--glass-highlight-pressed']), GLASS['highlightPressed'])
             self.assertEqual(float(v['--glass-press-scale']), GLASS['press']['scale'])
@@ -96,20 +139,30 @@ class TestGlassTokens(unittest.TestCase):
             self.assertEqual(v['--h-glass'], '%dpx' % GLASS['height'])
             self.assertEqual(v['--h-glass-small'], '%dpx' % GLASS['smallHeight'])
 
+    def test_tone_tokens(self):
+        """на каждый тон — rgb основы и нажатой, блик (две точки), кромка; цвета основ — из токенов v5; у светлого свои низ и тени"""
+        hexrgb = lambda h: ' '.join(str(int(h[i:i + 2], 16)) for i in (1, 3, 5))
+        for l, html in self.pages.items():
+            v = root_vars(html)
+            for pre in TONE_VARS.values():
+                for suf in ('rgb', 'rgb-pressed', 'hl-top', 'hl-mid', 'edge'):
+                    self.assertIn('--%s-%s' % (pre, suf), v, l)
+            self.assertEqual(v['--glass-olive-rgb'], hexrgb(v['--c-olive']), 'олива = #849E29')
+            self.assertEqual(v['--glass-wa-rgb'], hexrgb(v['--c-whatsapp']), 'WhatsApp = #25D366')
+            self.assertEqual(v['--glass-light-rgb'], hexrgb(v['--c-surface']))
+            self.assertEqual(v['--glass-light-rgb-pressed'], hexrgb(v['--c-raised']))
+            for suf in ('bottom', 'shadow', 'inset', 'shadow-pressed', 'inset-pressed'):
+                self.assertIn('--glass-light-' + suf, v, l)
+            # блик светлее основы: у оливы и WhatsApp — светлый вариант своего цвета
+            for pre in ('glass-olive', 'glass-wa', 'glass-light'):
+                top = [int(x) for x in re.match(r'rgba\((\d+),(\d+),(\d+),', v['--%s-hl-top' % pre]).groups()]
+                self.assertGreater(sum(top), sum(int(x) for x in v['--%s-rgb' % pre].split()), pre)
+
     def test_base_photo_and_btn_font(self):
         for l, html in self.pages.items():
             v = root_vars(html)
             self.assertEqual(v.get('--glass-base-photo'), '0.74', '%s: --glass-base-photo — отдельной переменной, 0.74' % l)
             self.assertEqual(v.get('--btn-font'), 'var(--font-display)', l)
-
-    def test_pressed_highlight_is_layer_opacity(self):
-        """блик при нажатии — тот же градиент, прозрачность слоя 0,36 (Button.tsx: opacity highlightPressed)"""
-        v = root_vars(self.pages['ru'])
-        dim = v['--glass-highlight-dim']
-        self.assertEqual(dim.count('calc(var(--glass-highlight-pressed)*100%)'), 2, 'обе цветные точки блика — через 0,36')
-        self.assertIn('var(--glass-hl-top)', dim)
-        self.assertIn('var(--glass-hl-mid)', dim)
-        self.assertTrue(norm(dim).endswith('transparent 55%)'))
 
     def test_comment_links_to_kofe_app(self):
         root = re.search(r':root\{(.*?)\n\}', read('index.html'), re.S).group(1)
@@ -122,61 +175,96 @@ class TestGlassButtons(unittest.TestCase):
         cls.pages = {l: read(p) for l, p in PAGES.items()}
         cls.css = {l: css_of(h) for l, h in cls.pages.items()}
 
-    def test_no_backdrop_filter_under_green_buttons(self):
-        for l, css in self.css.items():
-            for sel, body in rules(css):
-                if re.search(r'\.(?:btn|fab-menu)(?![\w-])', sel):
-                    self.assertNotIn('backdrop-filter', body, '%s: %s' % (l, sel))
-        nf = css_of(read('404.html'))
-        for sel, body in rules(nf):
-            if '.btn' in sel:
-                self.assertNotIn('backdrop-filter', body, '404: %s' % sel)
+    def test_layers_for_every_button(self):
+        """одно правило слоёв на все кнопки: основа, блик, низ, тень + inset, кромка 1px; нажатие; наведение; reduced-motion"""
+        lr = layer_rules(self.css['ru'])
+        self.assertEqual(sorted(lr), ['', ':active', ':hover', 'reduce'])
+        for key, (sels, body) in lr.items():
+            self.assertEqual(sels, LAYERED, key)
+        base = lr[''][1]
+        for need in BASE + ('--tone-a:var(--glass-base-plain)', '--tone-ap:var(--glass-pressed-plain)', 'border:0'):
+            self.assertIn(need, base)
+        act = lr[':active'][1]
+        for need in ('background-color:rgb(var(--tone-rgbp) / var(--tone-ap))', 'box-shadow:var(--tone-shp),var(--tone-inp),inset 0 0 0 1px var(--tone-edge)',
+                     'scale:var(--glass-press-scale)', 'transition:scale var(--glass-press-in) ease-out'):
+            self.assertIn(need, act)
+        self.assertEqual(act.count('calc(var(--glass-highlight-pressed)*100%)'), 2, 'блик при нажатии — прозрачность слоя 0,36')
+        self.assertEqual(lr[':hover'][1], 'background-color:rgb(var(--tone-rgbp) / var(--tone-ap))', 'наведение — основа нажатой')
+        self.assertEqual(lr['reduce'][1], 'scale:none')
+        for l in ('kk', 'en'):     # облегчённые: те же тела, в списке — только то, что есть на странице
+            lk = layer_rules(self.css[l])
+            for key in ('', ':active', ':hover', 'reduce'):
+                self.assertEqual(lk[key][1], lr[key][1], '%s %s' % (l, key))
+            self.assertEqual(lk[''][0], ['.btn', '.fab-menu', '.ib', '.pill', '.pill-point', '.lang-dd summary'], l)
 
-    def test_btn_glass_plain(self):
-        for l, css in self.css.items():
-            btn = rule(css, '.btn')
-            self.assertIn('min-height:var(--h-glass)', btn, '%s: высота 52' % l)
-            glass = rule(css, '.btn,.fab-menu')
-            for need in ('--glass-a:var(--glass-base-plain)', '--glass-ap:var(--glass-pressed-plain)', 'border:1px solid var(--glass-edge)',
-                         'background-color:rgb(var(--glass-rgb) / var(--glass-a))', 'background-image:var(--glass-highlight),var(--glass-bottom)',
-                         'box-shadow:var(--glass-shadow),var(--glass-inset)', 'color:var(--c-on-accent)', 'font-family:var(--btn-font)',
-                         'transition:scale var(--glass-press-out) var(--glass-press-spring)'):
-                self.assertIn(need, glass, '%s: %s' % (l, need))
-            act = rule(css, '.btn:active,.fab-menu:active')
-            for need in ('background-color:rgb(var(--glass-rgb-pressed) / var(--glass-ap))', 'background-image:var(--glass-highlight-dim),var(--glass-bottom)',
-                         'box-shadow:var(--glass-shadow-pressed),var(--glass-inset-pressed)', 'scale:var(--glass-press-scale)',
-                         'transition:scale var(--glass-press-in) ease-out'):
-                self.assertIn(need, act, '%s: нажатие %s' % (l, need))
-            self.assertIn('--glass-a:var(--glass-base-photo);--glass-ap:var(--glass-pressed-photo)', rule(css, '.btn.on-photo'))
-            self.assertIn('--glass-a:var(--glass-base-light-photo);--glass-ap:var(--glass-pressed-light-photo)', rule(css, '.btn.on-light-photo'))
-            hover = [b for s, b in rules(css) if s.startswith('@media(hover:hover)') and s.endswith('.btn:hover,.fab-menu:hover')]
-            self.assertEqual(hover, ['background-color:rgb(var(--glass-rgb-pressed) / var(--glass-ap))'], '%s: наведение — основа pressed' % l)
-            self.assertNotRegex(''.join(b for s, b in rules(css) if re.search(r'\.btn(?:[:,]|$)', s)), r'#31492F|--c-accent-dk', 'без плоского #31492F')
-            rm = [b for s, b in rules(css) if s.startswith('@media(prefers-reduced-motion:reduce)') and '.btn:active' in s]
-            self.assertEqual(rm, ['scale:none'], '%s: reduced-motion — без сжатия' % l)
+    def test_button_tones(self):
+        css = self.css['ru']
+        for t, sels in TONES.items():
+            for sel in sels:
+                self.assertEqual(tone_of(css, sel), t, sel)
+        for sel in ('.btn', '.fab-menu'):
+            self.assertIsNone(tone_of(css, sel), '%s — зелёный по умолчанию (тон слоёв)' % sel)
+        layer = layer_rules(css)[''][1]
+        self.assertIn('--tone-rgb:var(--glass-rgb)', layer)
+        self.assertIn('color:var(--c-on-olive)', rule(css, '.btn.olive'))
+        self.assertIn('color:#FFFFFF', rule(css, '.ib.wa'))
+        self.assertIn('--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)', rule(css, '.fab-menu'), 'плавающая «меню» — основа photo')
+        self.assertIn('--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)', rule(css, '.btn.on-photo'))
+        self.assertIn('--tone-a:var(--glass-base-light-photo);--tone-ap:var(--glass-pressed-light-photo)', rule(css, '.btn.on-light-photo'))
+        for l in ('kk', 'en'):
+            for sel, t in (('.btn.ghost', 'light'), ('.ib', 'light'), ('.pill-point', 'light'), ('.lang-dd summary', 'light'),
+                           ('.ib.route', 'green'), ('.ib.wa', 'wa'), ('.btn.olive', 'olive')):
+                self.assertEqual(tone_of(self.css[l], sel), t, '%s %s' % (l, sel))
+            self.assertNotRegex(self.css[l], r'\.mm-|\.sheet', l)
 
-    def test_ghost_and_olive_flat(self):
+    def test_no_flat_overrides_and_no_blur(self):
+        """у кнопок нет своих плоских заливок, теней и размытия поверх слоёв (кроме липкой лупы: её тень — слои + подложка)"""
         for l, css in self.css.items():
-            flat = rule(css, '.btn.ghost,.btn.olive')
-            for need in ('border-color:transparent', 'background-image:none', 'box-shadow:none'):
-                self.assertIn(need, flat, l)
-            self.assertIn('background-color:var(--c-surface);color:var(--c-text)', rule(css, '.btn.ghost'))
-            self.assertIn('background-color:var(--c-olive);color:var(--c-on-olive)', rule(css, '.btn.olive'))
-        # главная, вторичная и выделенная — в одном ряду героя
-        self.assertRegex(self.pages['ru'], r'<button class="btn olive"[^>]*>[^<]+</button>\s*<a class="btn" href')
+            for pre, body in rules(css):
+                parts = [re.sub(r'^@media\([^)]*\) ', '', s) for s in split_sel(pre)]
+                if not any(re.sub(r':(?:hover|active)$', '', p) in LAYERED + sum(TONES.values(), []) for p in parts):
+                    continue
+                self.assertNotIn('backdrop-filter', body, '%s: %s' % (l, pre))
+                self.assertNotRegex(body, r'(?:^|;)background:', '%s: %s — плоская заливка' % (l, pre))
+                if 'box-shadow' in body and not pre.startswith(':where') and ':where(' not in pre:
+                    self.assertIn('var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge)', body, '%s: %s' % (l, pre))
 
-    def test_404_button_same_glass(self):
-        nf, main = read('404.html'), root_vars(self.pages['ru'])
-        v = root_vars(nf)
-        glass = {k: x for k, x in v.items() if k.startswith('--glass-') or k in ('--h-glass', '--btn-font')}
-        self.assertGreaterEqual(len(glass), 20)
-        for k, x in glass.items():
-            self.assertEqual(x, main[k], '404: %s — как на главной' % k)
-        btn = rule(css_of(nf), 'a.btn')
-        for need in ('min-height:var(--h-glass)', 'background-color:rgb(var(--glass-rgb) / var(--glass-base-plain))',
-                     'background-image:var(--glass-highlight),var(--glass-bottom)', 'box-shadow:var(--glass-shadow),var(--glass-inset)',
-                     'font-family:var(--btn-font)'):
-            self.assertIn(need, btn)
+    def test_404_and_ugolok_same_glass(self):
+        main = root_vars(self.pages['ru'])
+        lr = layer_rules(self.css['ru'])
+        light = rule(self.css['ru'], ','.join(TONES['light']))
+        for path, sels in (('404.html', ['a.btn']), ('ugolok/index.html', ['.pass-btn', '.lang-btn', '.tb-back'])):
+            html = read(path)
+            v, css = root_vars(html), css_of(html)
+            glass = {k: x for k, x in v.items() if k.startswith('--glass-') or k in ('--h-glass', '--btn-font')}
+            self.assertGreaterEqual(len(glass), 18, path)
+            for k, x in glass.items():
+                self.assertEqual(x, main[k], '%s: %s — как на главной' % (path, k))
+            lk = layer_rules(css)
+            for key in ('', ':active', ':hover', 'reduce'):
+                self.assertEqual(lk[key], (sels, lr[key][1]), '%s: слои %s — дословно как на главной' % (path, key))
+            for pre, body in rules(css):
+                self.assertNotIn('backdrop-filter', body if any(s in pre for s in sels) else '', path)
+        ug = css_of(read('ugolok/index.html'))
+        self.assertEqual(rule(ug, '.lang-btn,.tb-back'), light, '/ugolok: языки и «на главную» — светлое стекло')
+        self.assertTrue(rule(ug, '.lang-btn.on').startswith('--tone-rgb:var(--glass-rgb);'), 'выбранный язык — зелёный')
+        for sel in ('.pass-btn', '.lang-btn', '.tb-back'):
+            self.assertNotRegex(rule(ug, sel), r'(?:^|;)background:', sel)
+        self.assertIn('min-height:var(--h-glass)', rule(ug, '.pass-btn'))
+        self.assertIn('min-height:var(--h-glass)', rule(css_of(read('404.html')), 'a.btn'))
+
+    def test_text_menus_glass(self):
+        lr = layer_rules(self.css['ru'])
+        light = rule(self.css['ru'], ','.join(TONES['light']))
+        sels = ['.pill', '.toc a', '.lang a']
+        for p in TEXT_MENUS:
+            css = css_of(read(p))
+            lk = layer_rules(css)
+            for key in ('', ':active', ':hover', 'reduce'):
+                self.assertEqual(lk[key], (sels, lr[key][1]), '%s %s' % (p, key))
+            self.assertIn('{' + light + '}', css, '%s: светлый тон — как у главной' % p)
+            self.assertTrue(rule(css, '.lang a[aria-current]').startswith('--tone-rgb:var(--glass-rgb);'), p)
+            self.assertNotRegex(rule(css, '.pill,.toc a,.lang a'), r'(?:^|;)background:', p)
 
 
 class TestChips(unittest.TestCase):
@@ -194,31 +282,34 @@ class TestChips(unittest.TestCase):
         for sel in ('.pill::after', '.mm-tab::after,.mm-cat::after'):
             self.assertEqual(rule(self.css, sel), "content:'';position:absolute;inset:calc(var(--s-8) / -2) 0", sel)
         self.assertIn('font-family:var(--font-body)', rule(self.css, '.mm-tab,.mm-cat'))
-        self.assertEqual(rule(self.css, '.mm-tab.on,.mm-cat.on'), 'background:var(--c-accent);color:var(--c-on-accent)')
 
-    def test_rows_leave_room_for_touch(self):
-        """ряды вкладок и разделов прокручиваются (overflow-x) — касание чипа (4px сверху и снизу) должно лечь в поля ряда"""
+    def test_rows_leave_room_for_touch_and_shadow(self):
+        """ряды вкладок и разделов прокручиваются (overflow-x): касание (4px) и тень чипа должны лечь в поля ряда"""
         rows = rule(self.css, '.mm-tabs,.mm-cats')
-        self.assertIn('padding:var(--s-4) var(--s-24)', rows)
+        self.assertIn('padding:var(--s-4) var(--s-24) var(--s-8)', rows)
         mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', self.css))
-        self.assertIn('.mm-tabs,.mm-cats{padding:var(--s-4) var(--s-12)', mob)
+        self.assertIn('.mm-tabs,.mm-cats{padding:var(--s-4) var(--s-12) var(--s-8)', mob)
         self.assertNotRegex(mob, r'\.mm-tab\{padding', 'поля чипа на телефоне — тоже 16')
+        v = root_vars(self.html)
+        self.assertEqual(v['--glass-light-shadow'], '0px 2px 6px rgba(36,28,21,0.12),0px 1px 2px rgba(36,28,21,0.1)', 'тень светлого — в 8px')
 
     def test_mode_and_lang_like_chips(self):
         r = rule(self.css, '.mm-mode-btn,.mm-lang-btn')
-        for need in ('height:44px', 'border:2px solid transparent', 'background-clip:padding-box', 'font-weight:500', 'font-family:var(--font-body)'):
+        for need in ('height:calc(var(--h-touch) - var(--s-8))', 'font-weight:500', 'font-family:var(--font-body)', 'position:relative'):
             self.assertIn(need, r, need)
+        self.assertEqual(rule(self.css, '.mm-mode-btn::after,.mm-lang-btn::after'), "content:'';position:absolute;inset:-2px 0", 'касание 44')
         self.assertIn('font-size:var(--fs-small)', rule(self.css, '.mm-mode-btn'))
         self.assertNotIn('font-weight:700', rule(self.css, '.mm-lang-btn'))
-        self.assertEqual(rule(self.css, '.mm-mode-btn.on,.mm-lang-btn.on'), 'background:var(--c-accent);color:var(--c-on-accent)')
+        mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', self.css))
+        self.assertNotRegex(re.search(r'\.mm-mode-btn\{[^}]*\}', mob).group(0), r'overflow:hidden', 'обрезка срезала бы касание')
 
-    def test_pill_point_untouched(self):
+    def test_pill_point_size_untouched(self):
         self.assertIn('min-height:var(--h-touch);padding:0 var(--s-16)', rule(self.css, '.pill-point'))
 
     def test_text_menus_chips(self):
-        for p in ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html'):
+        for p in TEXT_MENUS:
             css = css_of(read(p))
-            r = rule(css, '.pill,.toc a,.lang a')
+            r = re.search(r'\}\.pill,\.toc a,\.lang a\{(position[^}]*)\}', css).group(1)
             self.assertIn('min-height:40px', r, p)
             self.assertIn('font-weight:500', r, p)
             self.assertEqual(rule(css, '.pill::after,.toc a::after,.lang a::after'), "content:'';position:absolute;inset:-4px 0", p)
