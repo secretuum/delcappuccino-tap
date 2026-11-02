@@ -428,8 +428,9 @@ class TestPage(unittest.TestCase):
         css = style(self.pages['ru'])
         self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#25D366')
         for l, html in self.pages.items():
-            wa = re.search(r'\.ib\.wa\{([^}]*)\}', style(html)).group(1)
-            self.assertEqual(wa, 'background:var(--c-whatsapp);color:#FFFFFF', l)
+            # 2.11: стекло в цвете WhatsApp (тон --glass-wa-*, основа = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
+            wa = re.search(r'(?:^|\})\.ib\.wa\{([^}]*)\}', style(html)).group(1)
+            self.assertTrue(wa.startswith('--tone-rgb:var(--glass-wa-rgb);') and wa.endswith('color:#FFFFFF'), l)
             self.assertNotRegex(html, r'class="btn[^"]*"[^>]*>WhatsApp<', '%s: текстовых кнопок WhatsApp нет' % l)
 
     def test_contacts_social_icons(self):
@@ -497,7 +498,7 @@ class TestPage(unittest.TestCase):
             self.assertEqual(root_vars(html)['--h-glass-small'], '44px', l)
             self.assertGreaterEqual(int(re.search(r'min-width:(\d+)px', fab).group(1)), 160)
             for need in ('left:50%', 'transform:translateX(-50%)', 'env(safe-area-inset-bottom)', 'font-weight:700', 'font-size:16px',
-                         '--glass-a:var(--glass-base-photo);--glass-ap:var(--glass-pressed-photo)'):
+                         '--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)'):
                 self.assertIn(need, fab, l)
             shared = re.search(r'(?:^|\})\.btn,\.fab-menu\{([^}]*)\}', css).group(1)
             self.assertIn('color:var(--c-on-accent)', shared, 'текст белый')
@@ -948,8 +949,8 @@ console.log(JSON.stringify(out));
         css = style(self.pages['ru'])
         ib = re.search(r'\}\.ib\{([^}]*)\}', css).group(1)
         self.assertIn('width:var(--h-touch);height:var(--h-touch)', ib, 'касание 48 px')
-        self.assertIn('background:var(--c-surface)', ib)
-        self.assertIn('background:var(--c-accent);color:var(--c-on-accent)', re.search(r'\.ib\.route\{([^}]*)\}', css).group(1))
+        self.assertNotIn('background', ib, '2.11: светлое стекло — тоном (tests/test_glass.py), без плоской заливки')
+        self.assertRegex(css, r'\.ib\.route,[^{]*\{--tone-rgb:var\(--glass-rgb\);[^}]*color:var\(--c-on-accent\)\}', 'маршрут — зелёное стекло')
         lic = read('docs/LICENSES-media.md')
         for need in ('Lucide', 'ISC', 'Simple Icons', 'CC0', 'map-pin', 'phone', 'whatsapp'):
             self.assertIn(need, lic)
@@ -1052,22 +1053,22 @@ console.log(JSON.stringify(out));
         self.assertNotRegex(html, r'mm-where|whereHTML|mm-mark|ME<br>NU|mm-logo|to_togo\}|to_cafe\}')
         self.assertIn("function openMenu(mode){", html, 'сигнатура openMenu(mode) — прежняя')
         css = style(html)
-        on = re.search(r'\.mm-tab\.on,\.mm-cat\.on\{([^}]*)\}', css).group(1)
-        self.assertEqual(on, 'background:var(--c-accent);color:var(--c-on-accent)', 'одна схема: активная — forest, текст белый')
-        base = re.search(r'\.mm-tab,\.mm-cat\{([^}]*)\}', css).group(1)
-        self.assertIn('background:var(--c-surface)', base)
-        self.assertIn('border:0', base)
+        # 2.11: активная — зелёное стекло, текст белый; остальные — светлое стекло (тона и слои — tests/test_glass.py)
+        self.assertRegex(css, r'\}[^{}]*\.mm-tab\.on,\.mm-cat\.on,[^{]*\{--tone-rgb:var\(--glass-rgb\);[^}]*color:var\(--c-on-accent\)\}')
+        base = re.search(r'\}\.mm-tab,\.mm-cat\{([^}]*)\}', css).group(1)
+        self.assertNotIn('background', base)
         self.assertNotRegex(base, r'width:\d', 'по ширине текста')
         self.assertNotRegex(css, r'\.mm-(?:tab|cat)[^{]*\{[^}]*(?:olive|border:1)', 'без оливы и обводок у вкладок и разделов')
 
     def test_weight(self):
         sizes = {l: len(html.encode('utf-8')) for l, html in self.pages.items()}
         # 1.11: +4 КБ — свой набор значков «Формата»; этап 2 — поиск по меню и стиль списка, +5 КБ; предел 250 КБ (было 230)
-        self.assertLessEqual(sizes['ru'], 250 * 1024, 'главная была ~215 КБ — не раздувать')
+        # 2.11 glass-2: все кнопки — стекло (тона, общий набор слоёв): +2,3 КБ, было 254,6 из 250 КБ — предел 253 КБ
+        self.assertLessEqual(sizes['ru'], 253 * 1024, 'главная была ~215 КБ — не раздувать')
         # этап 2 (меню): +1,5 КБ CSS, было 56; 2.11 стекло кнопок (токены glass.ts в :root, правила .btn/.fab-menu): +0,9 КБ, было 60
         self.assertLessEqual(len(gzip.compress(self.pages['ru'].encode('utf-8'), 9)), 61 * 1024)
         for l in ('kk', 'en'):
-            self.assertLessEqual(sizes[l], 78 * 1024, l)   # 1.11: +4 КБ значков, было 70; 2.11: +2,4 КБ стекла кнопок, было 75
+            self.assertLessEqual(sizes[l], 80 * 1024, l)   # 1.11: +4 КБ значков, было 70; 2.11: +2,4 КБ стекла кнопок, было 75; glass-2: +1,7 КБ, было 78
 
     def test_scripts_in_node(self):
         """пилюля точки и заметка меню — на заглушке DOM: скрипты главной целиком"""
