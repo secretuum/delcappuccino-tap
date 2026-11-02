@@ -13,6 +13,7 @@
 | `menu-i18n` — меню на ҚАЗ/ENG | `worktree-menu-i18n` | оверлей меню: разметка `#menu-modal`, массивы `MENU_KITCHEN` / `MENU_BAR` / `MENU_DESSERT`, `MK`, `LEGEND`, `MENU_TABS` и функции отрисовки меню; стили `.mm-*`. Переключатель языка — только внутри оверлея меню. |
 | `to-go` — 5-я точка bakery to go | `worktree-to-go` | `BRANCHES` (карточки точек `#loc-grid` из него собирает `tools/seo_jsonld.py` с 22.10.2026, `renderLocations` удалён), модалка выбора филиала (`#modal`), секции hero / strip / about / features / locations / contacts, `<head>` (title, description, og/twitter) — тексты про «4 кофейни» и «24/7». |
 | `perf` — оптимизация загрузки | `worktree-perf` | `<head>` (preload, шрифты, иконки, manifest), картинки и ресурсы главной, `assets/`, `sw.js`, `manifest.webmanifest`, `tools/`, `tests/test_perf.py`. После любой правки `index.html` — `python3 tools/sw_version.py`. |
+| `glass` — зелёное «стекло» кнопок и чипы по приложению (решение владельца 02.11; источник — kofe-app 9206813, `glass.ts`, `Button.tsx`, `Chip.tsx`) | `worktree-agent-aedb5e0b769597913` | на время работы: `:root` (токены стекла `--glass-*`, `--h-glass*`, `--btn-font`), `.btn`, `.fab-menu`, `.pill` и чипы оверлея меню (`.mm-tab`, `.mm-cat`, `.mm-mode-btn`, `.mm-lang-btn`); кнопка `a.btn` в `404.html`, чипы текстовых меню в `tools/seo_jsonld.py`. Другие исполнители не активны. |
 
 Общие стили (`:root`, базовые классы) — предупредить второго исполнителя перед правкой.
 
