@@ -8,7 +8,9 @@ v2 (01.11.2026): 13 роликов напитков и групп в /media/app/
 скопированы байт в байт; те же правила (без звука, H.264, +faststart, ссылок со страниц нет, SW не трогает), бюджет ~1,5 МБ.
 v3 (05.11.2026): 10 роликов + 10 обложек *-poster.jpg + manifest.json в /media/app/v3/ (~/kofe-design-export/media/video-v3/),
 байт в байт; стоки Mixkit / Coverr / Pexels (у каждого файла своя лицензия — таблица в COORDINATION и поле license в manifest).
-Ролик ≤ ~1 МБ, обложка ≤ ~200 КБ. В manifest 11 записей на 10 роликов: espresso.mp4 — и «эспрессо», и «эспрессо двойной».
+Ролик ≤ ~1 МБ, обложка ≤ ~200 КБ. manifest.json на сайте — публичный (manifest.public.json kofe-app, замена 05.11 по их
+просьбе): {"files": [...]}, по записи на ролик, только file / poster / license (название + ссылка на текст лицензии);
+полный manifest (авторы, исходники, заметки) — у kofe-app локально. espresso.mp4 — и «эспрессо», и «эспрессо двойной».
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import collections, json, os, re, struct, unittest
 
@@ -28,6 +30,8 @@ LICENSE_V3 = {                   # ролик → сток (подтвержде
     'amerikano.mp4': 'Coverr', 'glavnaya.mp4': 'Coverr', 'glavnaya-7517.mp4': 'Coverr',
     'raf-klassicheskii.mp4': 'Pexels'}
 DOC_LICENSE = {'Mixkit': 'Mixkit Free License', 'Coverr': 'Coverr License', 'Pexels': 'Pexels License'}   # как в таблице COORDINATION
+LICENSE_URL = {'Mixkit': 'mixkit.co/license', 'Coverr': 'coverr.co/license', 'Pexels': 'pexels.com/license'}   # текст лицензии
+PRIVATE_V3 = ('author', 'kandidaty', 'source', 'note')   # из полного manifest kofe-app — на сайт не выкладываем
 FILES_V3 = sorted(LICENSE_V3)
 POSTERS_V3 = [f[:-4] + '-poster.jpg' for f in FILES_V3]
 MAX_BYTES_V3 = 1024 * 1024       # ~1 МБ на ролик v3 (сейчас 224–464 КБ)
@@ -104,19 +108,29 @@ class TestAppMediaFiles(unittest.TestCase):
             self.assertLessEqual(len(data), MAX_POSTER_V3, 'media/app/v3/%s: %d байт > ~200 КБ' % (f, len(data)))
 
     def test_v3_manifest(self):
-        with open(os.path.join(V3, 'manifest.json'), encoding='utf-8') as fh:
-            entries = json.load(fh)
+        # публичный manifest: {"files": [{file, poster, license}]}, по одной записи на ролик (эспрессо и эспрессо
+        # двойной — один файл и одна запись); размер и звук проверяются по самим файлам (тесты выше и ниже)
+        path = os.path.join(V3, 'manifest.json')
+        with open(path, encoding='utf-8') as fh:
+            text = fh.read()
+        for word in PRIVATE_V3:   # assertFalse, не assertNotIn: текст файла (с именами авторов) в сообщение не выводим
+            self.assertFalse(word in text, 'media/app/v3/manifest.json: «%s» — из полного manifest kofe-app, на сайт не выкладываем' % word)
+        root = json.loads(text)
+        self.assertIsInstance(root, dict, 'manifest: корень — объект {"files": [...]}')
+        self.assertEqual(sorted(root), ['files'], 'manifest: в корне только ключ files')
+        entries = root['files']
         self.assertIsInstance(entries, list)
+        counts = collections.Counter(e.get('file') for e in entries)
+        self.assertEqual(sorted(counts), FILES_V3, 'manifest описывает не все ролики v3 (или чужие)')
+        self.assertEqual({f: n for f, n in counts.items() if n > 1}, {}, 'manifest: ролик записан дважды')
         for e in entries:
-            self.assertIn(e.get('file'), FILES_V3, 'manifest: %r нет в media/app/v3/' % e.get('file'))
-            self.assertEqual(e.get('poster'), e['file'][:-4] + '-poster.jpg', 'manifest: обложка %s' % e['file'])
-            self.assertEqual(e.get('bytes'), os.path.getsize(os.path.join(V3, e['file'])), 'manifest: размер %s не тот' % e['file'])
-            self.assertIs(e.get('audio'), False, 'manifest: %s со звуком' % e['file'])
-            self.assertIn(LICENSE_V3[e['file']], e.get('license', ''), 'manifest: лицензия %s не %s' % (e['file'], LICENSE_V3[e['file']]))
-        # каждый ролик описан; дважды — только espresso.mp4 («эспрессо» и «эспрессо двойной», один файл — решение владельца)
-        counts = collections.Counter(e['file'] for e in entries)
-        self.assertEqual(sorted(counts), FILES_V3, 'manifest описывает не все ролики v3')
-        self.assertEqual({f: n for f, n in counts.items() if n > 1}, {'espresso.mp4': 2}, 'manifest: лишние повторы')
+            f = e['file']
+            self.assertEqual(sorted(e), ['file', 'license', 'poster'], 'manifest: %s — только file, poster, license' % f)
+            self.assertEqual(e['poster'], f[:-4] + '-poster.jpg', 'manifest: обложка %s' % f)
+            self.assertTrue(os.path.isfile(os.path.join(V3, e['poster'])), 'manifest: обложки %s нет в папке' % e['poster'])
+            stock = LICENSE_V3[f]
+            self.assertIn(stock, e['license'], 'manifest: лицензия %s не %s' % (f, stock))
+            self.assertIn(LICENSE_URL[stock], e['license'], 'manifest: у %s нет ссылки на текст лицензии %s' % (f, LICENSE_URL[stock]))
 
     def test_mp4_faststart_video_only(self):
         # moov до mdat (+faststart: iPhone начинает играть, не дожидаясь конца файла); дорожка видео есть, звука нет
@@ -187,13 +201,8 @@ class TestAppMediaHidden(unittest.TestCase):
         for f, lic in LICENSE_V3.items():
             for name in (f, f[:-4] + '-poster.jpg'):
                 self.assertIn(DOC_LICENSE[lic], rows[name], 'v3/%s: в таблице не та лицензия (нужна %s)' % (name, DOC_LICENSE[lic]))
-        for url in ('mixkit.co/license', 'coverr.co/license', 'pexels.com/license'):
+        for url in LICENSE_URL.values():
             self.assertIn(url, doc)
-        # имена авторов стоков — только в manifest.json, в документ не переносим (имя в сообщение не выводим)
-        with open(os.path.join(V3, 'manifest.json'), encoding='utf-8') as fh:
-            authors = {e['author'] for e in json.load(fh) if e.get('author')}
-        for a in authors:
-            self.assertFalse(a in doc, 'docs/COORDINATION.md: имя автора стока из manifest v3 — убрать')
 
 
 if __name__ == '__main__':
