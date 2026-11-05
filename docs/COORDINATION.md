@@ -64,9 +64,11 @@ JSON-LD ссылок на них нет; service worker их не перехва
 
 Заказ kofe-app. Готовые файлы «дизайна» (`~/kofe-design-export/media/video-v3/`) скопированы байт в байт, без
 перекодирования (sha256 источника и копии сверены): 10 роликов, 10 обложек `*-poster.jpg` (первый кадр ролика, JPEG
-720×1280) и `manifest.json` (по каждому напитку: исходник, отрезок, кроп, автор, лицензия, размер; авторов сюда не
-переносим). Не брали `contact-sheet.png`, `EXPO_PUBLIC_DRINK_VIDEOS.json`, `MENU_HERO.md`, `README.md`. Стадия —
-альфа/MVP: временные стоки, потом своя съёмка (решение владельца 01.11).
+720×1280) и `manifest.json`. На сайте — урезанный публичный manifest (`manifest.public.json` kofe-app под именем
+`manifest.json`; замена 05.11 по их просьбе): `{"files": [...]}`, по записи на ролик — `file`, `poster`, `license`
+(название лицензии + ссылка на её текст). Полный manifest (исходники, отрезки, кроп, авторы стоков, внутренние заметки)
+остаётся у kofe-app локально. Не брали `contact-sheet.png`, `EXPO_PUBLIC_DRINK_VIDEOS.json`, `MENU_HERO.md`,
+`README.md`. Стадия — альфа/MVP: временные стоки, потом своя съёмка (решение владельца 01.11).
 
 Лицензии разные, по файлу (подтверждено kofe-app 05.11, совпадает с полем `license` в `manifest.json`):
 [Mixkit Free License](https://mixkit.co/license/#videoFree) (Free, не Restricted), [Coverr License](https://coverr.co/license),
@@ -74,13 +76,13 @@ JSON-LD ссылок на них нет; service worker их не перехва
 раздавать или перезаливать файл как сток нельзя. Обложка — кадр своего ролика, лицензия та же. Правила те же, что для
 v1/v2: ссылок со страниц, `sitemap.xml`, `llms.txt` и JSON-LD нет; service worker не перехватывает (выход по префиксу
 `/media/app/` — и для обложек `.jpg`, и для `manifest.json`). Ролики: H.264 High, yuv420p, 720×1280, 30 к/с, без звука,
-`+faststart`, 0,23–0,47 МБ (≤ ~1 МБ); обложки 34–111 КБ (≤ ~200 КБ); всего 21 файл, 4 034 610 байт. `menu-par.mp4` и
-соседи (v1) и `v2/` не трогали — на них ссылаются установленные сборки. Охраняет `tests/test_app_media.py`
-(+ `test_perf`, прогоны `app_v3_*`).
+`+faststart`, 0,23–0,47 МБ (≤ ~1 МБ); обложки 34–111 КБ (≤ ~200 КБ); всего 21 файл, 4 020 077 байт (с публичным
+manifest). `menu-par.mp4` и соседи (v1) и `v2/` не трогали — на них ссылаются установленные сборки. Охраняет
+`tests/test_app_media.py` (+ `test_perf`, прогоны `app_v3_*`).
 
 | Адрес | Лицензия | Заметка |
 |---|---|---|
-| `/media/app/v3/espresso.mp4` | Mixkit Free License | эспрессо **и** эспрессо двойной — один файл, в manifest две записи (решение владельца); застабилизирован; 6,5 с |
+| `/media/app/v3/espresso.mp4` | Mixkit Free License | эспрессо **и** эспрессо двойной — один файл (решение владельца); застабилизирован; 6,5 с |
 | `/media/app/v3/espresso-poster.jpg` | Mixkit Free License | обложка эспрессо и эспрессо двойного |
 | `/media/app/v3/amerikano.mp4` | Coverr License | американо; кроп растянут ×1,9 — мягче остальных; 5 с |
 | `/media/app/v3/amerikano-poster.jpg` | Coverr License | обложка американо |
@@ -100,7 +102,7 @@ v1/v2: ссылок со страниц, `sitemap.xml`, `llms.txt` и JSON-LD н
 | `/media/app/v3/glavnaya-207-poster.jpg` | Mixkit Free License | обложка главной (запасной 1) |
 | `/media/app/v3/glavnaya-7517.mp4` | Coverr License | главная, запасной 2: зёрна в молоке, **светлый** (статус-бар над ним — на стороне kofe-app); 6 с |
 | `/media/app/v3/glavnaya-7517-poster.jpg` | Coverr License | обложка главной (запасной 2) |
-| `/media/app/v3/manifest.json` | — (описание, не медиа) | 11 записей на 10 роликов (`espresso.mp4` дважды); тест сверяет `file`, `poster`, `bytes`, `audio`, лицензию с папкой и таблицей |
+| `/media/app/v3/manifest.json` | — (описание, не медиа) | публичный: `{"files": [...]}`, 10 записей по одной на ролик, только `file`, `poster`, `license` (со ссылкой на текст); полный — у kofe-app; тест сверяет записи с папкой и лицензиями таблицы, следит, что нет авторов, исходников и заметок |
 
 ## Журнал приёмки
 
