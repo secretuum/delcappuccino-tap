@@ -6,8 +6,11 @@
 Правило test_perf «имя видео с хэшем» касается только <video> на странице — эти файлы туда не попадают (проверка ниже).
 v2 (01.11.2026): 13 роликов напитков и групп в /media/app/v2/ — готовые файлы «дизайна» (~/kofe-design-export/media/video-v2/),
 скопированы байт в байт; те же правила (без звука, H.264, +faststart, ссылок со страниц нет, SW не трогает), бюджет ~1,5 МБ.
+v3 (05.11.2026): 10 роликов + 10 обложек *-poster.jpg + manifest.json в /media/app/v3/ (~/kofe-design-export/media/video-v3/),
+байт в байт; стоки Mixkit / Coverr / Pexels (у каждого файла своя лицензия — таблица в COORDINATION и поле license в manifest).
+Ролик ≤ ~1 МБ, обложка ≤ ~200 КБ. В manifest 11 записей на 10 роликов: espresso.mp4 — и «эспрессо», и «эспрессо двойной».
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
-import os, re, struct, unittest
+import collections, json, os, re, struct, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(ROOT, 'media', 'app')
@@ -18,7 +21,18 @@ FILES_V2 = ['amerikano.mp4', 'espresso.mp4', 'espresso-dvoinoi.mp4', 'flet-uait.
             'raf-klassicheskii.mp4', 'raf-medovyi.mp4', 'gruppa-dopolnitelno.mp4', 'gruppa-mod-kofe.mp4',
             'gruppa-moloko.mp4', 'gruppa-podacha.mp4', 'gruppa-siropy.mp4']
 MAX_BYTES_V2 = 1536 * 1024       # ~1,5 МБ на ролик v2 (сейчас 0,14–0,8 МБ)
-REF = r'media/app'               # подпапку media/app/v2/ ловит тот же шаблон
+V3 = os.path.join(APP, 'v3')
+LICENSE_V3 = {                   # ролик → сток (подтверждено kofe-app 05.11); обложка — кадр того же ролика
+    'espresso.mp4': 'Mixkit', 'kapuchino.mp4': 'Mixkit', 'latte.mp4': 'Mixkit', 'flet-uait.mp4': 'Mixkit',
+    'raf-medovyi.mp4': 'Mixkit', 'glavnaya-207.mp4': 'Mixkit',
+    'amerikano.mp4': 'Coverr', 'glavnaya.mp4': 'Coverr', 'glavnaya-7517.mp4': 'Coverr',
+    'raf-klassicheskii.mp4': 'Pexels'}
+DOC_LICENSE = {'Mixkit': 'Mixkit Free License', 'Coverr': 'Coverr License', 'Pexels': 'Pexels License'}   # как в таблице COORDINATION
+FILES_V3 = sorted(LICENSE_V3)
+POSTERS_V3 = [f[:-4] + '-poster.jpg' for f in FILES_V3]
+MAX_BYTES_V3 = 1024 * 1024       # ~1 МБ на ролик v3 (сейчас 224–464 КБ)
+MAX_POSTER_V3 = 200 * 1024       # ~200 КБ на обложку (сейчас 33–109 КБ)
+REF = r'media/app'               # подпапки media/app/v2/, v3/ ловит тот же шаблон
 SKIP_DIRS = {'tests', 'docs', 'media', 'node_modules', '__pycache__'}   # не страницы сайта (docs описывает адреса)
 SKIP_FILES = {'sw.js'}           # service worker сам называет /media/app/ — чтобы их пропускать (проверка ниже)
 
@@ -74,9 +88,39 @@ class TestAppMediaFiles(unittest.TestCase):
             self.assertGreater(size, 50 * 1024, 'media/app/v2/%s подозрительно мал' % f)
             self.assertLessEqual(size, MAX_BYTES_V2, 'media/app/v2/%s: %d байт > ~1,5 МБ' % (f, size))
 
+    def test_v3_present_and_small(self):
+        self.assertEqual(sorted(os.listdir(V3)), sorted(FILES_V3 + POSTERS_V3 + ['manifest.json']),
+                         'media/app/v3/: только 10 роликов, 10 обложек и manifest.json (без contact-sheet, README, MENU_HERO, EXPO_*)')
+        for f in FILES_V3:
+            size = os.path.getsize(os.path.join(V3, f))
+            self.assertGreater(size, 50 * 1024, 'media/app/v3/%s подозрительно мал' % f)
+            self.assertLessEqual(size, MAX_BYTES_V3, 'media/app/v3/%s: %d байт > ~1 МБ' % (f, size))
+        for f in POSTERS_V3:
+            with open(os.path.join(V3, f), 'rb') as fh:
+                data = fh.read()
+            self.assertTrue(data.startswith(b'\xff\xd8\xff'), 'media/app/v3/%s: не JPEG (нет сигнатуры FFD8)' % f)
+            self.assertTrue(data.endswith(b'\xff\xd9'), 'media/app/v3/%s: JPEG обрезан (нет FFD9 в конце)' % f)
+            self.assertGreater(len(data), 10 * 1024, 'media/app/v3/%s подозрительно мала' % f)
+            self.assertLessEqual(len(data), MAX_POSTER_V3, 'media/app/v3/%s: %d байт > ~200 КБ' % (f, len(data)))
+
+    def test_v3_manifest(self):
+        with open(os.path.join(V3, 'manifest.json'), encoding='utf-8') as fh:
+            entries = json.load(fh)
+        self.assertIsInstance(entries, list)
+        for e in entries:
+            self.assertIn(e.get('file'), FILES_V3, 'manifest: %r нет в media/app/v3/' % e.get('file'))
+            self.assertEqual(e.get('poster'), e['file'][:-4] + '-poster.jpg', 'manifest: обложка %s' % e['file'])
+            self.assertEqual(e.get('bytes'), os.path.getsize(os.path.join(V3, e['file'])), 'manifest: размер %s не тот' % e['file'])
+            self.assertIs(e.get('audio'), False, 'manifest: %s со звуком' % e['file'])
+            self.assertIn(LICENSE_V3[e['file']], e.get('license', ''), 'manifest: лицензия %s не %s' % (e['file'], LICENSE_V3[e['file']]))
+        # каждый ролик описан; дважды — только espresso.mp4 («эспрессо» и «эспрессо двойной», один файл — решение владельца)
+        counts = collections.Counter(e['file'] for e in entries)
+        self.assertEqual(sorted(counts), FILES_V3, 'manifest описывает не все ролики v3')
+        self.assertEqual({f: n for f, n in counts.items() if n > 1}, {'espresso.mp4': 2}, 'manifest: лишние повторы')
+
     def test_mp4_faststart_video_only(self):
         # moov до mdat (+faststart: iPhone начинает играть, не дожидаясь конца файла); дорожка видео есть, звука нет
-        for f in FILES + ['v2/' + x for x in FILES_V2]:
+        for f in FILES + ['v2/' + x for x in FILES_V2] + ['v3/' + x for x in FILES_V3]:
             with open(os.path.join(APP, f), 'rb') as fh:
                 data = fh.read()
             top = atoms(data)
@@ -97,6 +141,8 @@ class TestAppMediaHidden(unittest.TestCase):
         files = list(site_files())
         for must in ('index.html', 'sitemap.xml', 'llms.txt', 'tools/seo_jsonld.py'):
             self.assertIn(must, files)
+        for addr in ('/media/app/v2/latte.mp4', '/media/app/v3/latte.mp4', '/media/app/v3/latte-poster.jpg', 'media/app/v3/manifest.json'):
+            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/, v3/')
         for p in files:
             self.assertNotRegex(read(p), REF, '%s ссылается на media/app/ (сток Mixkit — только прямые адреса)' % p)
 
@@ -114,8 +160,9 @@ class TestAppMediaHidden(unittest.TestCase):
         self.assertLess(m.start(), handler.index('respondWith'), 'выход для /media/app/ — до любого respondWith')
         precache = src[src.index('var PRECACHE'):src.index('];', src.index('var PRECACHE'))]
         self.assertNotIn('media/app', precache, 'media/app/ не в PRECACHE')
-        # v2 — подпапка: выход по префиксу '/media/app/' (indexOf === 0) покрывает и её; поведение в node — test_perf, app_v2_*
-        self.assertNotRegex(src, r'media/app/v2', 'sw.js: для v2/ отдельных правил не нужно')
+        # v2, v3 — подпапки: выход по префиксу '/media/app/' (indexOf === 0) покрывает и их, вместе с обложками .jpg и
+        # manifest.json (без него SW взял бы .jpg в кэш, а .json — «сначала сеть»); поведение в node — test_perf, app_v2_*, app_v3_*
+        self.assertNotRegex(src, r'media/app/v\d', 'sw.js: для v2/, v3/ отдельных правил не нужно')
 
     def test_documented(self):
         doc = read('docs', 'COORDINATION.md')
@@ -126,6 +173,27 @@ class TestAppMediaHidden(unittest.TestCase):
             self.assertIn('`/media/app/v2/%s`' % f, doc, 'адрес v2/%s не описан в docs/COORDINATION.md' % f)
         self.assertIn('latte.mp4', doc)
         self.assertIn('права не проверены', doc, 'latte.mp4 v2 — пометка «права не проверены»')
+
+    def test_documented_v3(self):
+        # таблица v3 — одна строка на файл: адрес, лицензия (обложка — как у её ролика), заметка
+        doc = read('docs', 'COORDINATION.md')
+        rows = {}
+        for line in doc.splitlines():
+            m = re.match(r'\| `/media/app/v3/([^`]+)` \|', line)
+            if m:
+                self.assertNotIn(m.group(1), rows, 'v3/%s описан в таблице дважды' % m.group(1))
+                rows[m.group(1)] = line
+        self.assertEqual(sorted(rows), sorted(FILES_V3 + POSTERS_V3 + ['manifest.json']), 'таблица v3: по строке на каждый файл папки')
+        for f, lic in LICENSE_V3.items():
+            for name in (f, f[:-4] + '-poster.jpg'):
+                self.assertIn(DOC_LICENSE[lic], rows[name], 'v3/%s: в таблице не та лицензия (нужна %s)' % (name, DOC_LICENSE[lic]))
+        for url in ('mixkit.co/license', 'coverr.co/license', 'pexels.com/license'):
+            self.assertIn(url, doc)
+        # имена авторов стоков — только в manifest.json, в документ не переносим (имя в сообщение не выводим)
+        with open(os.path.join(V3, 'manifest.json'), encoding='utf-8') as fh:
+            authors = {e['author'] for e in json.load(fh) if e.get('author')}
+        for a in authors:
+            self.assertFalse(a in doc, 'docs/COORDINATION.md: имя автора стока из manifest v3 — убрать')
 
 
 if __name__ == '__main__':

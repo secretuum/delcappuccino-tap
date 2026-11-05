@@ -60,6 +60,48 @@ JSON-LD ссылок на них нет; service worker их не перехва
 **`latte.mp4` — файл владельца, права не проверены.** Нарезка из ролика из «Загрузок» владельца, источник и лицензия
 не выяснены. Лежит только на время тестов приложения; к релизу заказчик заменит его на том же адресе.
 
+### v3 — `/media/app/v3/` (05.11.2026)
+
+Заказ kofe-app. Готовые файлы «дизайна» (`~/kofe-design-export/media/video-v3/`) скопированы байт в байт, без
+перекодирования (sha256 источника и копии сверены): 10 роликов, 10 обложек `*-poster.jpg` (первый кадр ролика, JPEG
+720×1280) и `manifest.json` (по каждому напитку: исходник, отрезок, кроп, автор, лицензия, размер; авторов сюда не
+переносим). Не брали `contact-sheet.png`, `EXPO_PUBLIC_DRINK_VIDEOS.json`, `MENU_HERO.md`, `README.md`. Стадия —
+альфа/MVP: временные стоки, потом своя съёмка (решение владельца 01.11).
+
+Лицензии разные, по файлу (подтверждено kofe-app 05.11, совпадает с полем `license` в `manifest.json`):
+[Mixkit Free License](https://mixkit.co/license/#videoFree) (Free, не Restricted), [Coverr License](https://coverr.co/license),
+[Pexels License](https://www.pexels.com/license/). У всех трёх: коммерция и приложения можно, атрибуция не нужна,
+раздавать или перезаливать файл как сток нельзя. Обложка — кадр своего ролика, лицензия та же. Правила те же, что для
+v1/v2: ссылок со страниц, `sitemap.xml`, `llms.txt` и JSON-LD нет; service worker не перехватывает (выход по префиксу
+`/media/app/` — и для обложек `.jpg`, и для `manifest.json`). Ролики: H.264 High, yuv420p, 720×1280, 30 к/с, без звука,
+`+faststart`, 0,23–0,47 МБ (≤ ~1 МБ); обложки 34–111 КБ (≤ ~200 КБ); всего 21 файл, 4 034 610 байт. `menu-par.mp4` и
+соседи (v1) и `v2/` не трогали — на них ссылаются установленные сборки. Охраняет `tests/test_app_media.py`
+(+ `test_perf`, прогоны `app_v3_*`).
+
+| Адрес | Лицензия | Заметка |
+|---|---|---|
+| `/media/app/v3/espresso.mp4` | Mixkit Free License | эспрессо **и** эспрессо двойной — один файл, в manifest две записи (решение владельца); застабилизирован; 6,5 с |
+| `/media/app/v3/espresso-poster.jpg` | Mixkit Free License | обложка эспрессо и эспрессо двойного |
+| `/media/app/v3/amerikano.mp4` | Coverr License | американо; кроп растянут ×1,9 — мягче остальных; 5 с |
+| `/media/app/v3/amerikano-poster.jpg` | Coverr License | обложка американо |
+| `/media/app/v3/kapuchino.mp4` | Mixkit Free License | капучино, макро «лист», почти неподвижно; 6,5 с |
+| `/media/app/v3/kapuchino-poster.jpg` | Mixkit Free License | обложка капучино |
+| `/media/app/v3/latte.mp4` | Mixkit Free License | латте; **теперь сток Mixkit** — в v2 `latte.mp4` был файл владельца с непроверенными правами; 6,5 с |
+| `/media/app/v3/latte-poster.jpg` | Mixkit Free License | обложка латте |
+| `/media/app/v3/flet-uait.mp4` | Mixkit Free License | флэт уайт, макро розетты, почти неподвижно; 6 с |
+| `/media/app/v3/flet-uait-poster.jpg` | Mixkit Free License | обложка флэт уайта |
+| `/media/app/v3/raf-klassicheskii.mp4` | Pexels License | раф классический — тот же ролик, что `v2/raf-klassicheskii.mp4` (sha256 совпадает); 5 с |
+| `/media/app/v3/raf-klassicheskii-poster.jpg` | Pexels License | **новая** обложка: снята с кадра 0 (обложка v2 была другим кадром — ролик «прыгал» бы на старте) |
+| `/media/app/v3/raf-medovyi.mp4` | Mixkit Free License | раф медовый: мёд стекает с ложки, замедлено до 0,75×; самого рафа в кадре нет; 5,1 с |
+| `/media/app/v3/raf-medovyi-poster.jpg` | Mixkit Free License | обложка рафа медового |
+| `/media/app/v3/glavnaya.mp4` | Coverr License | главная, основной: молоко закручивается в тёмный кофе; 6 с |
+| `/media/app/v3/glavnaya-poster.jpg` | Coverr License | обложка главной (основной) |
+| `/media/app/v3/glavnaya-207.mp4` | Mixkit Free License | главная, запасной 1: завитки сливок, тёмный; 6 с |
+| `/media/app/v3/glavnaya-207-poster.jpg` | Mixkit Free License | обложка главной (запасной 1) |
+| `/media/app/v3/glavnaya-7517.mp4` | Coverr License | главная, запасной 2: зёрна в молоке, **светлый** (статус-бар над ним — на стороне kofe-app); 6 с |
+| `/media/app/v3/glavnaya-7517-poster.jpg` | Coverr License | обложка главной (запасной 2) |
+| `/media/app/v3/manifest.json` | — (описание, не медиа) | 11 записей на 10 роликов (`espresso.mp4` дважды); тест сверяет `file`, `poster`, `bytes`, `audio`, лицензию с папкой и таблицей |
+
 ## Журнал приёмки
 
 | Дата | Задача | Ветка | PR | Итог |
@@ -119,3 +161,4 @@ JSON-LD ссылок на них нет; service worker их не перехва
 | 2026-11-01 | `pages-style` — этап 3 редизайна по просьбе владельца «всё под один стиль»: `/ugolok` и `404.html` в стиле главной (тема v5, Geologica + Montserrat, шапка и подвал), тексты и талоны не менялись; `/legal/` — только `style.css` (HTML kofe-app байт в байт, sha256 style.css 95ba85af), запасной системный шрифт, `@media print`; style.css передаётся kofe-app (терминал oferta) | `worktree-pages-style` | #53 | принято, слит 01.11 |
 | 2026-11-02 | `glass` — зелёное «стекло» кнопок по приложению (решение владельца 02.11, заказ prilozhenie-kofe-main; значения — kofe-app 9206813 `glass.ts`, как есть): токены `--glass-*` в `:root`, `--glass-base-photo: 0.74` и `--btn-font` (Geologica) — одно место для смены; `.btn` — вариант plain 0,94 (кнопки сайта на белом), блик, низ, кромка, тени, нажатие 0,97 с пружиной, без backdrop-filter; заготовки `.btn.on-photo` / `.on-light-photo`; ghost и olive плоские, как в приложении; плавающая «меню» — зелёное стекло (основа photo), светлое матовое убрано; чипы по Chip.tsx (40, Montserrat 500, касание 48); 404 — те же токены (тест сверяет с главной); выбор объёма в меню не менялся (владелец «нет»); `tests/test_glass.py`, пределы веса +1 КБ (главная) и +3 КБ (/kk/, /en/) | `worktree-agent-aedb5e0b769597913` | #54 | принято, 199/0, оба --check ok; вид — посмотреть владельцу на телефоне |
 | 2026-11-02 | `glass-2` — все кнопки сайта объёмным стеклом своего тона (владелец 02.11 после #54: «многие всё ещё плоские»; «стеклянно и объёмно, не просто прозрачно»; кнопки и переключатели меню — тоже): общий слой `:where(…)` (основа, блик, низ, тень + inset, кромка кольцом тени, нажатие 0,97 с пружиной, без backdrop-filter), кнопка задаёт только `--tone-*`; тона в `:root`: зелёное (главная, маршрут, «меню», выбранные чипы, талон /ugolok), олива («Забронировать»), WhatsApp (#25D366 — белый логотип ~1,9:1, вопрос владельцу), светлое (ghost, звонок, «Меню» у точек, пилюля точки, невыбранные чипы, режим/язык меню, лупа, крестики) — значения светлого свои (в kofe-app объёмного светлого нет); главная, /kk/, /en/, текстовые меню (`glass_css` в генераторе), 404 и /ugolok — копии слоёв, тест сверяет дословно; пределы веса: главная сырой 250→253 КБ, /kk/ 78→80 КБ | `worktree-agent-aedb5e0b769597913` | #55 | принято, 200/0, оба --check ok; вид — владельцу на телефоне |
+| 2026-11-05 | `app-media-v3` — ролики v3 для kofe-app в `/media/app/v3/` (заказ prilozhenie-kofe-main, «да» владельца главному 05.11; заявка 76617): 10 роликов + 10 обложек `*-poster.jpg` + `manifest.json` байт в байт, 21 файл, 4 034 610 байт; H.264 720×1280 без звука, faststart; лицензии по файлу — Mixkit Free 6, Coverr 3, Pexels 1 (raf-klassicheskii = v2, новая обложка); latte теперь Mixkit; espresso в manifest дважды намеренно; manifest публичен (авторы стоков, внутренние заметки — kofe-app предупреждён); v1/v2 не тронуты; SW пропускает и .jpg, и .json (`test_perf` app_v3_*) | `worktree-app-media-v3` | #56 | принято, 203/0, оба --check ok |
