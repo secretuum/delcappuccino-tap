@@ -1,0 +1,57 @@
+{
+  "format": 1,
+  "updated": "2026-11-06",
+  "base": "https://tap.delcappuccino.kz/media/app/",
+  "home": {
+    "video": "v3/glavnaya.mp4",
+    "poster": "v3/glavnaya-poster.jpg",
+    "dark": true,
+    "drink": null
+  },
+  "default": {
+    "video": "v3/kapuchino.mp4",
+    "dark": false
+  },
+  "items": {
+    "эспрессо": {
+      "photo": "v3/espresso-poster.jpg",
+      "video": "v3/espresso.mp4",
+      "dark": true
+    },
+    "эспрессо двойной": {
+      "photo": "v3/espresso-poster.jpg",
+      "video": "v3/espresso.mp4",
+      "dark": true
+    },
+    "американо": {
+      "photo": "v3/amerikano-poster.jpg",
+      "video": "v3/amerikano.mp4",
+      "dark": true
+    },
+    "капучино": {
+      "photo": "v3/kapuchino-poster.jpg",
+      "video": "v3/kapuchino.mp4",
+      "dark": false
+    },
+    "латте": {
+      "photo": "v3/latte-poster.jpg",
+      "video": "v3/latte.mp4",
+      "dark": false
+    },
+    "флэт уайт": {
+      "photo": "v3/flet-uait-poster.jpg",
+      "video": "v3/flet-uait.mp4",
+      "dark": false
+    },
+    "раф классический": {
+      "photo": "v3/raf-klassicheskii-poster.jpg",
+      "video": "v3/raf-klassicheskii.mp4",
+      "dark": false
+    },
+    "раф медовый": {
+      "photo": "v3/raf-medovyi-poster.jpg",
+      "video": "v3/raf-medovyi.mp4",
+      "dark": false
+    }
+  }
+}

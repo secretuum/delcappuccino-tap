@@ -11,8 +11,15 @@ v3 (05.11.2026): 10 роликов + 10 обложек *-poster.jpg + manifest.j
 Ролик ≤ ~1 МБ, обложка ≤ ~200 КБ. manifest.json на сайте — публичный (manifest.public.json kofe-app, замена 05.11 по их
 просьбе): {"files": [...]}, по записи на ролик, только file / poster / license (название + ссылка на текст лицензии);
 полный manifest (авторы, исходники, заметки) — у kofe-app локально. espresso.mp4 — и «эспрессо», и «эспрессо двойной».
+menu-media.json (06.11.2026, задача M3 kofe-app «медиа приложения без iiko»): список «позиция меню → фото / ролик» в корне
+/media/app/, байт в байт из ~/kofe-design-export/media/menu-media/. Адрес постоянный, содержимое меняется — его будет читать
+сервер kofe-app. Формат 1 проверяется здесь своим кодом (как check.py «дизайна», он лежит вне репозитория и из тестов не
+вызывается), плюс каждый упомянутый файл лежит в media/app/ — офлайн-аналог check.py --online.
+Правило kofe-app 06.11: медиафайлы (*.mp4, *.jpg) в /media/app/ под тем же именем не перезаписываются — новая версия
+получает новое имя или папку v4/ (иначе телефоны и Cloudflare показывают старое). Сторож — PINNED (sha256 каждого файла).
+JSON (menu-media.json, v3/manifest.json) не закрепляем: адрес постоянный, содержимое меняется.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
-import collections, json, os, re, struct, unittest
+import collections, hashlib, json, os, re, struct, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APP = os.path.join(ROOT, 'media', 'app')
@@ -36,6 +43,53 @@ FILES_V3 = sorted(LICENSE_V3)
 POSTERS_V3 = [f[:-4] + '-poster.jpg' for f in FILES_V3]
 MAX_BYTES_V3 = 1024 * 1024       # ~1 МБ на ролик v3 (сейчас 224–464 КБ)
 MAX_POSTER_V3 = 200 * 1024       # ~200 КБ на обложку (сейчас 33–109 КБ)
+MENU_MEDIA = 'menu-media.json'   # список медиа меню (06.11.2026), адрес https://tap.delcappuccino.kz/media/app/menu-media.json
+ROOT_LIST = FILES + [MENU_MEDIA, 'v2', 'v3']   # состав корня media/app/ (новая папка v4/ — дописать сюда)
+# формат 1 menu-media.json — те же правила, что в check.py «дизайна» (~/kofe-design-export/media/menu-media/check.py)
+MM_BASE = 'https://tap.delcappuccino.kz/media/app/'
+MM_PATH = re.compile(r'^[a-z0-9][a-z0-9/_-]*\.(mp4|jpg)$')    # относительный путь латиницей, без «..», без пробелов
+MM_MAX = {'mp4': 1_000_000, 'jpg': 300_000}                    # байт, как в check.py: ролик до ~1 МБ, фото до ~300 КБ
+IMMUTABLE = ('.mp4', '.jpg', '.jpeg')   # медиа под тем же именем не перезаписываем; JSON (списки) меняются на месте
+# sha256 (первые 16 hex) каждого медиафайла в media/app/ — правило kofe-app 06.11: файл под тем же именем никогда не меняется.
+# Новый файл → добавить хэш сюда в том же PR. Удаление старого — только с «да» владельца (на него ссылаются старые сборки).
+PINNED = {
+    'menu-par.mp4': '108f640f5aeb5cb7',
+    'napitok-kapuchino.mp4': '06ff2f9a67597d5e',
+    'napitok-moloko.mp4': '9e7958ab2c1979ea',
+    'v2/amerikano.mp4': 'd88a2813f6a224d0',
+    'v2/espresso-dvoinoi.mp4': 'aa4bf734b593ea1c',
+    'v2/espresso.mp4': 'aa4bf734b593ea1c',
+    'v2/flet-uait.mp4': '2e56ad7e9b4bfccc',
+    'v2/gruppa-dopolnitelno.mp4': '31153ea6daf704f7',
+    'v2/gruppa-mod-kofe.mp4': '762cf77ef61b1540',
+    'v2/gruppa-moloko.mp4': '89f0f6086e9647e1',
+    'v2/gruppa-podacha.mp4': '258c39e2fba689a4',
+    'v2/gruppa-siropy.mp4': '899ff525f91a2020',
+    'v2/kapuchino.mp4': 'ebbab7f6f1a963b6',
+    'v2/latte.mp4': '61ba32a9f6d99d11',
+    'v2/raf-klassicheskii.mp4': 'f00500f7e0cc24af',
+    'v2/raf-medovyi.mp4': 'f9ab464393aa50a2',
+    'v3/amerikano.mp4': '6c3c600c688964f2',
+    'v3/amerikano-poster.jpg': '7a2ebfb3ae37f7f8',
+    'v3/espresso.mp4': '68bf0373557c7169',
+    'v3/espresso-poster.jpg': 'c5273f3c60a96230',
+    'v3/flet-uait.mp4': '0476d6d61c057382',
+    'v3/flet-uait-poster.jpg': '0f4c6e1fb910d744',
+    'v3/glavnaya-207.mp4': 'c05758206a7e0d9b',
+    'v3/glavnaya-207-poster.jpg': '6584813b0b2c578b',
+    'v3/glavnaya-7517.mp4': '2dd8c3bacde815ba',
+    'v3/glavnaya-7517-poster.jpg': 'f164c49be149102b',
+    'v3/glavnaya.mp4': '3f49c064dbe395f2',
+    'v3/glavnaya-poster.jpg': '61dd7d0711c827cf',
+    'v3/kapuchino.mp4': 'b8828b07d66da676',
+    'v3/kapuchino-poster.jpg': '8395d8ff54252146',
+    'v3/latte.mp4': '9a3c5fdcbfc4f922',
+    'v3/latte-poster.jpg': 'a5295a861ad758c1',
+    'v3/raf-klassicheskii.mp4': 'f00500f7e0cc24af',
+    'v3/raf-klassicheskii-poster.jpg': 'cb01e0195f62b5c0',
+    'v3/raf-medovyi.mp4': '733f99c7659c6f9d',
+    'v3/raf-medovyi-poster.jpg': '9af4b0279db05066',
+}
 REF = r'media/app'               # подпапки media/app/v2/, v3/ ловит тот же шаблон
 SKIP_DIRS = {'tests', 'docs', 'media', 'node_modules', '__pycache__'}   # не страницы сайта (docs описывает адреса)
 SKIP_FILES = {'sw.js'}           # service worker сам называет /media/app/ — чтобы их пропускать (проверка ниже)
@@ -60,6 +114,79 @@ def atoms(data):
         out.append((kind.decode('latin-1'), i, i + size))
         i += size
     return out
+
+
+def mm_norm(name):
+    """ключ позиции, как check.py и app/src/domain/covers.ts: нижний регистр, ё/э → е, дефисы → пробел, пробелы схлопнуты"""
+    return re.sub(r'\s+', ' ', re.sub(r'[-‐–]', ' ', re.sub(r'[ёэ]', 'е', name.lower()))).strip()
+
+
+def menu_media_errors(doc):
+    """формат 1 menu-media.json (те же правила, что check.py «дизайна»): ([ошибки], [упомянутые файлы])"""
+    errors, files = [], []
+
+    def path(where, v, ext, need=True):
+        if v is None and not need:
+            return
+        if not isinstance(v, str) or not MM_PATH.match(v) or '..' in v or not v.endswith('.' + ext):
+            errors.append('%s: путь «%s» — нужен относительный путь .%s латиницей (например v3/latte.%s)' % (where, v, ext, ext))
+        else:
+            files.append(v)
+
+    def dark(where, v):
+        if not isinstance(v, bool):
+            errors.append('%s.dark: нужно true или false' % where)
+
+    if not isinstance(doc, dict):
+        return ['корень: нужен объект'], []
+    if doc.get('format') != 1:
+        errors.append('format: должно быть 1')
+    if doc.get('base') != MM_BASE:
+        errors.append('base: должно быть ' + MM_BASE)
+    if not isinstance(doc.get('updated'), str) or not re.match(r'^\d{4}-\d{2}-\d{2}$', doc['updated']):
+        errors.append('updated: дата ГГГГ-ММ-ДД')
+    home = doc.get('home')
+    if not isinstance(home, dict):
+        errors.append('home: нужен объект')
+        home = {}
+    else:
+        path('home.video', home.get('video'), 'mp4')
+        path('home.poster', home.get('poster'), 'jpg', need=False)
+        dark('home', home.get('dark'))
+        if home.get('drink') is not None and not isinstance(home.get('drink'), str):
+            errors.append('home.drink: название напитка строкой или null')
+    default = doc.get('default')
+    if default is not None:
+        if not isinstance(default, dict):
+            errors.append('default: объект или null')
+        else:
+            path('default.video', default.get('video'), 'mp4')
+            dark('default', default.get('dark'))
+    items = doc.get('items')
+    if not isinstance(items, dict) or not items:
+        errors.append('items: нужен непустой объект «название → медиа»')
+        items = {}
+    seen = {}
+    for name, m in items.items():
+        key = mm_norm(name)
+        if key in seen:
+            errors.append('items «%s»: совпадает с «%s» после нормализации' % (name, seen[key]))
+        seen[key] = name
+        if not isinstance(m, dict) or not (m.get('photo') or m.get('video')):
+            errors.append('items «%s»: нужен photo и/или video' % name)
+            continue
+        path('items «%s».photo' % name, m.get('photo'), 'jpg', need=False)
+        path('items «%s».video' % name, m.get('video'), 'mp4', need=False)
+        dark('items «%s»' % name, m.get('dark'))
+        extra = set(m) - {'photo', 'video', 'dark'}
+        if extra:
+            errors.append('items «%s»: лишние поля %s' % (name, sorted(extra)))
+    hd = home.get('drink')
+    if isinstance(hd, str):
+        rec = items.get(seen.get(mm_norm(hd)))
+        if not isinstance(rec, dict) or not rec.get('video'):
+            errors.append('home.drink «%s»: у напитка должна быть запись с video в items' % hd)
+    return errors, sorted(set(files))
 
 
 def site_files():
@@ -149,14 +276,112 @@ class TestAppMediaFiles(unittest.TestCase):
             self.assertNotIn(b'soun', handlers, '%s: есть звуковая дорожка (нужно -an)' % f)
             self.assertIn(b'avc1', data[a:b], '%s: не H.264 (avc1)' % f)
 
+    def test_root_listing(self):
+        self.assertEqual(sorted(os.listdir(APP)), sorted(ROOT_LIST),
+                         'media/app/: только три ролика v1, menu-media.json и папки v2/, v3/ (новая папка v4/ — дописать в ROOT_LIST)')
+
+
+class TestAppMediaImmutable(unittest.TestCase):
+    """правило kofe-app 06.11.2026: медиафайл в /media/app/ под тем же именем не перезаписывается — телефоны и Cloudflare
+    держат старую копию. Новая версия — новое имя (latte-2.mp4) или новая папка (v4/latte.mp4)."""
+
+    def found(self):
+        out = {}
+        for d, dirs, files in os.walk(APP):
+            for f in files:
+                if f.lower().endswith(IMMUTABLE):
+                    rel = os.path.relpath(os.path.join(d, f), APP).replace(os.sep, '/')
+                    with open(os.path.join(d, f), 'rb') as fh:
+                        out[rel] = hashlib.sha256(fh.read()).hexdigest()[:16]
+        return out
+
+    def test_media_not_overwritten(self):
+        found = self.found()
+        changed = {f: 'было %s, стало %s' % (PINNED[f], h) for f, h in found.items() if f in PINNED and h != PINNED[f]}
+        self.assertEqual(changed, {}, 'media/app/: файл перезаписан под тем же именем — верните прежний; '
+                                      'новая версия — новое имя или v4/ (правило kofe-app 06.11)')
+        self.assertEqual(sorted(set(found) - set(PINNED)), [],
+                         'media/app/: файлы без закреплённого sha256 — добавьте хэш в PINNED в том же PR '
+                         '(и проверьте, что это новое имя, а не перезапись: новая версия — новое имя или v4/)')
+        self.assertEqual(sorted(set(PINNED) - set(found)), [],
+                         'media/app/: пропали закреплённые файлы — на них ссылаются установленные сборки и кэш; '
+                         'удалять только с «да» владельца (и тогда убрать из PINNED). Новая версия — новое имя или v4/')
+
+    def test_json_not_pinned(self):
+        # списки (menu-media.json, v3/manifest.json) меняются на постоянном адресе — их сторож не держит
+        for f in PINNED:
+            self.assertTrue(f.endswith(IMMUTABLE), 'PINNED: %s — закрепляем только медиа (mp4/jpg), не JSON' % f)
+
+
+class TestMenuMedia(unittest.TestCase):
+    """menu-media.json — список «позиция меню → фото / ролик» для kofe-app (06.11.2026). Адрес постоянный, содержимое
+    меняется; исходник ведёт «дизайн», перед выкладкой — их check.py --online (вручную, из тестов не вызываем)."""
+
+    def doc(self):
+        with open(os.path.join(APP, MENU_MEDIA), encoding='utf-8') as fh:
+            return json.load(fh)
+
+    def test_format_1(self):
+        errors, files = menu_media_errors(self.doc())
+        self.assertEqual(errors, [], 'media/app/menu-media.json: формат 1 нарушен')
+        self.assertTrue(files, 'menu-media.json: ни одного файла')
+
+    def test_files_in_repo(self):
+        # офлайн-аналог check.py --online: каждый упомянутый файл лежит в media/app/, нужного типа, в пределах размера,
+        # и закреплён в PINNED (значит, под этим именем уже не поменяется)
+        _, files = menu_media_errors(self.doc())
+        for f in files:
+            p = os.path.join(APP, *f.split('/'))
+            self.assertTrue(os.path.isfile(p), 'menu-media.json ссылается на %s — файла нет в media/app/' % f)
+            self.assertIn(f, PINNED, 'menu-media.json: %s не закреплён в PINNED' % f)
+            ext = f.rsplit('.', 1)[1]
+            with open(p, 'rb') as fh:
+                head = fh.read(12)
+            if ext == 'jpg':
+                self.assertTrue(head.startswith(b'\xff\xd8\xff'), '%s: не JPEG' % f)
+            else:
+                self.assertEqual(head[4:8], b'ftyp', '%s: не MP4' % f)
+            self.assertLessEqual(os.path.getsize(p), MM_MAX[ext], '%s: больше, чем пропустит check.py' % f)
+
+    def test_checker_catches_errors(self):
+        # своя проверка не пустая: каждая порча находится
+        good = self.doc()
+        self.assertEqual(menu_media_errors(good)[0], [])
+        name = next(iter(good['items']))
+
+        def spoiled(fn):
+            d = json.loads(json.dumps(good))
+            fn(d)
+            return menu_media_errors(d)[0]
+
+        for why, fn in [
+            ('format 2', lambda d: d.update(format=2)),
+            ('чужой base', lambda d: d.update(base='https://example.com/')),
+            ('дата', lambda d: d.update(updated='06.11.2026')),
+            ('«..» в пути', lambda d: d['home'].update(video='../v3/latte.mp4')),
+            ('кириллица в пути', lambda d: d['home'].update(video='v3/латте.mp4')),
+            ('абсолютный путь', lambda d: d['home'].update(video='/media/app/v3/latte.mp4')),
+            ('jpg вместо mp4', lambda d: d.update(default={'video': 'v3/latte-poster.jpg', 'dark': False})),
+            ('dark строкой', lambda d: d['items'][name].update(dark='true')),
+            ('лишнее поле', lambda d: d['items'][name].update(url='x')),
+            ('запись без photo и video', lambda d: d['items'].update({name: {'dark': False}})),
+            ('повтор после нормализации', lambda d: d['items'].update({name.upper(): d['items'][name]})),
+            ('home.drink без записи', lambda d: d['home'].update(drink='нет такого')),
+            ('пустые items', lambda d: d.update(items={})),
+        ]:
+            self.assertNotEqual(spoiled(fn), [], 'проверка menu-media.json пропустила: %s' % why)
+
 
 class TestAppMediaHidden(unittest.TestCase):
     def test_no_links_from_site(self):
         files = list(site_files())
         for must in ('index.html', 'sitemap.xml', 'llms.txt', 'tools/seo_jsonld.py'):
             self.assertIn(must, files)
-        for addr in ('/media/app/v2/latte.mp4', '/media/app/v3/latte.mp4', '/media/app/v3/latte-poster.jpg', 'media/app/v3/manifest.json'):
-            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/, v3/')
+        for addr in ('/media/app/v2/latte.mp4', '/media/app/v3/latte.mp4', '/media/app/v3/latte-poster.jpg', 'media/app/v3/manifest.json',
+                     MM_BASE + MENU_MEDIA, '/media/app/menu-media.json'):
+            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/, v3/, и menu-media.json')
+        # сам menu-media.json называет base …/media/app/ — он лежит в media/ (SKIP_DIRS), страницей сайта не считается
+        self.assertNotIn(os.path.join('media', 'app', MENU_MEDIA), files)
         for p in files:
             self.assertNotRegex(read(p), REF, '%s ссылается на media/app/ (сток Mixkit — только прямые адреса)' % p)
 
@@ -175,7 +400,8 @@ class TestAppMediaHidden(unittest.TestCase):
         precache = src[src.index('var PRECACHE'):src.index('];', src.index('var PRECACHE'))]
         self.assertNotIn('media/app', precache, 'media/app/ не в PRECACHE')
         # v2, v3 — подпапки: выход по префиксу '/media/app/' (indexOf === 0) покрывает и их, вместе с обложками .jpg и
-        # manifest.json (без него SW взял бы .jpg в кэш, а .json — «сначала сеть»); поведение в node — test_perf, app_v2_*, app_v3_*
+        # manifest.json (без него SW взял бы .jpg в кэш, а .json — «сначала сеть»), и menu-media.json в корне;
+        # поведение в node — test_perf, app_v2_*, app_v3_*, app_menu_media
         self.assertNotRegex(src, r'media/app/v\d', 'sw.js: для v2/, v3/ отдельных правил не нужно')
 
     def test_documented(self):
@@ -187,6 +413,14 @@ class TestAppMediaHidden(unittest.TestCase):
             self.assertIn('`/media/app/v2/%s`' % f, doc, 'адрес v2/%s не описан в docs/COORDINATION.md' % f)
         self.assertIn('latte.mp4', doc)
         self.assertIn('права не проверены', doc, 'latte.mp4 v2 — пометка «права не проверены»')
+
+    def test_documented_menu_media(self):
+        doc = read('docs', 'COORDINATION.md')
+        sec = doc[doc.index('### Список медиа меню'):doc.index('## Журнал приёмки')]
+        self.assertIn('`%s%s`' % (MM_BASE, MENU_MEDIA), sec, 'постоянный адрес menu-media.json не описан')
+        self.assertIn('check.py', sec)
+        self.assertIn('под тем же именем никогда не перезаписывается', sec, 'правило «не перезаписывать под тем же именем» не описано')
+        self.assertIn('Polish', sec, 'Cloudflare Polish для /media/app/* — решение владельца, отметка в docs')
 
     def test_documented_v3(self):
         # таблица v3 — одна строка на файл: адрес, лицензия (обложка — как у её ролика), заметка
