@@ -54,6 +54,9 @@ LLMS = os.path.join(ROOT, 'llms.txt')
 SITE = 'https://tap.delcappuccino.kz/'
 MENU_URL = SITE + 'menyu'
 ORDER_URL = 'https://delcappuccino.kz/'      # заказ онлайн и приложение
+# превью ссылки в мессенджерах и соцсетях — та же картинка, что у главной (assets/photo_01.jpg, 1200×767)
+OG_IMAGE = ('<meta property="og:image" content="%sassets/photo_01.jpg">\n<meta property="og:image:width" content="1200">\n'
+            '<meta property="og:image:height" content="767">\n<meta name="twitter:card" content="summary_large_image">' % SITE)
 MENU_ARRAYS = ('MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT')
 DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 MARK = '<!-- schema.org: организация, точки из BRANCHES и меню с ценами — tools/seo_jsonld.py, руками не править -->'
@@ -655,6 +658,7 @@ def menu_page(html, lang='ru'):
 <meta property="og:title" content="%(og_title)s">
 <meta property="og:description" content="%(og_description)s">
 <meta property="og:locale" content="%(locale)s">
+%(og_image)s
 %(analytics)s<!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 %(fonts)s
@@ -725,7 +729,7 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
        'tokens': tokens_css(html), 'glass': glass_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
        'lang_label': H.escape(i18n()['kk' if lang == 'kk' else 'en']['page']['lang_label']) if lang != 'ru' else 'Язык',
-       'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID}
+       'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
 
 
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
@@ -942,7 +946,7 @@ def lang_page(html, lang):
 <meta property="og:title" content="%(title)s">
 <meta property="og:description" content="%(description)s">
 <meta property="og:locale" content="%(locale)s">
-<meta property="og:image" content="%(site)sassets/photo_01.jpg">
+%(og_image)s
 %(analytics)s%(intro_js)s
 <!-- Страница собрана tools/seo_jsonld.py: тексты — tools/pages_i18n.json, факты — BRANCHES и главная, стили — из <style> главной. Руками не править -->
 <style>
@@ -1071,7 +1075,7 @@ def lang_page(html, lang):
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
-           locale=LOCALE[lang], site=SITE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
+           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
@@ -1351,7 +1355,7 @@ def loc_cards(html):
                  icon_link('ib', 'tel:' + b['phone'], 'Позвонить', ev('loc_call'), 'phone', blank=False),
                  icon_link('ib wa', wa_link(html, b), 'WhatsApp', ev('loc_wa'), 'wa')]
         if b['menu']:
-            links.append('<a class="pill" href="#" onclick="%s">Меню</a>' % a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu'])))
+            links.append('<a class="pill" href="%s" onclick="%s">Меню</a>' % ('#menu-togo' if b['menu'] == 'togo' else '#menu', a("event.preventDefault();track('loc_menu',{branch:'%s'});openMenu('%s')" % (n, b['menu']))))
         out.append('    <div class="loc-card">\n      <small>%s</small>\n      <h3>%s</h3>\n'
                    '%s%s      <div class="loc-links">\n        %s\n      </div>\n    </div>'
                    % (t(short(b)), t(b['addr']), loc_meta(t(b['hours']), t(b['note']) if b['note'] else ''), card_extra(html, b, 'ru'),

@@ -389,7 +389,7 @@ class TestPage(unittest.TestCase):
         cap = re.search(r'<p class="grill-cap">(.*?)</p>', win, re.S)
         self.assertIsNotNone(cap, 'подпись — внутри окна огненной рамки')
         for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
-                     '<a class="promo-a" href="#"', 'смотреть в меню'):
+                     '<a class="promo-a" href="#menu"', 'смотреть в меню'):
             self.assertIn(need, cap.group(1))
         self.assertNotIn('grill-ticker', win, 'бегущая строка — не в огне')
         # строка — полосой под обеими плитками на всю ширину контейнера, только там, где есть «Курица гриль»
