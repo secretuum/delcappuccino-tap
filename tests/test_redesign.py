@@ -427,7 +427,7 @@ class TestPage(unittest.TestCase):
 
     def test_whatsapp_green(self):
         css = style(self.pages['ru'])
-        self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#128C7E', 'тёмно-зелёный WhatsApp (09.11): белый логотип читается')
+        self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#25D366', 'цвет WhatsApp — фирменный (владелец 31.10; 09.11 вернул после пробы #128C7E)')
         for l, html in self.pages.items():
             # 2.11: стекло в цвете WhatsApp (тон --glass-wa-*, основа = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
             wa = re.search(r'(?:^|\})\.ib\.wa\{([^}]*)\}', style(html)).group(1)
