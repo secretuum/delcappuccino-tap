@@ -11,6 +11,9 @@ v3 (05.11.2026): 10 роликов + 10 обложек *-poster.jpg + manifest.j
 Ролик ≤ ~1 МБ, обложка ≤ ~200 КБ. manifest.json на сайте — публичный (manifest.public.json kofe-app, замена 05.11 по их
 просьбе): {"files": [...]}, по записи на ролик, только file / poster / license (название + ссылка на текст лицензии);
 полный manifest (авторы, исходники, заметки) — у kofe-app локально. espresso.mp4 — и «эспрессо», и «эспрессо двойной».
+v4 (09.11.2026): те же 10 роликов + 10 обложек + публичный manifest.json в /media/app/v4/ (~/kofe-design-export/media/video-v4/),
+байт в байт; «дизайн» пересобрал их из оригиналов стоков в 1080×1920 (владелец о v3: «слишком сжатые, пиксельные»). Стоки,
+страницы и лицензии те же, что у v3. Ролик ≤ 3,2 МБ, обложка ≤ 500 КБ (как в check.py «дизайна»). v1–v3 не трогаем.
 menu-media.json (06.11.2026, задача M3 kofe-app «медиа приложения без iiko»): список «позиция меню → фото / ролик» в корне
 /media/app/, байт в байт из ~/kofe-design-export/media/menu-media/. Адрес постоянный, содержимое меняется — его будет читать
 сервер kofe-app. Формат 1 проверяется здесь своим кодом (как check.py «дизайна», он лежит вне репозитория и из тестов не
@@ -43,12 +46,18 @@ FILES_V3 = sorted(LICENSE_V3)
 POSTERS_V3 = [f[:-4] + '-poster.jpg' for f in FILES_V3]
 MAX_BYTES_V3 = 1024 * 1024       # ~1 МБ на ролик v3 (сейчас 224–464 КБ)
 MAX_POSTER_V3 = 200 * 1024       # ~200 КБ на обложку (сейчас 33–109 КБ)
+V4 = os.path.join(APP, 'v4')
+LICENSE_V4 = dict(LICENSE_V3)    # v4 — те же 10 роликов из тех же стоков (страницы и лицензии сверены с manifest kofe-app 09.11)
+FILES_V4 = sorted(LICENSE_V4)
+POSTERS_V4 = [f[:-4] + '-poster.jpg' for f in FILES_V4]
+MAX_BYTES_V4 = 3_200_000         # байт, как в check.py «дизайна»: ролик v4 1080×1920 до ~3,2 МБ (сейчас 1,01–2,59 МБ)
+MAX_POSTER_V4 = 500_000          # байт, обложка 1080×1920 до ~500 КБ (сейчас 66–212 КБ)
 MENU_MEDIA = 'menu-media.json'   # список медиа меню (06.11.2026), адрес https://tap.delcappuccino.kz/media/app/menu-media.json
-ROOT_LIST = FILES + [MENU_MEDIA, 'v2', 'v3']   # состав корня media/app/ (новая папка v4/ — дописать сюда)
+ROOT_LIST = FILES + [MENU_MEDIA, 'v2', 'v3', 'v4']   # состав корня media/app/ (новая папка v5/ — дописать сюда)
 # формат 1 menu-media.json — те же правила, что в check.py «дизайна» (~/kofe-design-export/media/menu-media/check.py)
 MM_BASE = 'https://tap.delcappuccino.kz/media/app/'
 MM_PATH = re.compile(r'^[a-z0-9][a-z0-9/_-]*\.(mp4|jpg)$')    # относительный путь латиницей, без «..», без пробелов
-MM_MAX = {'mp4': 1_000_000, 'jpg': 300_000}                    # байт, как в check.py: ролик до ~1 МБ, фото до ~300 КБ
+MM_MAX = {'mp4': 3_200_000, 'jpg': 500_000}                    # байт, как в check.py (с 09.11, под v4): ролик до ~3,2 МБ, фото до ~500 КБ
 IMMUTABLE = ('.mp4', '.jpg', '.jpeg')   # медиа под тем же именем не перезаписываем; JSON (списки) меняются на месте
 # sha256 (первые 16 hex) каждого медиафайла в media/app/ — правило kofe-app 06.11: файл под тем же именем никогда не меняется.
 # Новый файл → добавить хэш сюда в том же PR. Удаление старого — только с «да» владельца (на него ссылаются старые сборки).
@@ -89,8 +98,28 @@ PINNED = {
     'v3/raf-klassicheskii-poster.jpg': 'cb01e0195f62b5c0',
     'v3/raf-medovyi.mp4': '733f99c7659c6f9d',
     'v3/raf-medovyi-poster.jpg': '9af4b0279db05066',
+    'v4/amerikano.mp4': '9f716482a8a12028',
+    'v4/amerikano-poster.jpg': '98efa092a6073c2a',
+    'v4/espresso.mp4': '22c6a0d651abe8fe',
+    'v4/espresso-poster.jpg': 'ae965177c21bda6e',
+    'v4/flet-uait.mp4': '2a299c9b72f77de0',
+    'v4/flet-uait-poster.jpg': 'b4cabb5ad45bb9de',
+    'v4/glavnaya-207.mp4': '5e185dc84fd73d2a',
+    'v4/glavnaya-207-poster.jpg': 'd158840617374922',
+    'v4/glavnaya-7517.mp4': '23d0599044adbd89',
+    'v4/glavnaya-7517-poster.jpg': 'c491206127ff95eb',
+    'v4/glavnaya.mp4': '7f90b71b36879c01',
+    'v4/glavnaya-poster.jpg': '2f63ca9b2c53a771',
+    'v4/kapuchino.mp4': '5c6f4dd3d933b8d8',
+    'v4/kapuchino-poster.jpg': 'db07a10b9f8a5812',
+    'v4/latte.mp4': 'f74f792aa08c0a48',
+    'v4/latte-poster.jpg': '779bd1d82f5798e7',
+    'v4/raf-klassicheskii.mp4': '6e42f0b4d82c74f4',
+    'v4/raf-klassicheskii-poster.jpg': 'a265a4eedeaecf4a',
+    'v4/raf-medovyi.mp4': 'f02ed37ca2f91418',
+    'v4/raf-medovyi-poster.jpg': 'd255b3dc58de14e9',
 }
-REF = r'media/app'               # подпапки media/app/v2/, v3/ ловит тот же шаблон
+REF = r'media/app'               # подпапки media/app/v2/, v3/, v4/ ловит тот же шаблон
 SKIP_DIRS = {'tests', 'docs', 'media', 'node_modules', '__pycache__'}   # не страницы сайта (docs описывает адреса)
 SKIP_FILES = {'sw.js'}           # service worker сам называет /media/app/ — чтобы их пропускать (проверка ниже)
 
@@ -234,34 +263,55 @@ class TestAppMediaFiles(unittest.TestCase):
             self.assertGreater(len(data), 10 * 1024, 'media/app/v3/%s подозрительно мала' % f)
             self.assertLessEqual(len(data), MAX_POSTER_V3, 'media/app/v3/%s: %d байт > ~200 КБ' % (f, len(data)))
 
-    def test_v3_manifest(self):
+    def test_v4_present_and_small(self):
+        self.assertEqual(sorted(os.listdir(V4)), sorted(FILES_V4 + POSTERS_V4 + ['manifest.json']),
+                         'media/app/v4/: только 10 роликов, 10 обложек и manifest.json (без полного manifest, README, '
+                         'contact-sheet, comparison)')
+        for f in FILES_V4:
+            size = os.path.getsize(os.path.join(V4, f))
+            self.assertGreater(size, 300 * 1024, 'media/app/v4/%s подозрительно мал для 1080×1920' % f)
+            self.assertLessEqual(size, MAX_BYTES_V4, 'media/app/v4/%s: %d байт > ~3,2 МБ' % (f, size))
+        for f in POSTERS_V4:
+            with open(os.path.join(V4, f), 'rb') as fh:
+                data = fh.read()
+            self.assertTrue(data.startswith(b'\xff\xd8\xff'), 'media/app/v4/%s: не JPEG (нет сигнатуры FFD8)' % f)
+            self.assertTrue(data.endswith(b'\xff\xd9'), 'media/app/v4/%s: JPEG обрезан (нет FFD9 в конце)' % f)
+            self.assertGreater(len(data), 10 * 1024, 'media/app/v4/%s подозрительно мала' % f)
+            self.assertLessEqual(len(data), MAX_POSTER_V4, 'media/app/v4/%s: %d байт > ~500 КБ' % (f, len(data)))
+
+    def check_public_manifest(self, folder, ver, files, licenses):
         # публичный manifest: {"files": [{file, poster, license}]}, по одной записи на ролик (эспрессо и эспрессо
         # двойной — один файл и одна запись); размер и звук проверяются по самим файлам (тесты выше и ниже)
-        path = os.path.join(V3, 'manifest.json')
-        with open(path, encoding='utf-8') as fh:
+        with open(os.path.join(folder, 'manifest.json'), encoding='utf-8') as fh:
             text = fh.read()
         for word in PRIVATE_V3:   # assertFalse, не assertNotIn: текст файла (с именами авторов) в сообщение не выводим
-            self.assertFalse(word in text, 'media/app/v3/manifest.json: «%s» — из полного manifest kofe-app, на сайт не выкладываем' % word)
+            self.assertFalse(word in text, 'media/app/%s/manifest.json: «%s» — из полного manifest kofe-app, на сайт не выкладываем' % (ver, word))
         root = json.loads(text)
-        self.assertIsInstance(root, dict, 'manifest: корень — объект {"files": [...]}')
-        self.assertEqual(sorted(root), ['files'], 'manifest: в корне только ключ files')
+        self.assertIsInstance(root, dict, 'manifest %s: корень — объект {"files": [...]}' % ver)
+        self.assertEqual(sorted(root), ['files'], 'manifest %s: в корне только ключ files' % ver)
         entries = root['files']
         self.assertIsInstance(entries, list)
         counts = collections.Counter(e.get('file') for e in entries)
-        self.assertEqual(sorted(counts), FILES_V3, 'manifest описывает не все ролики v3 (или чужие)')
-        self.assertEqual({f: n for f, n in counts.items() if n > 1}, {}, 'manifest: ролик записан дважды')
+        self.assertEqual(sorted(counts), files, 'manifest описывает не все ролики %s (или чужие)' % ver)
+        self.assertEqual({f: n for f, n in counts.items() if n > 1}, {}, 'manifest %s: ролик записан дважды' % ver)
         for e in entries:
             f = e['file']
-            self.assertEqual(sorted(e), ['file', 'license', 'poster'], 'manifest: %s — только file, poster, license' % f)
-            self.assertEqual(e['poster'], f[:-4] + '-poster.jpg', 'manifest: обложка %s' % f)
-            self.assertTrue(os.path.isfile(os.path.join(V3, e['poster'])), 'manifest: обложки %s нет в папке' % e['poster'])
-            stock = LICENSE_V3[f]
-            self.assertIn(stock, e['license'], 'manifest: лицензия %s не %s' % (f, stock))
-            self.assertIn(LICENSE_URL[stock], e['license'], 'manifest: у %s нет ссылки на текст лицензии %s' % (f, LICENSE_URL[stock]))
+            self.assertEqual(sorted(e), ['file', 'license', 'poster'], 'manifest %s: %s — только file, poster, license' % (ver, f))
+            self.assertEqual(e['poster'], f[:-4] + '-poster.jpg', 'manifest %s: обложка %s' % (ver, f))
+            self.assertTrue(os.path.isfile(os.path.join(folder, e['poster'])), 'manifest %s: обложки %s нет в папке' % (ver, e['poster']))
+            stock = licenses[f]
+            self.assertIn(stock, e['license'], 'manifest %s: лицензия %s не %s' % (ver, f, stock))
+            self.assertIn(LICENSE_URL[stock], e['license'], 'manifest %s: у %s нет ссылки на текст лицензии %s' % (ver, f, LICENSE_URL[stock]))
+
+    def test_v3_manifest(self):
+        self.check_public_manifest(V3, 'v3', FILES_V3, LICENSE_V3)
+
+    def test_v4_manifest(self):
+        self.check_public_manifest(V4, 'v4', FILES_V4, LICENSE_V4)
 
     def test_mp4_faststart_video_only(self):
         # moov до mdat (+faststart: iPhone начинает играть, не дожидаясь конца файла); дорожка видео есть, звука нет
-        for f in FILES + ['v2/' + x for x in FILES_V2] + ['v3/' + x for x in FILES_V3]:
+        for f in FILES + ['v2/' + x for x in FILES_V2] + ['v3/' + x for x in FILES_V3] + ['v4/' + x for x in FILES_V4]:
             with open(os.path.join(APP, f), 'rb') as fh:
                 data = fh.read()
             top = atoms(data)
@@ -278,7 +328,7 @@ class TestAppMediaFiles(unittest.TestCase):
 
     def test_root_listing(self):
         self.assertEqual(sorted(os.listdir(APP)), sorted(ROOT_LIST),
-                         'media/app/: только три ролика v1, menu-media.json и папки v2/, v3/ (новая папка v4/ — дописать в ROOT_LIST)')
+                         'media/app/: только три ролика v1, menu-media.json и папки v2/, v3/, v4/ (новая папка v5/ — дописать в ROOT_LIST)')
 
 
 class TestAppMediaImmutable(unittest.TestCase):
@@ -378,8 +428,9 @@ class TestAppMediaHidden(unittest.TestCase):
         for must in ('index.html', 'sitemap.xml', 'llms.txt', 'tools/seo_jsonld.py'):
             self.assertIn(must, files)
         for addr in ('/media/app/v2/latte.mp4', '/media/app/v3/latte.mp4', '/media/app/v3/latte-poster.jpg', 'media/app/v3/manifest.json',
-                     MM_BASE + MENU_MEDIA, '/media/app/menu-media.json'):
-            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/, v3/, и menu-media.json')
+                     '/media/app/v4/latte.mp4', '/media/app/v4/latte-poster.jpg', 'media/app/v4/manifest.json',
+                     MM_BASE + 'v4/glavnaya.mp4', MM_BASE + MENU_MEDIA, '/media/app/menu-media.json'):
+            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/, v3/, v4/, и menu-media.json')
         # сам menu-media.json называет base …/media/app/ — он лежит в media/ (SKIP_DIRS), страницей сайта не считается
         self.assertNotIn(os.path.join('media', 'app', MENU_MEDIA), files)
         for p in files:
@@ -399,10 +450,10 @@ class TestAppMediaHidden(unittest.TestCase):
         self.assertLess(m.start(), handler.index('respondWith'), 'выход для /media/app/ — до любого respondWith')
         precache = src[src.index('var PRECACHE'):src.index('];', src.index('var PRECACHE'))]
         self.assertNotIn('media/app', precache, 'media/app/ не в PRECACHE')
-        # v2, v3 — подпапки: выход по префиксу '/media/app/' (indexOf === 0) покрывает и их, вместе с обложками .jpg и
+        # v2, v3, v4 — подпапки: выход по префиксу '/media/app/' (indexOf === 0) покрывает и их, вместе с обложками .jpg и
         # manifest.json (без него SW взял бы .jpg в кэш, а .json — «сначала сеть»), и menu-media.json в корне;
-        # поведение в node — test_perf, app_v2_*, app_v3_*, app_menu_media
-        self.assertNotRegex(src, r'media/app/v\d', 'sw.js: для v2/, v3/ отдельных правил не нужно')
+        # поведение в node — test_perf, app_v2_*, app_v3_*, app_v4_*, app_menu_media
+        self.assertNotRegex(src, r'media/app/v\d', 'sw.js: для v2/, v3/, v4/ отдельных правил не нужно')
 
     def test_documented(self):
         doc = read('docs', 'COORDINATION.md')
@@ -422,21 +473,30 @@ class TestAppMediaHidden(unittest.TestCase):
         self.assertIn('под тем же именем никогда не перезаписывается', sec, 'правило «не перезаписывать под тем же именем» не описано')
         self.assertIn('Polish', sec, 'Cloudflare Polish для /media/app/* — решение владельца, отметка в docs')
 
-    def test_documented_v3(self):
-        # таблица v3 — одна строка на файл: адрес, лицензия (обложка — как у её ролика), заметка
+    def check_documented(self, ver, files, posters, licenses):
+        # таблица папки — одна строка на файл: адрес, лицензия (обложка — как у её ролика), заметка
         doc = read('docs', 'COORDINATION.md')
         rows = {}
         for line in doc.splitlines():
-            m = re.match(r'\| `/media/app/v3/([^`]+)` \|', line)
+            m = re.match(r'\| `/media/app/%s/([^`]+)` \|' % ver, line)
             if m:
-                self.assertNotIn(m.group(1), rows, 'v3/%s описан в таблице дважды' % m.group(1))
+                self.assertNotIn(m.group(1), rows, '%s/%s описан в таблице дважды' % (ver, m.group(1)))
                 rows[m.group(1)] = line
-        self.assertEqual(sorted(rows), sorted(FILES_V3 + POSTERS_V3 + ['manifest.json']), 'таблица v3: по строке на каждый файл папки')
-        for f, lic in LICENSE_V3.items():
+        self.assertEqual(sorted(rows), sorted(files + posters + ['manifest.json']), 'таблица %s: по строке на каждый файл папки' % ver)
+        for f, lic in licenses.items():
             for name in (f, f[:-4] + '-poster.jpg'):
-                self.assertIn(DOC_LICENSE[lic], rows[name], 'v3/%s: в таблице не та лицензия (нужна %s)' % (name, DOC_LICENSE[lic]))
+                self.assertIn(DOC_LICENSE[lic], rows[name], '%s/%s: в таблице не та лицензия (нужна %s)' % (ver, name, DOC_LICENSE[lic]))
         for url in LICENSE_URL.values():
             self.assertIn(url, doc)
+
+    def test_documented_v3(self):
+        self.check_documented('v3', FILES_V3, POSTERS_V3, LICENSE_V3)
+
+    def test_documented_v4(self):
+        self.check_documented('v4', FILES_V4, POSTERS_V4, LICENSE_V4)
+        doc = read('docs', 'COORDINATION.md')
+        self.assertIn('### v4 — `/media/app/v4/` (09.11.2026)', doc, 'подраздел v4 в docs/COORDINATION.md')
+        self.assertIn('слишком сжатые, пиксельные', doc, 'причина v4 — слова владельца о v3')
 
 
 if __name__ == '__main__':
