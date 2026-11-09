@@ -22,6 +22,9 @@
 <meta property="og:description" content="Del Cappuccino in Almaty: 4 cafés open 24/7 and bakery to go (daily 07:00–22:00). Breakfast all day, favourite dishes and good coffee.">
 <meta property="og:locale" content="en_GB">
 <meta property="og:image" content="https://tap.delcappuccino.kz/assets/photo_01.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="767">
+<meta name="twitter:card" content="summary_large_image">
 <!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
@@ -46,8 +49,9 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);
   
   --c-brand-cream:#FEF1E7;
-  --c-whatsapp:#25D366;       
+  --c-whatsapp:#128C7E;       
   --c-input-border:#8C7E6E;   
+  --c-olive-text:#627122;     
   --r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;
   --s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
   --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
@@ -65,7 +69,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --glass-shadow-pressed:0px 3px 8px rgba(14,26,16,0.22);
   --glass-inset-pressed:inset 0px 3px 6px rgba(0,0,0,0.25),inset 0px 1px 0px rgba(255,255,255,0.25);
   --glass-olive-rgb:132 158 41; --glass-olive-rgb-pressed:116 140 34; --glass-olive-hl-top:rgba(214,228,150,0.6); --glass-olive-hl-mid:rgba(196,214,118,0.2); --glass-olive-edge:rgba(222,234,168,0.5);
-  --glass-wa-rgb:37 211 102; --glass-wa-rgb-pressed:31 186 89; --glass-wa-hl-top:rgba(160,246,192,0.55); --glass-wa-hl-mid:rgba(120,236,164,0.18); --glass-wa-edge:rgba(176,246,200,0.5);
+  --glass-wa-rgb:18 140 126; --glass-wa-rgb-pressed:16 123 111; --glass-wa-hl-top:rgba(113,186,178,0.45); --glass-wa-hl-mid:rgba(77,169,158,0.15); --glass-wa-edge:rgba(148,203,197,0.5);
   --glass-light-rgb:245 245 243; --glass-light-rgb-pressed:236 235 232; --glass-light-hl-top:rgba(255,255,255,0.95); --glass-light-hl-mid:rgba(255,255,255,0.4); --glass-light-edge:rgba(255,255,255,0.9);
   --glass-light-bottom:linear-gradient(180deg,transparent 50%,rgba(36,28,21,0.07) 100%);
   --glass-light-shadow:0px 2px 6px rgba(36,28,21,0.12),0px 1px 2px rgba(36,28,21,0.1);
@@ -89,7 +93,7 @@ a{color:inherit}
 h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
 h2 span,h1 span{color:var(--c-accent)}
 .shell{max-width:1160px;margin:0 auto;padding:0 var(--s-24)}
-:focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
+:focus-visible{outline:2px solid var(--c-olive-text);outline-offset:2px}
 .intro{display:none}
 .intro-on .intro{display:flex;position:fixed;inset:0;z-index:300;align-items:center;justify-content:center;background:var(--c-accent);pointer-events:none;animation:intro-out .35s ease 1.1s both}
 .intro .logo-art{width:min(72vw,340px)}
@@ -239,7 +243,6 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
 .f-row .f-legal{display:inline-flex;flex-wrap:wrap;justify-content:center;gap:var(--s-2) var(--s-12);max-width:100%}
 .f-row .f-legal a{color:var(--c-muted);font-weight:500;white-space:nowrap}
 .f-row .f-legal a:hover{color:var(--c-accent)}
-.hbar a{cursor:pointer}
 @media(max-width:900px){
 .hero{grid-template-columns:1fr;gap:var(--s-24)}
 .hero-zone{order:-1;aspect-ratio:5/4;max-height:none}
@@ -282,7 +285,7 @@ h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
 .fab-menu{display:inline-flex}
 footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 .f-row{flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:11px;gap:10px}
-.f-row img{display:none}
+.f-row>a:first-child{display:none}
 .f-row .f-legal{order:-1;gap:0 4px;margin-top:0}
 .f-row .f-legal a{display:inline-block;padding:6px 6px}
 .f-row span+span{margin-top:-4px}
@@ -308,6 +311,7 @@ footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
 @media(prefers-reduced-motion:reduce){
 .rv{opacity:1!important;transform:none!important}
 .px-on .hero-zone .logo-art,.px-on .story-photo img{transform:none!important}
+html{scroll-behavior:auto}
 }
 </style>
 <script type="application/ld+json">

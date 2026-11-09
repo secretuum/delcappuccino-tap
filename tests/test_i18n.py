@@ -161,8 +161,8 @@ class TestVersions(unittest.TestCase):
             page, d = self.pages[('menu', l)], tr(self.main, l)
             rows = re.findall(r'<li><span class="n">(.*?)</span>(?:<b class="p">(.*?)</b>)?</li>', page)
             self.assertEqual(len(rows), len(ru_rows), '%s: все позиции, как на /menyu' % l)
-            ru_prices = re.findall(r'<b class="p">([\d\u00a0 /]+) ₸', self.pages[('menu', 'ru')])
-            self.assertEqual(re.findall(r'<b class="p">([\d\u00a0 /]+) ₸', page), ru_prices, '%s: цены как на /menyu' % l)
+            ru_prices = re.findall(r'<b class="p">([\d\u00a0 /]+?)\u00a0₸', self.pages[('menu', 'ru')])
+            self.assertEqual(re.findall(r'<b class="p">([\d\u00a0 /]+?)\u00a0₸', page), ru_prices, '%s: цены как на /menyu' % l)
             self.assertIn('<html lang="%s">' % l, page)
             translated = [H.unescape(c) for c, _ in rows]
             for name in ('Капучино', 'Мясо'):

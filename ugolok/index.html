@@ -42,7 +42,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --font-display:'Geologica',system-ui,sans-serif;
   --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
   --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-border:rgba(66,99,73,.18);
-  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29;
+  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29; --c-olive-text:#627122;
   --r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;
   --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
   --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
@@ -91,9 +91,9 @@ a{color:inherit}
 h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
 .shell{max-width:960px;margin:0 auto;padding:0 24px}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
-/* контраст: светлая олива на подложке — 2,8:1, на белом — 3,0:1; рамка фокуса (≥3:1) и мелкие подписи (≥4,5:1) — олива,
-   затемнённая цветом текста: 5,0:1 на подложке, 5,4:1 на белом (без color-mix браузер оставит прежнюю оливу) */
-:focus-visible{outline-color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}
+/* контраст: светлая олива на подложке — 2,8:1, на белом — 3,0:1; рамка фокуса (≥3:1) и мелкие подписи (≥4,5:1) —
+   --c-olive-text (токен главной): 5,0:1 на подложке, 5,4:1 на белом */
+:focus-visible{outline-color:var(--c-olive-text)}
 
 /* ── ШАПКА (как на главной): белое стекло, «← на главную» пилюлей · логотип · языки пилюлями ── */
 .topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
@@ -137,7 +137,7 @@ main{padding:24px 0 20px}
 .row .v a:hover{text-decoration:underline}
 .talon-line{font-size:12px;color:var(--c-muted);line-height:1.5;margin-top:2px;overflow-wrap:anywhere}
 .talon-line b{color:var(--c-text);font-weight:600;font-variant-numeric:tabular-nums}
-.eyebrow,.pass-place small,.row .k{color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}   /* мелкие подписи — контраст ≥4,5:1 (см. :focus-visible) */
+.eyebrow,.pass-place small,.row .k{color:var(--c-olive-text)}   /* мелкие подписи — контраст ≥4,5:1 (см. :focus-visible) */
 /* кнопка талона — как кнопки главной: высота 52 (--h-glass, стекло), пилюля, Geologica строчными */
 .pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:var(--h-glass);color:var(--c-on-accent);border-radius:var(--r-pill);padding:8px 20px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.25;text-transform:lowercase;text-align:center}
 .pass-btn svg{width:16px;height:16px;flex:none}

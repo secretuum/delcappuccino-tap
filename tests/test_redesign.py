@@ -135,7 +135,8 @@ def woff2_cmap(path, cps):
             'EBLC', 'gasp', 'hdmx', 'kern', 'LTSH', 'PCLT', 'VDMX', 'vhea', 'vmtx', 'BASE', 'GDEF', 'GPOS', 'GSUB', 'EBSC', 'JSTF', 'MATH',
             'CBDT', 'CBLC', 'COLR', 'CPAL', 'SVG ', 'sbix', 'acnt', 'avar', 'bdat', 'bloc', 'bsln', 'cvar', 'fdsc', 'feat', 'fmtx', 'fvar',
             'gvar', 'hsty', 'just', 'lcar', 'mort', 'morx', 'opbd', 'prop', 'trak', 'Zapf', 'Silf', 'Glat', 'Gloc', 'Feat', 'Sill']
-    d = open(path, 'rb').read()
+    with open(path, 'rb') as f:
+        d = f.read()
 
     def b128(o):
         v = 0
@@ -290,7 +291,7 @@ class TestPage(unittest.TestCase):
                      for m in re.finditer(r'<h([123])\b[^>]*>(.*?)</h\1>', body, re.S)]
             self.assertGreaterEqual(len(heads), 15, l)
             self.assertEqual([t for _, t in heads if t.endswith('.')], [], '%s: заголовки с точкой в конце' % l)
-        self.assertIn('<h3>Выберите<br>филиал</h3>', self.pages['ru'], 'заголовок окна выбора филиала')
+        self.assertIn('<h3 id="modal-h">Выберите<br>филиал</h3>', self.pages['ru'], 'заголовок окна выбора филиала (имя диалога — aria-labelledby)')
 
     def test_owner_cuts_31_10(self):
         """правки владельца 31.10: без чипов и лент блюд, «Формат» без цифр и надзаголовка; кнопки hero остаются"""
@@ -387,8 +388,8 @@ class TestPage(unittest.TestCase):
         win = html[i:win_end]
         cap = re.search(r'<p class="grill-cap">(.*?)</p>', win, re.S)
         self.assertIsNotNone(cap, 'подпись — внутри окна огненной рамки')
-        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990 ₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
-                     '<a class="promo-a" href="#"', 'смотреть в меню'):
+        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
+                     '<a class="promo-a" href="#menu"', 'смотреть в меню'):
             self.assertIn(need, cap.group(1))
         self.assertNotIn('grill-ticker', win, 'бегущая строка — не в огне')
         # строка — полосой под обеими плитками на всю ширину контейнера, только там, где есть «Курица гриль»
@@ -426,7 +427,7 @@ class TestPage(unittest.TestCase):
 
     def test_whatsapp_green(self):
         css = style(self.pages['ru'])
-        self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#25D366')
+        self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#128C7E', 'тёмно-зелёный WhatsApp (09.11): белый логотип читается')
         for l, html in self.pages.items():
             # 2.11: стекло в цвете WhatsApp (тон --glass-wa-*, основа = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
             wa = re.search(r'(?:^|\})\.ib\.wa\{([^}]*)\}', style(html)).group(1)
@@ -590,9 +591,9 @@ console.log(JSON.stringify(out));
         self.assertFalse(got['cardHidden'])
         card = got['card']
         self.assertRegex(card, r'^<button type="button" class="mm-card-x" aria-label="[^"]+">×</button><div class="mm-card-pic"')
-        self.assertIn('<h3 class="mm-card-t" id="mm-card-t">Рибай на кости</h3><div class="mm-card-p"><span class="old">7%s200</span> 3%s990 ₸</div>' % (nb, nb), card)
+        self.assertIn('<h3 class="mm-card-t" id="mm-card-t">Рибай на кости</h3><div class="mm-card-p"><span class="old">7%s200</span> 3%s990&nbsp;₸</div>' % (nb, nb), card)
         self.assertIn('class="mm-card-k"', card)
-        self.assertIn('<div class="mm-card-p">1%s400 / 1%s500 / 1%s700 ₸</div>' % (nb, nb, nb), got['cap'], 'ярусы цены — как в меню')
+        self.assertIn('<div class="mm-card-p">1%s400 / 1%s500 / 1%s700&nbsp;₸</div>' % (nb, nb, nb), got['cap'], 'ярусы цены — как в меню')
         self.assertIn('<div class="mm-card-p">', got['togoCard'], 'карточка в режиме togo — цена из меню bakery')
 
     def test_menu_search_in_node(self):

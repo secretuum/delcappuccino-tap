@@ -129,7 +129,8 @@ class TestNormAndMatch(unittest.TestCase):
         with contextlib.redirect_stdout(io.StringIO()):
             rc = mp.main(['--menu', self.index, '--listing', listing, '--map', mapp, '--report', report])
         self.assertEqual(rc, 0)
-        m = json.load(open(mapp, encoding='utf-8'))
+        with open(mapp, encoding='utf-8') as f:
+            m = json.load(f)
         self.assertEqual(m['Маргарита'], {'iiko': 'k1', 'drive_file': 'кухня/Пицца Маргарита.png'})   # старый формат → новый
         self.assertEqual(m['Четыре сезона'], {'iiko': 'k2', 'drive_file': 'кухня/Пицца 4 сезона.png'})
         self.assertEqual(m['Борщ с говядиной и бородинским хлебом'], {'iiko': None, 'drive_file': 'кухня/Борщ.jpg'})
@@ -148,12 +149,14 @@ class TestNormAndMatch(unittest.TestCase):
         mapp = os.path.join(self.d, 'name_map.json')
         with contextlib.redirect_stdout(io.StringIO()):
             mp.main(['--menu', self.index, '--photos', self.photos, '--map', mapp, '--report', os.path.join(self.d, 'r.md'), '--overrides', over])
-        m = json.load(open(mapp, encoding='utf-8'))
+        with open(mapp, encoding='utf-8') as f:
+            m = json.load(f)
         self.assertEqual(m['Рамен сливочный']['drive_file'], 'кухня/рамен сливочный с курицей.png')
         self.assertEqual(m['Маргарита']['drive_file'], 'кухня/Пицца Маргарита.jfif')
         self.assertNotIn('Борщ с говядиной и бородинским хлебом', m)
         self.assertEqual(m['Стейк-омлет']['drive_file'], 'кухня/стейк омлет.png')                # автоматика осталась
-        rep = open(os.path.join(self.d, 'r.md'), encoding='utf-8').read()
+        with open(os.path.join(self.d, 'r.md'), encoding='utf-8') as f:
+            rep = f.read()
         self.assertIn('## Ручные пары (3)', rep)
         self.assertIn('Маргарита  ←  кухня/Пицца Маргарита.jfif  (было: кухня/Пицца Маргарита.png)', rep)
         self.assertIn('НЕТ ТАКОГО ФАЙЛА', rep)
@@ -210,7 +213,8 @@ class TestBuildWithFolderPhotos(unittest.TestCase):
         self.assertEqual(list(cards['Борщ с говядиной и бородинским хлебом']), ['img', 'img480', 'ar'])   # только фото из папки
         self.assertNotIn('Тыквенный крем-суп', cards)                            # файла нет → карточки нет
         self.assertIn('нет файла кухня/нет такого.png', rep)
-        src = json.load(open(os.path.join(self.img, 'sources.json'), encoding='utf-8'))
+        with open(os.path.join(self.img, 'sources.json'), encoding='utf-8') as f:
+            src = json.load(f)
         self.assertTrue(src['margarita'].startswith('drive:кухня/Пицца Маргарита.png:'))
         self.assertTrue(src['stejk-omlet'].startswith('iiko:'))
         from PIL import Image

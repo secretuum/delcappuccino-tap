@@ -269,9 +269,11 @@ class TestCalc(Base):
             json.dump(sources, f, ensure_ascii=False)
         dst = os.path.join(self.img, sl + '.webp')
         Image.new('RGBA', (960, 960), (0, 0, 0, 0)).save(dst, 'WEBP')   # «вырезка» с прозрачным фоном
-        before = open(dst, 'rb').read()
+        with open(dst, 'rb') as f:
+            before = f.read()
         cards, rep = self.build(iiko=iiko, no_photos=False)
-        self.assertEqual(open(dst, 'rb').read(), before, 'вырезку не перезаписали')
+        with open(dst, 'rb') as f:
+            self.assertEqual(f.read(), before, 'вырезку не перезаписали')
         self.assertEqual(cards['Тест: вырезка']['ar'], [960, 960], 'ar — от холста вырезки')
         with open(man, encoding='utf-8') as f:
             self.assertTrue(json.load(f)[sl].endswith('+cut1 [960, 960]'))
