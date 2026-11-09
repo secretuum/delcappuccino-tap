@@ -388,7 +388,7 @@ class TestPage(unittest.TestCase):
         win = html[i:win_end]
         cap = re.search(r'<p class="grill-cap">(.*?)</p>', win, re.S)
         self.assertIsNotNone(cap, 'подпись — внутри окна огненной рамки')
-        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990 ₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
+        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
                      '<a class="promo-a" href="#"', 'смотреть в меню'):
             self.assertIn(need, cap.group(1))
         self.assertNotIn('grill-ticker', win, 'бегущая строка — не в огне')
@@ -591,9 +591,9 @@ console.log(JSON.stringify(out));
         self.assertFalse(got['cardHidden'])
         card = got['card']
         self.assertRegex(card, r'^<button type="button" class="mm-card-x" aria-label="[^"]+">×</button><div class="mm-card-pic"')
-        self.assertIn('<h3 class="mm-card-t" id="mm-card-t">Рибай на кости</h3><div class="mm-card-p"><span class="old">7%s200</span> 3%s990 ₸</div>' % (nb, nb), card)
+        self.assertIn('<h3 class="mm-card-t" id="mm-card-t">Рибай на кости</h3><div class="mm-card-p"><span class="old">7%s200</span> 3%s990&nbsp;₸</div>' % (nb, nb), card)
         self.assertIn('class="mm-card-k"', card)
-        self.assertIn('<div class="mm-card-p">1%s400 / 1%s500 / 1%s700 ₸</div>' % (nb, nb, nb), got['cap'], 'ярусы цены — как в меню')
+        self.assertIn('<div class="mm-card-p">1%s400 / 1%s500 / 1%s700&nbsp;₸</div>' % (nb, nb, nb), got['cap'], 'ярусы цены — как в меню')
         self.assertIn('<div class="mm-card-p">', got['togoCard'], 'карточка в режиме togo — цена из меню bakery')
 
     def test_menu_search_in_node(self):

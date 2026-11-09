@@ -885,7 +885,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
             <source src="assets/grill-closeup.701739c2.mp4" type="video/mp4">
             </video>
             <div class="grill-glow" aria-hidden="true"></div>
-            <p class="grill-cap"><b class="promo-t">Курица гриль</b> <span class="promo-s"><s>6000</s>&nbsp;<span class="sale">3990 ₸</span> · Толе Би, 64 и Серкебаева, 146</span> <a class="promo-a" href="#" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — открыть в меню">смотреть в меню →</a></p>
+            <p class="grill-cap"><b class="promo-t">Курица гриль</b> <span class="promo-s"><s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span> · Толе Би, 64 и Серкебаева, 146</span> <a class="promo-a" href="#" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — открыть в меню">смотреть в меню →</a></p>
           </div>
         </div>
       </div>
@@ -913,7 +913,7 @@ footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
         <div class="stats">
           <div><b>24/7</b><span>4 кофейни</span></div>
           <div><b>5</b><span>точек</span></div>
-          <div><b>all day</b><span>завтраки</span></div>
+          <div><b lang="en">all day</b><span>завтраки</span></div>
         </div>
       </div>
     </div>
@@ -2351,7 +2351,7 @@ function findItem(key){
 function cardPrice(key){
   const f=findItem(key); if(!f) return '';
   const p=f.it.p!=null?f.it.p:f.s.p; if(p==null) return '';
-  return `<div class="mm-card-p">${f.it.old?`<span class="old">${fmtP(f.it.old)}</span> `:''}${fmtP(p)} ₸</div>`;
+  return `<div class="mm-card-p">${f.it.old?`<span class="old">${fmtP(f.it.old)}</span> `:''}${fmtP(p)}&nbsp;₸</div>`;
 }
 function cardHTML(key){
   const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);

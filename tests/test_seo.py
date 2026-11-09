@@ -67,7 +67,7 @@ class TestJsonLd(unittest.TestCase):
         self.assertNotEqual(page, read('menyu', 'index.html'), 'смена цены должна делать /menyu устаревшей')
         import html as H
         row = next(l for l in page.split('\n') if l.startswith('<li><span class="n">%s' % H.escape(name, quote=False)))
-        self.assertIn('<b class="p">%s ₸' % seo.fmt_p(price + 1000), row)
+        self.assertIn('<b class="p">%s\u00a0₸' % seo.fmt_p(price + 1000), row)
 
     def test_five_branches_from_BRANCHES(self):
         self.assertEqual(len(self.branches), 5)

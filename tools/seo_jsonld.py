@@ -604,7 +604,7 @@ def menu_page(html, lang='ru'):
             price = ''
             if it['p']:
                 # старая цена словами («вместо»), а не только <s>: бот, вырезающий теги, иначе прочтёт «6 000 3 990 ₸»
-                price = '<b class="p">%s ₸%s</b>' % (fmt_p(it['p']), ' <small>%s</small>' % mp['instead'].format(old='<s>%s</s>' % fmt_p(it['old'])) if it['old'] else '')
+                price = '<b class="p">%s\u00a0₸%s</b>' % (fmt_p(it['p']), ' <small>%s</small>' % mp['instead'].format(old='<s>%s</s>' % fmt_p(it['old'])) if it['old'] else '')
             rows.append('<li><span class="n">%s%s</span>%s</li>' % (e(tt(it['n'])), extra, price))
         return '<ul>\n' + '\n'.join(rows) + '\n</ul>'
 
@@ -615,7 +615,7 @@ def menu_page(html, lang='ru'):
             # раздел с тем же названием, что вкладка («Десерты» → «Десерты»), без своего заголовка — как dupT на главной
             sec = []                                          # раздел — на своей мягкой подложке, как в меню главной
             if not (s['t'] == ui0['tab_' + tab] and not s['badge'] and not s['p']):
-                sec.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s ₸</b>' % fmt_p(s['p']) if s['p'] else ''))
+                sec.append('<h4><span>%s</span>%s</h4>' % (head, '<b class="p">%s\u00a0₸</b>' % fmt_p(s['p']) if s['p'] else ''))
             if s['note']:
                 sec.append('<p class="note">%s</p>' % e(tt(s['note'])))
             sec.append(items_html(s['items']))
@@ -920,8 +920,8 @@ def lang_page(html, lang):
                 % (e(T(c, short(b))), e(T(c, b['addr'])), loc_meta(e(hours_card(c, b['hours'])), e(note)),
                    card_extra(html, b, lang), '\n        '.join(links)))
 
-    stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b>all day</b><span>%s</span></div>'
-             % (P['stat_cafes'], len(bs), P['stat_points'], P['stat_breakfast']))
+    stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b%s>all day</b><span>%s</span></div>'
+             % (P['stat_cafes'], len(bs), P['stat_points'], '' if lang == 'en' else ' lang="en"', P['stat_breakfast']))
     faq_html = faq_block(items, (P['faq_h2'], P['faq_p']))
     return '''<!DOCTYPE html>
 <html lang="%(lang)s">

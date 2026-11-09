@@ -80,8 +80,8 @@ class TestSalePrices(unittest.TestCase):
         cap = re.search(r'<p class="grill-cap">(.*?)</p>', self.html, re.S)
         self.assertIsNotNone(cap, 'нет подписи акции <p class="grill-cap">')
         cap = cap.group(1)
-        # &nbsp; — старая и новая цены не разъезжаются по строкам на 360 px
-        self.assertIn('<s>6000</s>&nbsp;<span class="sale">3990 ₸</span>', cap)
+        # &nbsp; — старая и новая цены не разъезжаются по строкам на 360 px; перед ₸ — тоже неразрывный
+        self.assertIn('<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', cap)
         self.assertIn('aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸', cap)
 
 
