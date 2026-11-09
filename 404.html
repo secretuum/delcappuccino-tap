@@ -31,7 +31,7 @@ track('page_not_found',{path:location.pathname});</script>
   --font-display:'Geologica',system-ui,sans-serif;
   --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
   --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-border:rgba(66,99,73,.18);
-  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29;
+  --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29; --c-olive-text:#627122;
   --r-lg:22px; --r-pill:999px; --h-button:56px; --h-touch:48px;
   /* стекло кнопок — копия токенов из :root главной (kofe-app 9206813, glass.ts; кнопка «на главную» — зелёная); что они равны главной — проверяет tests/test_glass.py */
   --glass-base-plain:0.94;
@@ -57,8 +57,8 @@ track('page_not_found',{path:location.pathname});</script>
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
-/* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — олива, затемнённая цветом текста (5,0:1 на подложке) */
-:focus-visible{outline-color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}
+/* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — --c-olive-text (токен главной, 5,0:1 на подложке) */
+:focus-visible{outline-color:var(--c-olive-text)}
 /* шапка — как на главной: белое стекло, логотип ссылкой на главную */
 header{position:sticky;top:0;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .hbar{display:flex;align-items:center;max-width:1160px;margin:0 auto;padding:8px 24px;min-height:64px}
@@ -68,7 +68,7 @@ header{position:sticky;top:0;background:color-mix(in srgb,var(--c-bg) 92%,transp
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .box{background:var(--c-surface);border-radius:var(--r-lg);padding:40px 28px;max-width:520px;width:100%;text-align:center}
 p.tag{font-size:12px;text-transform:lowercase;color:var(--c-olive);font-weight:700;margin-bottom:12px}
-p.tag{color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}
+p.tag{color:var(--c-olive-text)}
 h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;color:var(--c-text);margin-bottom:12px}
 h1 span{color:var(--c-accent)}
 p.lead{font-size:15px;color:var(--c-muted);line-height:1.65;max-width:340px;margin:0 auto 28px}

@@ -291,7 +291,7 @@ class TestPage(unittest.TestCase):
                      for m in re.finditer(r'<h([123])\b[^>]*>(.*?)</h\1>', body, re.S)]
             self.assertGreaterEqual(len(heads), 15, l)
             self.assertEqual([t for _, t in heads if t.endswith('.')], [], '%s: заголовки с точкой в конце' % l)
-        self.assertIn('<h3>Выберите<br>филиал</h3>', self.pages['ru'], 'заголовок окна выбора филиала')
+        self.assertIn('<h3 id="modal-h">Выберите<br>филиал</h3>', self.pages['ru'], 'заголовок окна выбора филиала (имя диалога — aria-labelledby)')
 
     def test_owner_cuts_31_10(self):
         """правки владельца 31.10: без чипов и лент блюд, «Формат» без цифр и надзаголовка; кнопки hero остаются"""
