@@ -15,7 +15,8 @@ def read(*p):
         return f.read()
 
 
-FACTS = json.loads(open(os.path.join(ROOT, 'tools', 'branch_facts.json'), encoding='utf-8').read())
+with open(os.path.join(ROOT, 'tools', 'branch_facts.json'), encoding='utf-8') as _f:
+    FACTS = json.load(_f)
 
 
 def visible_text(s):
