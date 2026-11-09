@@ -148,7 +148,7 @@ class TestGlassTokens(unittest.TestCase):
                 for suf in ('rgb', 'rgb-pressed', 'hl-top', 'hl-mid', 'edge'):
                     self.assertIn('--%s-%s' % (pre, suf), v, l)
             self.assertEqual(v['--glass-olive-rgb'], hexrgb(v['--c-olive']), 'олива = #849E29')
-            self.assertEqual(v['--glass-wa-rgb'], hexrgb(v['--c-whatsapp']), 'WhatsApp = #25D366')
+            self.assertEqual(v['--glass-wa-rgb'], hexrgb(v['--c-whatsapp']), 'WhatsApp = --c-whatsapp (#128C7E)')
             self.assertEqual(v['--glass-light-rgb'], hexrgb(v['--c-surface']))
             self.assertEqual(v['--glass-light-rgb-pressed'], hexrgb(v['--c-raised']))
             for suf in ('bottom', 'shadow', 'inset', 'shadow-pressed', 'inset-pressed'):
