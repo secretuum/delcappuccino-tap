@@ -1,8 +1,11 @@
 # Координация — Taplink del Cappuccino
 
-Журнал главного терминала части (`taplink-del-cappuccino-master`).
+Журнал главного терминала части (`taplink-del-cappuccino-tap-site`).
 Главная ветка — `master`. Задачи живут в копиях `.claude/worktrees/<задача>` на ветках `worktree-<задача>`.
-Сливает пул-реквесты, пушит `master` и деплоит (GitHub Pages) только владелец.
+Принятые пул-реквесты сливает главный терминал (решение владельца 22.10: «мерджишь всегда сам»). Слияние в `master` —
+это сразу выкладка: сайт — статический сайт Render (аккаунт владельца) за Cloudflare, собирается из `master` за 1–5 мин;
+кэш Cloudflare `s-maxage=300`. Прямой push в `master` и force push — никто. Задачи от других терминалов (kofe-app и др.)
+начинаются после «да» владельца в окне главного: «да», данное в другом окне, сюда не переносится.
 
 ## Зоны в `index.html`
 
@@ -13,7 +16,11 @@
 | `menu-i18n` — меню на ҚАЗ/ENG | `worktree-menu-i18n` | оверлей меню: разметка `#menu-modal`, массивы `MENU_KITCHEN` / `MENU_BAR` / `MENU_DESSERT`, `MK`, `LEGEND`, `MENU_TABS` и функции отрисовки меню; стили `.mm-*`. Переключатель языка — только внутри оверлея меню. |
 | `to-go` — 5-я точка bakery to go | `worktree-to-go` | `BRANCHES` (карточки точек `#loc-grid` из него собирает `tools/seo_jsonld.py` с 22.10.2026, `renderLocations` удалён), модалка выбора филиала (`#modal`), секции hero / strip / about / features / locations / contacts, `<head>` (title, description, og/twitter) — тексты про «4 кофейни» и «24/7». |
 | `perf` — оптимизация загрузки | `worktree-perf` | `<head>` (preload, шрифты, иконки, manifest), картинки и ресурсы главной, `assets/`, `sw.js`, `manifest.webmanifest`, `tools/`, `tests/test_perf.py`. После любой правки `index.html` — `python3 tools/sw_version.py`. |
-| `glass`, `glass-2` — «стекло» всех кнопок своего цвета и чипы по приложению (решения владельца 02.11; источник — kofe-app 9206813, `glass.ts`, `Button.tsx`, `Chip.tsx`) | `worktree-agent-aedb5e0b769597913` | на время работы: `:root` (токены стекла `--glass-*` всех тонов, `--h-glass*`, `--btn-font`), общий набор слоёв `:where(…)` и тона `--tone-*`; все кнопки главной: `.btn`, `.fab-menu`, `.ib`, `.pill`, `.pill-point`, `.lang-dd summary`; оверлей меню целиком по кнопкам (`.mm-tab`, `.mm-cat`, `.mm-mode-btn`, `.mm-lang-btn`, `.mm-search-btn`, `.mm-search-x`, `.mm-x`, `.mm-card-x`, `.mm-only`, поля рядов `.mm-tabs`/`.mm-cats`); модалки по кнопкам (`.sheet .x`); `404.html` (`a.btn`), `/ugolok` по кнопкам (`.pass-btn`, `.lang-btn`, `.tb-back`) — копии токенов; чипы текстовых меню и отбор правил стекла для /kk/ /en/ в `tools/seo_jsonld.py`. Другие исполнители не активны. |
+| `glass`, `glass-2` — «стекло» всех кнопок своего цвета и чипы по приложению (решения владельца 02.11; источник — kofe-app 9206813, `glass.ts`, `Button.tsx`, `Chip.tsx`) | `worktree-agent-aedb5e0b769597913` | на время работы: `:root` (токены стекла `--glass-*` всех тонов, `--h-glass*`, `--btn-font`), общий набор слоёв `:where(…)` и тона `--tone-*`; все кнопки главной: `.btn`, `.fab-menu`, `.ib`, `.pill`, `.pill-point`, `.lang-dd summary`; оверлей меню целиком по кнопкам (`.mm-tab`, `.mm-cat`, `.mm-mode-btn`, `.mm-lang-btn`, `.mm-search-btn`, `.mm-search-x`, `.mm-x`, `.mm-card-x`, `.mm-only`, поля рядов `.mm-tabs`/`.mm-cats`); модалки по кнопкам (`.sheet .x`); `404.html` (`a.btn`), `/ugolok` по кнопкам (`.pass-btn`, `.lang-btn`, `.tb-back`) — копии токенов; чипы текстовых меню и отбор правил стекла для /kk/ /en/ в `tools/seo_jsonld.py`. Закрыта 02.11 (#54, #55). |
+| `polish-main` — шлифовка мелочей главной (владелец 09.11: «допиливай все детали мелкие») | `worktree-polish-main` | с 09.11: `index.html` целиком, `kk/`, `en/`, `menyu/`, `tools/`, генерируемые `sitemap.xml` и `llms.txt`, `sw.js` (только версия через `tools/sw_version.py`), `manifest.webmanifest`, `robots.txt`; токены `:root` и слои стекла — и их копии в `404.html` и `ugolok/` (тест сверяет дословно). |
+| `polish-pages` — шлифовка мелочей остальных страниц (там же) | `worktree-polish-pages` | с 09.11: `ugolok/`, `404.html`, `legal/style.css` — всё, **кроме** `:root`-токенов и слоёв стекла (это `polish-main`). HTML в `/legal/` — от kofe-app байт в байт, не трогаем. Тесты — только `tests/test_ugolok.py`, `tests/test_legal.py` и новый `tests/test_polish_pages.py`. |
+
+Из прежних задач (to-go, menu-i18n, perf, glass) активных исполнителей нет; их строки — кто чем владел последним.
 
 Общие стили (`:root`, базовые классы) — предупредить второго исполнителя перед правкой.
 
