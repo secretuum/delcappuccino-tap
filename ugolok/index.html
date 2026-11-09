@@ -553,7 +553,7 @@ const I18N = {
   }
 };
 
-function setLang(lang){
+function setLang(lang, quiet){
   const dict = I18N[lang] || I18N.kk;
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el){
@@ -566,11 +566,11 @@ function setLang(lang){
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   if(dict.pageTitle) document.title = dict.pageTitle;
-  track('ugolok_lang', {lang: lang});
+  if(!quiet) track('ugolok_lang', {lang: lang});
 }
 
-/* Always open in Kazakh */
-setLang('kk');
+/* Always open in Kazakh — без события ugolok_lang: оно только про выбор языка посетителем, не про каждое открытие */
+setLang('kk', true);
 </script>
 <script>
 /* Аналитика — после load, в простое; service worker общий с главной (правила — в /sw.js) */
