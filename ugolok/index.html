@@ -76,6 +76,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{
   background:var(--c-bg);color:var(--c-text);
   font-family:var(--font-body);
@@ -86,16 +87,19 @@ a{color:inherit}
 h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercase;letter-spacing:-.01em}
 .shell{max-width:960px;margin:0 auto;padding:0 24px}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
+/* контраст: светлая олива на подложке — 2,8:1, на белом — 3,0:1; рамка фокуса (≥3:1) и мелкие подписи (≥4,5:1) — олива,
+   затемнённая цветом текста: 5,0:1 на подложке, 5,4:1 на белом (без color-mix браузер оставит прежнюю оливу) */
+:focus-visible{outline-color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}
 
 /* ── ШАПКА (как на главной): белое стекло, «← на главную» пилюлей · логотип · языки пилюлями ── */
 .topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
-.tb-brand{display:inline-flex;align-items:center;flex:none}
+.tb-brand{display:inline-flex;align-items:center;flex:none;min-height:44px}
 .tb-brand img{height:40px;width:auto;display:block;border-radius:10px}
 .lang-switch{display:flex;gap:4px}
 .lang-btn{position:relative;color:var(--c-text);font-family:var(--font-body);font-weight:500;font-size:12px;letter-spacing:.03em;padding:6px 12px;min-height:40px;border-radius:var(--r-pill);cursor:pointer}
 .lang-btn::after{content:'';position:absolute;inset:-2px 0}
 /* «← На главную» вверху: всегда на виду (шапка липкая); подпись — та же строка back словаря, что внизу */
-.tb-back{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;white-space:nowrap;min-height:44px;padding:6px 13px 6px 10px;border-radius:var(--r-pill);color:var(--c-text);font-family:var(--font-body);font-weight:600;font-size:13px;line-height:1.2;text-decoration:none;transition:background .15s}
+.tb-back{display:inline-flex;align-items:center;gap:6px;flex:0 1 auto;min-width:0;white-space:nowrap;min-height:44px;padding:6px 13px 6px 10px;border-radius:var(--r-pill);color:var(--c-text);font-family:var(--font-body);font-weight:600;font-size:13px;line-height:1.2;text-decoration:none}
 .tb-back svg{flex:none}
 .tb-back span{min-width:0;overflow:hidden;text-overflow:ellipsis}   /* запас: если не влезет — многоточие, а не прокрутка вбок */
 .lang-switch{flex:none}
@@ -125,10 +129,11 @@ main{padding:24px 0 20px}
 .rows{display:flex;flex-direction:column;gap:9px;flex:1}
 .row .k{font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--c-olive);font-weight:600;display:block;margin-bottom:1px}
 .row .v{font-size:var(--fs-small);color:var(--c-muted);line-height:1.45;overflow-wrap:anywhere}
-.row .v a{color:var(--c-accent);font-weight:600;text-decoration:none}
+.row .v a{color:var(--c-accent);font-weight:600;text-decoration:none;white-space:nowrap}   /* номер телефона не рвём посередине */
 .row .v a:hover{text-decoration:underline}
 .talon-line{font-size:12px;color:var(--c-muted);line-height:1.5;margin-top:2px;overflow-wrap:anywhere}
 .talon-line b{color:var(--c-text);font-weight:600;font-variant-numeric:tabular-nums}
+.eyebrow,.pass-place small,.row .k{color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}   /* мелкие подписи — контраст ≥4,5:1 (см. :focus-visible) */
 /* кнопка талона — как кнопки главной: высота 56, пилюля, Geologica строчными */
 .pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:var(--h-glass);color:var(--c-on-accent);border-radius:var(--r-pill);padding:8px 20px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.25;text-transform:lowercase;text-align:center}
 .pass-btn svg{width:16px;height:16px;flex:none}
@@ -160,6 +165,7 @@ main{padding:24px 0 20px}
 /* ── ПОДВАЛ — как на главной: логотип, подпись, «← на главную», © ── */
 footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
 .f-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:var(--fs-caption);color:var(--c-muted)}
+.f-row a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}   /* логотип 28 px и ссылка 12 px — зона касания 44 */
 .f-row img{height:28px;width:auto;border-radius:6px;display:block}
 .f-row a.back{display:inline-flex;align-items:center;gap:7px;color:var(--c-accent);font-weight:600;text-decoration:none}
 .f-row a.back:hover{text-decoration:underline}
@@ -197,9 +203,9 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
   </a>
   <a class="tb-brand" href="/" aria-label="Del Cappuccino"><img src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino"></a>
   <div class="lang-switch" role="group" aria-label="Тіл / Язык / Language">
-    <button class="lang-btn on" data-lang="kk" onclick="setLang('kk')">ҚАЗ</button>
-    <button class="lang-btn" data-lang="ru" onclick="setLang('ru')">РУС</button>
-    <button class="lang-btn" data-lang="en" onclick="setLang('en')">ENG</button>
+    <button type="button" class="lang-btn on" data-lang="kk" lang="kk" aria-pressed="true" onclick="setLang('kk')">ҚАЗ</button>
+    <button type="button" class="lang-btn" data-lang="ru" lang="ru" aria-pressed="false" onclick="setLang('ru')">РУС</button>
+    <button type="button" class="lang-btn" data-lang="en" lang="en" aria-pressed="false" onclick="setLang('en')">ENG</button>
   </div>
 </div>
 
@@ -244,10 +250,10 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
           <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77025672332">+7 702 567 23 32</a></span></div>
           <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg1">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 16.02.2023</span></div>
           <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_auezov">Әуезов ауданы бойынша МКБ</span></div>
-          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ95TWQ02741884</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ85UWQ04709368</b></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span>&nbsp;<b>KZ95TWQ02741884</b> · <span data-i18n="lbl_incoming">Кіріс №</span>&nbsp;<b>KZ85UWQ04709368</b></div>
         </div>
         <a class="pass-btn" href="/ugolok/talon-rustamova.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'01'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
@@ -271,10 +277,10 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
           <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77053673232">+7 705 367 32 32</a></span></div>
           <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg2">ЖК тіркеу деректерінің өзгеруі: 06.10.2023</span></div>
           <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_bostandyk">Бостандық ауданы бойынша МКБ</span></div>
-          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ43TWQ03401062</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ90UWQ05548910</b></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span>&nbsp;<b>KZ43TWQ03401062</b> · <span data-i18n="lbl_incoming">Кіріс №</span>&nbsp;<b>KZ90UWQ05548910</b></div>
         </div>
         <a class="pass-btn" href="/ugolok/talon-turekhan.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'02'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
@@ -298,10 +304,10 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
           <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77770355617">+7 777 035 56 17</a></span></div>
           <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg3">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 29.04.2024</span></div>
           <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_bostandyk">Бостандық ауданы бойынша МКБ</span></div>
-          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ91TWQ03955717</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ83UWQ06335706</b></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span>&nbsp;<b>KZ91TWQ03955717</b> · <span data-i18n="lbl_incoming">Кіріс №</span>&nbsp;<b>KZ83UWQ06335706</b></div>
         </div>
         <a class="pass-btn" href="/ugolok/talon-alimkulova.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'03'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
@@ -325,10 +331,10 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
           <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77769079070">+7 776 907 90 70</a></span></div>
           <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg4">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 23.08.2022</span></div>
           <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_auezov">Әуезов ауданы бойынша МКБ</span></div>
-          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ26TWQ02214961</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ94UWQ03863366</b></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span>&nbsp;<b>KZ26TWQ02214961</b> · <span data-i18n="lbl_incoming">Кіріс №</span>&nbsp;<b>KZ94UWQ03863366</b></div>
         </div>
         <a class="pass-btn" href="/ugolok/talon-koshkarov.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'04'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
@@ -352,10 +358,10 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
           <div class="row"><span class="k" data-i18n="lbl_phone">Байланыс телефоны</span><span class="v"><a href="tel:+77773278566">+7 777 327 85 66</a></span></div>
           <div class="row"><span class="k" data-i18n="lbl_reg">Мемлекеттік тіркеу</span><span class="v" data-i18n="reg4">ЖК қызметінің басталғаны туралы хабарламаны тіркеу: 23.08.2022</span></div>
           <div class="row"><span class="k" data-i18n="lbl_org">Орган</span><span class="v" data-i18n="org_auezov">Әуезов ауданы бойынша МКБ</span></div>
-          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span> <b>KZ26TWQ02214961</b> · <span data-i18n="lbl_incoming">Кіріс №</span> <b>KZ94UWQ03863366</b></div>
+          <div class="talon-line"><span data-i18n="lbl_talon">Талон №</span>&nbsp;<b>KZ26TWQ02214961</b> · <span data-i18n="lbl_incoming">Кіріс №</span>&nbsp;<b>KZ94UWQ03863366</b></div>
         </div>
         <a class="pass-btn" href="/ugolok/talon-koshkarov.pdf" target="_blank" rel="noopener" onclick="track('ugolok_talon',{branch:'05'})">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
           <span data-i18n="btn_talon">Талонды ашу (PDF)</span>
         </a>
       </article>
@@ -418,7 +424,7 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
   </section>
 
   <div class="note">
-    <span class="ic">ℹ️</span>
+    <span class="ic" aria-hidden="true">ℹ️</span>
     <span data-i18n="note">Ескерту: салық төлеушінің QR-паспорттарын МКД қалыптастырады және оларды ККМ жанында әрі жалпыға қолжетімді жерде орналастыру қажет.</span>
   </div>
 
@@ -428,7 +434,7 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
   <div class="f-row">
     <a href="/" aria-label="Del Cappuccino"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
     <a class="back" href="/">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       <span data-i18n="back">Басты бетке</span>
     </a>
     <span>© 2026 Del Cappuccino · coffee &amp; food · Алматы</span>
@@ -555,7 +561,9 @@ function setLang(lang){
     if(dict[k] !== undefined) el.textContent = dict[k];
   });
   document.querySelectorAll('.lang-btn').forEach(function(b){
-    b.classList.toggle('on', b.getAttribute('data-lang') === lang);
+    const on = b.getAttribute('data-lang') === lang;
+    b.classList.toggle('on', on);
+    b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   if(dict.pageTitle) document.title = dict.pageTitle;
   track('ugolok_lang', {lang: lang});
