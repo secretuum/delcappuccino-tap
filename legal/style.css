@@ -46,6 +46,9 @@ body {
 }
 
 :focus-visible { outline: 2px solid var(--olive); outline-offset: 2px; }
+/* Рамка фокуса — олива, затемнённая цветом текста: светлая олива на подложке документа — 2,8:1, нужно ≥3:1 (так — 5,0:1);
+   без color-mix браузер оставит прежнюю оливу */
+:focus-visible { outline-color: color-mix(in srgb, var(--olive) 65%, var(--text)); }
 
 main, .top, .langs, footer {
   max-width: 800px;
@@ -56,6 +59,7 @@ main, .top, .langs, footer {
 /* Переключатель языка — пилюли справа, текущий язык залит зелёным (как на главной) */
 .langs {
   display: flex;
+  align-items: center;
   justify-content: flex-end;
   gap: 4px;
   padding: 12px 16px 0;
@@ -71,7 +75,7 @@ main, .top, .langs, footer {
 .langs a {
   display: inline-flex;
   align-items: center;
-  min-height: 40px;
+  min-height: 44px;
   padding: 0 14px;
   border-radius: var(--r-pill);
   background: var(--surface);
@@ -108,7 +112,8 @@ main, .top, .langs, footer {
 .top a[aria-current="page"], .bottom a[aria-current="page"] { background: var(--accent); color: var(--on-accent); }
 .top a.home, .bottom a.home {
   flex-basis: 100%;
-  min-height: 32px;
+  min-height: 44px;   /* зона касания 44, а строка по-прежнему 32: поля −6 px сверху и снизу */
+  margin: -6px 0;
   padding: 0;
   background: transparent;
   color: var(--accent);
@@ -194,15 +199,19 @@ footer p { margin: 0; }
   td { padding: 2px 14px 10px; }
 }
 
-/* Печать: без подложек и теней, чёрный текст, адреса ссылок видны */
+/* Печать: без шапки (языки, документы), подвала и подложек, чёрный текст, адреса ссылок видны;
+   заголовок не остаётся внизу листа без текста, строка реквизитов не рвётся между листами */
 @media print {
   body { background: #fff; color: #000; font-size: 12pt; }
-  main { background: none; border-radius: 0; padding: 0; max-width: none; }
-  .langs, .top, .bottom { display: none; }
+  main { background: none; border-radius: 0; padding: 0; margin: 0; max-width: none; }
+  .langs, .top, .bottom, footer { display: none; }
+  h1, h2, h3 { break-after: avoid; }
+  tr, li { break-inside: avoid; }
+  table { border-radius: 0; }
   table, .notice { background: none; }
   th, td { border-bottom: 1px solid #999; color: #000; }
-  h1, h2, h3, .edition, .notice, footer { color: #000; }
+  h1, h2, h3, .edition, .notice { color: #000; }
   a { color: #000; text-decoration: underline; }
   main a[href^="http"]::after { content: " (" attr(href) ")"; }
-  footer { border-top: 1px solid #999; }
+  main a[href="https://tap.delcappuccino.kz"]::after { content: none; }   /* текст ссылки — сам адрес, без повтора */
 }
