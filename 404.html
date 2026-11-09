@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Страница не найдена — Del Cappuccino</title>
+<meta name="robots" content="noindex">
 <link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
@@ -54,16 +55,20 @@ track('page_not_found',{path:location.pathname});</script>
   --btn-font:var(--font-display);
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;display:flex;flex-direction:column}
+body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
+/* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — олива, затемнённая цветом текста (5,0:1 на подложке) */
+:focus-visible{outline-color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}
 /* шапка — как на главной: белое стекло, логотип ссылкой на главную */
 header{position:sticky;top:0;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
 .hbar{display:flex;align-items:center;max-width:1160px;margin:0 auto;padding:8px 24px;min-height:64px}
+.hbar a{display:flex;align-items:center;min-height:44px}   /* зона касания логотипа — 44 */
 .hbar img{height:40px;width:auto;display:block;border-radius:10px}
 /* текст — на мягкой подложке со скруглением, по центру экрана */
 main{flex:1;display:flex;align-items:center;justify-content:center;padding:24px 16px}
 .box{background:var(--c-surface);border-radius:var(--r-lg);padding:40px 28px;max-width:520px;width:100%;text-align:center}
 p.tag{font-size:12px;text-transform:lowercase;color:var(--c-olive);font-weight:700;margin-bottom:12px}
+p.tag{color:color-mix(in srgb,var(--c-olive) 65%,var(--c-text))}
 h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;color:var(--c-text);margin-bottom:12px}
 h1 span{color:var(--c-accent)}
 p.lead{font-size:15px;color:var(--c-muted);line-height:1.65;max-width:340px;margin:0 auto 28px}
@@ -76,6 +81,7 @@ a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-
 /* подвал — как на главной */
 footer{border-top:1px solid var(--c-border);padding:24px}
 .f-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1112px;margin:0 auto;font-size:12px;color:var(--c-muted)}
+.f-row a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}   /* логотип 28 px — зона касания 44 */
 .f-row img{height:28px;width:auto;border-radius:6px;display:block}
 @media(max-width:680px){.hbar{padding:8px 16px}h1{font-size:30px}.box{padding:32px 20px}.f-row{justify-content:center;text-align:center}}
 </style>
