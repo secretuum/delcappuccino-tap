@@ -192,6 +192,23 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
   .tb-back{font-size:12px;padding:6px 10px 6px 8px;gap:5px}
   .lang-btn{padding:6px 9px}
 }
+/* печать: без шапки, подвала и кнопок; подложки браузер не печатает — карточки в рамке, чёрный текст, мелкие подписи не мельче 8 pt;
+   номера точек и шагов — белым по зелёному и точки списка — фоном, поэтому их фон печатаем (иначе цифры и маркеры пропадут) */
+@media print{
+  .topbar,footer,.pass-btn{display:none}
+  .shell{max-width:none;padding:0}
+  .uk-hero{padding:0 0 4px}
+  main{padding:12px 0 0}
+  .sec{margin-bottom:20px}
+  .sec-head,.sec-title{break-after:avoid}
+  .cards{grid-template-columns:1fr 1fr;gap:10px}   /* лист A4 уже 720 px — без этого карточки встали бы в столбец */
+  .pass,.info,.note{background:none;border:1px solid #999;break-inside:avoid}
+  .perechen{border:1px solid #ccc}
+  .eyebrow,.pass-place small,.row .k,.row .v,.row .v a,.talon-line,.pass-kicker,.uk-sub,.perechen,.note{color:#000}
+  .row .k{font-size:8pt}
+  .talon-line{font-size:9pt}
+  .pass-num,.steps li::before,.info li::before{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
 </style>
 </head>
 <body>
