@@ -176,7 +176,8 @@ class TestPhones(Base):
         """Sputnik Mall — не филиал (владелец 11.11.2026): нет в BRANCHES, JSON-LD, #locations, окне выбора, sitemap, llms.txt"""
         x = fb.EXTRA_POINTS[0]
         self.assertEqual(x['phone'], NEW_PHONE)
-        self.assertEqual(set(x), {'id', 'phone', 'name', 'addr'}, 'номера 06, часов и гео у новой точки нет')
+        # 11.11 «ближайшая точка — сверху»: geo — только для сортировки карточек здесь (метка ТРЦ на Яндекс Картах, tests/test_near.py)
+        self.assertEqual(set(x), {'id', 'phone', 'name', 'addr', 'geo'}, 'номера 06 и часов у новой точки нет')
         self.assertNotRegex(x['id'], r'\d', 'номер точки не даём')
         branches = re.search(r'const BRANCHES = \[(.*?)\n\];', self.main, re.S).group(1)
         self.assertNotIn(digits(NEW_PHONE), digits(branches))

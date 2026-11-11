@@ -7,7 +7,10 @@
 - филиалы 01–05 — из BRANCHES главной: название, адрес, телефон (руками не дублируются); названия и адреса на kk/en —
   из словаря MENU_TR главной, как на /kk/ и /en/;
 - новая точка — список EXTRA_POINTS ниже: её нет в BRANCHES, поэтому нет и в JSON-LD, #locations, окне выбора филиала,
-  sitemap и llms.txt — только на этой странице;
+  sitemap и llms.txt — только на этой странице; её geo — только для сортировки карточек здесь по близости;
+- ближайшая точка — сверху (владелец 11.11.2026): при открытии страница спрашивает место и ставит карточки по близости,
+  на каждой — расстояние; делает общий файл assets/near.<хэш>.js (исходник tools/near.js, тот же, что у #locations главной),
+  тег — за карточками; отказ или ошибка — порядок прежний и одна спокойная строка .fb-geo (otzyv.geo; без JS скрыта);
 - тексты — tools/pages_i18n.json, раздел otzyv у ru / kk / en (казахские уходят на вычитку в menu/kk_review.md);
 - вид — токены v5 и плоский слой кнопок главной (:root и правила её <style>; плоские с 11.11), шрифты — её @font-face;
   WhatsApp — тон кнопки WhatsApp главной (#25D366, решение владельца 09.11), «Позвонить» — светлый тон, как звонок в карточке точки;
@@ -30,11 +33,15 @@ LANG_BTN = {'kk': 'ҚАЗ', 'ru': 'РУС', 'en': 'ENG'}
 HOME = {'ru': '/', 'kk': '/kk/', 'en': '/en/'}  # «← на главную» — на главную своего языка
 
 # новая точка, данных о филиале пока нет (владелец 11.11.2026): «как филиал пока ничего неизвестно, но номер уже нужно
-# добавить». Поэтому в BRANCHES её нет, номера 06 нет, часов и гео нет; только эта страница. Телефон — мобильный номер точки.
+# добавить». Поэтому в BRANCHES её нет, номера 06 нет, часов нет; только эта страница. Телефон — мобильный номер точки.
+# geo [широта, долгота] — только чтобы карточки здесь вставали по близости (задача владельца 11.11.2026): метка ТРЦ
+# на Яндекс Картах — организация 1085318890 «Спутник Молл, торговый центр, Алматы, микрорайон Мамыр-1, 8А»
+# (https://yandex.kz/maps/org/sputnik_moll/1085318890/, первые "coordinates":[долгота,широта] страницы, curl 11.11.2026),
+# как брали 01–04 (PR #47): метка всего ТРЦ, не самой кофейни внутри. Без geo карточка встала бы последней.
 # Когда точка станет филиалом (появится в BRANCHES) — убрать её отсюда: генератор остановится, если номер или название
 # окажутся в обоих местах.
 EXTRA_POINTS = (
-    {'id': 'sputnik', 'phone': '+77478839057',
+    {'id': 'sputnik', 'phone': '+77478839057', 'geo': (43.21216, 76.842353),
      'name': {'ru': 'Sputnik Mall', 'kk': 'Sputnik Mall', 'en': 'Sputnik Mall'},
      'addr': {'ru': 'мкр. Мамыр-1, 8а, 1 этаж', 'kk': 'Мамыр-1 шағын ауданы, 8а, 1-қабат',
               'en': '8a Mamyr-1 microdistrict, ground floor'}},
@@ -129,7 +136,7 @@ def dict_js(T, ps):
     out = {}
     for l in LANGS:
         t = T[l]
-        d = {'pageTitle': t['title'], 'eyebrow': t['eyebrow'], 'h1': t['h1'], 'lead': t['lead'], 'call': t['call'],
+        d = {'pageTitle': t['title'], 'eyebrow': t['eyebrow'], 'h1': t['h1'], 'lead': t['lead'], 'geo': t['geo'], 'call': t['call'],
              'back': t['back'], 'home': HOME[l]}
         for p in ps:
             d['n_' + p['id']], d['a_' + p['id']] = p['name'][l], p['addr'][l]
@@ -232,6 +239,7 @@ h1,h2{font-family:var(--font-display);font-weight:700;text-transform:lowercase;l
 .eyebrow{font-size:var(--fs-caption);text-transform:lowercase;color:var(--c-olive-text);font-weight:700;margin-bottom:6px}
 .fb-hero h1{font-size:34px;line-height:1.08}
 .fb-lead{margin-top:12px;max-width:560px;font-size:var(--fs-body);color:var(--c-muted);line-height:1.5}
+.fb-geo{margin-top:8px;max-width:560px;font-size:var(--fs-small);color:var(--c-muted);line-height:1.4}   /* место не определили — показывает near.js */
 /* карточки точек — как карточки точек главной: белые, рамка 1px (плоско, 11.11); кнопки — плоские, высотой 52, переносятся целиком */
 main{padding:24px 0 32px}
 .fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
@@ -287,6 +295,7 @@ footer.shell{margin-top:8px;padding-top:24px;padding-bottom:40px}   /* margin и
   <p class="eyebrow" data-i18n="eyebrow">%(eyebrow)s</p>
   <h1 data-i18n="h1">%(h1)s</h1>
   <p class="fb-lead" data-i18n="lead">%(lead)s</p>
+  <p class="fb-geo" data-i18n="geo" hidden>%(geo)s</p>
 </header>
 
 <main class="shell">
@@ -294,6 +303,7 @@ footer.shell{margin-top:8px;padding-top:24px;padding-bottom:40px}   /* margin и
 %(cards)s
   </div>
 </main>
+%(near)s
 
 <footer class="shell">
   <div class="f-row">
@@ -349,7 +359,8 @@ function setLang(lang, quiet){
 ''' % {'title': H.escape(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID) + S.HEAD_JS,
        'preload': preload, 'og_image': S.OG_IMAGE, 'fonts': S.font_faces(html), 'tokens': S.tokens_css(html), 'btn': btn,
        'sprite': sprite(), 'arrow': ARROW, 'back': e(t['back']), 'langs': langs, 'eyebrow': e(t['eyebrow']), 'h1': e(t['h1']),
-       'lead': e(t['lead']), 'cards': '\n'.join(card(T, p) for p in ps), 'i18n': i18n_js, 'ga': S.GA_ID}
+       'lead': e(t['lead']), 'geo': e(t['geo']), 'cards': '\n'.join(card(T, p) for p in ps), 'i18n': i18n_js, 'ga': S.GA_ID,
+       'near': S.near_tag(html)}
 
 
 def kk_review_rows():
