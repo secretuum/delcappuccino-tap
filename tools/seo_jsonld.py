@@ -751,7 +751,7 @@ footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|::-webkit-scrollbar|::view-transition-(?:old|new)\(root\)|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
                       r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
-                      r'grill-promo|grill-frame|grill-fire|grill-win|grill-video|grill-price|sale|'
+                      r'grill-promo|grill-frame|grill-fire|grill-fire-outer|grill-win|grill-video|grill-price|sale|'
                       r'icons|ic|ib|pill|social|rv|rv-in|rv-fast|px-on|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'

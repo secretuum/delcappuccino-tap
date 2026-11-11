@@ -54,7 +54,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --font-body:'Montserrat',system-ui,-apple-system,sans-serif;
   --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);
   --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;
-  --c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);
+  --c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-flame:#F23A10; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);
   /* кремовый — только цвет бренда: логотип и мопед на зелёном, заставка, светлое на зелёной видеозоне (владелец 31.10: в интерфейсе крема нет) */
   --c-brand-cream:#FEF1E7;
   --c-whatsapp:#25D366;       /* WhatsApp — в цвете WhatsApp: заливка, белый логотип (владелец 31.10) */
@@ -212,12 +212,13 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .grill-win{position:absolute;left:3.30%;top:14.19%;width:93.41%;height:80.97%;overflow:hidden;z-index:1;clip-path:polygon(0.0% 91.8%,0.0% 93.0%,0.2% 94.2%,0.4% 95.2%,0.7% 96.2%,1.0% 97.0%,1.5% 97.8%,2.0% 98.5%,2.5% 99.0%,3.2% 99.4%,3.9% 99.7%,4.7% 99.9%,5.5% 100.0%,94.5% 100.0%,95.3% 99.9%,96.1% 99.7%,96.8% 99.4%,97.5% 99.0%,98.0% 98.5%,98.5% 97.8%,99.0% 97.0%,99.3% 96.2%,99.6% 95.2%,99.8% 94.2%,100.0% 93.0%,100.0% 91.8%,100.0% 34.0%,99.9% 31.7%,99.7% 29.5%,99.3% 27.3%,98.8% 25.1%,98.1% 23.0%,97.3% 20.9%,96.5% 18.8%,95.5% 16.8%,94.5% 14.9%,93.4% 13.0%,92.3% 11.1%,91.1% 9.3%,90.3% 11.1%,89.4% 12.9%,88.3% 14.8%,87.0% 16.6%,85.7% 18.3%,84.3% 20.0%,82.9% 21.5%,81.5% 22.9%,80.0% 24.2%,78.6% 25.3%,77.3% 26.2%,76.0% 26.8%,74.1% 24.9%,72.1% 22.8%,70.1% 20.6%,68.0% 18.2%,65.9% 15.8%,63.8% 13.4%,61.7% 11.0%,59.6% 8.5%,57.6% 6.2%,55.7% 4.0%,53.8% 1.9%,52.1% 0.0%,50.6% 2.3%,49.1% 4.7%,47.5% 7.1%,45.9% 9.4%,44.2% 11.7%,42.6% 13.9%,40.9% 16.1%,39.3% 18.1%,37.7% 20.0%,36.2% 21.8%,34.8% 23.3%,33.6% 24.7%,32.3% 23.4%,30.9% 22.1%,29.4% 20.7%,27.8% 19.3%,26.1% 17.9%,24.3% 16.5%,22.5% 15.1%,20.6% 13.7%,18.7% 12.3%,16.8% 10.9%,14.9% 9.6%,13.0% 8.2%,11.8% 10.1%,10.6% 12.0%,9.3% 14.0%,8.1% 16.1%,6.9% 18.2%,5.7% 20.4%,4.6% 22.6%,3.5% 24.8%,2.5% 27.1%,1.6% 29.4%,0.7% 31.7%,0.0% 34.0%)}
 .grill-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .grill-fire{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-.grill-ticker{position:relative;height:44px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(13px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500}
+.grill-ticker{position:relative;height:44px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(19px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500}
 .grill-ticker span{display:inline-block;padding-right:.6em;animation:grill-run 9s linear infinite}
 @keyframes grill-run{to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}
-/* «ВНИМАНИЕ» — вплотную к низу плиток (11.11), скругление внизу; жёлтый на --c-danger — 4,8:1 */
-.promo-run{border-radius:0 0 var(--r-lg) var(--r-lg);background:var(--c-danger);overflow:hidden;cursor:pointer}
+/* «ВНИМАНИЕ» — вплотную к низу плиток, цвета огня (11.11); жёлтый на нём 3,1:1 — крупный жирный текст ≥ 19 px, порог 3:1 */
+.grill-fire-outer{fill:var(--c-flame)}
+.promo-run{border-radius:0 0 var(--r-lg) var(--r-lg);background:var(--c-flame);overflow:hidden;cursor:pointer}
 
 /* ── О НАС ── */
 .story{padding-top:var(--s-32);padding-bottom:var(--s-32)}

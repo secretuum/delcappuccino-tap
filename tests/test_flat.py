@@ -180,13 +180,24 @@ class TestPromoAndHero(unittest.TestCase):
         self.assertIsNone(decl(rule(self.css, '.grill-frame'), 'filter'))
 
     def test_attention_strip_solid(self):
+        """решение владельца 11.11: полоса цвета огня — фон полосы и внешнее пламя — один токен --c-flame, стыка не видно;
+        жёлтый на нём ~3,1:1 — строка декоративная (aria-hidden), крупный жирный текст (≥ 18,7 px bold) — порог 3:1"""
+        sys.path.insert(0, os.path.join(ROOT, 'tools'))
+        import flame_frame as ff
         run = rule(self.css, '.promo-run')
-        self.assertEqual(decl(run, 'background'), 'var(--c-danger)')
+        self.assertEqual(decl(run, 'background'), 'var(--c-flame)')
+        self.assertEqual(decl(rule(self.css, '.grill-fire-outer'), 'fill'), 'var(--c-flame)')
+        self.assertEqual(self.v['--c-flame'], ff.OUTER_FILL)
+        self.assertIn('class="grill-fire-outer" fill="%s"' % ff.OUTER_FILL, self.html)
         ticker = rule(self.css, '.grill-ticker')
         self.assertIsNone(decl(ticker, 'text-shadow'))
         self.assertIsNone(decl(ticker, 'mask-image'))
-        c = contrast(color(self.v, decl(ticker, 'color'))[0], color(self.v, 'var(--c-danger)')[0])
-        self.assertGreaterEqual(c, 4.5, 'жёлтый на красной полосе: %.2f' % c)
+        c = contrast(color(self.v, decl(ticker, 'color'))[0], color(self.v, 'var(--c-flame)')[0])
+        self.assertGreaterEqual(c, 3, 'жёлтый на полосе цвета огня (крупный текст): %.2f' % c)
+        size = re.match(r'clamp\((\d+(?:\.\d+)?)px,', decl(ticker, 'font-size'))
+        self.assertGreaterEqual(float(size.group(1)), 18.7, 'крупный текст на всех ширинах: минимум clamp ≥ 18,7 px')
+        self.assertGreaterEqual(int(decl(ticker, 'font-weight')), 700)
+        self.assertIn('class="grill-ticker" aria-hidden="true"', self.html, 'строка декоративная')
 
     def test_caption_plates_readable_over_any_frame(self):
         """подпись на ровной плашке поверх видео: худший случай — белый кадр под плашкой; каждый цвет текста подписи ≥ 4,5:1"""
