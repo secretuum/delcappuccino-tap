@@ -549,15 +549,14 @@ def tokens_css(html):
     return re.sub(r'\s*\n\s*', '', re.search(r':root\{.*?\}', css, re.S).group(0))
 
 
-def glass_css(html, sel, light=''):
-    """слои стекла кнопок главной (:where(…) — основа, нажатие, наведение, reduced-motion) для своих селекторов sel;
+def btn_css(html, sel, light=''):
+    """слои плоских кнопок главной (:where(…) — заливка тона, нажатие, наведение) для своих селекторов sel;
     light — селекторы светлого тона (тело правила тона светлых кнопок главной). Один источник вида — правила главной"""
     css = re.sub(r'\s*\n\s*', '', re.sub(r'/\*.*?\*/', '', html[html.index('<style>') + 7:html.index('</style>')], flags=re.S))
     w = ':where(%s)' % sel
-    rules = [w + '{' + re.search(r':where\([^)]*\)\{(--tone-rgb[^}]*)\}', css).group(1) + '}',
+    rules = [w + '{' + re.search(r':where\([^)]*\)\{(--tone-bg[^}]*)\}', css).group(1) + '}',
              w + ':active{' + re.search(r':where\([^)]*\):active\{([^}]*)\}', css).group(1) + '}',
-             '@media(hover:hover){%s:hover{%s}}' % (w, re.search(r':where\([^)]*\):hover\{([^}]*)\}', css).group(1)),
-             '@media(prefers-reduced-motion:reduce){%s:active{scale:none}}' % w]
+             '@media(hover:hover){%s:hover{%s}}' % (w, re.search(r':where\([^)]*\):hover\{([^}]*)\}', css).group(1))]
     if light:
         rules.append(light + '{' + re.search(r'(?:^|\})\.btn\.ghost,[^{]*\{([^}]*)\}', css).group(1) + '}')
     return '\n'.join(rules)
@@ -672,13 +671,13 @@ header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
 .logo{display:inline-flex;margin-right:4px}
 .logo img{display:block;height:36px;width:auto;border-radius:8px}
 /* чипы как в приложении (Chip.tsx): 40, поля 16, Montserrat 500 14px; касание 48 — псевдоэлементом по 4px сверху и снизу;
-   светлое стекло — слои и тон из правил главной (glass_css), выбранный язык — зелёное */
-%(glass)s
+   плоские, светлый тон — слои и тон из правил главной (btn_css), выбранный язык — зелёный */
+%(btn)s
 .pill,.toc a,.lang a{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);color:var(--c-text);font-size:var(--fs-small);font-weight:500;text-decoration:none;white-space:nowrap}
 .pill::after,.toc a::after,.lang a::after{content:'';position:absolute;inset:-4px 0}
 .lang{display:flex;gap:4px;margin-left:auto}
 .lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption)}
-.lang a[aria-current]{--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow-pressed);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);color:var(--c-on-accent)}
+.lang a[aria-current]{--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);color:var(--c-on-accent)}
 h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase;line-height:1.2}
 h1{font-size:var(--fs-heading);margin:16px 0 8px}
 .lead{color:var(--c-muted)}
@@ -727,7 +726,7 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
        'og_description': H.escape(mp['og_description']), 'back': e(mp['back']), 'photo_menu': e(mp['photo_menu']),
        'h1': e(mp['h1']), 'lead': mp['lead'].replace('{menu_link}', menu_link),
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
-       'tokens': tokens_css(html), 'glass': glass_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
+       'tokens': tokens_css(html), 'btn': btn_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
        'lang_label': H.escape(i18n()['kk' if lang == 'kk' else 'en']['page']['lang_label']) if lang != 'ru' else 'Язык',
        'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
 
@@ -806,20 +805,20 @@ def css_rules(css):
 def keep_rule(rule):
     pre, body = rule.split('{', 1)
     pre = pre.strip()
-    if pre.startswith(('@media', '@supports')):     # @media — телефон, hover, reduced-motion (стекло кнопок); @supports — на будущее
+    if pre.startswith(('@media', '@supports')):     # @media — телефон, hover (наведение кнопок), reduced-motion; @supports — на будущее
         inner = [r for r in (keep_rule(x) for x in css_rules(body[:-1])) if r]
         return pre + '{\n' + '\n'.join(inner) + '\n}' if inner else None
     if pre.startswith('@keyframes'):
         return rule if pre.split()[1] in CSS_KEYFRAMES else None
     if pre.startswith('@'):
         return None
-    w = re.match(r':where\((.*)\)(:[\w-]+)?$', pre)     # слои стекла кнопок: :where(список) — в списке только нужное странице
+    w = re.match(r':where\((.*)\)(:[\w-]+)?$', pre)     # слои кнопок: :where(список) — в списке только нужное странице
     if w:
         sels = [s for s in w.group(1).split(',') if CSS_KEEP.match(s.strip())]
         return ':where(%s)%s{%s' % (','.join(sels), w.group(2) or '', body) if sels else None
     if not any(CSS_KEEP.match(s.strip()) for s in pre.split(',')):
         return None
-    if body.startswith('--tone-'):                         # тона стекла: из общего списка — только нужное странице
+    if body.startswith('--tone-'):                         # тона кнопок: из общего списка — только нужное странице
         return ','.join(s for s in pre.split(',') if CSS_KEEP.match(s.strip())) + '{' + body
     return rule
 

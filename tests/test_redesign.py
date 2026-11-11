@@ -429,9 +429,9 @@ class TestPage(unittest.TestCase):
         css = style(self.pages['ru'])
         self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#25D366', 'цвет WhatsApp — фирменный (владелец 31.10; 09.11 вернул после пробы #128C7E)')
         for l, html in self.pages.items():
-            # 2.11: стекло в цвете WhatsApp (тон --glass-wa-*, основа = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
+            # 11.11: плоская заливка в цвете WhatsApp (тон --btn-wa = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
             wa = re.search(r'(?:^|\})\.ib\.wa\{([^}]*)\}', style(html)).group(1)
-            self.assertTrue(wa.startswith('--tone-rgb:var(--glass-wa-rgb);') and wa.endswith('color:#FFFFFF'), l)
+            self.assertTrue(wa.startswith('--tone-bg:var(--btn-wa);') and wa.endswith('color:#FFFFFF'), l)
             self.assertNotRegex(html, r'class="btn[^"]*"[^>]*>WhatsApp<', '%s: текстовых кнопок WhatsApp нет' % l)
 
     def test_contacts_social_icons(self):
@@ -489,23 +489,34 @@ class TestPage(unittest.TestCase):
                 self.assertIn(need, mob, l)
         self.assertEqual(root_vars(self.pages['ru'])['--fs-heading'], '28px')
 
-    def test_fab_menu_glass_pill(self):
-        """плавающая «меню» на телефоне (решение владельца 02.11): зелёное стекло, как главная кнопка (токены --glass-*), основа photo —
-        плавает над любым содержимым; текст белый, высота 44 = smallHeight, длиннее (≥ 160); без backdrop-filter и прежнего @supports"""
+    def test_fab_menu_right_corner(self):
+        """плавающая «меню» на телефоне: зелёная таблетка (02.11), плоская (11.11; тон — из общего слоя кнопок, tests/test_glass.py),
+        справа внизу (владелец 11.11: «повесим справа»): 16 от правого и нижнего края плюс вырез экрана (safe-area), без прежней
+        центровки left:50% и сдвига; текст белый, высота 44, длиннее (≥ 160). Не перекрывает: прочее с position:fixed — окна
+        и подсказка меню поверх неё (z-index выше), а подвал на телефоне снизу оставляет под ней место"""
         for l, html in self.pages.items():
             css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
             fab = re.search(r'(?:^|\})\.fab-menu\{([^}]*)\}', css).group(1)
-            self.assertIn('height:var(--h-glass-small)', fab, l)
-            self.assertEqual(root_vars(html)['--h-glass-small'], '44px', l)
+            self.assertIn('height:var(--h-btn-sm)', fab, l)
+            self.assertEqual(root_vars(html)['--h-btn-sm'], '44px', l)
             self.assertGreaterEqual(int(re.search(r'min-width:(\d+)px', fab).group(1)), 160)
-            for need in ('left:50%', 'transform:translateX(-50%)', 'env(safe-area-inset-bottom)', 'font-weight:700', 'font-size:16px',
-                         '--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)'):
+            for need in ('position:fixed', 'right:calc(var(--s-16) + env(safe-area-inset-right))',
+                         'bottom:calc(var(--s-16) + env(safe-area-inset-bottom))', 'font-weight:700', 'font-size:16px'):
                 self.assertIn(need, fab, l)
+            self.assertNotRegex(fab, r'(?:^|;)(?:left|transform|--tone-)', '%s: без центровки, сдвига и своего тона' % l)
+            z = int(re.search(r'z-index:(\d+)', fab).group(1))
+            others = [(sel, body) for sel, body in re.findall(r'([^{}]+)\{([^{}]*position:fixed[^{}]*)\}', css) if '.fab-menu' not in sel]
+            self.assertTrue(others or l != 'ru', l)
+            for sel, body in others:
+                self.assertGreater(int(re.search(r'z-index:(\d+)', body).group(1)), z, '%s: %s — закреплено и не поверх «меню»' % (l, sel))
+            mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css))
+            self.assertIn('.fab-menu{display:inline-flex}', mob, l)
+            room = int(re.search(r'footer\{padding:[^;}]*calc\((\d+)px \+ env\(safe-area-inset-bottom\)\)', mob).group(1))
+            self.assertGreaterEqual(room, 16 + 44 + 8, '%s: последние строки подвала — над «меню», не под ней' % l)
             shared = re.search(r'(?:^|\})\.btn,\.fab-menu\{([^}]*)\}', css).group(1)
             self.assertIn('color:var(--c-on-accent)', shared, 'текст белый')
             self.assertIn('font-family:var(--btn-font)', shared)
             self.assertNotIn('@supports', css, '%s: прежнего светлого матового стекла нет' % l)
-            self.assertNotRegex(css, r'rgba\(245,245,243', l)
             self.assertRegex(html, r'class="fab-menu"[^>]*onclick="track\(\'cta_menu\',\{src:\'hbar_m\'\}\)[^"]*"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>', l)
             self.assertIn('<symbol id="i-menu"', html, l)
 
@@ -950,8 +961,8 @@ console.log(JSON.stringify(out));
         css = style(self.pages['ru'])
         ib = re.search(r'\}\.ib\{([^}]*)\}', css).group(1)
         self.assertIn('width:var(--h-touch);height:var(--h-touch)', ib, 'касание 48 px')
-        self.assertNotIn('background', ib, '2.11: светлое стекло — тоном (tests/test_glass.py), без плоской заливки')
-        self.assertRegex(css, r'\.ib\.route,[^{]*\{--tone-rgb:var\(--glass-rgb\);[^}]*color:var\(--c-on-accent\)\}', 'маршрут — зелёное стекло')
+        self.assertNotIn('background', ib, 'заливка — тоном из общего слоя кнопок (tests/test_glass.py), не своя')
+        self.assertRegex(css, r'\.ib\.route,[^{]*\{--tone-bg:var\(--btn-green\);[^}]*color:var\(--c-on-accent\)\}', 'маршрут — зелёный')
         lic = read('docs/LICENSES-media.md')
         for need in ('Lucide', 'ISC', 'Simple Icons', 'CC0', 'map-pin', 'phone', 'whatsapp'):
             self.assertIn(need, lic)
@@ -1054,8 +1065,8 @@ console.log(JSON.stringify(out));
         self.assertNotRegex(html, r'mm-where|whereHTML|mm-mark|ME<br>NU|mm-logo|to_togo\}|to_cafe\}')
         self.assertIn("function openMenu(mode){", html, 'сигнатура openMenu(mode) — прежняя')
         css = style(html)
-        # 2.11: активная — зелёное стекло, текст белый; остальные — светлое стекло (тона и слои — tests/test_glass.py)
-        self.assertRegex(css, r'\}[^{}]*\.mm-tab\.on,\.mm-cat\.on,[^{]*\{--tone-rgb:var\(--glass-rgb\);[^}]*color:var\(--c-on-accent\)\}')
+        # 11.11: активная — зелёная, текст белый; остальные — светлые, плоские (тона и слои — tests/test_glass.py)
+        self.assertRegex(css, r'\}[^{}]*\.mm-tab\.on,\.mm-cat\.on,[^{]*\{--tone-bg:var\(--btn-green\);[^}]*color:var\(--c-on-accent\)\}')
         base = re.search(r'\}\.mm-tab,\.mm-cat\{([^}]*)\}', css).group(1)
         self.assertNotIn('background', base)
         self.assertNotRegex(base, r'width:\d', 'по ширине текста')

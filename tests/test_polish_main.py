@@ -60,8 +60,7 @@ class TestWhatsAppTone(unittest.TestCase):
     def test_brand_green(self):
         v = root_vars(read('index.html'))
         self.assertEqual(v['--c-whatsapp'], '#25D366', 'WhatsApp — фирменный зелёный (решение владельца 09.11)')
-        base = tuple(int(x) for x in v['--glass-wa-rgb'].split())
-        self.assertEqual(base, hexrgb(v['--c-whatsapp']), 'стекло WhatsApp — того же тона')
+        self.assertEqual(v['--btn-wa'], 'var(--c-whatsapp)', 'кнопка WhatsApp — того же тона (плоская заливка с 11.11)')
 
 
 VOID = {'area', 'base', 'br', 'col', 'embed', 'hr', 'img', 'input', 'link', 'meta', 'source', 'track', 'wbr', 'param'}
