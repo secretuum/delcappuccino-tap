@@ -1022,10 +1022,12 @@ console.log(JSON.stringify(out));
         js = re.search(r'<script>(.*)</script>', seo.MOTION_JS, re.S).group(1)
         harness = r"""
 const vm = require('vm'); const js = %s; const SEL = %s; const out = {};
+// как в браузере: пустое имя класса — DOMException (SyntaxError), ничего не меняется (11.11: rv / rv-in оставались на карточках)
+function tok(c) { if (c.some(x => x === '' || /\s/.test(x))) throw new Error("SyntaxError: Failed to execute on 'DOMTokenList': The token provided must not be empty."); return c; }
 function mk(name, top, parent, ref) {
   const cls = new Set(), props = {};
   const el = { name, parentNode: parent, previousElementSibling: ref || null, clientHeight: 800,
-    classList: { add: (...c) => c.forEach(x => cls.add(x)), remove: (...c) => c.forEach(x => cls.delete(x)), contains: c => cls.has(c) },
+    classList: { add: (...c) => tok(c).forEach(x => cls.add(x)), remove: (...c) => tok(c).forEach(x => cls.delete(x)), contains: c => cls.has(c) },
     style: { setProperty: (k, v) => { props[k] = v; }, removeProperty: k => { delete props[k]; } },
     getBoundingClientRect: () => ({ top, height: 300 }), matches: s => s.split(',').some(x => x.trim() === name || x.trim().endsWith(' ' + name)),
     _cls: cls, _props: props };
@@ -1036,9 +1038,13 @@ function run(opts) {
   const a = mk('article', 2000, grid), b = mk('article', 2000, grid, a), c = mk('article', 2000, grid, b);
   const seen = mk('.loc-card', 100, grid);             // уже в экране при загрузке
   const photo = mk('img', 1500, mk('.story-photo', 1500, null));
-  const timers = [], ios = [], scroll = [];
+  const menu = mk('#menu-modal', 0, null), feed = mk('.mm-feed', 0, menu);       // меню-оверлей: подложки разделов
+  const s1 = mk('.mm-sec', 2000, feed), s2 = mk('.mm-sec', 2000, feed, s1);
+  menu.querySelectorAll = s => s === '.mm-sec' ? [s1, s2] : [];
+  const timers = [], ios = [], scroll = [], errs = [];
+  const tick = () => timers.splice(0).forEach(f => { try { f(); } catch (e) { errs.push(String(e)); } });
   const ctx = { document: { querySelectorAll: s => s === SEL ? [a, b, c, seen] : (s.indexOf('logo-art') >= 0 ? [photo] : []),
-      getElementById: () => null, documentElement: mk('html', 0, null) },
+      getElementById: id => id === 'menu-modal' ? menu : null, documentElement: mk('html', 0, null) },
     innerHeight: 800, matchMedia: q => ({ matches: q.indexOf('reduce') >= 0 ? !!opts.reduce : (q.indexOf('901') >= 0 ? !!opts.desk : false) }),
     setTimeout: f => timers.push(f), requestAnimationFrame: f => f(),
     addEventListener: (t, f, o) => scroll.push([t, o, f]) };
@@ -1046,9 +1052,15 @@ function run(opts) {
   ctx.window = ctx; vm.createContext(ctx); vm.runInContext(js, ctx);
   const st = () => [a, b, c, seen].map(e => [...e._cls].sort().join(' ') + '|' + (e._props['--rv-d'] || ''));
   const r = { before: st(), ios: ios.map(i => [(i.o || {}).threshold, (i.o || {}).rootMargin, i.list.length]), menu: typeof ctx.revealMenu };
-  if (ios[0]) { ios[0].cb([{ isIntersecting: true, target: a }]); r.inView = st(); timers.forEach(f => f()); r.after = st(); }
+  if (ios[0]) { ios[0].cb([{ isIntersecting: true, target: a }]); r.inView = st(); tick(); r.after = st(); }
   r.px = ctx.document.documentElement._cls.has('px-on'); r.scroll = scroll.filter(x => x[0] === 'scroll').map(x => x[1]);
   if (opts.desk && ios[1]) { ios[1].cb([{ isIntersecting: true, target: photo }]); scroll.filter(x => x[0] === 'scroll').forEach(x => x[2]()); r.py = photo._props['--py']; }
+  const ms = () => [s1, s2].map(e => [...e._cls].sort().join(' ') + '|' + (e._props['--rv-d'] || ''));
+  if (typeof ctx.revealMenu === 'function') {
+    const n = ios.length; ctx.revealMenu(); r.mBefore = ms();
+    if (ios[n]) { ios[n].cb([{ isIntersecting: true, target: s1 }]); r.mIn = ms(); tick(); r.mAfter = ms(); }
+  }
+  r.errs = errs;
   return r;
 }
 out.mobile = run({}); out.desk = run({ desk: true }); out.reduce = run({ reduce: true }); out.noIO = run({ noIO: true });
@@ -1066,6 +1078,12 @@ console.log(JSON.stringify(out));
         self.assertEqual(m['ios'][0], [0.15, '0px 0px -10% 0px', 3])
         self.assertEqual(m['inView'][0], 'rv rv-in|0ms')
         self.assertEqual(m['after'][0], '|', 'после появления классы сняты')
+        # 11.11: classList.remove('rv','rv-in','') бросал DOMException (как в браузере) — классы оставались; теперь без пустого имени
+        for k in ('mobile', 'desk', 'reduce', 'noIO'):
+            self.assertEqual(got[k]['errs'], [], '%s: снятие классов без исключений' % k)
+        self.assertEqual(m['mBefore'], ['rv rv-fast|0ms', 'rv rv-fast|0ms'], 'подложки меню — rv и rv-fast')
+        self.assertEqual(m['mIn'][0], 'rv rv-fast rv-in|0ms')
+        self.assertEqual(m['mAfter'], ['|', 'rv rv-fast|0ms'], 'после появления подложки — без rv, rv-in, rv-fast и --rv-d')
         self.assertEqual(m['menu'], 'function')
         self.assertFalse(m['px'], 'на телефоне параллакса нет')
         self.assertTrue(got['desk']['px'])

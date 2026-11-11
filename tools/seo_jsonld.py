@@ -1512,6 +1512,7 @@ def with_sub(html):
 # requestAnimationFrame + translate3d, scroll passive, только пока блок на экране. Меню-оверлей: подложки разделов —
 # так же, но 16 px и 350 мс, лесенка не длиннее 3 (window.revealMenu, вызывает renderFeed).
 # reduced-motion или нет IntersectionObserver — ничего не делает; без JS всё видно (класс скрытия ставит только скрипт).
+# Снятие классов — без пустого имени: classList.remove('') бросает DOMException, и rv / rv-in оставались на карточках (до 11.11).
 MOTION_MARK = '<!-- движение: появление при прокрутке, параллакс — собирает tools/seo_jsonld.py, руками не править -->'
 MOTION_RE = re.compile(re.escape(MOTION_MARK) + r'\n.*?<!-- /движение -->\n', re.S)
 MOTION_SEL = '.promo,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
@@ -1519,7 +1520,7 @@ MOTION_JS = ("<script>(function(){try{if(matchMedia('(prefers-reduced-motion: re
              "if(!('IntersectionObserver'in window))return;var d=document,SEL='" + MOTION_SEL + "';"
              "function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){"
              "es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);el.classList.add('rv-in');"
-             "setTimeout(function(){el.classList.remove('rv','rv-in',cls);el.style.removeProperty('--rv-d')},1000)})},"
+             "setTimeout(function(){el.classList.remove('rv','rv-in');if(cls)el.classList.remove(cls);el.style.removeProperty('--rv-d')},1000)})},"
              "{root:root||null,threshold:.15,rootMargin:'0px 0px -10% 0px'});"
              "els.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vh*.9)return;var i=0,s=el.previousElementSibling;"
              "while(s){if(s.matches&&s.matches(el.parentNode&&el.parentNode.matches&&el.parentNode.matches('.mm-cols')?'.mm-sec':SEL))i++;s=s.previousElementSibling}"
