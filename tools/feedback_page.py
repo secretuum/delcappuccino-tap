@@ -228,7 +228,7 @@ h1,h2{font-family:var(--font-display);font-weight:700;text-transform:lowercase;l
 .tb-back svg{flex:none}
 .tb-back span{min-width:0;overflow:hidden;text-overflow:ellipsis}
 /* заголовок и строка под ним */
-.fb-hero{padding:32px 0 8px}
+.fb-hero{padding-top:32px;padding-bottom:8px}   /* только по вертикали: боковые поля — от .shell (сокращение padding их обнуляло, 11.11) */
 .eyebrow{font-size:var(--fs-caption);text-transform:lowercase;color:var(--c-olive-text);font-weight:700;margin-bottom:6px}
 .fb-hero h1{font-size:34px;line-height:1.08}
 .fb-lead{margin-top:12px;max-width:560px;font-size:var(--fs-body);color:var(--c-muted);line-height:1.5}
@@ -254,7 +254,7 @@ footer.shell{margin-top:8px;padding-top:24px;padding-bottom:40px}   /* margin и
 @media(max-width:720px){
   .shell{padding:0 16px}
   .topbar{padding:7px 14px}
-  .fb-hero{padding:24px 0 4px}
+  .fb-hero{padding-top:24px;padding-bottom:4px}
   .fb-hero h1{font-size:28px}
   main{padding:20px 0 24px}
   .fb-grid{gap:12px}

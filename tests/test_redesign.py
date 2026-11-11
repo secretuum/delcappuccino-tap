@@ -718,6 +718,47 @@ console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classLi
                 for side, val in sides.items():
                     self.assertEqual(got.get(side), val, '%s, %d px: %s подвала' % (p, w, side))
 
+    def test_shell_side_padding_everywhere(self):
+        """боковые поля контейнера — у каждого элемента с ним на всех 9 страницах: на /otzyv <header class="fb-hero shell">
+        с .fb-hero{padding:32px 0 8px} после .shell{…;padding:0 24px} (та же специфичность, позже в файле) обнулял боковые 24 / 16 px,
+        и «обратная связь · жалобы и предложения» прилипали к краю экрана, а карточки ниже стояли с отступом (владелец 11.11, iPhone).
+        Итоговые padding-left/right и margin-left/right каждого такого элемента при 1200 и 375 px — как у самого контейнера
+        (.shell, в текстовых меню — .wrap), сам контейнер — 24 / 16 px (меню — 16 px). Своим классам — только padding-top/bottom"""
+        boxes = {   # страница: (класс контейнера, {ширина: боковое поле контейнера})
+            'index.html': ('shell', {1200: 'var(--s-24)', 375: 'var(--s-16)'}),
+            'ugolok/index.html': ('shell', {1200: '24px', 375: '16px'}),
+            'otzyv/index.html': ('shell', {1200: '24px', 375: '16px'}),
+            'menyu/index.html': ('wrap', {1200: '16px', 375: '16px'}),
+            '404.html': (None, {}),   # контейнеров нет; появятся — впишите сюда класс и поля
+        }
+        for twin, of in (('kk/index.html', 'index.html'), ('en/index.html', 'index.html'), ('kk/menyu/index.html', 'menyu/index.html'),
+                         ('en/menu/index.html', 'menyu/index.html')):
+            boxes[twin] = boxes[of]
+        self.assertEqual(len(boxes), 9)
+        for p, (box, by_width) in boxes.items():
+            html = read(p)
+            markup = re.sub(r'<script\b.*?</script>', '', html[html.index('</style>'):], flags=re.S)
+            found = set()
+            for tag, attrs in re.findall(r'<([a-z][a-z0-9]*)\b([^>]*)>', markup):
+                c = re.search(r'\bclass="([^"]*)"', attrs)
+                cls = tuple(c.group(1).split()) if c else ()
+                if {'shell', 'wrap'} & set(cls):
+                    found.add((tag, cls))
+            if box is None:
+                self.assertEqual(found, set(), '%s: появился контейнер — впишите его поля в тест' % p)
+                continue
+            self.assertTrue(found, '%s: нет ни одного .%s' % (p, box))
+            css = css_flat(html)
+            for w, x in by_width.items():
+                own = cascade(css, None, [box], w)
+                self.assertEqual((own.get('padding-left'), own.get('padding-right')), (x, x), '%s, %d px: поля .%s' % (p, w, box))
+                for tag, cls in sorted(found):
+                    self.assertIn(box, cls, '%s: <%s class="%s"> — контейнер не того класса' % (p, tag, ' '.join(cls)))
+                    got = cascade(css, tag, list(cls), w)
+                    for side in ('padding-left', 'padding-right', 'margin-left', 'margin-right'):
+                        self.assertEqual(got.get(side), own.get(side), '%s, %d px: %s у <%s class="%s"> не как у .%s' % (
+                            p, w, side, tag, ' '.join(cls), box))
+
     def test_menu_overlay_in_node(self):
         """этап 2: оверлей меню на заглушке DOM — открыть, фото-превью у позиций с фото, вкладки, режим togo, язык kk/en,
         карточка блюда в новом виде (фото, название, цена пилюлей, старая цена зачёркнута)"""
