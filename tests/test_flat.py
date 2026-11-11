@@ -175,7 +175,7 @@ class TestPromoAndHero(unittest.TestCase):
 
     def test_caption_plates_readable_over_any_frame(self):
         """подпись на ровной плашке поверх видео: худший случай — белый кадр под плашкой; каждый цвет текста подписи ≥ 4,5:1"""
-        texts = {'.tile-cap': ['.tile-cap .promo-t', '.promo-s', '.promo-s s'], '.grill-cap': ['.promo-t', '.promo-s', '.promo-s s', '.promo-s .sale', '.promo-a']}
+        texts = {'.tile-cap': ['.tile-cap .promo-t', '.promo-s']}
         for cap, sels in texts.items():
             bg = decl(rule(self.css, cap), 'background')
             self.assertRegex(bg, r'^rgba\(\d+,\d+,\d+,[\d.]+\)$', '%s: ровная плашка, не градиент' % cap)
@@ -185,6 +185,17 @@ class TestPromoAndHero(unittest.TestCase):
                     fg = over(color(self.v, decl(rule(self.css, sel), 'color')), plate)
                     c = contrast(fg, plate)
                     self.assertGreaterEqual(c, 4.5, '%s %s над кадром %s: %.2f' % (cap, sel, frame, c))
+
+    def test_grill_price_tag_solid(self):
+        """цена на плитке «Курицы гриль» (11.11: подписи нет) — сплошная жёлтая метка в цвет кромки огня, текст ≥ 4,5:1"""
+        for p in HOMES:
+            css, v = css_of(read(p)), root_vars(read(p))
+            tag = rule(css, '.grill-price')
+            bg = color(v, decl(tag, 'background'))
+            self.assertEqual(bg, ((255, 229, 0), 1.0), '%s: сплошной #FFE500' % p)
+            for sel in ('.grill-price', '.grill-price s'):
+                c = contrast(color(v, decl(rule(css, sel), 'color'))[0], bg[0])
+                self.assertGreaterEqual(c, 4.5, '%s: %s — %.2f' % (p, sel, c))
 
     def test_hero_plain(self):
         for p in HOMES:

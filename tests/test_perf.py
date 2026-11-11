@@ -406,9 +406,9 @@ class TestGrillPromo(unittest.TestCase):
         self.assertLess(frame.index('<svg class="grill-fire"'), frame.index('<div class="grill-win">'),
                         'svg пламени должен идти в DOM раньше окна с видео')
         win = inner('<div class="grill-win">')
-        # редизайн 31.10 (владелец): название, цена, адреса и ссылка «смотреть в меню» — тоже внутри окна, поверх видео;
+        # редизайн 31.10: подпись — внутри окна, поверх видео; с 11.11 (владелец: «только цену») — одна метка цены;
         # с 1.11 бегущая строка — не в огне, а полосой под плитками акций (её перекрывали зубцы пламени)
-        for part in ('<video class="grill-video"', '<p class="grill-cap">'):
+        for part in ('<video class="grill-video"', '<span class="grill-price"'):
             self.assertIn(part, win, part + ' должен быть внутри окна .grill-win')
         self.assertNotIn('grill-ticker', win)
         self.assertNotIn('z-index:1', re.search(r'\n\.grill-fire\{([^}]*)\}', self.html).group(1))

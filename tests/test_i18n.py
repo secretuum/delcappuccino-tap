@@ -112,13 +112,16 @@ class TestVersions(unittest.TestCase):
             # редизайн 31.10: + скрипт заставки из <head> главной (тот же текст, раз за сессию) и ленивый загрузчик анимации
             # кофе в карточке подписки (тот же, что на главной) — страница без них видна целиком, вместо анимации постер
             # 1.11: + скрипт «движение» (появление при прокрутке, параллакс) — тот же, что на главной; без него всё видно сразу
-            self.assertEqual(len(re.findall(r'<script\b', page)), 6, 'аналитика (2), JSON-LD, заставка, видео подписки и движение — других скриптов нет')
+            # 11.11: + загрузчик видео «Курицы гриль» (тот же, что у подписки, на .grill-video) — плитка акции теперь и здесь
+            self.assertEqual(len(re.findall(r'<script\b', page)), 7, 'аналитика (2), JSON-LD, заставка, видео подписки и курицы, движение')
             self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or "querySelector('.sub-video')" in s
+                                or "querySelector('.grill-video')" in s
                                 or "classList.add('rv-in')" in s for s in scripts))
             self.assertIn(seo.MOTION_JS, page)
             self.assertIn(seo.MOTION_JS, self.main, 'движение — тот же скрипт, что на главной')
             self.assertIn(seo.SUB_JS, page)
             self.assertIn(seo.SUB_JS, self.main, 'видео подписки — тот же загрузчик, что на главной')
+            self.assertIn(seo.GRILL_JS, page)
             intro = [s for s in scripts if 'intro-on' in s]
             self.assertEqual(len(intro), 1)
             self.assertIn('<script>%s</script>' % intro[0], self.main.split('</head>')[0], 'заставка — тот же скрипт, что на главной')
@@ -127,7 +130,7 @@ class TestVersions(unittest.TestCase):
                 self.assertRegex(h, r"^(?:if\(this\.open\))?track\('[a-z_]+'(?:,\{[^}]*\})?\)$", h)
             self.assertNotRegex(page, r'(src|href|srcset)="(?!/|https://|#|tel:)', 'пути только от корня')
             css = re.search(r'<style>(.*?)</style>', page, re.S).group(1)
-            self.assertNotRegex(css, r'\.(mm-|grill|modal|strip|showcase)', 'в стилях только нужное странице')
+            self.assertNotRegex(css, r'\.(mm-|grill-(?:ticker|cap|glow|run)|promo-run|modal|strip|showcase)', 'в стилях только нужное странице')
             self.assertIn('.lang-sw', css)
             # казахские буквы — в cyrillic/cyrillic-ext шрифтов из :root главной (tests/test_redesign.py), подмена шрифта для kk не нужна
             self.assertNotIn('html[lang=kk]', css)

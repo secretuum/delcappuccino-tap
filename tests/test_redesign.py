@@ -392,18 +392,18 @@ class TestPage(unittest.TestCase):
 
     def test_promo_tiles(self):
         """акции (владелец 31.10): две плитки делят ширину контейнера пополам с зазором колонок hero, без серых подложек;
-        «Курица гриль» — сама огненная рамка, подпись (название, цена, адреса, кнопка-пилюля) внутри окна с видео внизу на
-        затемнении; подписка — та же форма 910×620 на фирменном зелёном. Ширины по CSS: 2000 и 1280 → (1112 − 32) / 2 = 540;
+        «Курица гриль» — сама огненная рамка, в окне видео и одна цена (11.11: подписи нет), плитка — ссылка на меню, с 11.11 и
+        на /kk/, /en/; подписка — та же форма 910×620 на фирменном зелёном. Ширины по CSS: 2000 и 1280 → (1112 − 32) / 2 = 540;
         ≤ 900 (как hero) — одна под другой: 768 → 720, 360 → 328"""
         for l, html in self.pages.items():
             promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
             self.assertIn('<div class="row-head"><h2 id="promo-h">%s</h2></div>' % self.i18n[l]['sub']['h2'], promo, '%s: «акции» — множественное' % l)
             self.assertNotIn('promo-card', promo)
             self.assertIn('<div class="promo-tile sub-tile">', promo)
+            self.assertEqual(re.findall(r'\n\s*<(?:div|a) class="promo-tile ([\w-]+)"', promo), ['grill-promo', 'sub-tile'], l)
         self.assertEqual([self.i18n[l]['sub']['h2'] for l in ('ru', 'kk', 'en')], ['акции', 'акциялар', 'offers'])
         html = self.pages['ru']
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
-        self.assertEqual(re.findall(r'\n\s*<div class="promo-tile ([\w-]+)"', promo), ['grill-promo', 'sub-tile'])
         css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
         rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
         hero = rule('.hero')
@@ -414,18 +414,11 @@ class TestPage(unittest.TestCase):
         self.assertIn('aspect-ratio:910/620', rule('.grill-frame'))
         self.assertNotRegex(rule('.promo-tile'), r'background|padding', 'у плитки нет подложки — огненная рамка и есть плитка')
         self.assertIn('background:var(--c-accent)', rule('.sub-tile'))
-        cap = rule('.grill-cap')
-        self.assertIn('position:absolute', cap)
-        self.assertIn('bottom:0', cap)
-        self.assertIn('background:rgba(24,10,4,.75)', cap, 'ровная плашка для читаемости (11.11, вместо градиента; контраст — tests/test_flat.py)')
-        # 1.11 (владелец): «смотреть в меню» — простая светлая ссылка, без плашки; подпись — по центру у низа окна
-        link = rule('.promo-a')
-        self.assertNotRegex(link, r'background|border-radius', 'ссылка без плашки-пилюли')
-        self.assertIn('text-decoration:underline', link)
-        self.assertIn('color:#FFFFFF', link)
-        self.assertIn('text-align:center', cap)
-        self.assertIn('align-items:center', cap)
-        self.assertIn('bottom:0', cap)
+        self.assertNotIn('.grill-cap', css, '11.11: подписи на видео нет — только цена')
+        price = rule('.grill-price')
+        for need in ('position:absolute', 'left:4%', 'bottom:6%', 'background:#FFE500', 'white-space:nowrap'):
+            self.assertIn(need, price, 'метка цены — компактная, сплошная, в углу окна')
+        self.assertIn('cursor:pointer', rule('.grill-promo'))
         # пламя целиком (с языками) — во весь бокс SVG 910×620, рамка = плитка: края, верх и низ — как у плитки подписки
         sys.path.insert(0, os.path.join(ROOT, 'tools'))
         import flame_frame as ff
@@ -443,25 +436,79 @@ class TestPage(unittest.TestCase):
         mid = re.search(r'@media\(max-width:900px\)\{(.*?)\}\}', css, re.S).group(1)
         self.assertIn('.promo-grid{grid-template-columns:1fr', mid, 'на телефоне и планшете — одна под другой, как hero')
 
-    def test_grill_text_inside_fire_frame(self):
+    def test_grill_tile_price_only_and_link(self):
+        """владелец 11.11: «полупрозрачная рамка и текст занимают слишком много места курицы — лучше без неё, оставить только
+        цену; само видео кликабельное». В окне огня — видео и метка цены, подписи нет; вся плитка — ссылка: на главной открывает
+        меню на «Блюда на гриле» (openGrill, событие cta_grill), на /kk/ и /en/ — меню главной на своём языке сразу на гриле;
+        имя для экранного диктора — название и цена; фокус с клавиатуры — у ссылки. «Курица гриль» — во всех кофейнях (11.11)"""
+        hash_re = re.search(r'const MENU_HASH=/(.*?)/;', self.pages['ru']).group(1)
+        labels = {'ru': 'Курица гриль за 3990 ₸ вместо 6000 ₸ — смотреть в меню', 'kk': 'Грильдегі тауық, 3 990 ₸ — Мәзірді қарау',
+                  'en': 'Grilled chicken, 3 990 ₸ — See the menu'}
+        for l, html in self.pages.items():
+            tile = re.search(r'\n *<a class="promo-tile grill-promo" ([^>]*)>\n(.*?)\n *</a>\n', html, re.S)
+            self.assertIsNotNone(tile, '%s: плитка «Курицы гриль» — ссылка' % l)
+            attrs, body = dict(re.findall(r'([\w-]+)="([^"]*)"', tile.group(1))), tile.group(2)
+            self.assertEqual(attrs['aria-label'], labels[l], l)
+            self.assertRegex(attrs['href'].lstrip('/'), hash_re, '%s: ссылка проходит через MENU_HASH главной' % l)
+            self.assertIn('-grill', attrs['href'], l)
+            self.assertIn("track('cta_grill')" if l != 'ru' else 'openGrill()', attrs['onclick'], l)
+            self.assertNotRegex(body, r'<(?:a|button|input)\b|tabindex="0"', '%s: внутри ссылки нет других элементов управления' % l)
+            self.assertNotRegex(body, r'grill-cap|promo-t|promo-s|Толе Би|Серкебаева|Tole Bi|смотреть в меню', '%s: подписи на видео нет' % l)
+            self.assertEqual(re.findall(r'<span class="grill-price" aria-hidden="true">(.*?)</span>\n', body),
+                             ['<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>'], l)
+            self.assertIn('<video class="grill-video"', body)
+            self.assertNotIn('grill-ticker', body, 'бегущая строка — не в огне')
+        self.assertEqual(re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['kk'], re.S).group(1).replace('"/assets/', '"assets/'),
+                         re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['ru'], re.S).group(1), 'на /kk/ — та же плитка, что на главной')
+        # строка «ВНИМАНИЕ» — полосой под обеими плитками на всю ширину контейнера и только на главной (текст русский)
         html = self.pages['ru']
-        i = html.index('<div class="grill-win">')
-        win_end = html.index('\n          </div>\n        </div>\n      </div>', i)
-        win = html[i:win_end]
-        cap = re.search(r'<p class="grill-cap">(.*?)</p>', win, re.S)
-        self.assertIsNotNone(cap, 'подпись — внутри окна огненной рамки')
-        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
-                     '<a class="promo-a" href="#menu"', 'смотреть в меню'):
-            self.assertIn(need, cap.group(1))
-        self.assertNotIn('grill-ticker', win, 'бегущая строка — не в огне')
-        # строка — полосой под обеими плитками на всю ширину контейнера, только там, где есть «Курица гриль»
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
         self.assertRegex(promo, r'</div>\n    <div class="promo-run" onclick="openGrill\(\)"><div class="grill-ticker" aria-hidden="true">')
         self.assertGreater(promo.index('class="promo-run"'), promo.index('<!-- /подписка -->'))
         for l in ('kk', 'en'):
             self.assertNotIn('grill-ticker', self.pages[l])
-        css = style(html)
-        self.assertIn('@media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}', css)
+        self.assertIn('@media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}', style(html))
+        # во всех кофейнях: у позиции нет only, в разметке — нет availableAtOrFrom, в текстовых меню — нет «только: …»
+        self.assertRegex(html, r"\{n:'Курица гриль', p:3990, old:6000, m:\['new'\]\}")
+        ld = json.loads(re.search(r'<script type="application/ld\+json">\n(.*?)\n</script>', html, re.S).group(1))
+        menu = next(n for n in ld['@graph'] if n.get('@id', '').endswith('#menu'))
+        it = [i for s in menu['hasMenuSection'] for i in s['hasMenuItem'] if i['name'] == 'Курица гриль']
+        self.assertEqual(len(it), 1)
+        self.assertNotIn('availableAtOrFrom', json.dumps(it[0]), 'курица — во всех кофейнях')
+        for path, name in (('menyu/index.html', 'Курица гриль'), ('kk/menyu/index.html', 'Грильдегі тауық'), ('en/menu/index.html', 'Grilled chicken')):
+            row = re.search(r'<li><span class="n">%s\b(.*?)</li>' % re.escape(name), read(path)).group(1)
+            self.assertNotRegex(row, r'(?i)только|тек мына|only at|<em>', '%s: у курицы нет «только: …»' % path)
+
+    def test_grill_deep_link_in_node(self):
+        """плитка на /kk/ и /en/ ведёт на /#menu-grill-kk|-en: меню главной открывается на этом языке сразу на «Блюда на гриле»
+        (раздел ищется по русскому ключу s.t в данных, перевод — только при показе); событие cta_grill — один раз, при нажатии
+        на плитку, а не при переходе по ссылке. Скрипты главной целиком, на заглушке DOM из tests/test_polish_main.py"""
+        node = find_node()
+        if not node:
+            self.skipTest('нет node')
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))     # заглушка DOM — из соседнего теста, как бы ни запускали
+        import test_polish_main as pm
+        harness = pm.FOCUS_HARNESS.split('ctx.window = ctx;')[0]
+        harness = harness.replace('requestAnimationFrame: () => 0', 'requestAnimationFrame: f => (f(), 0)')
+        harness = harness.replace("location: { hash: '', pathname: '/', search: '' }", "location: { hash: process.argv[3], pathname: '/', search: '' }")
+        harness += """ctx.window = ctx; vm.createContext(ctx); scripts.forEach(s => vm.runInContext(s, ctx));
+const R = c => vm.runInContext(c, ctx);
+const ev = R('dataLayer').map(a => [...a]).filter(a => a[0] === 'event');
+console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classList.contains('open'), tab: R('menuTab'), cat: R('menuCat'),
+  grill: R("MENU_KITCHEN.findIndex(s=>s.t==='Блюда на гриле')"), events: ev.map(e => e[1])}));
+"""
+        with tempfile.TemporaryDirectory() as d:
+            h = os.path.join(d, 'g.js')
+            with open(h, 'w', encoding='utf-8') as f:
+                f.write(harness)
+            for hsh, lang in (('#menu-grill-kk', 'kk'), ('#menu-grill-en', 'en'), ('#menu-grill', 'ru')):
+                r = subprocess.run([node, h, os.path.join(ROOT, 'index.html'), hsh], capture_output=True, text=True, timeout=60)
+                self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+                got = json.loads(r.stdout.strip().splitlines()[-1])
+                self.assertEqual((got['lang'], got['open'], got['tab']), (lang, True, 'kitchen'), hsh)
+                self.assertGreaterEqual(got['grill'], 0)
+                self.assertEqual(got['cat'], got['grill'], '%s: меню — на «Блюда на гриле»' % hsh)
+                self.assertNotIn('cta_grill', got['events'], '%s: переход по ссылке — не нажатие на плитку' % hsh)
 
     def test_no_247_and_numbers_in_cards_and_modal(self):
         for l, html in self.pages.items():

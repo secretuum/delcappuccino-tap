@@ -101,6 +101,7 @@ LANGS = ('ru', 'kk', 'en')
 HOME = {'ru': SITE, 'kk': SITE + 'kk/', 'en': SITE + 'en/'}
 MENU = {'ru': MENU_URL, 'kk': SITE + 'kk/menyu', 'en': SITE + 'en/menu'}
 MENU_HASH = {'ru': '#menu', 'kk': '#menu-kk', 'en': '#menu-en'}      # глубокие ссылки: меню главной сразу на этом языке
+GRILL_HASH = '#menu-grill'      # + '-kk' / '-en': меню главной сразу на «Блюда на гриле» (плитка «Курицы гриль» на /kk/ и /en/)
 LOCALE = {'ru': 'ru_RU', 'kk': 'kk_KZ', 'en': 'en_GB'}       # английский — британское написание (flavour, favourite)
 HREF_MARK = '<!-- hreflang: версии главной на ru/kk/en — tools/seo_jsonld.py -->'
 HREF_RE = re.compile(re.escape(HREF_MARK) + r'\n.*?<!-- /hreflang -->\n', re.S)
@@ -740,10 +741,12 @@ footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);
 
 
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
-# точки (кнопки-значки), вопросы, контакты, подвал (без оверлея меню, модалки, «Курицы гриль» и фото «Фирменный стиль»)
+# точки (кнопки-значки), вопросы, контакты, подвал, плитка «Курицы гриль» без строки «ВНИМАНИЕ» (без оверлея меню, модалки
+# и фото «Фирменный стиль»)
 CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
                       r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
+                      r'grill-promo|grill-frame|grill-fire|grill-win|grill-video|grill-price|sale|'
                       r'icons|ic|ib|pill|social|rv|rv-in|rv-fast|px-on|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
@@ -1018,7 +1021,7 @@ def lang_page(html, lang):
   <section class="promo shell" aria-labelledby="promo-h">
     <div class="row-head"><h2 id="promo-h">%(promo_h2)s</h2></div>
     <div class="promo-grid">
-%(sub)s    </div>
+%(grill)s%(sub)s    </div>
   </section>
 
   <section class="story shell" id="about">
@@ -1087,7 +1090,7 @@ def lang_page(html, lang):
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           sub=sub_card(lang), icons=ICONS, motion=MOTION_JS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
+           grill=grill_card(html, lang), sub=sub_card(lang), icons=ICONS, motion=MOTION_JS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
@@ -1402,6 +1405,7 @@ SUB_JS = ("<script>(function(){var v=document.querySelector('.sub-video');if(!v|
           "function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}"
           "function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}"
           "if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
+GRILL_JS = SUB_JS.replace("'.sub-video'", "'.grill-video'")      # видео «Курицы гриль» на /kk/ и /en/ — тот же загрузчик
 
 
 def sub_card(lang):
@@ -1422,6 +1426,24 @@ def sub_card(lang):
             '        <source src="%s" type="video/webm">\n        <source src="%s" type="video/mp4">\n      </video>\n'
             '      <p class="tile-cap"><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
             % (V['poster'], V['w'], V['h'], V['webm'], V['mp4'], e(S['title']), line, SUB_JS))
+
+
+GRILL_RE = re.compile(r'\n      <a class="promo-tile grill-promo" [^>]*>\n(.*?)\n      </a>\n', re.S)
+
+
+def grill_card(html, lang):
+    """плитка «Курица гриль» для /kk/ и /en/ — та же, что на главной (пламя, видео, цена; текста нет — от языка не зависит):
+    ссылка на меню главной сразу на «Блюда на гриле» и на языке страницы (/#menu-grill-kk), имя для экранного диктора —
+    название из MENU_TR, цена и «смотреть меню» страницы; видео — по видимости, как у плитки подписки"""
+    m = GRILL_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: на главной нет плитки <a class="promo-tile grill-promo"> — поправьте grill_card()')
+    it = next((x for sec in sections(html, 'MENU_KITCHEN') for x in sec['items'] if x['n'] == 'Курица гриль'), None)
+    if not it:
+        sys.exit('seo_jsonld: в MENU_KITCHEN нет «Курица гриль» — плитку акции на /kk/ и /en/ не собрать')
+    label = '%s, %s ₸ — %s' % (tr_dict(html, lang)['Курица гриль'], fmt_p(it['p']).replace('\u00a0', ' '), i18n()[lang]['page']['menu'])
+    return ('    <a class="promo-tile grill-promo" href="/%s-%s" onclick="track(\'cta_grill\')" aria-label="%s">\n%s\n    </a>\n%s\n'
+            % (GRILL_HASH, lang, H.escape(label), root_paths(m.group(1)), GRILL_JS))
 
 
 def with_sub(html):

@@ -176,11 +176,9 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .promo-tile{position:relative;min-width:0;aspect-ratio:910/620}
 .row-head{display:flex;align-items:center;gap:var(--s-12);margin:var(--s-24) 0 var(--s-16)}
 .row-head h2{font-size:var(--fs-heading);line-height:1.15}
-/* подпись плитки: заголовок, строка, кнопка-пилюля — светлым по низу, на затемнении */
+/* подпись плитки подписки: заголовок и строка — светлым по низу, на ровной плашке */
 .promo-t{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.15;text-transform:lowercase;color:#FFFFFF}
 .promo-s{font-size:var(--fs-small);line-height:1.4;color:rgba(255,255,255,.88)}
-.promo-s s{color:rgba(255,255,255,.7)}
-.promo-s .sale{color:#FFFFFF;font-weight:700;white-space:nowrap;text-decoration-color:#FFE500}
 .promo-a{display:inline-block;margin-top:var(--s-4);padding:var(--s-4) 0;color:#FFFFFF;font-size:var(--fs-small);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;white-space:nowrap}
 .promo-a:hover{text-decoration-thickness:2px}
 .sub-tile{border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent)}
@@ -188,21 +186,23 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .tile-cap .promo-t{color:var(--c-brand-cream)}
 /* видео налива кофе — во всю плитку (кадр собран под 910:620, tools/build_sub_video.py), под подписью — затемнение */
 .sub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-/* одна плитка (на /kk/ и /en/ «Курицы гриль» нет) — того же размера, что в паре, по центру ряда */
+/* одна плитка (если акцию «Курица гриль» снимут) — того же размера, что в паре, по центру ряда */
 .promo-grid>.promo-tile:only-child{grid-column:1/-1;justify-self:center;width:calc((100% - var(--s-32)) / 2)}
 /* ── GRILL PROMO — акция «Курица гриль» (19.10.2026): видео — главное, огонь — тонкая кайма с языками сверху (#30 → правка
    владельца «курицы мало, огонь меньше»). SVG (tools/flame_frame.py): внешнее пламя и жёлтая кромка — сплошные цвета (плоско, 11.11), кривые C.
    Окно .grill-win: почти прямоугольник 80% ширины бокса со скруглённым низом и короткими языками сверху, clip-path: polygon(...);
    лежит НАД svg (z-index:1, svg раньше в DOM); окно оставляет ≈84% бокса (tests/test_perf.py требует ≥75%).
-   Внутри окна: видео (object-fit:cover) и подпись на ровной плашке — всё режется контуром пламени; без свечения и тени
-   (владелец 11.11: «все плоским»).
+   Внутри окна: видео (object-fit:cover) и цена меткой — режутся контуром пламени; без подписи, свечения и тени
+   (владелец 11.11: «все плоским», «только цену»). Вся плитка — ссылка на меню гриля; /kk/ и /en/ берут её генератором.
    Видео: preload=none, play() по IntersectionObserver, при reduced-motion — постер. ── */
-.grill-promo{cursor:pointer}
+/* вся плитка — ссылка на меню «Блюда на гриле» (владелец 11.11: «видео кликабельное»); имя для экранного диктора — aria-label */
+.grill-promo{display:block;cursor:pointer;text-decoration:none}
 /* пламя целиком (с языками) — во весь бокс 910×620 (tools/flame_frame.py, правка 1.11): рамка = плитка, края, верх
    и низ — как у плитки подписки */
-/* подпись «Курицы гриль» — внутри окна с видео (режется контуром огня), по центру, как можно ниже: отступ снизу 2 % ширины
-   окна + 4 px поля ссылки; по центру ссылка не задевает скруглённые углы окна */
-.grill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:var(--s-2);padding:2% 7%;text-align:center;background:rgba(24,10,4,.75)}
+/* цена — плоская жёлтая метка в цвет кромки огня в левом нижнем углу окна (владелец 11.11: «без рамки и текста, только цена»):
+   тёмный текст на #FFE500 — ≥ 4,5:1 (tests/test_flat.py); угол окна скруглён на 5 % — метка отстоит на 4 % и 6 % */
+.grill-price{position:absolute;left:4%;bottom:6%;z-index:1;display:inline-flex;align-items:baseline;gap:var(--s-8);padding:var(--s-4) var(--s-12);border-radius:var(--r-pill);background:#FFE500;color:var(--c-text);font-family:var(--font-display);font-size:clamp(15px,1vw + 8px,20px);font-weight:700;line-height:1.2;white-space:nowrap}
+.grill-price s{font-weight:400;color:var(--c-muted)}
 .grill-frame{position:relative;aspect-ratio:910/620}
 .grill-win{position:absolute;left:3.30%;top:14.19%;width:93.41%;height:80.97%;overflow:hidden;z-index:1;clip-path:polygon(0.0% 91.8%,0.0% 93.0%,0.2% 94.2%,0.4% 95.2%,0.7% 96.2%,1.0% 97.0%,1.5% 97.8%,2.0% 98.5%,2.5% 99.0%,3.2% 99.4%,3.9% 99.7%,4.7% 99.9%,5.5% 100.0%,94.5% 100.0%,95.3% 99.9%,96.1% 99.7%,96.8% 99.4%,97.5% 99.0%,98.0% 98.5%,98.5% 97.8%,99.0% 97.0%,99.3% 96.2%,99.6% 95.2%,99.8% 94.2%,100.0% 93.0%,100.0% 91.8%,100.0% 34.0%,99.9% 31.7%,99.7% 29.5%,99.3% 27.3%,98.8% 25.1%,98.1% 23.0%,97.3% 20.9%,96.5% 18.8%,95.5% 16.8%,94.5% 14.9%,93.4% 13.0%,92.3% 11.1%,91.1% 9.3%,90.3% 11.1%,89.4% 12.9%,88.3% 14.8%,87.0% 16.6%,85.7% 18.3%,84.3% 20.0%,82.9% 21.5%,81.5% 22.9%,80.0% 24.2%,78.6% 25.3%,77.3% 26.2%,76.0% 26.8%,74.1% 24.9%,72.1% 22.8%,70.1% 20.6%,68.0% 18.2%,65.9% 15.8%,63.8% 13.4%,61.7% 11.0%,59.6% 8.5%,57.6% 6.2%,55.7% 4.0%,53.8% 1.9%,52.1% 0.0%,50.6% 2.3%,49.1% 4.7%,47.5% 7.1%,45.9% 9.4%,44.2% 11.7%,42.6% 13.9%,40.9% 16.1%,39.3% 18.1%,37.7% 20.0%,36.2% 21.8%,34.8% 23.3%,33.6% 24.7%,32.3% 23.4%,30.9% 22.1%,29.4% 20.7%,27.8% 19.3%,26.1% 17.9%,24.3% 16.5%,22.5% 15.1%,20.6% 13.7%,18.7% 12.3%,16.8% 10.9%,14.9% 9.6%,13.0% 8.2%,11.8% 10.1%,10.6% 12.0%,9.3% 14.0%,8.1% 16.1%,6.9% 18.2%,5.7% 20.4%,4.6% 22.6%,3.5% 24.8%,2.5% 27.1%,1.6% 29.4%,0.7% 31.7%,0.0% 34.0%)}
 .grill-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
@@ -466,7 +466,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .mm-it .vol,.mm-it .itnote{font-size:13px;font-weight:400;line-height:1.4;color:var(--c-muted)}
 .mm-it .pr{flex:none;font-size:15px;font-weight:600;color:var(--c-text);white-space:nowrap;font-variant-numeric:tabular-nums}
 .mm-it .pr .old{font-weight:400;color:var(--c-muted);text-decoration:line-through;margin-right:4px;font-size:13px;white-space:nowrap}
-/* новая цена рядом со старой (поле old): красное подчёркивание тоном пламени акции; то же в подписи .grill-cap */
+/* новая цена рядом со старой (поле old): красное подчёркивание тоном пламени акции; то же в цене плитки .grill-price */
 .sale{text-decoration-line:underline;text-decoration-color:var(--sale);text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-skip-ink:none}
 .mm-only{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin:0 2px 0 5px;padding:0;border:1.3px solid var(--c-accent);border-radius:50%;color:var(--forest);font-family:var(--font-body);font-size:10px;font-weight:800;line-height:1;vertical-align:1px;cursor:pointer}
 .mm-only::after{content:'';position:absolute;inset:-15px}
@@ -635,7 +635,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 {"@type":"MenuSection","name":"Блюда на гриле","hasMenuItem":[
 {"@type":"MenuItem","name":"Люля из говядины с салатом и питой","offers":{"@type":"Offer","price":3200,"priceCurrency":"KZT"}},
 {"@type":"MenuItem","name":"Шашлычки из говядины с питой","offers":{"@type":"Offer","price":4000,"priceCurrency":"KZT"}},
-{"@type":"MenuItem","name":"Курица гриль","offers":{"@type":"Offer","price":3990,"priceCurrency":"KZT","availableAtOrFrom":[{"@id":"https://tap.delcappuccino.kz/#branch-04"},{"@id":"https://tap.delcappuccino.kz/#branch-02"}]}},
+{"@type":"MenuItem","name":"Курица гриль","offers":{"@type":"Offer","price":3990,"priceCurrency":"KZT"}},
 {"@type":"MenuItem","name":"Рибай на кости","offers":{"@type":"Offer","price":3990,"priceCurrency":"KZT"}},
 {"@type":"MenuItem","name":"Ти-бон стейк с молодым картофелем","offers":{"@type":"Offer","price":3990,"priceCurrency":"KZT"}},
 {"@type":"MenuItem","name":"Стейк лосося с молодым картофелем","offers":{"@type":"Offer","price":7200,"priceCurrency":"KZT"}}]},
@@ -856,18 +856,19 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   <section class="promo shell" aria-labelledby="promo-h">
     <div class="row-head"><h2 id="promo-h">акции</h2></div>
     <div class="promo-grid">
-      <!-- Акция «Курица гриль»: видео (assets/grill-closeup.*.mp4, 910×512, 4 с) в окне-языке огня (SVG из tools/flame_frame.py); тап — меню на «Блюда на гриле» -->
-      <div class="promo-tile grill-promo" onclick="openGrill()">
+      <!-- Акция «Курица гриль»: видео (assets/grill-closeup.*.mp4, 910×512, 4 с) в окне-языке огня (SVG из tools/flame_frame.py) и цена;
+           вся плитка — ссылка на меню «Блюда на гриле»; /kk/ и /en/ берут эту плитку (tools/seo_jsonld.py, grill_card) -->
+      <a class="promo-tile grill-promo" href="#menu-grill" onclick="event.preventDefault();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — смотреть в меню">
         <div class="grill-frame">
           <svg class="grill-fire" viewBox="0 0 910 620" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="grill-fire-outer" fill="#F23A10" d="M0 559 C0 595 25 620 65 620 L845 620 C885 620 910 595 910 559 L910 248 C910 176 857 124 822 62 C787 124 717 176 670 197 C624 155 531 72 472 0 C414 83 356 145 309 186 C263 155 193 114 146 72 C112 124 42 176 0 248 Z"/><path class="grill-fire-inner" fill="#FFE500" d="M11 558 C11 585 29 601 60 601 L850 601 C881 601 899 585 899 558 L899 255 C899 206 863 163 820 125 C796 163 729 206 686 217 C619 179 534 115 473 77 C425 125 352 179 309 206 C266 179 193 147 126 120 C84 158 35 206 11 255 Z"/></svg>
           <div class="grill-win">
             <video class="grill-video" poster="assets/grill-poster.e74142ba.webp" width="910" height="512" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">
             <source src="assets/grill-closeup.701739c2.mp4" type="video/mp4">
             </video>
-            <p class="grill-cap"><b class="promo-t">Курица гриль</b> <span class="promo-s"><s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span> · Толе Би, 64 и Серкебаева, 146</span> <a class="promo-a" href="#menu" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — открыть в меню">смотреть в меню →</a></p>
+            <span class="grill-price" aria-hidden="true"><s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span></span>
           </div>
         </div>
-      </div>
+      </a>
 <!-- Плитка подписки (видео налива кофе) — собирает tools/seo_jsonld.py, руками не править -->
     <div class="promo-tile sub-tile">
       <!-- видео: Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License; клип — tools/build_sub_video.py; docs/LICENSES-media.md -->
@@ -1257,7 +1258,7 @@ const MENU_KITCHEN = [
  {t:'Блюда на гриле', items:[
   {n:'Люля из говядины с салатом и питой', p:3200, m:['new']},
   {n:'Шашлычки из говядины с питой', p:4000, m:['new']},
-  {n:'Курица гриль', p:3990, old:6000, only:['04','02'], m:['new']},
+  {n:'Курица гриль', p:3990, old:6000, m:['new']},
   {n:'Рибай на кости', vol:'300 гр', p:3990, old:7200, m:['hit','wait']},
   {n:'Ти-бон стейк с молодым картофелем', vol:'300 гр', p:3990, old:7200, m:['wait']},
   {n:'Стейк лосося с молодым картофелем', vol:'250 гр', p:7200, m:['wait']},
@@ -2215,12 +2216,14 @@ function closeMenu(){
   menuOpener=null;
 }
 /* Глубокие ссылки (hasMenu в JSON-LD): /#menu — меню кофеен, /#menu-togo — меню точки 05 Bakery to go */
-/* …-kk / -en в конце (/#menu-kk, /#menu-togo-en) — меню сразу на этом языке, как кнопка языка в самом меню (ссылки с /kk/ и /en/) */
-const MENU_HASH=/^#menu(-togo)?(?:-(kk|ru|en))?$/;
+/* …-kk / -en в конце (/#menu-kk, /#menu-togo-en) — меню сразу на этом языке, как кнопка языка в самом меню (ссылки с /kk/ и /en/);
+   /#menu-grill(-kk|-en) — меню кофеен сразу на «Блюда на гриле» (плитка «Курицы гриль» на /kk/ и /en/) */
+const MENU_HASH=/^#menu(-togo|-grill)?(?:-(kk|ru|en))?$/;
 function menuFromHash(){
   const m=MENU_HASH.exec(location.hash);
   if(!m)return;
   if(m[2]){ menuLang=m[2]; try{ localStorage.setItem('dc_menu_lang', m[2]); }catch(e){} }
+  if(m[1]==='-grill'){ showGrill(); return; }
   openMenu(m[1]?'togo':undefined);
 }
 
@@ -2463,8 +2466,9 @@ function setTopH(){
 </script>
 <script>
 /* Акция «Курица гриль»: открыть меню на разделе «Блюда на гриле» (функции меню — зона menu-i18n, здесь только вызовы) */
-function openGrill(){
-  track('cta_grill');
+function openGrill(){ track('cta_grill'); showGrill(); }
+/* раздел ищем по индексу в данных (s.t — русский ключ), поэтому и в меню на ҚАЗ / ENG попадаем туда же */
+function showGrill(){
   openMenu();
   var i=MENU_KITCHEN.findIndex(function(s){return s.t==='Блюда на гриле'});
   if(i>=0)requestAnimationFrame(function(){goMenuCat(i)});

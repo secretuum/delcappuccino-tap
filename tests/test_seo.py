@@ -174,11 +174,13 @@ class TestPage(unittest.TestCase):
         self.assertIn('<p class="tag">кофейни в Алматы · coffee &amp; food</p>\n      <h1>', self.html)
 
     def test_menu_deep_link(self):
-        # /#menu, /#menu-togo и с языком в конце (/#menu-kk, /#menu-togo-en) — при загрузке и по hashchange
-        self.assertIn("const MENU_HASH=/^#menu(-togo)?(?:-(kk|ru|en))?$/;", self.html)
+        # /#menu, /#menu-togo, /#menu-grill и с языком в конце (/#menu-kk, /#menu-togo-en, /#menu-grill-kk) — при загрузке и по hashchange
+        self.assertIn("const MENU_HASH=/^#menu(-togo|-grill)?(?:-(kk|ru|en))?$/;", self.html)
         f = re.search(r'function menuFromHash\(\)\{(.*?)\n\}', self.html, re.S)
         self.assertIsNotNone(f)
         self.assertIn("openMenu(m[1]?'togo':undefined)", f.group(1))
+        self.assertIn("if(m[1]==='-grill'){ showGrill(); return; }", f.group(1), '«Курица гриль» с /kk/ и /en/ — меню сразу на гриле')
+        self.assertIn('function openGrill(){ track(\'cta_grill\'); showGrill(); }', self.html, 'событие — только при нажатии, не при переходе по ссылке')
         self.assertIn("localStorage.setItem('dc_menu_lang', m[2])", f.group(1))
         self.assertIn("menuFromHash(); addEventListener('hashchange',menuFromHash);", self.html)
 
