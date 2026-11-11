@@ -40,7 +40,7 @@ TONES = {
 LAYERED = ['.btn', '.fab-menu', '.ib', '.pill', '.pill-point', '.lang-dd summary', '.mm-tab', '.mm-cat', '.mm-mode-btn', '.mm-lang-btn',
            '.mm-search-btn', '.mm-search-x', '.mm-x', '.mm-card-x', '.sheet .x', '.mm-only']
 LAYER = ('--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);'
-         '-webkit-tap-highlight-color:transparent;transition:background-color .15s,transform .2s ease')
+         '-webkit-tap-highlight-color:transparent;transition:background-color .15s')
 PRESSED = 'background:var(--tone-p)'
 LAYER_KEYS = [('', ''), ('', ':active'), ('@media(hover:hover)', ':hover')]
 LIGHT = '--tone-bg:var(--btn-light);--tone-p:var(--btn-light-p)'

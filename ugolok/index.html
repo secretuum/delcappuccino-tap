@@ -70,8 +70,8 @@ h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercas
    --c-olive-text (токен главной): 5,0:1 на подложке, 5,4:1 на белом */
 :focus-visible{outline-color:var(--c-olive-text)}
 
-/* ── ШАПКА (как на главной): белое стекло, «← на главную» пилюлей · логотип · языки пилюлями ── */
-.topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
+/* ── ШАПКА (как на главной): сплошной белый фон и линия снизу (плоско, 11.11), «← на главную» пилюлей · логотип · языки пилюлями ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--c-bg);border-bottom:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
 .tb-brand{display:inline-flex;align-items:center;flex:none;min-height:44px}
 .tb-brand img{height:40px;width:auto;display:block;border-radius:10px}
 .lang-switch{display:flex;gap:4px}
@@ -117,7 +117,7 @@ main{padding:24px 0 20px}
 .pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:var(--h-btn);color:var(--c-on-accent);border-radius:var(--r-pill);padding:8px 20px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.25;text-transform:lowercase;text-align:center}
 .pass-btn svg{width:16px;height:16px;flex:none}
 /* плоские кнопки — слои дословно как на главной; тона: светлый — языки и «на главную», зелёный — талон и выбранный язык */
-:where(.pass-btn,.lang-btn,.tb-back){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s,transform .2s ease}
+:where(.pass-btn,.lang-btn,.tb-back){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
 :where(.pass-btn,.lang-btn,.tb-back):active{background:var(--tone-p)}
 @media(hover:hover){:where(.pass-btn,.lang-btn,.tb-back):hover{background:var(--tone-p)}}
 .lang-btn,.tb-back{--tone-bg:var(--btn-light);--tone-p:var(--btn-light-p)}

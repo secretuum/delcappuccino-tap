@@ -205,7 +205,7 @@ h1,h2{font-family:var(--font-display);font-weight:700;text-transform:lowercase;l
 :focus-visible{outline:2px solid var(--c-olive-text);outline-offset:2px}
 .icons{position:absolute;width:0;height:0;overflow:hidden}
 /* шапка — как на /ugolok: «← на главную» · логотип · языки; кнопки — плоские, слой и тона главной (ниже) */
-.topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--c-bg) 92%%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
+.topbar{position:sticky;top:0;z-index:100;background:var(--c-bg);border-bottom:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
 .tb-brand{display:inline-flex;align-items:center;flex:none;min-height:44px}
 .tb-brand img{height:40px;width:auto;display:block;border-radius:10px}
 .lang-switch{display:flex;gap:4px;flex:none}
@@ -219,10 +219,10 @@ h1,h2{font-family:var(--font-display);font-weight:700;text-transform:lowercase;l
 .eyebrow{font-size:var(--fs-caption);text-transform:lowercase;color:var(--c-olive-text);font-weight:700;margin-bottom:6px}
 .fb-hero h1{font-size:34px;line-height:1.08}
 .fb-lead{margin-top:12px;max-width:560px;font-size:var(--fs-body);color:var(--c-muted);line-height:1.5}
-/* карточки точек — как карточки точек главной: белые, мягкая тень; кнопки — плоские, высотой 52, переносятся целиком */
+/* карточки точек — как карточки точек главной: белые, рамка 1px (плоско, 11.11); кнопки — плоские, высотой 52, переносятся целиком */
 main{padding:24px 0 32px}
 .fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.fb-card{display:flex;flex-direction:column;padding:20px;border-radius:var(--r-lg);background:var(--c-bg);box-shadow:var(--shadow-floating)}
+.fb-card{display:flex;flex-direction:column;padding:20px;border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
 .fb-card h2{font-size:19px;line-height:1.2;color:var(--c-text)}
 .fb-addr{margin-top:4px;font-size:var(--fs-body);font-weight:500;color:var(--c-muted);line-height:1.4}
 .fb-phone{margin-top:2px;font-size:var(--fs-small);color:var(--c-muted);font-variant-numeric:tabular-nums;white-space:nowrap}

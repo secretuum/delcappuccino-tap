@@ -43,8 +43,8 @@ body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-we
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
 /* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — --c-olive-text (токен главной, 5,0:1 на подложке) */
 :focus-visible{outline-color:var(--c-olive-text)}
-/* шапка — как на главной: белое стекло, логотип ссылкой на главную */
-header{position:sticky;top:0;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+/* шапка — как на главной: сплошной белый фон и линия снизу (плоско, 11.11), логотип ссылкой на главную */
+header{position:sticky;top:0;background:var(--c-bg);border-bottom:1px solid var(--c-border)}
 .hbar{display:flex;align-items:center;max-width:1160px;margin:0 auto;padding:8px 24px;min-height:64px}
 .hbar a{display:flex;align-items:center;min-height:44px}   /* зона касания логотипа — 44 */
 .hbar img{height:40px;width:auto;display:block;border-radius:10px}
@@ -58,7 +58,7 @@ h1 span{color:var(--c-accent)}
 p.lead{font-size:15px;color:var(--c-muted);line-height:1.65;max-width:340px;margin:0 auto 28px}
 /* кнопка — как на главной: плоская зелёная (слои — дословно правила главной), высота 52, пилюля, Geologica строчными */
 a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-btn);padding:8px 28px;border-radius:var(--r-pill);color:var(--c-on-accent);font-family:var(--btn-font);font-size:16px;font-weight:700;text-transform:lowercase;text-decoration:none}
-:where(a.btn){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s,transform .2s ease}
+:where(a.btn){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
 :where(a.btn):active{background:var(--tone-p)}
 @media(hover:hover){:where(a.btn):hover{background:var(--tone-p)}}
 /* подвал — как на главной */

@@ -417,7 +417,7 @@ class TestPage(unittest.TestCase):
         cap = rule('.grill-cap')
         self.assertIn('position:absolute', cap)
         self.assertIn('bottom:0', cap)
-        self.assertIn('linear-gradient(to top', cap, 'затемнение для читаемости')
+        self.assertIn('background:rgba(24,10,4,.75)', cap, 'ровная плашка для читаемости (11.11, вместо градиента; контраст — tests/test_flat.py)')
         # 1.11 (владелец): «смотреть в меню» — простая светлая ссылка, без плашки; подпись — по центру у низа окна
         link = rule('.promo-a')
         self.assertNotRegex(link, r'background|border-radius', 'ссылка без плашки-пилюли')
@@ -477,7 +477,8 @@ class TestPage(unittest.TestCase):
         css = style(self.pages['ru'])
         self.assertIn('background:var(--c-bg)', re.search(r'\.locations\{([^}]*)\}', css).group(1), 'фон секции — белый')
         card = re.search(r'\.loc-card\{([^}]*)\}', css).group(1)
-        self.assertIn('box-shadow:var(--shadow-floating)', card)
+        self.assertIn('border:1px solid var(--c-border)', card, '11.11: плоско — рамка вместо тени')
+        self.assertNotIn('box-shadow', card)
         self.assertIn('text-align:center', card)
         self.assertIn('justify-content:center', re.search(r'\.loc-links\{([^}]*)\}', css).group(1))
         draw = re.search(r'function draw\(arr,showDist\)\{(.*?)\n  \}\n', self.pages['ru'], re.S).group(1)
@@ -838,13 +839,13 @@ console.log(JSON.stringify(out));
             self.assertIn('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (k, v), review)
 
     def test_section_plates(self):
-        """владелец 1.11: каждый раздел меню — на мягкой подложке (чуть темнее белого, скругление 22, едва заметная тень),
+        """владелец 1.11: каждый раздел меню — на мягкой подложке (чуть темнее белого, скругление 22; тень убрана 11.11 — плоско),
         линии внутри тоньше и светлее; заголовок части — вне подложки; результаты поиска — одна подложка; текстовые меню — так же"""
         css = re.sub(r'/\*.*?\*/', '', style(self.pages['ru']), flags=re.S)
         sec = re.search(r'(?:^|\})\.mm-sec\{([^}]*)\}', css).group(1)
-        for need in ('break-inside:avoid', 'border-radius:var(--r-lg)', 'background:var(--c-surface)', 'box-shadow:0 2px 16px rgba(36,28,21,.04)',
-                     'padding:var(--s-24)', 'margin-bottom:var(--s-24)'):
+        for need in ('break-inside:avoid', 'border-radius:var(--r-lg)', 'background:var(--c-surface)', 'padding:var(--s-24)', 'margin-bottom:var(--s-24)'):
             self.assertIn(need, sec)
+        self.assertNotIn('box-shadow', sec)
         mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S))
         self.assertIn('.mm-sec{margin-bottom:var(--s-16);padding:var(--s-16)}', mob)
         self.assertIn('border-bottom:1px solid rgba(36,28,21,.06)', re.search(r'(?:^|\})\.mm-it\{([^}]*)\}', css).group(1))
@@ -861,7 +862,7 @@ console.log(JSON.stringify(out));
             self.assertTrue(all('<ul>' in s_ for s_ in secs), path)
             self.assertEqual(sum(s_.count('<li>') for s_ in secs), page.count('<li>'), '%s: все строки — внутри подложек' % path)
             mcss = style(page)
-            self.assertIn('.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}', mcss)
+            self.assertIn('.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface)}', mcss)
             self.assertIn('li:last-child{border-bottom:0}', mcss)
 
     def test_motion_in_node(self):
@@ -933,8 +934,8 @@ console.log(JSON.stringify(out));
         self.assertIn('.rv-fast.rv-in{transition-duration:.35s}', css)
         self.assertIn('@media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}', css)
         hov = re.search(r'@media\(hover:hover\)\{(.*?)\}\}', css, re.S).group(1)
-        self.assertIn('transform:translateY(-4px)', hov)
-        self.assertIn('.ib:hover{transform:scale(1.05)', hov)
+        # 11.11 (владелец: «все плоским»): при наведении ни подъёма, ни тени, ни увеличения — только цвет кнопок
+        self.assertNotRegex(hov, r'transform|translate|scale|shadow')
         self.assertNotRegex(re.search(r'\.rv\.rv-in\{([^}]*)\}', css).group(1), r'(?:^|;)(?:top|margin|height|width):', 'только transform и opacity')
         for l, html in self.pages.items():
             self.assertEqual(html.count(seo.MOTION_JS), 1, l)
@@ -1097,7 +1098,7 @@ console.log(JSON.stringify(out));
             self.assertNotRegex(html, r'(?i)lottie|brewing-coffee|sub-anim', '%s: от Lottie ничего не осталось' % l)
         css = style(self.pages['ru'])
         self.assertIn('.sub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover', css)
-        self.assertIn('linear-gradient(to top', re.search(r'\.tile-cap\{([^}]*)\}', css).group(1), 'затемнение под подписью')
+        self.assertIn('background:rgba(20,14,10,.75)', re.search(r'\.tile-cap\{([^}]*)\}', css).group(1), 'ровная плашка под подписью (11.11)')
         self.assertNotIn('latte-pour', re.search(r'PRECACHE\s*=\s*\[(.*?)\]', read('sw.js'), re.S).group(1))
         for gone in ('assets/lottie_light.23cd2c01.js', 'assets/brewing-coffee.df6fc172.json', 'assets/brewing-coffee-poster.b7411dfe.webp',
                      'assets/brewing-coffee.2e74c5d9.json', 'assets/brewing-coffee-poster.f762aef7.webp', 'tools/lottie_brand.py'):

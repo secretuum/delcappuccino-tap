@@ -385,7 +385,7 @@ class TestGrillPromo(unittest.TestCase):
 
     def test_video_layer_above_fire(self):
         """Заявка 20992 вернулась: svg лежал поверх видео. Окно с видео должно рисоваться над пламенем,
-        а тикер и виньетка — внутри окна (режутся его контуром, на кремовом фоне текста нет)."""
+        а подпись — внутри окна (режется его контуром, на кремовом фоне текста нет). Виньетки .grill-glow нет — плоско (11.11)."""
         def z(sel):
             m = re.search(r'\n' + re.escape(sel) + r'\{([^}]*)\}', self.html)
             self.assertIsNotNone(m, 'нет правила ' + sel)
@@ -408,12 +408,11 @@ class TestGrillPromo(unittest.TestCase):
         win = inner('<div class="grill-win">')
         # редизайн 31.10 (владелец): название, цена, адреса и ссылка «смотреть в меню» — тоже внутри окна, поверх видео;
         # с 1.11 бегущая строка — не в огне, а полосой под плитками акций (её перекрывали зубцы пламени)
-        for part in ('<video class="grill-video"', '<div class="grill-glow"', '<p class="grill-cap">'):
+        for part in ('<video class="grill-video"', '<p class="grill-cap">'):
             self.assertIn(part, win, part + ' должен быть внутри окна .grill-win')
         self.assertNotIn('grill-ticker', win)
         self.assertNotIn('z-index:1', re.search(r'\n\.grill-fire\{([^}]*)\}', self.html).group(1))
-        glow = re.search(r'\n\.grill-glow\{([^}]*)\}', self.html).group(1)
-        self.assertIn('transparent', glow, 'центр виньетки должен быть прозрачным')
+        self.assertNotIn('grill-glow', self.html, 'свечения-виньетки нет (владелец 11.11: «все плоским»)')
 
     def test_ticker_seamless_and_static_on_reduced_motion(self):
         spans = re.findall(r'<div class="grill-ticker"[^>]*>(.*?)</div>', self.html, re.S)
@@ -427,7 +426,7 @@ class TestGrillPromo(unittest.TestCase):
         ticker_css = re.search(r'\.grill-ticker\{([^}]*)\}', self.html).group(1)
         self.assertIn('color:#FFE500', ticker_css, 'бегущая строка должна быть чисто-жёлтой')
         self.assertGreaterEqual(int(re.search(r'font-weight:(\d+)', ticker_css).group(1)), 800)
-        self.assertIn('text-shadow', ticker_css, 'нужно свечение, чтобы читалось на красном')
+        self.assertNotIn('text-shadow', ticker_css, 'без свечения (11.11): жёлтый на сплошном --c-danger — 4,8:1 (tests/test_flat.py)')
 
 
 class TestServiceWorker(unittest.TestCase):

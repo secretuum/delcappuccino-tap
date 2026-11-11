@@ -110,7 +110,7 @@ h2 span,h1 span{color:var(--c-accent)}
 .logo-art-moped{left:39.53%;top:0;width:32.37%;height:49.49%}
 
 /* ── ШАПКА: пилюля точки · меню (компьютер) · круглая кнопка языка ── */
-header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+header{position:sticky;top:0;z-index:50;background:var(--c-bg);border-bottom:1px solid var(--c-border)}
 .hbar{display:flex;align-items:center;gap:var(--s-12);max-width:1160px;margin:0 auto;padding:var(--s-8) var(--s-24);min-height:64px}
 .brand{display:inline-flex;align-items:center;flex:none}
 .logo-d{height:40px;width:auto;display:block;border-radius:10px}
@@ -127,7 +127,7 @@ header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg)
 .pill-point+.lang-sw{margin-left:auto}
 .lang-dd summary{list-style:none;display:flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;color:var(--c-text);font-size:var(--fs-caption);font-weight:700;letter-spacing:.02em;cursor:pointer;user-select:none}
 .lang-dd summary::-webkit-details-marker{display:none}
-.lang-list{position:absolute;right:0;top:calc(100% + var(--s-8));z-index:60;display:flex;flex-direction:column;min-width:136px;padding:var(--s-8);background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--r-md);box-shadow:var(--shadow-floating)}
+.lang-list{position:absolute;right:0;top:calc(100% + var(--s-8));z-index:60;display:flex;flex-direction:column;min-width:136px;padding:var(--s-8);background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--r-md)}
 .lang-list a{display:flex;align-items:center;gap:var(--s-8);min-height:var(--h-touch);padding:0 var(--s-12);border-radius:var(--r-sm);font-size:var(--fs-small);font-weight:600;text-decoration:none;color:var(--c-text)}
 .lang-list a:hover{background:var(--c-surface)}
 .lang-list a[aria-current]{color:var(--c-accent)}
@@ -137,7 +137,7 @@ header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg)
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--h-btn);padding:var(--s-8) var(--s-24);border-radius:var(--r-pill);font-size:var(--fs-body);font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;text-align:center;cursor:pointer}
 /* ── ПЛОСКИЕ кнопки и чипы (владелец 11.11): сплошная заливка тона, наведение (@media hover ниже) и нажатие — тон -p;
    без бликов, теней, градиентов и размытия. Одно правило на все кнопки, элемент задаёт только тон --tone-bg / --tone-p ── */
-:where(.btn,.fab-menu,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s,transform .2s ease}
+:where(.btn,.fab-menu,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
 :where(.btn,.fab-menu,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only):active{background:var(--tone-p)}
 /* тона: светлый (серые кнопки), зелёный (выбранные и маршрут), WhatsApp, олива; .btn и .fab-menu — зелёные по умолчанию */
 .btn.ghost,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only{--tone-bg:var(--btn-light);--tone-p:var(--btn-light-p)}
@@ -154,9 +154,8 @@ header{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--c-bg)
 /* ── HERO: видеозона (пока фирменный зелёный и логотип — видео владелец ещё не утвердил) + заголовок и кнопки ── */
 .hero{display:grid;grid-template-columns:1fr 1fr;gap:var(--s-32);align-items:center;padding:var(--s-16) var(--s-24) var(--s-32)}
 .hero-zone{order:2;position:relative;width:100%;aspect-ratio:4/5;max-height:600px;border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent);display:flex;align-items:center;justify-content:center}
-.hero-zone::before{content:'';position:absolute;inset:0;opacity:.08;background-image:radial-gradient(circle at 20% 30%,var(--c-brand-cream) 1.5px,transparent 1.5px),radial-gradient(circle at 70% 65%,var(--c-brand-cream) 1.5px,transparent 1.5px);background-size:120px 120px,170px 170px}
 .hero-zone .logo-art{width:min(74%,380px)}
-.hero-badge{position:absolute;left:var(--s-16);bottom:var(--s-16);display:flex;align-items:center;gap:var(--s-12);padding:var(--s-12) var(--s-16);border-radius:var(--r-md);background:var(--c-glass);color:var(--c-accent-dk)}
+.hero-badge{position:absolute;left:var(--s-16);bottom:var(--s-16);display:flex;align-items:center;gap:var(--s-12);padding:var(--s-12) var(--s-16);border-radius:var(--r-md);background:var(--c-bg);color:var(--c-accent-dk)}
 .hero-badge b{font-family:var(--font-display);font-size:var(--fs-title);line-height:1}
 .hero-badge span{display:block;font-size:var(--fs-caption);line-height:1.3;color:var(--c-muted)}
 .tag{font-size:var(--fs-small);font-weight:600;color:var(--c-muted);margin-bottom:var(--s-8)}
@@ -185,36 +184,36 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .promo-a{display:inline-block;margin-top:var(--s-4);padding:var(--s-4) 0;color:#FFFFFF;font-size:var(--fs-small);font-weight:600;text-decoration:underline;text-underline-offset:3px;text-decoration-thickness:1px;white-space:nowrap}
 .promo-a:hover{text-decoration-thickness:2px}
 .sub-tile{border-radius:var(--r-lg);overflow:hidden;background:var(--c-accent)}
-.tile-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;flex-direction:column;align-items:center;gap:var(--s-2);padding:var(--s-32) var(--s-24) var(--s-16);text-align:center;background:linear-gradient(to top,rgba(20,14,10,.82),rgba(20,14,10,.5) 55%,rgba(20,14,10,0))}
+.tile-cap{position:absolute;left:0;right:0;bottom:0;z-index:1;display:flex;flex-direction:column;align-items:center;gap:var(--s-2);padding:var(--s-12) var(--s-24);text-align:center;background:rgba(20,14,10,.75)}
 .tile-cap .promo-t{color:var(--c-brand-cream)}
 /* видео налива кофе — во всю плитку (кадр собран под 910:620, tools/build_sub_video.py), под подписью — затемнение */
 .sub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 /* одна плитка (на /kk/ и /en/ «Курицы гриль» нет) — того же размера, что в паре, по центру ряда */
 .promo-grid>.promo-tile:only-child{grid-column:1/-1;justify-self:center;width:calc((100% - var(--s-32)) / 2)}
 /* ── GRILL PROMO — акция «Курица гриль» (19.10.2026): видео — главное, огонь — тонкая кайма с языками сверху (#30 → правка
-   владельца «курицы мало, огонь меньше»). SVG (tools/flame_frame.py): внешнее пламя красный→оранжевый, жёлтая кромка, кривые C.
+   владельца «курицы мало, огонь меньше»). SVG (tools/flame_frame.py): внешнее пламя и жёлтая кромка — сплошные цвета (плоско, 11.11), кривые C.
    Окно .grill-win: почти прямоугольник 80% ширины бокса со скруглённым низом и короткими языками сверху, clip-path: polygon(...);
    лежит НАД svg (z-index:1, svg раньше в DOM); окно оставляет ≈84% бокса (tests/test_perf.py требует ≥75%).
-   Внутри окна: видео (object-fit:cover), виньетка .grill-glow (прозрачный центр, оранжевый край) и бегущая строка в нижней
-   трети окна — всё режется контуром пламени, на кремовом фоне текста нет.
+   Внутри окна: видео (object-fit:cover) и подпись на ровной плашке — всё режется контуром пламени; без свечения и тени
+   (владелец 11.11: «все плоским»).
    Видео: preload=none, play() по IntersectionObserver, при reduced-motion — постер. ── */
 .grill-promo{cursor:pointer}
 /* пламя целиком (с языками) — во весь бокс 910×620 (tools/flame_frame.py, правка 1.11): рамка = плитка, края, верх
    и низ — как у плитки подписки */
 /* подпись «Курицы гриль» — внутри окна с видео (режется контуром огня), по центру, как можно ниже: отступ снизу 2 % ширины
    окна + 4 px поля ссылки; по центру ссылка не задевает скруглённые углы окна */
-.grill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:var(--s-2);padding:8% 7% 2%;text-align:center;background:linear-gradient(to top,rgba(24,10,4,.9),rgba(24,10,4,.62) 45%,rgba(24,10,4,0))}
-.grill-frame{position:relative;aspect-ratio:910/620;filter:drop-shadow(0 16px 26px rgba(215,38,30,.32))}
+.grill-cap{position:absolute;left:0;right:0;bottom:0;z-index:2;display:flex;flex-direction:column;align-items:center;gap:var(--s-2);padding:2% 7%;text-align:center;background:rgba(24,10,4,.75)}
+.grill-frame{position:relative;aspect-ratio:910/620}
 .grill-win{position:absolute;left:3.30%;top:14.19%;width:93.41%;height:80.97%;overflow:hidden;z-index:1;clip-path:polygon(0.0% 91.8%,0.0% 93.0%,0.2% 94.2%,0.4% 95.2%,0.7% 96.2%,1.0% 97.0%,1.5% 97.8%,2.0% 98.5%,2.5% 99.0%,3.2% 99.4%,3.9% 99.7%,4.7% 99.9%,5.5% 100.0%,94.5% 100.0%,95.3% 99.9%,96.1% 99.7%,96.8% 99.4%,97.5% 99.0%,98.0% 98.5%,98.5% 97.8%,99.0% 97.0%,99.3% 96.2%,99.6% 95.2%,99.8% 94.2%,100.0% 93.0%,100.0% 91.8%,100.0% 34.0%,99.9% 31.7%,99.7% 29.5%,99.3% 27.3%,98.8% 25.1%,98.1% 23.0%,97.3% 20.9%,96.5% 18.8%,95.5% 16.8%,94.5% 14.9%,93.4% 13.0%,92.3% 11.1%,91.1% 9.3%,90.3% 11.1%,89.4% 12.9%,88.3% 14.8%,87.0% 16.6%,85.7% 18.3%,84.3% 20.0%,82.9% 21.5%,81.5% 22.9%,80.0% 24.2%,78.6% 25.3%,77.3% 26.2%,76.0% 26.8%,74.1% 24.9%,72.1% 22.8%,70.1% 20.6%,68.0% 18.2%,65.9% 15.8%,63.8% 13.4%,61.7% 11.0%,59.6% 8.5%,57.6% 6.2%,55.7% 4.0%,53.8% 1.9%,52.1% 0.0%,50.6% 2.3%,49.1% 4.7%,47.5% 7.1%,45.9% 9.4%,44.2% 11.7%,42.6% 13.9%,40.9% 16.1%,39.3% 18.1%,37.7% 20.0%,36.2% 21.8%,34.8% 23.3%,33.6% 24.7%,32.3% 23.4%,30.9% 22.1%,29.4% 20.7%,27.8% 19.3%,26.1% 17.9%,24.3% 16.5%,22.5% 15.1%,20.6% 13.7%,18.7% 12.3%,16.8% 10.9%,14.9% 9.6%,13.0% 8.2%,11.8% 10.1%,10.6% 12.0%,9.3% 14.0%,8.1% 16.1%,6.9% 18.2%,5.7% 20.4%,4.6% 22.6%,3.5% 24.8%,2.5% 27.1%,1.6% 29.4%,0.7% 31.7%,0.0% 34.0%)}
 .grill-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
-.grill-glow{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 62% 60% at 50% 58%,transparent 0,transparent 60%,rgba(255,150,0,.45) 85%,rgba(255,90,0,.7) 100%)}
 .grill-fire{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
-.grill-ticker{position:relative;height:44px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(13px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500;text-shadow:0 0 6px #FF7A00,0 0 16px rgba(255,90,0,.85),0 1px 0 #A80F00;-webkit-mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent);mask-image:linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)}
+.grill-ticker{position:relative;height:44px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(13px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500}
 .grill-ticker span{display:inline-block;padding-right:.6em;animation:grill-run 9s linear infinite}
 @keyframes grill-run{to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}
-/* бегущая строка «ВНИМАНИЕ» — под обеими плитками на всю ширину контейнера, на огненной полосе (жёлтый на белом не читается) */
-.promo-run{margin-top:var(--s-16);border-radius:var(--r-pill);background:linear-gradient(90deg,#C2140F,#F23A10 50%,#C2140F);overflow:hidden;cursor:pointer}
+/* бегущая строка «ВНИМАНИЕ» — под обеими плитками на всю ширину контейнера, на красной полосе (жёлтый на белом не читается;
+   на --c-danger — 4,8:1), сплошной цвет без свечения */
+.promo-run{margin-top:var(--s-16);border-radius:var(--r-pill);background:var(--c-danger);overflow:hidden;cursor:pointer}
 
 /* ── О НАС ── */
 .story{padding-top:var(--s-32);padding-bottom:var(--s-32)}
@@ -254,7 +253,7 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .loc-head p{color:var(--c-muted);max-width:340px;font-size:var(--fs-small);line-height:1.55}
 .loc-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--s-12)}
 /* колонкой: карточки ряда одной высоты, кнопки прижаты к низу — у точек разное число строк удобств */
-.loc-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-24) var(--s-16);border-radius:var(--r-lg);background:var(--c-bg);box-shadow:var(--shadow-floating)}
+.loc-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-24) var(--s-16);border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
 .loc-card small{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
 .loc-card h3{font-family:var(--font-body);font-size:var(--fs-body);font-weight:500;text-transform:none;letter-spacing:0;color:var(--c-muted);margin:var(--s-4) 0 var(--s-2)}
 .loc-meta{font-size:var(--fs-small);color:var(--c-muted);line-height:1.5;margin:0 0 var(--s-8)}
@@ -361,7 +360,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .promo-t{font-size:18px}
   .promo-s{font-size:var(--fs-caption)}
   .promo-a{font-size:13px}
-  .tile-cap{padding:var(--s-24) var(--s-16) var(--s-12)}
+  .tile-cap{padding:var(--s-12) var(--s-16)}
   .story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .story h2,.f-head h2,.loc-head h2,.contact h2,.row-head h2{font-size:var(--fs-title)}
   .f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
@@ -389,7 +388,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 @media(max-width:359px){.hbar{padding:var(--s-8) var(--s-12)}.pill-point{padding:0 var(--s-12)}}
 
 
-/* ── движение (владелец 1.11): появление при прокрутке, лёгкий параллакс, отклик на наведение; классы ставит скрипт
+/* ── движение (владелец 1.11): появление при прокрутке, лёгкий параллакс (подъём и тени при наведении убраны 11.11 — плоско); классы ставит скрипт
    «движение» в конце страницы (tools/seo_jsonld.py), без JS и при reduced-motion — всё видно сразу. Только transform и opacity ── */
 .rv{opacity:0;transform:translate3d(0,20px,0)}
 .rv.rv-in{opacity:1;transform:none;transition:opacity .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms),transform .6s cubic-bezier(.2,.7,.2,1) var(--rv-d,0ms)}
@@ -398,10 +397,6 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .px-on .hero-zone .logo-art{transform:translate3d(0,var(--py,0px),0);will-change:transform}
 .px-on .story-photo img{transform:translate3d(0,var(--py,0px),0) scale(1.12);will-change:transform}
 @media(hover:hover){
-.promo-tile,.f-grid article,.loc-card,.stats>div,.sc-row img{transition:transform .2s ease,box-shadow .2s ease}
-.promo-tile:hover,.f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{transform:translateY(-4px)}
-.f-grid article:hover,.loc-card:hover,.stats>div:hover,.sc-row img:hover{box-shadow:0 10px 30px rgba(49,73,47,.2)}
-.ib:hover{transform:scale(1.05)}
 :where(.btn,.fab-menu,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only):hover{background:var(--tone-p)}
 }
 @media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}.px-on .hero-zone .logo-art,.px-on .story-photo img{transform:none!important}html{scroll-behavior:auto}}
@@ -411,7 +406,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .menu-modal.open{display:block}
 /* шапка меню в духе приложения: одна строка «режим · язык · закрыть», ниже вкладки и разделы — пилюли как чипы приложения
    (заливка surface, активная — forest с белым текстом, без обводок, по ширине текста) */
-.mm-head{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--c-bg) 94%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--c-border)}
+.mm-head{position:sticky;top:0;z-index:5;background:var(--c-bg);border-bottom:1px solid var(--c-border)}
 .mm-top{display:flex;align-items:center;gap:var(--s-8);max-width:1150px;margin:0 auto;padding:var(--s-8) var(--s-24) var(--s-4)}
 .mm-tabs,.mm-cats{position:relative;display:flex;align-items:center;gap:var(--s-8);overflow-x:auto;scrollbar-width:none;max-width:1150px;margin:0 auto;padding:var(--s-4) var(--s-24) var(--s-8)}
 .mm-cats{margin-top:calc(-1 * var(--s-4))}
@@ -429,7 +424,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .mm-search-x::before,.mm-search-x::after{content:'';position:absolute;left:50%;top:50%;width:12px;height:1.5px;margin:-.75px 0 0 -6px;background:currentColor;border-radius:1px}
 .mm-search-x::before{transform:rotate(45deg)}
 .mm-search-x::after{transform:rotate(-45deg)}
-.mm-search:focus-within{border-color:var(--c-olive-text);box-shadow:0 0 0 1px var(--c-olive-text)}
+.mm-search:focus-within{border-color:var(--c-olive-text);outline:1px solid var(--c-olive-text)}
 .mm-search-none{padding:var(--s-32) 0;text-align:center;color:var(--c-muted)}
 /* режим и язык — отдельные плоские чипы 40, касание 44 (::after) */
 .mm-mode,.mm-lang{display:flex;gap:var(--s-4);flex:none;border-radius:var(--r-pill)}
@@ -451,8 +446,8 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 /* над меню — одна карточка: аллергия и сервисный сбор (адреса точек — в карточках на главной) */
 .mm-intro{margin-bottom:var(--s-4)}
 .mm-notice{margin:0;font-size:13px;line-height:1.5;color:var(--c-muted)}
-/* раздел — на своей мягкой подложке (владелец 1.11): чуть темнее белого, скругление 22, едва заметная тень-размытие */
-.mm-sec{break-inside:avoid;margin-bottom:var(--s-24);padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
+/* раздел — на своей мягкой подложке (владелец 1.11): чуть темнее белого, скругление 22; без тени (11.11 — плоско) */
+.mm-sec{break-inside:avoid;margin-bottom:var(--s-24);padding:var(--s-24);border-radius:var(--r-lg);background:var(--c-surface)}
 .mm-sec h4{display:flex;align-items:center;gap:var(--s-8);flex-wrap:wrap;font-family:var(--font-display);font-weight:700;font-size:21px;line-height:1.2;text-transform:lowercase;color:var(--c-text);margin-bottom:var(--s-8)}
 .mm-badge{display:inline-flex;align-items:center;min-height:24px;padding:0 var(--s-8);border-radius:var(--r-pill);background:var(--c-bg);color:var(--c-muted);font-family:var(--font-body);font-size:var(--fs-caption);font-weight:600;line-height:1;text-transform:none;white-space:nowrap}
 .mm-secp{margin-left:auto;font-family:var(--font-body);font-size:var(--fs-body);font-weight:700;text-transform:none;color:var(--c-text);font-variant-numeric:tabular-nums}
@@ -475,7 +470,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .sale{text-decoration-line:underline;text-decoration-color:var(--sale);text-decoration-thickness:2px;text-underline-offset:3px;text-decoration-skip-ink:none}
 .mm-only{position:relative;display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;margin:0 2px 0 5px;padding:0;border:1.3px solid var(--c-accent);border-radius:50%;color:var(--forest);font-family:var(--font-body);font-size:10px;font-weight:800;line-height:1;vertical-align:1px;cursor:pointer}
 .mm-only::after{content:'';position:absolute;inset:-15px}
-.mm-pop{position:fixed;z-index:140;max-width:min(280px,calc(100vw - 24px));background:var(--forest);color:var(--cream);font-family:var(--font-body);font-size:12px;line-height:1.5;padding:10px 13px;border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18)}
+.mm-pop{position:fixed;z-index:140;max-width:min(280px,calc(100vw - 24px));background:var(--forest);color:var(--cream);font-family:var(--font-body);font-size:12px;line-height:1.5;padding:10px 13px;border-radius:10px;border:1px solid var(--c-border)}
 .mm-pop b{display:block;font-weight:700;margin-bottom:2px}
 .mm-pop[hidden]{display:none}
 /* ── карточка блюда (тап по позиции): в духе экрана «напиток» приложения — крупное фото, название строчными, цена пилюлей ── */
@@ -523,18 +518,17 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .mm-head.compact{transform:translateY(calc(-1 * var(--mm-top-h,0px)))}
   .mm-top{padding:var(--s-8) var(--s-12) var(--s-4);gap:6px}
   .mm-tabs,.mm-cats{padding:var(--s-4) var(--s-12) var(--s-8);gap:6px;scroll-behavior:smooth}
-  .mm-cats{-webkit-mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent);mask-image:linear-gradient(90deg,transparent,#000 12px,#000 calc(100% - 24px),transparent)}
   .mm-mode{flex:1;min-width:0}
   /* 13px: на 360 px «Кофеханалар» в 14px не влезает; без обрезки — касание ::after не режется */
   .mm-mode-btn{flex:1;min-width:0;padding:0 var(--s-8);font-size:13px}
   .mm-lang-wrap{width:44px;height:40px}
   .mm-lang{position:absolute;top:0;right:0;flex-direction:column;z-index:10}
   .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
-  .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);box-shadow:var(--shadow-floating)}
+  .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);border:1px solid var(--c-border);margin:-1px}
   /* лупа на узком экране всегда видна: прилипает к правому краю ряда вкладок, вкладки уходят под неё (градиент слева,
-     справа — белая полоса на ширину отступа ряда: box-shadow без размытия цветом фона — маска, не тень) */
+     слева и справа — белые полосы: слева ::before 8 px, справа box-shadow без размытия цветом фона — маска, не тень) */
   .mm-search-btn{position:sticky;right:0;z-index:1;box-shadow:var(--s-12) 0 0 var(--c-bg)}
-  .mm-search-btn::before{content:'';position:absolute;top:0;bottom:0;right:100%;width:28px;background:linear-gradient(to right,rgba(255,255,255,0),var(--c-bg));pointer-events:none}
+  .mm-search-btn::before{content:'';position:absolute;top:0;bottom:0;right:100%;width:var(--s-8);background:var(--c-bg);pointer-events:none}
   .mm-sec{margin-bottom:var(--s-16);padding:var(--s-16)}
   .mm-sec h4{font-size:20px}
 }
@@ -865,12 +859,11 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
       <!-- Акция «Курица гриль»: видео (assets/grill-closeup.*.mp4, 910×512, 4 с) в окне-языке огня (SVG из tools/flame_frame.py); тап — меню на «Блюда на гриле» -->
       <div class="promo-tile grill-promo" onclick="openGrill()">
         <div class="grill-frame">
-          <svg class="grill-fire" viewBox="0 0 910 620" preserveAspectRatio="none" aria-hidden="true" focusable="false"><defs><radialGradient id="grill-g1" cx="50%" cy="92%" r="80%"><stop offset="0" stop-color="#FF7A00"/><stop offset=".55" stop-color="#F23A10"/><stop offset="1" stop-color="#C2140F"/></radialGradient><radialGradient id="grill-g2" cx="50%" cy="95%" r="75%"><stop offset="0" stop-color="#FFE500"/><stop offset=".6" stop-color="#FFB300"/><stop offset="1" stop-color="#FF6A00"/></radialGradient></defs><path class="grill-fire-outer" fill="url(#grill-g1)" d="M0 559 C0 595 25 620 65 620 L845 620 C885 620 910 595 910 559 L910 248 C910 176 857 124 822 62 C787 124 717 176 670 197 C624 155 531 72 472 0 C414 83 356 145 309 186 C263 155 193 114 146 72 C112 124 42 176 0 248 Z"/><path class="grill-fire-inner" fill="url(#grill-g2)" d="M11 558 C11 585 29 601 60 601 L850 601 C881 601 899 585 899 558 L899 255 C899 206 863 163 820 125 C796 163 729 206 686 217 C619 179 534 115 473 77 C425 125 352 179 309 206 C266 179 193 147 126 120 C84 158 35 206 11 255 Z"/></svg>
+          <svg class="grill-fire" viewBox="0 0 910 620" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="grill-fire-outer" fill="#F23A10" d="M0 559 C0 595 25 620 65 620 L845 620 C885 620 910 595 910 559 L910 248 C910 176 857 124 822 62 C787 124 717 176 670 197 C624 155 531 72 472 0 C414 83 356 145 309 186 C263 155 193 114 146 72 C112 124 42 176 0 248 Z"/><path class="grill-fire-inner" fill="#FFE500" d="M11 558 C11 585 29 601 60 601 L850 601 C881 601 899 585 899 558 L899 255 C899 206 863 163 820 125 C796 163 729 206 686 217 C619 179 534 115 473 77 C425 125 352 179 309 206 C266 179 193 147 126 120 C84 158 35 206 11 255 Z"/></svg>
           <div class="grill-win">
             <video class="grill-video" poster="assets/grill-poster.e74142ba.webp" width="910" height="512" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">
             <source src="assets/grill-closeup.701739c2.mp4" type="video/mp4">
             </video>
-            <div class="grill-glow" aria-hidden="true"></div>
             <p class="grill-cap"><b class="promo-t">Курица гриль</b> <span class="promo-s"><s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span> · Толе Би, 64 и Серкебаева, 146</span> <a class="promo-a" href="#menu" onclick="event.preventDefault();event.stopPropagation();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — открыть в меню">смотреть в меню →</a></p>
           </div>
         </div>
