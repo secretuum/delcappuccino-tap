@@ -185,13 +185,14 @@ class TestPage(unittest.TestCase):
     def test_canonical_and_sitemap(self):
         canon = {}
         for path in ('index.html', 'ugolok/index.html', 'menyu/index.html', 'kk/index.html', 'en/index.html',
-                     'kk/menyu/index.html', 'en/menu/index.html'):
+                     'kk/menyu/index.html', 'en/menu/index.html', 'otzyv/index.html'):
             links = re.findall(r'<link rel="canonical" href="([^"]+)">', read(path).split('</head>')[0])
             self.assertEqual(len(links), 1, path)
             canon[path] = links[0]
         self.assertEqual(canon, {'index.html': SITE, 'ugolok/index.html': SITE + 'ugolok', 'menyu/index.html': SITE + 'menyu',
                                  'kk/index.html': SITE + 'kk/', 'en/index.html': SITE + 'en/',
-                                 'kk/menyu/index.html': SITE + 'kk/menyu', 'en/menu/index.html': SITE + 'en/menu'})
+                                 'kk/menyu/index.html': SITE + 'kk/menyu', 'en/menu/index.html': SITE + 'en/menu',
+                                 'otzyv/index.html': SITE + 'otzyv'})     # «Для жалоб и предложений», 11.11.2026
         sm = read('sitemap.xml')
         urls = re.findall(r'<url>(.*?)</url>', sm, re.S)
         self.assertEqual(sorted(re.search(r'<loc>([^<]*)</loc>', u).group(1) for u in urls), sorted(canon.values()))
