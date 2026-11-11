@@ -38,6 +38,10 @@
 - /otzyv — «Для жалоб и предложений» (11.11.2026): собирает tools/feedback_page.py — филиалы из BRANCHES и новая точка из
   его EXTRA_POINTS (только там), тексты — pages_i18n.json (otzyv); кнопка в подвале /, /kk/, /en/ — над рядом ссылок
   с «Уголком потребителя», событие feedback_open.
+- Язык — один выбор на весь сайт (владелец 11.11.2026): скрипт LANG_JS в <head> всех 9 страниц, сразу за блоком аналитики
+  и переходом (HEAD_JS), ключ localStorage dc_lang. Выбор — переключатель в шапке, кнопки языка в меню, /ugolok и /otzyv,
+  явная метка в адресе и открытие /, /kk/, /en/ (и текстовых меню); следуют — меню, /ugolok, /otzyv, а главные и текстовые
+  меню с другим сохранённым языком сразу уходят на свою версию (location.replace). Подробно — у LANG_JS ниже.
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -90,7 +94,8 @@ YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
 NOT_FOUND_JS = "track('page_not_found',{path:location.pathname})"
 
 AN_MARK = '<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->'
-AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n(?:<!-- переход между страницами[^\n]*-->\n<script>.*?</script>\n)?', re.S)
+AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n(?:<!-- переход между страницами[^\n]*-->\n<script>.*?</script>\n)?'
+                   r'(?:<script>var dcLang;.*?</script>\n)?', re.S)
 # Переход между страницами (владелец 11.11) там, где браузер не умеет view transitions между документами (Firefox и старые):
 # новая страница проявляется (класс vt-in), клик по ссылке на другую страницу сайта — страница гаснет 160 мс (vt-out),
 # потом переход; не трогаем: #метки, target, Ctrl/⌘/Shift/Alt, среднюю кнопку, download, tel:/wa.me (другой origin),
@@ -102,6 +107,27 @@ VT_JS = ("(function(){var d=document.documentElement;if('CSSViewTransitionRule'i
          "||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;"
          "e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();")
 VT_HEAD = '<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->\n<script>' + VT_JS + '</script>\n'
+# Язык — один выбор на весь сайт (владелец 11.11: «если выбран в одном любом месте язык, то он автоматически везде меняется»).
+# Ключ localStorage dc_lang = ru | kk | en; чтение и запись — в try (нет хранилища — всё по-старому, по умолчанию). Скрипт —
+# в <head> всех 9 страниц сразу за переходом (LANG_HEAD), до заставки и до скриптов страницы:
+# - глобальные dcLang (текущий выбор или undefined) и dcSave(l) — запомнить выбор; ими пользуются меню главной, /ugolok, /otzyv;
+# - явная метка языка в адресе (#kk, #menu-kk, #menu-togo-en, #menu-grill-kk; /otzyv/#en) важнее хранилища и сама становится
+#   выбором; #menu без языка — меню на сохранённом языке, страницу не трогаем;
+# - страница с версиями по языкам (есть <link rel=alternate hreflang>: /, /kk/, /en/ и три текстовых меню): открыли без выбора
+#   или на выбранном языке — это выбор, запомнить <html lang>; выбран другой — сразу location.replace на версию этого языка
+#   (путь из <link hreflang> без домена SITE, с ?query и #меткой), страница скрыта (html[hidden]) — без вспышки, без анимации ухода и без
+#   заставки; на тот же путь не переходим (офлайн service worker отдаёт главную вместо /kk/ — цикла нет);
+# - клик по ссылке с hreflang (переключатель языка в шапке главных и текстовых меню) — выбор до перехода, иначе / вернул бы
+#   на /kk/. У поисковых роботов и новых посетителей хранилище пустое — для них ничего не меняется.
+LANG_JS = (r"var dcLang;function dcSave(l){dcLang=l;try{localStorage.setItem('dc_lang',l)}catch(e){}}"
+           r"(function(){var d=document.documentElement,o=location,m=/^#(menu(-togo|-grill)?-?)?(kk|ru|en)?$/.exec(o.hash),a;"
+           r"addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[hreflang]');a&&dcSave(a.hreflang)});"
+           r"try{dcLang=/^(kk|ru|en)$/.exec(localStorage.getItem('dc_lang'))[1]}catch(e){}"
+           r"if(m)m[3]&&dcSave(m[3]);else if(document.querySelector('link[hreflang]'))if(!dcLang||dcLang==d.lang)dcSave(d.lang);"
+           r"else try{a=document.querySelector('link[hreflang='+dcLang+']').href.replace('%s','');"
+           r"a!=o.pathname&&(d.hidden=1,o.replace(a+o.search+o.hash))}catch(e){}})();") % SITE[:-1]
+LANG_HEAD = '<script>' + LANG_JS + '</script>\n'
+HEAD_JS = VT_HEAD + LANG_HEAD       # за блоком аналитики на всех страницах: переход между страницами и язык
 GA_LINE_RE = re.compile(r"<script>window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\)\}"
                         r"gtag\('js',new Date\(\)\);gtag\('config','G-[A-Z0-9]+'\);(?:function track\(n,p\)\{[^<]*\})?</script>\n")
 UGOLOK = os.path.join(ROOT, 'ugolok', 'index.html')
@@ -756,7 +782,7 @@ footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
        'tokens': tokens_css(html), 'btn': btn_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
        'lang_label': H.escape(i18n()['kk' if lang == 'kk' else 'en']['page']['lang_label']) if lang != 'ru' else 'Язык',
-       'analytics': analytics_head(YM_ID) + VT_HEAD, 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
+       'analytics': analytics_head(YM_ID) + HEAD_JS, 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
 
 
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
@@ -802,7 +828,7 @@ def analytics_head(ym_id=None, track_links=True, on_load=None):
 def with_analytics(html, track_links=True, on_load=None):
     """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID); track_links=False — /ugolok:
     адреса PDF-талонов с именами ИП не уходят в Метрику (главный, 23.10.2026)"""
-    new, head = analytics_head(YM_ID, track_links, on_load) + VT_HEAD, html.split('</head>')[0]
+    new, head = analytics_head(YM_ID, track_links, on_load) + HEAD_JS, html.split('</head>')[0]
     m = AN_RE.search(head) or GA_LINE_RE.search(head)
     if not m:
         sys.exit('seo_jsonld: в <head> нет блока аналитики и строки gtag — некуда поставить analytics_head')
@@ -1107,7 +1133,7 @@ def lang_page(html, lang):
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_otzyv', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
-           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID) + VT_HEAD, ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
+           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID) + HEAD_JS, ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,

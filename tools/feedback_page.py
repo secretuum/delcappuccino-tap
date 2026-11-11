@@ -14,8 +14,9 @@
 - аналитика — блок analytics_head, события feedback_wa / feedback_call {branch:'01'…'05'|'sputnik'}, без номеров телефонов;
   открытие страницы с подвала /, /kk/, /en/ — feedback_open (кнопка рядом с «Уголком потребителя»).
 Адрес страницы — SLUG (выбор главного; владелец может сменить): поменять здесь, переименовать папку, поправить ссылку
-в подвале index.html (tests/test_otzyv.py сверяет) и <loc> в sitemap.xml. Язык при заходе — из #kk / #en в адресе
-(подвалы /kk/ и /en/ ведут сразу на свой язык), иначе русский.
+в подвале index.html (tests/test_otzyv.py сверяет) и <loc> в sitemap.xml. Язык при заходе — общий выбор сайта (dcLang,
+seo_jsonld.LANG_JS): метка #kk / #en в адресе (подвалы /kk/ и /en/ ведут сразу на свой язык), иначе выбранный раньше на любой
+странице, иначе русский; переключатель здесь — тоже выбор на весь сайт (dcSave), «на главную» — главная этого языка.
 Только stdlib."""
 import html as H, json, os, re, sys
 from urllib.parse import quote
@@ -328,10 +329,11 @@ function setLang(lang, quiet){
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   document.title = d.pageTitle;
-  if(!quiet){ try{ history.replaceState(null, '', '#' + lang); }catch(e){} }
+  if(!quiet){ dcSave(lang); try{ history.replaceState(null, '', '#' + lang); }catch(e){} }     /* выбор посетителя — на весь сайт */
 }
-/* с подвала /kk/ и /en/ приходят с #kk / #en — сразу свой язык; без метки — русский, как в разметке */
-(function(){ var h = (location.hash || '').slice(1); if(h !== 'ru' && Object.prototype.hasOwnProperty.call(I18N, h)) setLang(h, true); })();
+/* язык при заходе — общий выбор сайта dcLang (скрипт языка в <head>): метка #kk / #en в адресе (с подвала /kk/ и /en/) важнее,
+   иначе язык, выбранный раньше где угодно на сайте; ничего — русский, как в разметке */
+(function(){ if(dcLang && dcLang !== 'ru' && Object.prototype.hasOwnProperty.call(I18N, dcLang)) setLang(dcLang, true); })();
 </script>
 <script>
 /* Аналитика — после load, в простое; service worker общий с главной (правила — в /sw.js) */
@@ -344,7 +346,7 @@ function setLang(lang, quiet){
 </script>
 </body>
 </html>
-''' % {'title': H.escape(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID) + S.VT_HEAD,
+''' % {'title': H.escape(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID) + S.HEAD_JS,
        'preload': preload, 'og_image': S.OG_IMAGE, 'fonts': S.font_faces(html), 'tokens': S.tokens_css(html), 'btn': btn,
        'sprite': sprite(), 'arrow': ARROW, 'back': e(t['back']), 'langs': langs, 'eyebrow': e(t['eyebrow']), 'h1': e(t['h1']),
        'lead': e(t['lead']), 'cards': '\n'.join(card(T, p) for p in ps), 'i18n': i18n_js, 'ga': S.GA_ID}

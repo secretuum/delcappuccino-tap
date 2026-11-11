@@ -181,7 +181,9 @@ class TestPage(unittest.TestCase):
         self.assertIn("openMenu(m[1]?'togo':undefined)", f.group(1))
         self.assertIn("if(m[1]==='-grill'){ showGrill(); return; }", f.group(1), '«Курица гриль» с /kk/ и /en/ — меню сразу на гриле')
         self.assertIn('function openGrill(){ track(\'cta_grill\'); showGrill(); }', self.html, 'событие — только при нажатии, не при переходе по ссылке')
-        self.assertIn("localStorage.setItem('dc_menu_lang', m[2])", f.group(1))
+        # 11.11: язык из адреса — общий выбор сайта (dcSave, seo.LANG_JS), а не отдельная память меню dc_menu_lang
+        self.assertIn("if(m[2]) dcSave(menuLang=m[2]);", f.group(1))
+        self.assertNotIn('dc_menu_lang', self.html)
         self.assertIn("menuFromHash(); addEventListener('hashchange',menuFromHash);", self.html)
 
     def test_canonical_and_sitemap(self):
@@ -391,14 +393,15 @@ class TestMenuPage(unittest.TestCase):
             self.assertIn(tag, head)
         # JS только аналитика (как на /ugolok, тот же ID, что на главной); меню — текстом, без скриптов
         scripts = re.findall(r'<script>(.*?)</script>', self.page, re.S)
-        self.assertEqual(len(scripts), 3)
+        self.assertEqual(len(scripts), 4)
         self.assertIn(seo.VT_JS, scripts, '11.11: запасной переход между страницами (без view transitions)')
-        self.assertEqual(len(re.findall(r'<script\b', self.page)), 3, 'других скриптов на /menyu нет')
+        self.assertEqual(len(re.findall(r'<script\b', self.page)), 4, 'других скриптов на /menyu нет')
         ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", self.html.split('</head>')[0]).group(1)
         self.assertIn("gtag('config','%s')" % ga, scripts[0])
         self.assertEqual(scripts[1], seo.VT_JS, 'в <head> — сразу за аналитикой')
-        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[2])
-        self.assertIn("addEventListener('load'", scripts[2])
+        self.assertEqual(scripts[2], seo.LANG_JS, '11.11: язык — один выбор на весь сайт, в <head> за переходом')
+        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[3])
+        self.assertIn("addEventListener('load'", scripts[3])
         self.assertNotRegex(self.page, r'(src|href)="(?!/|https://|#)', 'пути только от корня: /menyu отдаётся без слэша')
 
     def test_all_items_with_prices(self):

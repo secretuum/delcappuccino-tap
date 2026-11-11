@@ -14,8 +14,6 @@
 <!-- /hreflang -->
 <link rel="preload" href="assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
-<!-- заставка: раз за сессию и не при reduced-motion ставит класс intro-on (CSS .intro), через 1,5 с снимает; ошибки хранилища — без заставки -->
-<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('dc_intro'))return;sessionStorage.setItem('dc_intro','1');var d=document.documentElement;d.classList.add('intro-on');setTimeout(function(){d.classList.remove('intro-on')},1500)}catch(e){}})();</script>
 <meta name="theme-color" content="#426349">
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" type="image/png" sizes="192x192" href="assets/icon-192.png">
@@ -26,6 +24,9 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
 <!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
 <script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
+<script>var dcLang;function dcSave(l){dcLang=l;try{localStorage.setItem('dc_lang',l)}catch(e){}}(function(){var d=document.documentElement,o=location,m=/^#(menu(-togo|-grill)?-?)?(kk|ru|en)?$/.exec(o.hash),a;addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[hreflang]');a&&dcSave(a.hreflang)});try{dcLang=/^(kk|ru|en)$/.exec(localStorage.getItem('dc_lang'))[1]}catch(e){}if(m)m[3]&&dcSave(m[3]);else if(document.querySelector('link[hreflang]'))if(!dcLang||dcLang==d.lang)dcSave(d.lang);else try{a=document.querySelector('link[hreflang='+dcLang+']').href.replace('https://tap.delcappuccino.kz','');a!=o.pathname&&(d.hidden=1,o.replace(a+o.search+o.hash))}catch(e){}})();</script>
+<!-- заставка: раз за сессию и не при reduced-motion ставит класс intro-on (CSS .intro), через 1,5 с снимает; ошибки хранилища — без заставки -->
+<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches||sessionStorage.getItem('dc_intro')||document.documentElement.hidden)return;sessionStorage.setItem('dc_intro','1');var d=document.documentElement;d.classList.add('intro-on');setTimeout(function(){d.classList.remove('intro-on')},1500)}catch(e){}})();</script>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://tap.delcappuccino.kz/">
@@ -2008,8 +2009,7 @@ const MENU_TR = {
 };
 
 const MENU_LANGS = ['kk','ru','en'];
-let menuLang = 'ru';
-try{ const l=localStorage.getItem('dc_menu_lang'); if(MENU_LANGS.includes(l)) menuLang=l; }catch(e){}
+let menuLang = dcLang||'ru';
 
 /* единицы в объёмах/весах без словаря: «350 гр», «300 мл / 1 л» */
 function trUnits(s){
@@ -2034,7 +2034,7 @@ function applyMenuLang(){
 function switchMenuLang(lang){
   if(!MENU_LANGS.includes(lang)) return;
   menuLang=lang;
-  try{ localStorage.setItem('dc_menu_lang', lang); }catch(e){}
+  dcSave(lang);
   const tab=menuTab, cat=menuCat;
   applyMenuLang(); renderFeed(); renderTabs(); renderCats(); setTopH(); refreshCard();
   if(document.getElementById('menu-modal').scrollTop>0) scrollToMenuEl(document.getElementById(`mm-sec-${tab}-${cat}`), false);
@@ -2255,8 +2255,10 @@ function openMenu(mode){
   document.getElementById('mm-x').focus({preventScroll:true});
   track('menu_open',{mode:menuMode});
 }
+/* меню не на РУС закрыли — на главную его языка */
 function closeMenu(){
   const m=document.getElementById('menu-modal'), was=m.classList.contains('open');
+  if(was&&menuLang!='ru'){ location.replace('/'+menuLang+'/'); return; }
   closeCard(); hidePop(); closeLangMenu();
   if(menuQ!==null){ menuQ=null; clearTimeout(searchTimer); document.getElementById('mm-cats').hidden=false; }
   m.classList.remove('open','in'); if(was) gone(m,()=>bg(0));   /* видео — когда меню ушло */
@@ -2272,7 +2274,7 @@ const MENU_HASH=/^#menu(-togo|-grill)?(?:-(kk|ru|en))?$/;
 function menuFromHash(){
   const m=MENU_HASH.exec(location.hash);
   if(!m)return;
-  if(m[2]){ menuLang=m[2]; try{ localStorage.setItem('dc_menu_lang', m[2]); }catch(e){} }
+  if(m[2]) dcSave(menuLang=m[2]);
   if(m[1]==='-grill'){ showGrill(); return; }
   openMenu(m[1]?'togo':undefined);
 }

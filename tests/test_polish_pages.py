@@ -302,40 +302,70 @@ class TestUgolok(unittest.TestCase):
         if not node:
             self.skipTest('нет node')
         script = [s for s in re.findall(r'<script>([\s\S]*?)</script>', self.html) if 'const I18N' in s][0]
+        # 11.11: язык — общий выбор сайта: скрипт языка из <head> страницы (dcLang, dcSave) идёт раньше скрипта страницы
+        lang_js = [s for s in re.findall(r'<script>([\s\S]*?)</script>', self.html.split('</head>')[0]) if s.startswith('var dcLang;')][0]
+        homes = len(re.findall(r'<a [^>]*href="/" data-home', self.html))
+        self.assertEqual(homes, 4, '«на главную» — шапка, название, подвал (2)')
         harness = r"""
 const vm = require('vm'), fs = require('fs');
-const src = fs.readFileSync(process.argv[2], 'utf8');
+const src = fs.readFileSync(process.argv[2], 'utf8'), lang_js = fs.readFileSync(process.argv[3], 'utf8');
+const { hash, store, click, homes } = JSON.parse(process.argv[4]);
 const mk = (attrs) => { const a = Object.assign({}, attrs), cls = new Set((a['class'] || '').split(' ').filter(Boolean));
-  return { textContent: '', getAttribute: k => (k in a ? a[k] : null), setAttribute: (k, x) => { a[k] = String(x); },
+  return { textContent: '', href: a.href, getAttribute: k => (k in a ? a[k] : null), setAttribute: (k, x) => { a[k] = String(x); },
     classList: { toggle: (c, on) => { on ? cls.add(c) : cls.delete(c); }, contains: c => cls.has(c) }, attrs: a, cls }; };
 const btns = ['kk', 'ru', 'en'].map((l, i) => mk({ 'data-lang': l, 'class': 'lang-btn' + (i ? '' : ' on'), 'aria-pressed': i ? 'false' : 'true' }));
 const back = [mk({ 'data-i18n': 'back' }), mk({ 'data-i18n': 'back' })];
+const home = Array.from({ length: homes }, () => mk({ href: '/', 'data-home': '' }));
 const events = [];
-const document = { documentElement: { lang: 'kk' }, title: '',
-  querySelectorAll: q => q === '.lang-btn' ? btns : q === '[data-i18n]' ? back : [] };
-const ctx = { document, track: (n, p) => events.push([n, p]) };
-vm.createContext(ctx); vm.runInContext(src, ctx);
+const document = { documentElement: { lang: 'kk' }, title: '', querySelector: () => null,
+  querySelectorAll: q => q === '.lang-btn' ? btns : q === '[data-i18n]' ? back : q === '[data-home]' ? home : [] };
+const st = store === 'throw' ? null : Object.assign({}, store || {});
+const localStorage = st ? { getItem: k => (k in st ? st[k] : null), setItem: (k, v) => { st[k] = String(v); } }
+  : { getItem() { throw new Error('SecurityError'); }, setItem() { throw new Error('SecurityError'); } };
+const ctx = { document, localStorage, addEventListener() {}, location: { hash: hash || '', pathname: '/ugolok/', search: '' },
+  track: (n, p) => events.push([n, p]) };
+vm.createContext(ctx); vm.runInContext(lang_js, ctx); vm.runInContext(src, ctx);
 const state = () => ({ lang: document.documentElement.lang, title: document.title, back: back.map(b => b.textContent),
-  pressed: btns.map(b => b.attrs['aria-pressed']), on: btns.map(b => b.cls.has('on')), events: events.slice() });
+  pressed: btns.map(b => b.attrs['aria-pressed']), on: btns.map(b => b.cls.has('on')), events: events.slice(),
+  home: [...new Set(home.map(a => a.href))], store: st && Object.assign({}, st) });
 const out = { load: state() };
-ctx.setLang('ru'); out.ru = state();
+if (click) { ctx.setLang(click); out.click = state(); }
 console.log(JSON.stringify(out));
 """
         with tempfile.TemporaryDirectory() as d:
-            h, s = os.path.join(d, 'h.js'), os.path.join(d, 's.js')
-            with open(h, 'w', encoding='utf-8') as f:
-                f.write(harness)
-            with open(s, 'w', encoding='utf-8') as f:
-                f.write(script)
-            r = subprocess.run([node, h, s], capture_output=True, text=True, timeout=60)
-        self.assertEqual(r.returncode, 0, r.stderr[-1500:])
-        out = json.loads(r.stdout)
-        load, ru = out['load'], out['ru']
-        self.assertEqual(load['events'], [], 'открытие страницы — не выбор языка: ugolok_lang не шлём')
-        self.assertEqual((load['lang'], load['back'], load['pressed']), ('kk', ['Басты бетке'] * 2, ['true', 'false', 'false']))
-        self.assertEqual(ru['events'], [['ugolok_lang', {'lang': 'ru'}]], 'выбор языка посетителем — одно событие')
-        self.assertEqual((ru['lang'], ru['title'], ru['back']), ('ru', 'Уголок потребителя — Del Cappuccino', ['На главную'] * 2))
-        self.assertEqual((ru['pressed'], ru['on']), (['false', 'true', 'false'], [False, True, False]))
+            h, s, l = os.path.join(d, 'h.js'), os.path.join(d, 's.js'), os.path.join(d, 'l.js')
+            for path, text in ((h, harness), (s, script), (l, lang_js)):
+                with open(path, 'w', encoding='utf-8') as f:
+                    f.write(text)
+
+            def run(hash_='', store=None, click=None):
+                r = subprocess.run([node, h, s, l, json.dumps({'hash': hash_, 'store': store, 'click': click, 'homes': homes})],
+                                   capture_output=True, text=True, timeout=60)
+                self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+                return json.loads(r.stdout)
+            out = run(click='ru')
+            load, ru = out['load'], out['click']
+            self.assertEqual(load['events'], [], 'открытие страницы — не выбор языка: ugolok_lang не шлём')
+            self.assertEqual((load['lang'], load['back'], load['pressed']), ('kk', ['Басты бетке'] * 2, ['true', 'false', 'false']))
+            self.assertEqual((load['home'], load['store']), (['/'], {}), 'казахский по умолчанию — не выбор: «на главную» — /, хранилище пустое')
+            self.assertEqual(ru['events'], [['ugolok_lang', {'lang': 'ru'}]], 'выбор языка посетителем — одно событие')
+            self.assertEqual((ru['lang'], ru['title'], ru['back']), ('ru', 'Уголок потребителя — Del Cappuccino', ['На главную'] * 2))
+            self.assertEqual((ru['pressed'], ru['on']), (['false', 'true', 'false'], [False, True, False]))
+            self.assertEqual((ru['home'], ru['store']), (['/'], {'dc_lang': 'ru'}), 'выбор здесь — на весь сайт')
+            en = run(click='en')['click']
+            self.assertEqual((en['lang'], en['home'], en['store']), ('en', ['/en/'], {'dc_lang': 'en'}), '«на главную» — главная выбранного языка')
+            # 11.11 владелец: «в уголке потребителя — казахский», хотя выбран русский; выбор с любой страницы — здесь тоже
+            for lang, back_txt in (('ru', 'На главную'), ('en', 'Back to home'), ('kk', 'Басты бетке')):
+                got = run(store={'dc_lang': lang})['load']
+                self.assertEqual((got['lang'], got['back'][0], got['events']), (lang, back_txt, []), lang)
+                self.assertEqual(got['home'], ['/' if lang == 'ru' else '/%s/' % lang], lang)
+            got = run('#en', store={'dc_lang': 'ru'})['load']
+            self.assertEqual((got['lang'], got['store']), ('en', {'dc_lang': 'en'}), 'метка в адресе важнее хранилища и сама — выбор')
+            for store in ('throw', {'dc_lang': 'de'}):
+                got = run(store=store)['load']
+                self.assertEqual((got['lang'], got['home']), ('kk', ['/']), 'нет хранилища или в нём не язык — по-старому: %r' % (store,))
+            got = run(store='throw', click='en')['click']
+            self.assertEqual((got['lang'], got['home']), ('en', ['/en/']), 'нет хранилища — переключатель и «на главную» работают')
 
 
 class TestLegalStyle(unittest.TestCase):
