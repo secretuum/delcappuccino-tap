@@ -391,12 +391,14 @@ class TestMenuPage(unittest.TestCase):
             self.assertIn(tag, head)
         # JS только аналитика (как на /ugolok, тот же ID, что на главной); меню — текстом, без скриптов
         scripts = re.findall(r'<script>(.*?)</script>', self.page, re.S)
-        self.assertEqual(len(scripts), 2)
-        self.assertEqual(len(re.findall(r'<script\b', self.page)), 2, 'других скриптов на /menyu нет')
+        self.assertEqual(len(scripts), 3)
+        self.assertIn(seo.VT_JS, scripts, '11.11: запасной переход между страницами (без view transitions)')
+        self.assertEqual(len(re.findall(r'<script\b', self.page)), 3, 'других скриптов на /menyu нет')
         ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", self.html.split('</head>')[0]).group(1)
         self.assertIn("gtag('config','%s')" % ga, scripts[0])
-        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[1])
-        self.assertIn("addEventListener('load'", scripts[1])
+        self.assertEqual(scripts[1], seo.VT_JS, 'в <head> — сразу за аналитикой')
+        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[2])
+        self.assertIn("addEventListener('load'", scripts[2])
         self.assertNotRegex(self.page, r'(src|href)="(?!/|https://|#)', 'пути только от корня: /menyu отдаётся без слэша')
 
     def test_all_items_with_prices(self):

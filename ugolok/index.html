@@ -11,6 +11,8 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
+<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
+<script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
 <link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
@@ -58,11 +60,14 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 html{scroll-behavior:smooth}
 /* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
-::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
-::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:cubic-bezier(.4,0,1,1)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.vt-in body{animation:vt-in .22s cubic-bezier(.2,.8,.2,1)}
+.vt-out body{opacity:0;transition:opacity .16s cubic-bezier(.4,0,1,1)}
+@keyframes vt-in{from{opacity:0}}
 /* смена языка (владелец 11.11: «мягкая смена текста»): текст меняется сразу, страница проявляется заново; reduced-motion — без */
 @keyframes lang-in{from{opacity:0}}
-main.lang-in{animation:lang-in .24s ease-out}
+main.lang-in{animation:lang-in .24s cubic-bezier(.2,.8,.2,1)}
 @media(prefers-reduced-motion:reduce){main.lang-in{animation:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{

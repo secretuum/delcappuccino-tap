@@ -90,7 +90,18 @@ YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
 NOT_FOUND_JS = "track('page_not_found',{path:location.pathname})"
 
 AN_MARK = '<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->'
-AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n', re.S)
+AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n(?:<!-- переход между страницами[^\n]*-->\n<script>.*?</script>\n)?', re.S)
+# Переход между страницами (владелец 11.11) там, где браузер не умеет view transitions между документами (Firefox и старые):
+# новая страница проявляется (класс vt-in), клик по ссылке на другую страницу сайта — страница гаснет 160 мс (vt-out),
+# потом переход; не трогаем: #метки, target, Ctrl/⌘/Shift/Alt, среднюю кнопку, download, tel:/wa.me (другой origin),
+# ссылки, чьё нажатие уже обработано (preventDefault); «Назад» из bfcache — снять vt-out; запас — вернуть страницу через 3 с;
+# reduced-motion — ничего. Где есть CSSViewTransitionRule — работает @view-transition, скрипт выходит сразу
+VT_JS = ("(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;"
+         "d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});"
+         "addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey"
+         "||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;"
+         "e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();")
+VT_HEAD = '<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->\n<script>' + VT_JS + '</script>\n'
 GA_LINE_RE = re.compile(r"<script>window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\)\}"
                         r"gtag\('js',new Date\(\)\);gtag\('config','G-[A-Z0-9]+'\);(?:function track\(n,p\)\{[^<]*\})?</script>\n")
 UGOLOK = os.path.join(ROOT, 'ugolok', 'index.html')
@@ -676,8 +687,11 @@ def menu_page(html, lang='ru'):
 body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
 /* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
-::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
-::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:var(--ez-out)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:var(--ez-in)}
+.vt-in body{animation:vt-in .22s var(--ez-in)}
+.vt-out body{opacity:0;transition:opacity .16s var(--ez-out)}
+@keyframes vt-in{from{opacity:0}}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
 a{color:var(--c-accent);font-weight:600}
 header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
@@ -742,7 +756,7 @@ footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
        'tokens': tokens_css(html), 'btn': btn_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
        'lang_label': H.escape(i18n()['kk' if lang == 'kk' else 'en']['page']['lang_label']) if lang != 'ru' else 'Язык',
-       'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
+       'analytics': analytics_head(YM_ID) + VT_HEAD, 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
 
 
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
@@ -755,8 +769,8 @@ CSS_KEEP = re.compile(r'^(?::root|:focus-visible|::-webkit-scrollbar|::view-tran
                       r'icons|ic|ib|pill|social|rv|rv-in|rv-fast|px-on|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
-                      r'f-row|f-otzyv|hide-mobile))(?![\w-])')
-CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out', 'drop')     # анимации заставки и списка языков
+                      r'f-row|f-otzyv|hide-mobile|vt-in|vt-out))(?![\w-])')
+CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out', 'drop', 'vt-in')     # анимации заставки, списка языков, смены страницы
 
 
 def hreflang(urls):
@@ -788,7 +802,7 @@ def analytics_head(ym_id=None, track_links=True, on_load=None):
 def with_analytics(html, track_links=True, on_load=None):
     """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID); track_links=False — /ugolok:
     адреса PDF-талонов с именами ИП не уходят в Метрику (главный, 23.10.2026)"""
-    new, head = analytics_head(YM_ID, track_links, on_load), html.split('</head>')[0]
+    new, head = analytics_head(YM_ID, track_links, on_load) + VT_HEAD, html.split('</head>')[0]
     m = AN_RE.search(head) or GA_LINE_RE.search(head)
     if not m:
         sys.exit('seo_jsonld: в <head> нет блока аналитики и строки gtag — некуда поставить analytics_head')
@@ -1093,7 +1107,7 @@ def lang_page(html, lang):
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_otzyv', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
-           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
+           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID) + VT_HEAD, ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,

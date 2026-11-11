@@ -200,11 +200,14 @@ def page(html):
 html{scroll-behavior:smooth}
 /* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
-::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
-::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:var(--ez-out)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:var(--ez-in)}
+.vt-in body{animation:vt-in .22s var(--ez-in)}
+.vt-out body{opacity:0;transition:opacity .16s var(--ez-out)}
+@keyframes vt-in{from{opacity:0}}
 /* смена языка (владелец 11.11: «мягкая смена текста»): текст меняется сразу, страница проявляется заново; reduced-motion — без */
 @keyframes lang-in{from{opacity:0}}
-main.lang-in{animation:lang-in .24s ease-out}
+main.lang-in{animation:lang-in .24s var(--ez-in)}
 @media(prefers-reduced-motion:reduce){main.lang-in{animation:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
@@ -341,7 +344,7 @@ function setLang(lang, quiet){
 </script>
 </body>
 </html>
-''' % {'title': H.escape(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID),
+''' % {'title': H.escape(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID) + S.VT_HEAD,
        'preload': preload, 'og_image': S.OG_IMAGE, 'fonts': S.font_faces(html), 'tokens': S.tokens_css(html), 'btn': btn,
        'sprite': sprite(), 'arrow': ARROW, 'back': e(t['back']), 'langs': langs, 'eyebrow': e(t['eyebrow']), 'h1': e(t['h1']),
        'lead': e(t['lead']), 'cards': '\n'.join(card(T, p) for p in ps), 'i18n': i18n_js, 'ga': S.GA_ID}

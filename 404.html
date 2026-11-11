@@ -16,6 +16,8 @@
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}
 track('page_not_found',{path:location.pathname});</script>
 <!-- /аналитика -->
+<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
+<script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
 <style>
 /* Шрифты self-host — те же файлы и подмножества, что у главной (tools/fetch_fonts.py geologica montserrat) */
 @font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
@@ -42,8 +44,11 @@ track('page_not_found',{path:location.pathname});</script>
 ::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 /* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
-::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
-::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:cubic-bezier(.4,0,1,1)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.vt-in body{animation:vt-in .22s cubic-bezier(.2,.8,.2,1)}
+.vt-out body{opacity:0;transition:opacity .16s cubic-bezier(.4,0,1,1)}
+@keyframes vt-in{from{opacity:0}}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
 /* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — --c-olive-text (токен главной, 5,0:1 на подложке) */

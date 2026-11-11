@@ -74,6 +74,7 @@ OUTER, WINDOW = fit(OUTER), fit(WINDOW)
 INNER_K = 1.045                                       # жёлтая кромка: окно, увеличенное вокруг своего центра
 OUTER_FILL, INNER_FILL = '#F23A10', '#FFE500'         # плоско (11.11): пламя и кромка — сплошные, жёлтый = бегущая строка;
                                                       # OUTER_FILL = --c-flame главной (им же залита полоса «ВНИМАНИЕ»)
+CLIP_N = 6                                            # точек clip-path на кривую: отклонение < 0,5 px при 540 px — вид тот же, видео легче
 TICKER_Y0 = None                                      # бегущая строка (CSS .grill-ticker) — с 1.11 не в огне, а полосой под плитками акций
 
 
@@ -124,7 +125,7 @@ def build():
     window = WINDOW
     bx, by, bw, bh = [round(v) for v in bbox(flatten(window))]   # бокс видео = габарит окна; object-fit:cover
     inner = scaled(WINDOW, INNER_K, (bx + bw / 2, by + bh / 2))
-    poly = [(min(max((x - bx) / bw, 0), 1) * 100, min(max((y - by) / bh, 0), 1) * 100) for x, y in flatten(window)]
+    poly = [(min(max((x - bx) / bw, 0), 1) * 100, min(max((y - by) / bh, 0), 1) * 100) for x, y in flatten(window, CLIP_N)]
     visible = area(poly) / (100 * 100)
     svg = (f'<svg class="grill-fire" viewBox="0 0 {W} {H}" preserveAspectRatio="none" aria-hidden="true" focusable="false">'
            f'<path class="grill-fire-outer" fill="{OUTER_FILL}" d="{d_attr(OUTER)}"/>'

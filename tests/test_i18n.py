@@ -113,9 +113,10 @@ class TestVersions(unittest.TestCase):
             # кофе в карточке подписки (тот же, что на главной) — страница без них видна целиком, вместо анимации постер
             # 1.11: + скрипт «движение» (появление при прокрутке, параллакс) — тот же, что на главной; без него всё видно сразу
             # 11.11: + загрузчик видео «Курицы гриль» (тот же, что у подписки, на .grill-video) — плитка акции теперь и здесь
-            self.assertEqual(len(re.findall(r'<script\b', page)), 7, 'аналитика (2), JSON-LD, заставка, видео подписки и курицы, движение')
+            # 11.11: + запасной переход между страницами (seo.VT_JS — там, где браузер не умеет view transitions)
+            self.assertEqual(len(re.findall(r'<script\b', page)), 8, 'аналитика (2), переход, JSON-LD, заставка, видео подписки и курицы, движение')
             self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or "querySelector('.sub-video')" in s
-                                or "querySelector('.grill-video')" in s
+                                or "querySelector('.grill-video')" in s or s == seo.VT_JS
                                 or "classList.add('rv-in')" in s for s in scripts))
             self.assertIn(seo.MOTION_JS, page)
             self.assertIn(seo.MOTION_JS, self.main, 'движение — тот же скрипт, что на главной')

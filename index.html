@@ -24,6 +24,8 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
+<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
+<script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
 <meta property="og:type" content="website">
 <meta property="og:locale" content="ru_RU">
 <meta property="og:url" content="https://tap.delcappuccino.kz/">
@@ -72,6 +74,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --btn-light:var(--c-surface); --btn-light-p:var(--c-raised);
   --h-btn:52px; --h-btn-sm:44px;
   --btn-font:var(--font-display);
+  --ez-in:cubic-bezier(.2,.8,.2,1); --ez-out:cubic-bezier(.4,0,1,1);
   /* прежние имена — для оверлея меню (этап 2 редизайна); значения — из токенов выше. --forest и --sale записаны
      числом: их читают manifest (theme_color) и тест цвета скидки; что они равны --c-accent и --c-danger — проверяет tests/test_redesign.py */
   --forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);
@@ -80,12 +83,16 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;
 }
 *{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
-::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
+::-webkit-scrollbar{display:none}
 html{scroll-behavior:smooth}
 /* переход между страницами (11.11) */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
-::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
-::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:var(--ez-out)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:var(--ez-in)}
+/* без view transitions — класс ставит VT_JS в <head> */
+.vt-in body{animation:vt-in .22s var(--ez-in)}
+.vt-out body{opacity:0;transition:opacity .16s var(--ez-out)}
+@keyframes vt-in{from{opacity:0}}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);font-size:var(--fs-body);line-height:1.5;-webkit-font-smoothing:antialiased}
 .disp{font-family:var(--font-display)}
 a{color:inherit}
@@ -131,8 +138,8 @@ header{position:sticky;top:0;z-index:50;background:var(--c-bg);border-bottom:1px
 .lang-dd summary{list-style:none;display:flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;color:var(--c-text);font-size:var(--fs-caption);font-weight:700;letter-spacing:.02em;cursor:pointer;user-select:none}
 .lang-dd summary::-webkit-details-marker{display:none}
 .lang-list{position:absolute;right:0;top:calc(100% + var(--s-8));z-index:60;display:flex;flex-direction:column;min-width:136px;padding:var(--s-8);background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--r-md)}
-.lang-dd[open] .lang-list{animation:drop .24s ease-out}
-.lang-dd:not([open]) .lang-list{opacity:0;transform:translateY(-6px);transition:opacity .18s ease-in,transform .18s ease-in}
+.lang-dd[open] .lang-list{animation:drop .24s var(--ez-in)}
+.lang-dd:not([open]) .lang-list{opacity:0;transform:translateY(-6px);transition:opacity .18s var(--ez-out),transform .18s var(--ez-out)}
 .lang-dd::details-content{transition:content-visibility .18s allow-discrete}
 @keyframes drop{from{opacity:0;transform:translateY(-6px)}}
 @media(prefers-reduced-motion:reduce){.lang-list{animation:none;transition:none}}
@@ -209,14 +216,14 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .grill-price{position:absolute;left:4%;bottom:6%;z-index:1;display:inline-flex;align-items:baseline;gap:var(--s-8);padding:var(--s-4) var(--s-12);border-radius:var(--r-pill);background:#FFE500;color:var(--c-text);font-family:var(--font-display);font-size:clamp(15px,1vw + 8px,20px);font-weight:700;line-height:1.2;white-space:nowrap}
 .grill-price s{font-weight:400;color:var(--c-muted)}
 .grill-frame{position:relative;aspect-ratio:910/620}
-.grill-win{position:absolute;left:3.30%;top:14.19%;width:93.41%;height:80.97%;overflow:hidden;z-index:1;clip-path:polygon(0.0% 91.8%,0.0% 93.0%,0.2% 94.2%,0.4% 95.2%,0.7% 96.2%,1.0% 97.0%,1.5% 97.8%,2.0% 98.5%,2.5% 99.0%,3.2% 99.4%,3.9% 99.7%,4.7% 99.9%,5.5% 100.0%,94.5% 100.0%,95.3% 99.9%,96.1% 99.7%,96.8% 99.4%,97.5% 99.0%,98.0% 98.5%,98.5% 97.8%,99.0% 97.0%,99.3% 96.2%,99.6% 95.2%,99.8% 94.2%,100.0% 93.0%,100.0% 91.8%,100.0% 34.0%,99.9% 31.7%,99.7% 29.5%,99.3% 27.3%,98.8% 25.1%,98.1% 23.0%,97.3% 20.9%,96.5% 18.8%,95.5% 16.8%,94.5% 14.9%,93.4% 13.0%,92.3% 11.1%,91.1% 9.3%,90.3% 11.1%,89.4% 12.9%,88.3% 14.8%,87.0% 16.6%,85.7% 18.3%,84.3% 20.0%,82.9% 21.5%,81.5% 22.9%,80.0% 24.2%,78.6% 25.3%,77.3% 26.2%,76.0% 26.8%,74.1% 24.9%,72.1% 22.8%,70.1% 20.6%,68.0% 18.2%,65.9% 15.8%,63.8% 13.4%,61.7% 11.0%,59.6% 8.5%,57.6% 6.2%,55.7% 4.0%,53.8% 1.9%,52.1% 0.0%,50.6% 2.3%,49.1% 4.7%,47.5% 7.1%,45.9% 9.4%,44.2% 11.7%,42.6% 13.9%,40.9% 16.1%,39.3% 18.1%,37.7% 20.0%,36.2% 21.8%,34.8% 23.3%,33.6% 24.7%,32.3% 23.4%,30.9% 22.1%,29.4% 20.7%,27.8% 19.3%,26.1% 17.9%,24.3% 16.5%,22.5% 15.1%,20.6% 13.7%,18.7% 12.3%,16.8% 10.9%,14.9% 9.6%,13.0% 8.2%,11.8% 10.1%,10.6% 12.0%,9.3% 14.0%,8.1% 16.1%,6.9% 18.2%,5.7% 20.4%,4.6% 22.6%,3.5% 24.8%,2.5% 27.1%,1.6% 29.4%,0.7% 31.7%,0.0% 34.0%)}
+.grill-win{position:absolute;left:3.30%;top:14.19%;width:93.41%;height:80.97%;overflow:hidden;z-index:1;clip-path:polygon(0.0% 91.8%,0.2% 94.2%,0.7% 96.2%,1.5% 97.8%,2.5% 99.0%,3.9% 99.7%,5.5% 100.0%,94.5% 100.0%,96.1% 99.7%,97.5% 99.0%,98.5% 97.8%,99.3% 96.2%,99.8% 94.2%,100.0% 91.8%,100.0% 34.0%,99.7% 29.5%,98.8% 25.1%,97.3% 20.9%,95.5% 16.8%,93.4% 13.0%,91.1% 9.3%,89.4% 12.9%,87.0% 16.6%,84.3% 20.0%,81.5% 22.9%,78.6% 25.3%,76.0% 26.8%,72.1% 22.8%,68.0% 18.2%,63.8% 13.4%,59.6% 8.5%,55.7% 4.0%,52.1% 0.0%,49.1% 4.7%,45.9% 9.4%,42.6% 13.9%,39.3% 18.1%,36.2% 21.8%,33.6% 24.7%,30.9% 22.1%,27.8% 19.3%,24.3% 16.5%,20.6% 13.7%,16.8% 10.9%,13.0% 8.2%,10.6% 12.0%,8.1% 16.1%,5.7% 20.4%,3.5% 24.8%,1.6% 29.4%,0.0% 34.0%)}
 .grill-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .grill-fire{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:0}
 .grill-ticker{position:relative;height:44px;display:flex;align-items:center;overflow:hidden;white-space:nowrap;font-family:var(--font-body);font-weight:800;font-size:clamp(19px,1.9vw + 1px,26px);line-height:1;letter-spacing:.1em;color:#FFE500}
 .grill-ticker span{display:inline-block;padding-right:.6em;animation:grill-run 9s linear infinite}
 @keyframes grill-run{to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}
-/* «ВНИМАНИЕ» — вплотную к низу плиток, цвета огня (11.11); жёлтый на нём 3,1:1 — крупный жирный текст ≥ 19 px, порог 3:1 */
+/* «ВНИМАНИЕ» — у низа плиток, цвета огня; крупный текст — 3:1 (11.11) */
 .grill-fire-outer{fill:var(--c-flame)}
 .promo-run{border-radius:0 0 var(--r-lg) var(--r-lg);background:var(--c-flame);overflow:hidden;cursor:pointer}
 
@@ -272,7 +279,7 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
    «Меню» у bakery — текстовая пилюля. Значки — SVG-спрайт .icons (Lucide ISC, Simple Icons CC0), цвет — currentColor */
 .icons{position:absolute;width:0;height:0;overflow:hidden}
 .loc-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s-12);margin-top:auto}
-/* филиалы крупно (11.11): кнопки 56, значки 26, «Меню» той же высоты */
+/* филиалы крупно (11.11) */
 .loc-card .ib,.branch-row .ib{width:56px;height:56px}
 .loc-card .ic,.branch-row .ic{width:26px;height:26px}
 .loc-card .pill,.branch-row .pill{min-height:56px;padding:0 var(--s-24);font-size:var(--fs-body);font-weight:600}
@@ -324,7 +331,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center}
 .modal.open{display:flex}
 .backdrop{position:absolute;inset:0;background:var(--c-scrim);border:0}
-.sheet{position:relative;background:var(--c-bg);color:var(--c-text);width:100%;max-width:480px;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-32) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .24s ease-out;max-height:86vh;max-height:86dvh;overflow:auto;overscroll-behavior:contain}
+.sheet{position:relative;background:var(--c-bg);color:var(--c-text);width:100%;max-width:480px;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-32) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));max-height:86vh;max-height:86dvh;overflow:auto;overscroll-behavior:contain}
 .sheet::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--c-border)}
 @media(min-width:640px){.modal{align-items:center}.sheet{border-radius:var(--r-lg)}.sheet::before{display:none}}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -486,7 +493,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .mm-card{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center}
 .mm-card[hidden]{display:none}
 .mm-card-bg{position:absolute;inset:0;background:var(--c-scrim)}
-.mm-card-box{position:relative;width:100%;max-width:520px;max-height:90vh;max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:var(--c-bg);color:var(--c-text);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-16) var(--s-16) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .24s ease-out;font-family:var(--font-body)}
+.mm-card-box{position:relative;width:100%;max-width:520px;max-height:90vh;max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:var(--c-bg);color:var(--c-text);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-16) var(--s-16) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));font-family:var(--font-body)}
 .mm-card-box:focus{outline:none}
 .mm-card-x{position:absolute;top:var(--s-24);right:var(--s-24);z-index:1;border-radius:50%;color:var(--c-text);cursor:pointer}
 /* ── крестики закрытия (модалка филиалов, шапка меню, карточка): один размер, центр без привязки к базовой линии шрифта ── */
@@ -540,19 +547,24 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .mm-sec h4{font-size:20px}
 }
 @media(max-width:359px){.mm-mode-btn{padding:0 var(--s-4);font-size:12px}}
-/* ── появление и уход (11.11): .closing держит элемент, пока он уходит (gone/stay в скрипте) ── */
+/* появление и уход (11.11): enter/gone/stay в скрипте */
 @keyframes rise{from{opacity:0;transform:translateY(12px)}}
 @keyframes sink{to{opacity:0;transform:translateY(12px)}}
 @keyframes down{to{opacity:0;transform:translateY(24px)}}
 @keyframes out{to{opacity:0}}
-.menu-modal.open,#mm-cols.entering{animation:rise .24s ease-out}
-.modal.open .backdrop,.mm-card-bg,.mm-pop,.mm-search,.mm-lang.open .mm-lang-btn:not(.on){animation:fade-in .24s ease-out}
+.pre{opacity:0}
+.anim,.closing{will-change:transform,opacity}
+.modal,.mm-card{contain:layout paint}
+.ovl .grill-ticker span{animation-play-state:paused}
+.menu-modal.in,#mm-cols.in{animation:rise .24s var(--ez-in)}
+.modal.in .sheet,.mm-card.in .mm-card-box{animation:up .24s var(--ez-in)}
+.modal.in .backdrop,.mm-card.in .mm-card-bg,.mm-pop,.mm-search,.mm-lang.open .mm-lang-btn:not(.on){animation:fade-in .24s var(--ez-in)}
 .closing{pointer-events:none}
 .menu-modal.closing,.mm-pop.closing{display:block}
 .modal.closing,.mm-card.closing{display:flex}
-.menu-modal.closing{animation:sink .18s ease-in forwards}
-.modal.closing .sheet,.mm-card.closing .mm-card-box{animation:down .18s ease-in forwards}
-.modal.closing .backdrop,.mm-card.closing .mm-card-bg,.mm-pop.closing,#mm-cols.closing,.mm-search.closing,.mm-lang.closing .mm-lang-btn:not(.on){animation:out .18s ease-in forwards}
+.menu-modal.closing{animation:sink .18s var(--ez-out) forwards}
+.modal.closing .sheet,.mm-card.closing .mm-card-box{animation:down .18s var(--ez-out) forwards}
+.modal.closing .backdrop,.mm-card.closing .mm-card-bg,.mm-pop.closing,#mm-cols.closing,.mm-search.closing,.mm-lang.closing .mm-lang-btn:not(.on){animation:out .18s var(--ez-out) forwards}
 @media(prefers-reduced-motion:reduce){.menu-modal,.modal *,.mm-card *,.mm-pop,#mm-cols,.mm-search,.mm-lang-btn{animation:none!important}}
 @media(prefers-reduced-motion:reduce){.mm-tabs,.mm-cats{scroll-behavior:auto}.sheet,.mm-card-box{animation:none}}
 </style>
@@ -877,8 +889,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   <section class="promo shell" aria-labelledby="promo-h">
     <div class="row-head"><h2 id="promo-h">акции</h2></div>
     <div class="promo-grid">
-      <!-- Акция «Курица гриль»: видео (assets/grill-closeup.*.mp4, 910×512, 4 с) в окне-языке огня (SVG из tools/flame_frame.py) и цена;
-           вся плитка — ссылка на меню «Блюда на гриле»; /kk/ и /en/ берут эту плитку (tools/seo_jsonld.py, grill_card) -->
+      <!-- Акция «Курица гриль»: видео в окне огня (tools/flame_frame.py), цена; плитка — ссылка на гриль; /kk/, /en/ — grill_card -->
       <a class="promo-tile grill-promo" href="#menu-grill" onclick="event.preventDefault();openGrill()" aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸ — смотреть в меню">
         <div class="grill-frame">
           <svg class="grill-fire" viewBox="0 0 910 620" preserveAspectRatio="none" aria-hidden="true" focusable="false"><path class="grill-fire-outer" fill="#F23A10" d="M0 620 L910 620 L910 248 C910 176 857 124 822 62 C787 124 717 176 670 197 C624 155 531 72 472 0 C414 83 356 145 309 186 C263 155 193 114 146 72 C112 124 42 176 0 248 Z"/><path class="grill-fire-inner" fill="#FFE500" d="M11 558 C11 585 29 601 60 601 L850 601 C881 601 899 585 899 558 L899 255 C899 206 863 163 820 125 C796 163 729 206 686 217 C619 179 534 115 473 77 C425 125 352 179 309 206 C266 179 193 147 126 120 C84 158 35 206 11 255 Z"/></svg>
@@ -1131,16 +1142,19 @@ function dist(a,b){
   return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
 }
 
-/* уход: .closing до animationend или таймера, потом done(); stay() — отмена */
+/* уход: .closing до animationend или таймера; stay() — отмена */
 function gone(el,done){if(!el)return;if(RM.matches){el.classList.remove('closing');done&&done();return}el._done=done;if(el._c)return;
   el._c=1;el.classList.add('closing');const fin=()=>{if(!el._c)return;el._c=0;clearTimeout(el._t);el.removeEventListener('animationend',el._ae);el.classList.remove('closing');const d=el._done;el._done=null;d&&d()};
   el._ae=e=>{if(/^(out|sink|down)$/.test(e.animationName))fin()};el.addEventListener('animationend',el._ae);el._t=setTimeout(fin,260)}
+function enter(el){el.classList.add('pre','anim');const go=()=>{el.classList.remove('pre');el.classList.add('in');setTimeout(()=>el.classList.remove('anim'),320)};
+  RM.matches?go():requestAnimationFrame(()=>requestAnimationFrame(go))}
+function bg(off){const o=id=>document.getElementById(id).classList.contains('open');if(!off&&(o('menu-modal')||o('modal')))return;document.body.classList.toggle('ovl',off);document.querySelectorAll('.grill-video,.sub-video').forEach(v=>{if(off){if(!v.paused){v._w=1;v.pause()}}else if(v._w){v._w=0;v.play().catch(()=>{})}})}
 function stay(el){if(!el||!el._c)return;el._c=0;clearTimeout(el._t);el.removeEventListener('animationend',el._ae);el.classList.remove('closing');el._done=null}
 function openModal(intent){
   intent=intent||'route';
   const m=document.getElementById('modal');
   if(!m.classList.contains('open')) modalOpener=document.activeElement;
-  stay(m); m.classList.add('open'); m.querySelector('.x').focus();
+  stay(m); m.classList.add('open'); enter(m); bg(1); m.querySelector('.x').focus();
   const list = document.getElementById('branch-list');
   const status = document.getElementById('modal-status');
   const hint = {book:'Забронируйте столик в WhatsApp или по телефону', wa:'Напишите нам в WhatsApp', route:'Откройте маршрут в 2GIS'}[intent]||'';
@@ -1174,7 +1188,7 @@ function openModal(intent){
   }
 }
 let modalOpener=null;
-function closeModal(){const m=document.getElementById('modal');if(!m.classList.contains('open'))return;m.classList.remove('open');gone(m);if(modalOpener&&modalOpener.focus)modalOpener.focus();modalOpener=null}
+function closeModal(){const m=document.getElementById('modal');if(!m.classList.contains('open'))return;m.classList.remove('open','in');gone(m,()=>bg(0));if(modalOpener&&modalOpener.focus)modalOpener.focus();modalOpener=null}
 /* Tab — по кругу внутри окна */
 function trapTab(e,box){if(e.key!=='Tab')return;const f=[...box.querySelectorAll('a[href],button,input,[tabindex="0"]')].filter(x=>x.offsetParent&&x.tabIndex>=0),n=f.length-1,i=f.indexOf(document.activeElement);if(n>=0&&(e.shiftKey?i<=0:i<0||i===n)){e.preventDefault();f[e.shiftKey?n:0].focus()}}
 document.getElementById('modal').addEventListener('keydown',e=>trapTab(e,document.querySelector('#modal .sheet')));
@@ -2130,7 +2144,7 @@ function closeSearch(){
   const f=document.querySelector('#mm-tabs .mm-search'), q=document.getElementById('mm-q'); if(q&&q.blur) q.blur();
   const back=()=>{ if(menuQ!==null) return;
     document.getElementById('mm-cats').hidden=false;
-    renderTabs(); renderFeed(); renderCats(); lockSpy(); document.getElementById('menu-modal').scrollTop=0; };
+    const c=document.getElementById('mm-cols'); c.classList.remove('in'); renderTabs(); renderFeed(); renderCats(); lockSpy(); document.getElementById('menu-modal').scrollTop=0; enter(c); };
   f ? gone(f, back) : back();
   return true;
 }
@@ -2193,11 +2207,10 @@ function menuSpy(){
   setActive(part.dataset.tab, cat);
 }
 
-/* к разделу: лента гаснет, место меняется, лента въезжает */
 function menuJump(id){
   const c=document.getElementById('mm-cols');
-  c.classList.remove('entering');
-  gone(c, ()=>{ scrollToMenuEl(document.getElementById(id), false); if(!RM.matches){ void c.offsetWidth; c.classList.add('entering'); } });
+  c.classList.remove('in');
+  gone(c, ()=>{ c.classList.add('pre'); scrollToMenuEl(document.getElementById(id), false); enter(c); });
 }
 function switchMenuTab(tab){
   setActive(tab, 0);
@@ -2233,8 +2246,8 @@ function openMenu(mode){
   stay(m);
   applyMenuLang();
   setMenuMode(mode);
-  m.classList.add('open');
-  renderMenuStart();
+  m.classList.add('open'); bg(1);
+  renderMenuStart(); enter(m);
   loadCards(); scheduleIdlePrefetch();
   document.body.style.overflow='hidden';
   document.querySelector('#menu-modal .mm-head').classList.remove('compact');
@@ -2246,7 +2259,7 @@ function closeMenu(){
   const m=document.getElementById('menu-modal'), was=m.classList.contains('open');
   closeCard(); hidePop(); closeLangMenu();
   if(menuQ!==null){ menuQ=null; clearTimeout(searchTimer); document.getElementById('mm-cats').hidden=false; }
-  m.classList.remove('open'); if(was) gone(m);
+  m.classList.remove('open','in'); if(was) gone(m,()=>bg(0));   /* видео — когда меню ушло */
   document.body.style.overflow='';
   if(MENU_HASH.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
   if(was&&menuOpener&&menuOpener.focus) menuOpener.focus();
@@ -2314,7 +2327,8 @@ function loadCards(){
   if(cardsReq) return cardsReq;
   cardsReq = fetch(CARDS_URL).then(r=>r.ok?r.json():{}).catch(()=>({})).then(j=>{
     CARDS = (j && typeof j==='object' && !Array.isArray(j)) ? j : {};
-    if(Object.keys(CARDS).length && document.getElementById('menu-modal').classList.contains('open')){ renderFeed(); scheduleIdlePrefetch(); }
+    const m=document.getElementById('menu-modal');
+    if(Object.keys(CARDS).length && m.classList.contains('open')) setTimeout(()=>{ if(m.classList.contains('open')){ renderFeed(); scheduleIdlePrefetch(); } }, 320);
     return CARDS;
   });
   return cardsReq;
@@ -2391,7 +2405,7 @@ function openCard(name, opener, sec){
   const wrap=document.getElementById('mm-card'), box=document.getElementById('mm-card-box');
   cardName=key; cardOpener=opener||document.activeElement;
   box.innerHTML=cardHTML(key);
-  stay(wrap); wrap.hidden=false;
+  stay(wrap); wrap.hidden=false; enter(wrap);
   document.getElementById('menu-modal').style.overflow='hidden';
   box.scrollTop=0; box.focus();
   track('menu_card',{name:key});
@@ -2400,7 +2414,7 @@ function openCard(name, opener, sec){
 function closeCard(){
   const wrap=document.getElementById('mm-card');
   if(!wrap || wrap.hidden) return false;
-  wrap.hidden=true; gone(wrap); cardName=null;
+  wrap.hidden=true; wrap.classList.remove('in'); gone(wrap); cardName=null;
   document.getElementById('menu-modal').style.overflow='';
   if(cardOpener && cardOpener.focus) cardOpener.focus();
   cardOpener=null;
@@ -2504,7 +2518,7 @@ function setTopH(){
 <script>
 /* Акция «Курица гриль»: открыть меню на разделе «Блюда на гриле» (функции меню — зона menu-i18n, здесь только вызовы) */
 function openGrill(){ track('cta_grill'); showGrill(); }
-/* раздел ищем по индексу в данных (s.t — русский ключ), поэтому и в меню на ҚАЗ / ENG попадаем туда же */
+/* раздел — по индексу в данных: и в меню ҚАЗ / ENG */
 function showGrill(){
   openMenu();
   var i=MENU_KITCHEN.findIndex(function(s){return s.t==='Блюда на гриле'});

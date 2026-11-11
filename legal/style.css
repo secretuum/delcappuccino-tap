@@ -221,5 +221,12 @@ footer p { margin: 0; }
 @media (prefers-reduced-motion: no-preference) {
   @view-transition { navigation: auto; }
 }
-::view-transition-old(root) { animation-duration: .18s; animation-timing-function: ease-in; }
-::view-transition-new(root) { animation-duration: .24s; animation-timing-function: ease-out; }
+::view-transition-old(root) { animation-duration: .18s; animation-timing-function: cubic-bezier(.4,0,1,1); }
+::view-transition-new(root) { animation-duration: .24s; animation-timing-function: cubic-bezier(.2,.8,.2,1); }
+/* где браузер не умеет view transitions (HTML документов не трогаем — без скрипта): страница только проявляется */
+@supports not (view-transition-name: none) {
+  @media (prefers-reduced-motion: no-preference) {
+    body { animation: vt-in .22s cubic-bezier(.2,.8,.2,1); }
+  }
+}
+@keyframes vt-in { from { opacity: 0; } }
