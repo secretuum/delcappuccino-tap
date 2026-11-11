@@ -704,7 +704,8 @@ CODE_PAGES = {'home': ['index.html'], 'site': ['index.html', 'kk/index.html', 'e
 NO_CODE_PAGES = ['404.html', 'ugolok/index.html', 'menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html', 'otzyv/index.html']
 
 # Ранний клик: встроенные скрипты главной без файлов кода, нажатия (onclick из разметки), потом код главной — на заглушке DOM
-# из tests/test_polish_main.py (FOCUS_HARNESS до ctx.window); argv: страница, код главной, нажатия (JSON), адрес #…
+# из tests/test_polish_main.py (FOCUS_HARNESS до ctx.window; requestAnimationFrame — сразу, location.replace записывается);
+# argv: страница, код главной, нажатия (JSON), адрес #…
 EARLY_TAIL = r"""
 ctx.window = ctx; vm.createContext(ctx); scripts.forEach(s => vm.runInContext(s, ctx));
 const home = fs.readFileSync(process.argv[3], 'utf8'), clicks = JSON.parse(process.argv[4]);
@@ -717,6 +718,8 @@ out.modal = els['modal'].classList.contains('open');
 out.dcQ = R('window.dcQ');
 out.events = R('dataLayer').map(a => [...a]).filter(a => a[0] === 'event').map(a => a[1]);
 out.real = R('[openMenu, openModal, openGrill, goHome].map(f => String(f).indexOf("dcQ") < 0)');
+out.mode = R('menuMode'); out.tab = R('menuTab'); out.cat = R('menuCat'); out.grill = R("MENU_KITCHEN.findIndex(s => s.t === 'Блюда на гриле')");
+out.went = ctx.__went || null;
 console.log(JSON.stringify(out));
 """
 
@@ -818,9 +821,12 @@ class TestCodeFiles(unittest.TestCase):
         if not node:
             self.skipTest('нет node')
         import test_polish_main as pm
-        harness = pm.FOCUS_HARNESS.split('ctx.window = ctx;')[0].replace("location: { hash: '', pathname: '/', search: '' }",
-                                                                           "location: { hash: process.argv[5], pathname: '/', search: '' }")
+        harness = pm.FOCUS_HARNESS.split('ctx.window = ctx;')[0].replace(
+            "location: { hash: '', pathname: '/', search: '' }",
+            "location: { hash: process.argv[5], pathname: '/', search: '', replace: u => { ctx.__went = u; } }")
+        harness = harness.replace('requestAnimationFrame: () => 0', 'requestAnimationFrame: f => (f(), 0)')
         self.assertIn('process.argv[5]', harness)
+        self.assertIn('requestAnimationFrame: f => (f(), 0)', harness)
         on = lambda rx: re.search(rx + r'[^>]*onclick="([^"]*)"', self.main).group(1)
         fab, pill = on(r'<button class="fab-menu"'), on(r'<button class="pill-point" id="pill-point"')
         grill, brand = on(r'<a class="promo-tile grill-promo"'), on(r'<a class="brand"')
@@ -845,7 +851,22 @@ class TestCodeFiles(unittest.TestCase):
             got = run([fab], '#menu')
             self.assertEqual((got['menu'], got['events']), (True, ['cta_menu', 'menu_open']), 'меню уже открыто по #menu — второго открытия нет')
             got = run([grill])
-            self.assertEqual((got['errors'], got['menu'], got['events']), ([], True, ['cta_grill', 'menu_open']), '«Курица гриль» — тоже ждёт кода')
+            self.assertEqual((got['errors'], got['menu'], got['events']), ([], True, ['cta_grill', 'menu_open', 'menu_cat']), '«Курица гриль» — тоже ждёт кода')
+            self.assertEqual((got['tab'], got['cat']), ('kitchen', got['grill']))
+            # клик — последнее намерение, важнее метки #menu (меню по ней открылось раньше, чем выполнился повтор клика)
+            got = run([brand], '#menu')
+            self.assertEqual((got['errors'], got['queued'], got['menu'], got['events']), ([], ['goHome()'], False, ['menu_open']),
+                             '/#menu + логотип до кода — меню закрыто')
+            got = run([grill], '#menu')
+            self.assertEqual((got['menu'], got['mode'], got['tab'], got['cat']), (True, 'cafe', 'kitchen', got['grill']), '/#menu + «Курица гриль» — раздел гриля')
+            self.assertEqual(got['events'], ['menu_open', 'cta_grill', 'menu_cat'], 'без второго menu_open')
+            got = run([grill], '#menu-togo')
+            self.assertEqual((got['menu'], got['mode'], got['cat'], got['events'].count('menu_open')), (True, 'cafe', got['grill'], 1),
+                             '/#menu-togo + «Курица гриль» — меню кофеен на гриле, menu_open один')
+            got = run([pill], '#menu')
+            self.assertEqual((got['errors'], got['menu'], got['modal']), ([], False, True), '/#menu + выбор филиала — окно не под меню')
+            got = run([brand], '#menu-kk')
+            self.assertEqual(got['went'], '/kk/', '/#menu-kk + логотип — меню на ҚАЗ закрывается, как обычно: на /kk/')
             got = run([brand])
             self.assertEqual((got['errors'], got['queued'], got['menu']), ([], ['goHome()'], False))
             got = run([])

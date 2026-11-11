@@ -9,7 +9,8 @@
    Собранный файл руками не править: правка здесь → python3 tools/seo_jsonld.py → python3 tools/sw_version.py.
    defer: файл выполняется после разбора страницы, до DOMContentLoaded — вся разметка уже есть. До этого кнопки с onclick
    (goHome, openModal, openMenu, openGrill) — заглушки из index.html (перед <header>): вызов ждёт в window.dcQ, в конце
-   файла повторяется последний (если меню или окно уже не открыты, например по #menu в адресе). */
+   файла повторяется последний — и поверх меню, открытого по #menu в адресе (клик важнее метки); не повторяется только
+   уже исполненное: openMenu при открытом меню, openModal при открытом окне. */
 const RM=matchMedia('(prefers-reduced-motion: reduce)');
 function goHome(){try{closeMenu()}catch(e){}try{closeModal()}catch(e){}window.scrollTo({top:0,behavior:RM.matches?'auto':'smooth'})}
 
@@ -579,9 +580,11 @@ function setTopH(){
 
 /* Акция «Курица гриль»: открыть меню на разделе «Блюда на гриле» (функции меню — зона menu-i18n, здесь только вызовы) */
 function openGrill(){ track('cta_grill'); showGrill(); }
-/* раздел — по индексу в данных: и в меню ҚАЗ / ENG */
+/* раздел — по индексу в данных: и в меню ҚАЗ / ENG. Меню уже открыто (по #menu в адресе, а «Курицу гриль» нажали, пока грузился
+   этот файл) — лента кофеен с начала и к грилю, без повторного входа и второго menu_open */
 function showGrill(){
-  openMenu();
+  if(document.getElementById('menu-modal').classList.contains('open')){ applyMenuLang(); setMenuMode('cafe'); renderMenuStart(); setTopH(); syncLangAria(); }
+  else openMenu();
   var i=MENU_KITCHEN.findIndex(function(s){return s.t==='Блюда на гриле'});
   if(i>=0)requestAnimationFrame(function(){goMenuCat(i,true)});
 }
@@ -596,10 +599,14 @@ menuFromHash(); addEventListener('hashchange',menuFromHash);
   new IntersectionObserver(function(es){es.forEach(function(e){e.isIntersecting?play():v.pause()})},{threshold:.25}).observe(v);
 })();
 
-/* Ранний клик: пока файл грузился, заглушки из index.html складывали вызовы в window.dcQ — повторить последний
-   (меню или окно по #menu в адресе уже открыты — не повторяем: второй menu_open не нужен) */
+/* Ранний клик: пока файл грузился, заглушки из index.html складывали вызовы в window.dcQ — повторить последний. Клик —
+   последнее намерение человека, он важнее метки #menu в адресе (меню по ней уже открыл menuFromHash выше): не повторяем
+   только уже исполненное — openMenu при открытом меню, openModal при открытом окне. goHome закроет меню, openGrill перейдёт
+   к грилю (showGrill), окно филиалов — после закрытия меню (иначе оно оказалось бы под меню) */
 (function(){
-  const q=window.dcQ||[], c=q[q.length-1];
+  const q=window.dcQ||[], c=q[q.length-1], open=id=>document.getElementById(id).classList.contains('open');
   window.dcQ=null;
-  if(c&&!['menu-modal','modal'].some(id=>document.getElementById(id).classList.contains('open'))) window[c[0]].apply(window,c[1]);
+  if(!c||(c[0]==='openMenu'&&open('menu-modal'))||(c[0]==='openModal'&&open('modal'))) return;
+  if(c[0]==='openModal'&&open('menu-modal')) closeMenu();
+  window[c[0]].apply(window,c[1]);
 })();
