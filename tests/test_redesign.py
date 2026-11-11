@@ -42,6 +42,68 @@ def root_vars(html):
     return dict(re.findall(r'(--[\w-]+):\s*([^;]+?)\s*;', re.search(r':root\{(.*?)\}', style(html), re.S).group(1)))
 
 
+def css_flat(html):
+    """<style> страницы без комментариев и переводов строк (для разбора правил)"""
+    css = html[html.index('<style>') + 7:html.index('</style>')]
+    return re.sub(r'\s*\n\s*', '', re.sub(r'/\*.*?\*/', '', css, flags=re.S))
+
+
+def split_vals(v):
+    """значения сокращения по пробелам, не разрывая calc(…) и env(…)"""
+    out, depth, cur = [], 0, ''
+    for ch in v.strip():
+        depth += (ch == '(') - (ch == ')')
+        if ch == ' ' and not depth:
+            out, cur = (out + [cur]) if cur else out, ''
+        else:
+            cur += ch
+    return out + [cur] if cur else out
+
+
+def cascade(css, tag, classes, width):
+    """итоговые padding-*/margin-* у элемента <tag class="classes"> (сам по себе, без предков и состояний) при ширине окна
+    width: правила верхнего уровня и @media с max-/min-width, победитель — по специфичности, затем по порядку в файле;
+    сокращения padding/margin/padding-block раскладываются по сторонам. Так видно, что .shell перебивает footer{…}"""
+    sides = ('top', 'right', 'bottom', 'left')
+
+    def walk(css, ok=True):
+        for r in seo.css_rules(css):
+            pre, body = r.split('{', 1)
+            pre = pre.strip()
+            if pre.startswith('@media'):
+                conds = re.findall(r'\(([^)]*)\)', pre)
+                fits = bool(conds) and 'print' not in pre and all(re.match(r'(max|min)-width:\d+px$', c) for c in conds) and all(
+                    (width <= int(c.split(':')[1][:-2])) if c.startswith('max') else (width >= int(c.split(':')[1][:-2])) for c in conds)
+                yield from walk(body[:-1], ok and fits)
+            elif not pre.startswith('@') and ok:
+                yield pre, body[:-1]
+
+    hits = []
+    for i, (pre, body) in enumerate(walk(css)):
+        for sel in (x.strip() for x in pre.split(',')):
+            m = re.match(r'^(\*|[a-z][a-z0-9]*)?((?:\.[\w-]+)*)$', sel)
+            if not m or not sel:
+                continue
+            t, cls = m.group(1), [c for c in m.group(2).split('.') if c]
+            if t not in (None, '*', tag) or not set(cls) <= set(classes):
+                continue
+            hits.append(((len(cls), int(t not in (None, '*'))), i, body))
+    got = {}
+    for _, _, body in sorted(hits, key=lambda h: (h[0], h[1])):
+        for decl in filter(None, body.split(';')):
+            prop, val = (x.strip() for x in decl.split(':', 1))
+            if prop in ('padding', 'margin'):
+                v = split_vals(val)
+                v = {1: v * 4, 2: v * 2, 3: v + v[1:2], 4: v}[len(v)]
+                got.update({'%s-%s' % (prop, side): x for side, x in zip(sides, v)})
+            elif prop == 'padding-block':
+                v = split_vals(val)
+                got.update({'padding-top': v[0], 'padding-bottom': v[-1]})
+            elif re.match(r'(padding|margin)-(top|right|bottom|left)$', prop):
+                got[prop] = val
+    return got
+
+
 def find_node():
     ver = lambda p: [int(x) for x in re.findall(r'\d+', p.split('/node/')[-1].split('/')[0])]
     return shutil.which('node') or (sorted(glob.glob(os.path.expanduser('~/.nvm/versions/node/*/bin/node')), key=ver) or [None])[-1]
@@ -511,7 +573,9 @@ class TestPage(unittest.TestCase):
                 self.assertGreater(int(re.search(r'z-index:(\d+)', body).group(1)), z, '%s: %s — закреплено и не поверх «меню»' % (l, sel))
             mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css))
             self.assertIn('.fab-menu{display:inline-flex}', mob, l)
-            room = int(re.search(r'footer\{padding:[^;}]*calc\((\d+)px \+ env\(safe-area-inset-bottom\)\)', mob).group(1))
+            # итоговый нижний отступ подвала на телефоне — по каскаду (footer class="shell": .shell перебивал footer{…}, 11.11)
+            bottom = cascade(css_flat(html), 'footer', ['shell'], 375)['padding-bottom']
+            room = int(re.match(r'calc\((\d+)px \+ env\(safe-area-inset-bottom\)\)$', bottom).group(1))
             self.assertGreaterEqual(room, 16 + 44 + 8, '%s: последние строки подвала — над «меню», не под ней' % l)
             shared = re.search(r'(?:^|\})\.btn,\.fab-menu\{([^}]*)\}', css).group(1)
             self.assertIn('color:var(--c-on-accent)', shared, 'текст белый')
@@ -519,6 +583,34 @@ class TestPage(unittest.TestCase):
             self.assertNotIn('@supports', css, '%s: прежнего светлого матового стекла нет' % l)
             self.assertRegex(html, r'class="fab-menu"[^>]*onclick="track\(\'cta_menu\',\{src:\'hbar_m\'\}\)[^"]*"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>', l)
             self.assertIn('<symbol id="i-menu"', html, l)
+
+    def test_footer_spacing_survives_shell(self):
+        """подвал — <footer class="shell"> (на /ugolok и /otzyv тоже, в текстовых меню — class="wrap"): padding:0 … у .shell и .wrap
+        по специфичности сильнее footer{…}, и отступы подвала пропадали — кнопка «Для жалоб и предложений» прилипала к линии
+        (владелец 11.11: «чуть отсоедини от полосы»), а 88 px под «меню» на телефоне не применялись. Проверка — по итоговому
+        каскаду на ширине компьютера и телефона, не по тексту правила; горизонтальные поля .shell / .wrap не тронуты"""
+        want = {   # страница: (классы подвала, {ширина: ожидаемые стороны})
+            'index.html': (['shell'], {1200: {'padding-top': 'var(--s-24)', 'padding-bottom': 'var(--s-24)', 'padding-left': 'var(--s-24)', 'padding-right': 'var(--s-24)'},
+                                       375: {'padding-top': 'var(--s-24)', 'padding-bottom': 'calc(88px + env(safe-area-inset-bottom))',
+                                             'padding-left': 'var(--s-16)', 'padding-right': 'var(--s-16)'}}),
+            'ugolok/index.html': (['shell'], {w: {'padding-top': '24px', 'padding-bottom': '40px', 'margin-top': '20px', 'padding-left': x, 'padding-right': x}
+                                              for w, x in ((1200, '24px'), (375, '16px'))}),
+            'otzyv/index.html': (['shell'], {w: {'padding-top': '24px', 'padding-bottom': '40px', 'margin-top': '8px', 'padding-left': x, 'padding-right': x}
+                                             for w, x in ((1200, '24px'), (375, '16px'))}),
+            'menyu/index.html': (['wrap'], {w: {'padding-top': '16px', 'margin-top': '40px', 'margin-bottom': '28px', 'margin-left': 'auto', 'padding-left': '16px'}
+                                            for w in (1200, 375)}),
+            '404.html': ([], {w: {'padding-top': '24px', 'padding-bottom': '24px'} for w in (1200, 375)}),
+        }
+        for twin, of in (('kk/index.html', 'index.html'), ('en/index.html', 'index.html'), ('kk/menyu/index.html', 'menyu/index.html'),
+                         ('en/menu/index.html', 'menyu/index.html')):
+            want[twin] = want[of]
+        for p, (cls, by_width) in want.items():
+            html = read(p)
+            self.assertIn('<footer%s>' % (' class="%s"' % ' '.join(cls) if cls else ''), html, p)
+            for w, sides in by_width.items():
+                got = cascade(css_flat(html), 'footer', cls, w)
+                for side, val in sides.items():
+                    self.assertEqual(got.get(side), val, '%s, %d px: %s подвала' % (p, w, side))
 
     def test_menu_overlay_in_node(self):
         """этап 2: оверлей меню на заглушке DOM — открыть, фото-превью у позиций с фото, вкладки, режим togo, язык kk/en,

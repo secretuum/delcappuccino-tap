@@ -231,7 +231,8 @@ main{padding:24px 0 32px}
 .fb-btn .ic{width:18px;height:18px;flex:none}
 %(btn)s
 /* подвал — как на /ugolok */
-footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:8px}
+footer{border-top:1px solid var(--c-border)}
+footer.shell{margin-top:8px;padding-top:24px;padding-bottom:40px}   /* margin и padding .shell сильнее footer{…} */
 .f-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:var(--fs-caption);color:var(--c-muted)}
 .f-row a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}
 .f-row img{height:28px;width:auto;border-radius:6px;display:block}

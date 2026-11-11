@@ -703,7 +703,8 @@ li .n{font-weight:500}
 small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
 .p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}
 .p s{font-weight:400;color:var(--c-muted)}
-footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
+footer.wrap{margin-top:40px;margin-bottom:28px;padding-top:16px}   /* margin и padding .wrap сильнее footer{…} */
+footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
 .social{display:flex;justify-content:center;gap:12px;margin:12px 0}
 .social a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%%;background:var(--c-surface);color:var(--c-text)}
 .social svg{display:block;width:22px;height:22px}

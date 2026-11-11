@@ -214,7 +214,8 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .contact{padding:var(--s-32) var(--s-24);text-align:center}
 .contact h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-16)}
 .social{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s-12)}
-footer{border-top:1px solid var(--c-border);padding:var(--s-24) 0}
+footer{border-top:1px solid var(--c-border)}
+footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .f-row{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-caption);color:var(--c-muted);flex-wrap:wrap;gap:var(--s-12)}
 .f-row img{height:28px;width:auto;border-radius:6px}
 .f-row a{color:var(--c-accent);font-weight:600;text-decoration:none}
@@ -263,7 +264,7 @@ h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
 .faq-list summary{font-size:var(--fs-small)}
 .contact{padding:var(--s-24) var(--s-16)}
 .fab-menu{display:inline-flex}
-footer{padding:var(--s-16) 0 calc(88px + env(safe-area-inset-bottom))}
+footer.shell{padding-bottom:calc(88px + env(safe-area-inset-bottom))}
 .f-row{flex-direction:column;align-items:center;justify-content:center;text-align:center;font-size:11px;gap:10px}
 .f-row>a:first-child{display:none}
 .f-row .f-legal{order:-1;gap:0 4px;margin-top:0}
