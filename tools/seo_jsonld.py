@@ -949,6 +949,19 @@ def intro_js(html):
     return m.group(0) + '\n'
 
 
+def light(page):
+    """/kk/ и /en/ облегчённые (11.11.2026, запас веса /kk/ ≥ 5 КБ — выноса кода не хватило: встроенного кода там было ~3,6 КБ):
+    в спрайте значков — только те, на которые ссылается сама страница (как css_subset для стилей; лупа и фото меню — только на
+    главной, кода, который рисует значки, на этих страницах нет); в <body> — без отступов перед тегами (перевод строки остаётся,
+    пробелы между тегами браузер и так схлопывает, white-space:pre на этих страницах нет — вид тот же)"""
+    head, body = page.split('</head>', 1)
+    m = re.search(r'<svg class="icons"[^>]*>.*?</svg>', body, re.S)
+    rest = body[:m.start()] + body[m.end():]
+    sprite = re.sub(r'<symbol id="([\w-]+)".*?</symbol>', lambda s: s.group(0) if 'href="#%s"' % s.group(1) in rest else '', m.group(0), flags=re.S)
+    body = re.sub(r'(?m)^[ \t]+(?=<)', '', body[:m.start()] + sprite + body[m.end():])
+    return head + '</head>' + body
+
+
 def lang_page(html, lang):
     """/kk/ и /en/ — облегчённая главная на своём языке: текст в HTML без JS, вид — стили главной; меню — ссылкой на главную"""
     c = lang_ctx(html, lang)
@@ -992,7 +1005,7 @@ def lang_page(html, lang):
     stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b%s>all day</b><span>%s</span></div>'
              % (P['stat_cafes'], len(bs), P['stat_points'], '' if lang == 'en' else ' lang="en"', P['stat_breakfast']))
     faq_html = faq_block(items, (P['faq_h2'], P['faq_p']))
-    return '''<!DOCTYPE html>
+    return light('''<!DOCTYPE html>
 <html lang="%(lang)s">
 <head>
 <meta charset="UTF-8">
@@ -1150,7 +1163,7 @@ def lang_page(html, lang):
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
            otzyv=feedback_page.PATH + '#' + lang,          # «Для жалоб и предложений» — сразу на языке страницы
            near=near_tag(html),                            # ближайшая точка — сверху: общий файл, за блоком точек
-           social=social_row())
+           social=social_row()))
 
 
 KK_REVIEW_UI = ('search', 'search_none')       # новые строки MENU_UI.kk — тоже на вычитку

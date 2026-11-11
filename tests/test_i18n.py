@@ -144,6 +144,23 @@ class TestVersions(unittest.TestCase):
             # казахские буквы — в cyrillic/cyrillic-ext шрифтов из :root главной (tests/test_redesign.py), подмена шрифта для kk не нужна
             self.assertNotIn('html[lang=kk]', css)
 
+    def test_light_icons_and_indent(self):
+        """11.11 (запас веса /kk/): в спрайте — только значки, на которые ссылается страница, и все ссылки находят значок; в <body>
+        нет отступов перед тегами — вид тот же, потому что пробелы тут схлопываются: ни <pre>/<textarea>, ни white-space:pre*"""
+        main_ids = set(re.findall(r'<symbol id="([\w-]+)"', self.main))
+        for l in ('kk', 'en'):
+            page = self.pages[('home', l)]
+            head, body = page.split('</head>', 1)
+            sprite = re.search(r'<svg class="icons"[^>]*>.*?</svg>', body, re.S).group(0)
+            ids = re.findall(r'<symbol id="([\w-]+)"', sprite)
+            used = set(re.findall(r'href="#([\w-]+)"', body.replace(sprite, '')))
+            self.assertEqual(set(ids), used & main_ids, '%s: в спрайте ровно используемые значки' % l)
+            self.assertLessEqual(used - {'top', 'about', 'features', 'locations', 'faq', 'contacts'}, set(ids), '%s: каждый значок нашёлся' % l)
+            self.assertTrue(set(ids) < main_ids, '%s: значки меню главной (лупа, фото) сюда не нужны' % l)
+            self.assertNotRegex(body, r'(?m)^[ \t]+<', '%s: отступов перед тегами нет' % l)
+            self.assertNotRegex(body, r'<(?:pre|textarea)\b', l)
+            self.assertNotRegex(head, r'white-space:\s*(?:pre|break-spaces)', '%s: пробелы схлопываются — снятые отступы вид не меняют' % l)
+
     def test_links_to_menu_and_order(self):
         for l in ('kk', 'en'):
             page = self.pages[('home', l)]

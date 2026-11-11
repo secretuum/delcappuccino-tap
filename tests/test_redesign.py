@@ -379,7 +379,7 @@ class TestPage(unittest.TestCase):
             S = self.i18n[l]['sub']
             promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S)
             self.assertIsNotNone(promo, '%s: блок акции' % l)
-            card = re.search(r'<div class="promo-tile sub-tile">(.*?)\n    </div>', promo.group(1), re.S)
+            card = re.search(r'<div class="promo-tile sub-tile">(.*?)\n *</div>', promo.group(1), re.S)
             self.assertIsNotNone(card, '%s: плитка подписки — в блоке акций' % l)
             self.assertIn('<p class="tile-cap"><b class="promo-t">%s</b> <span class="promo-s">%s</span></p>' % (S['title'], S['soon']), card.group(1), l)
             self.assertNotRegex(html, r'apps\.apple\.com|itunes\.apple|play\.google\.com|app_store', '%s: ссылок на сторы пока нет' % l)
@@ -461,8 +461,9 @@ class TestPage(unittest.TestCase):
                              ['<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>'], l)
             self.assertIn('<video class="grill-video"', body)
             self.assertNotIn('grill-ticker', body, 'бегущая строка — не в огне')
+        flat = lambda x: re.sub(r'(?m)^[ \t]+(?=<)', '', x)     # на /kk/ и /en/ отступов в <body> нет (seo.light) — сравниваем без них
         self.assertEqual(re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['kk'], re.S).group(1).replace('"/assets/', '"assets/'),
-                         re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['ru'], re.S).group(1), 'на /kk/ — та же плитка, что на главной')
+                         flat(re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['ru'], re.S).group(1)), 'на /kk/ — та же плитка, что на главной')
         # строка «ВНИМАНИЕ» — полосой под обеими плитками на всю ширину контейнера и только на главной (текст русский)
         html = self.pages['ru']
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
@@ -575,7 +576,7 @@ console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classLi
         for l, html in self.pages.items():
             loc = re.search(r'<section class="locations" id="locations">(.*?)</section>', html, re.S).group(1)
             self.assertNotIn('<p class="tag">', loc, '%s: без надзаголовка «алматы · 5 точек»' % l)
-            cards = re.findall(r'<div class="loc-card">(.*?)\n    </div>', loc, re.S)
+            cards = loc.split('<div class="loc-card">')[1:]          # карточка — до следующей (на /kk/, /en/ отступов нет, seo.light)
             self.assertEqual(len(cards), 5)
             for c in cards:
                 vis = re.sub(r'<[^>]+>', ' ', c)
@@ -1200,7 +1201,7 @@ console.log(JSON.stringify(out));
 
     def test_location_names_without_numbers(self):
         for l, html in self.pages.items():
-            names = re.findall(r'<div class="loc-card">\n      <small>([^<]+)</small>', html)
+            names = re.findall(r'<div class="loc-card">\n *<small>([^<]+)</small>', html)
             self.assertEqual(len(names), 5, l)
             for n in names:
                 self.assertNotRegex(n, r'^\d', '%s: номер в видимом названии точки: %s' % (l, n))
@@ -1258,7 +1259,7 @@ console.log(JSON.stringify(out));
         self.assertLessEqual(os.path.getsize(os.path.join(ROOT, V['webm'].lstrip('/'))), 1.2 * 1024 * 1024)
         self.assertLessEqual(os.path.getsize(os.path.join(ROOT, V['poster'].lstrip('/'))), 30 * 1024, 'постер маленький')
         for l, html in self.pages.items():
-            tile = re.search(r'<div class="promo-tile sub-tile">(.*?)\n    </div>', html, re.S).group(1)
+            tile = re.search(r'<div class="promo-tile sub-tile">(.*?)\n *</div>', html, re.S).group(1)
             self.assertIn('<!-- видео: Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License', tile)
             vid = re.search(r'<video class="sub-video" ([^>]*)>\s*<source src="([^"]+)" type="video/webm">\s*<source src="([^"]+)" type="video/mp4">\s*</video>', tile)
             self.assertIsNotNone(vid, '%s: видео во всю плитку, webm первым' % l)
