@@ -21,6 +21,16 @@
       "home": "Главная",
       "faq": "Частые вопросы",
       "order": "Заказать в приложении"
+    },
+    "otzyv": {
+      "title": "Жалобы и предложения — Del Cappuccino",
+      "description": "Жалоба, отзыв или идея — напишите в WhatsApp или позвоните в филиал Del Cappuccino в Алматы. Телефоны всех точек на одной странице.",
+      "eyebrow": "обратная связь",
+      "h1": "Жалобы и предложения",
+      "lead": "Напишите или позвоните в филиал, где вы были, — мы ответим.",
+      "call": "Позвонить",
+      "back": "На главную",
+      "wa_text": "Здравствуйте! У меня отзыв / предложение по филиалу {place}: "
     }
   },
   "kk": {
@@ -81,6 +91,7 @@
       "footer_tag": "coffee &amp; food · Алматы",
       "footer_menu": "Бағалары бар мәзір",
       "footer_ugolok": "Тұтынушы бұрышы",
+      "footer_otzyv": "Шағымдар мен ұсыныстар",
       "footer_offer": "Жария оферта",
       "footer_privacy": "Құпиялылық саясаты",
       "footer_contacts": "Байланыс және деректемелер",
@@ -127,6 +138,16 @@
       "home": "Басты бет",
       "faq": "Жиі қойылатын сұрақтар",
       "order": "Қосымшада тапсырыс беру"
+    },
+    "otzyv": {
+      "title": "Шағымдар мен ұсыныстар — Del Cappuccino",
+      "description": "Шағым, пікір немесе ұсыныс — Алматыдағы Del Cappuccino филиалына WhatsApp-қа жазыңыз немесе қоңырау шалыңыз. Барлық нүктелердің телефондары бір бетте.",
+      "eyebrow": "кері байланыс",
+      "h1": "Шағымдар мен ұсыныстар",
+      "lead": "Өзіңіз болған филиалға жазыңыз немесе қоңырау шалыңыз — біз жауап береміз.",
+      "call": "Қоңырау шалу",
+      "back": "Басты бетке",
+      "wa_text": "Сәлеметсіз бе! {place} филиалы бойынша пікірім / ұсынысым бар: "
     }
   },
   "en": {
@@ -187,6 +208,7 @@
       "footer_tag": "coffee &amp; food · Almaty",
       "footer_menu": "Menu with prices",
       "footer_ugolok": "Consumer corner",
+      "footer_otzyv": "Complaints &amp; suggestions",
       "footer_offer": "Public offer",
       "footer_privacy": "Privacy policy",
       "footer_contacts": "Contacts &amp; legal details",
@@ -233,6 +255,16 @@
       "home": "Home",
       "faq": "FAQ",
       "order": "Order in the app"
+    },
+    "otzyv": {
+      "title": "Complaints & suggestions — Del Cappuccino",
+      "description": "A complaint, feedback or an idea? Message any Del Cappuccino branch in Almaty on WhatsApp or give them a call. All phone numbers on one page.",
+      "eyebrow": "feedback",
+      "h1": "Complaints & suggestions",
+      "lead": "Message or call the branch you visited — we'll get back to you.",
+      "call": "Call",
+      "back": "Back to home",
+      "wa_text": "Hello! I have feedback / a suggestion about your branch at {place}: "
     }
   }
 }

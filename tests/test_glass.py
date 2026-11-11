@@ -4,7 +4,8 @@
 элемент задаёт только тон; у кнопок нет бликов, теней (box-shadow, drop-shadow), градиентов, размытия и сжатия при нажатии;
 тона — в :root главной (--btn-*: зелёный, олива, WhatsApp — фирменный #25D366, решение владельца 09.11, светлый) из цветов
 темы; текст на заливке ≥ 4,5:1 и при нажатии; /kk/ и /en/ (их CSS — подмножество главной, tools/seo_jsonld.py), текстовые
-меню (btn_css генератора), 404.html и /ugolok — те же слои дословно и те же тона. Рамка фокуса и касание — tests/test_polish_*.
+меню (btn_css генератора), 404.html, /ugolok и /otzyv (tools/feedback_page.py, сверяет tests/test_otzyv.py) — те же слои
+дословно и те же тона. Рамка фокуса и касание — tests/test_polish_*.
 Карточки, плитки акций, шапка и фото — не кнопки: их тени и размытие здесь не проверяем (владелец по ним не решал).
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import os, re, sys, unittest
@@ -17,6 +18,7 @@ PAGES = {'ru': 'index.html', 'kk': 'kk/index.html', 'en': 'en/index.html'}
 TEXT_MENUS = ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html')
 COPIES = {'404.html': ['a.btn'], 'ugolok/index.html': ['.pass-btn', '.lang-btn', '.tb-back']}
 MENU_SELS = ['.pill', '.toc a', '.lang a']
+OTZYV = ('otzyv/index.html', ['.fb-btn', '.fb-btn.wa', '.fb-btn.call', '.lang-btn', '.lang-btn.on', '.tb-back'])
 
 # тон → цвет темы (основа) и наведение/нажатие: тот же тон чуть темнее, у оливы — светлее (тёмный текст на прежнем
 # нажатом #748C22 давал 4,2:1). Значения нажатия — прежние «нажатые» тона стекла, кроме оливы
@@ -126,7 +128,7 @@ def contrast(a, b):
 
 
 def all_pages():
-    return [*PAGES.values(), *TEXT_MENUS, *COPIES]
+    return [*PAGES.values(), *TEXT_MENUS, *COPIES, OTZYV[0]]
 
 
 class TestTones(unittest.TestCase):
@@ -218,7 +220,7 @@ class TestFlatButtons(unittest.TestCase):
         """у кнопок (и их наведения/нажатия) на всех страницах — ни теней, ни градиентов, ни размытия, ни своей заливки
         мимо тона, ни снятой рамки фокуса; псевдоэлементы кнопок (касание, крестики) — тоже без теней и размытия"""
         menu_light = MENU_SELS
-        buttons = set(LAYERED + sum(TONES.values(), []) + sum(COPIES.values(), []) + menu_light + ['.lang a[aria-current]', '.lang-btn.on'])
+        buttons = set(LAYERED + sum(TONES.values(), []) + sum(COPIES.values(), []) + menu_light + OTZYV[1] + ['.lang a[aria-current]'])
         checked = 0
         for p in all_pages():
             for media, pre, body in rules(css_of(read(p))):
@@ -243,7 +245,7 @@ class TestFlatButtons(unittest.TestCase):
                         self.assertNotRegex(body, VOLUME, where)
                     self.assertNotRegex(body, r'(?:^|;)background(?:-color)?:', '%s — своя заливка мимо тона' % where)
                     self.assertNotRegex(body, r'outline:\s*(?:none|0)', '%s — рамку фокуса не снимать' % where)
-        self.assertGreater(checked, 80)
+        self.assertGreater(checked, 90)
 
     def test_lupa_mask_present(self):
         mob = [b for m, p, b in rules(self.css['ru']) if m == LUPA[0] and p == LUPA[1]]

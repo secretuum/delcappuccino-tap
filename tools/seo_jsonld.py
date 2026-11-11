@@ -33,8 +33,11 @@
 - Аналитика (блок в <head> всех страниц, включая /ugolok): gtag и единая track() — все события в Google Analytics;
   цели YM_GOALS (18 событий → 13 целей, одна цель на одно действие) ещё и в Яндекс Метрику; на /ugolok trackLinks:false;
   404.html — тот же блок и при загрузке событие page_not_found {path} (цель not_found). Включить Метрику: YM_ID = <номер счётчика> ниже,
-  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 8 собираемых страницах (с 404.html) появится ym init (вебвизор,
+  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 9 собираемых страницах (с 404.html и /otzyv) появится ym init (вебвизор,
   карта кликов, ссылки), tag.js грузится после load. Пока YM_ID = None, кода Метрики на страницах нет (тест).
+- /otzyv — «Для жалоб и предложений» (11.11.2026): собирает tools/feedback_page.py — филиалы из BRANCHES и новая точка из
+  его EXTRA_POINTS (только там), тексты — pages_i18n.json (otzyv); кнопка в подвале /, /kk/, /en/ — над рядом ссылок
+  с «Уголком потребителя», событие feedback_open.
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -44,6 +47,7 @@ from urllib.parse import quote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import feature_icons  # noqa: E402  значки «Формата»
+import feedback_page  # noqa: E402  /otzyv — «Для жалоб и предложений» (11.11.2026): адрес SLUG, новая точка, сборка страницы
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
@@ -81,6 +85,8 @@ YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
             'lang_switch': 'lang_switch', 'menu_lang': 'lang_switch', 'faq_open': 'faq_open',
             'cta_ugolok': 'ugolok', 'ugolok_talon': 'ugolok',
             'page_not_found': 'not_found'}     # 404: один раз при загрузке, параметр path — путь без строки запроса
+# /otzyv (11.11.2026): feedback_open (кнопка в подвале), feedback_wa и feedback_call {branch:'01'…'05'|'sputnik'} — пока только
+# в Google Analytics: в плане целей владельца их нет; нужна цель — одна строка здесь и в PLAN tests/test_analytics.py
 NOT_FOUND_JS = "track('page_not_found',{path:location.pathname})"
 
 AN_MARK = '<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->'
@@ -99,7 +105,8 @@ LOCALE = {'ru': 'ru_RU', 'kk': 'kk_KZ', 'en': 'en_GB'}       # английск�
 HREF_MARK = '<!-- hreflang: версии главной на ru/kk/en — tools/seo_jsonld.py -->'
 HREF_RE = re.compile(re.escape(HREF_MARK) + r'\n.*?<!-- /hreflang -->\n', re.S)
 PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html', MENU_URL: 'menyu/index.html',
-         HOME['kk']: 'kk/index.html', HOME['en']: 'en/index.html', MENU['kk']: 'kk/menyu/index.html', MENU['en']: 'en/menu/index.html'}
+         HOME['kk']: 'kk/index.html', HOME['en']: 'en/index.html', MENU['kk']: 'kk/menyu/index.html', MENU['en']: 'en/menu/index.html',
+         SITE + feedback_page.SLUG: feedback_page.SLUG + '/index.html'}       # /otzyv — как /ugolok: canonical без слэша
 
 
 def js_array(html, name):
@@ -739,7 +746,7 @@ CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|
                       r'icons|ic|ib|pill|social|rv|rv-in|rv-fast|px-on|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
-                      r'f-row|hide-mobile))(?![\w-])')
+                      r'f-row|f-otzyv|hide-mobile))(?![\w-])')
 CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out')     # анимации заставки
 
 
@@ -1056,6 +1063,7 @@ def lang_page(html, lang):
 %(social)s</section>
 
 <footer class="shell">
+  <div class="f-otzyv"><a class="btn ghost" href="%(otzyv)s" onclick="track('feedback_open')">%(footer_otzyv)s</a></div>
   <div class="f-row">
     <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
     <span>%(footer_tag)s</span>
@@ -1071,7 +1079,7 @@ def lang_page(html, lang):
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
                                'about_h2', 'about_p', 'features_h2', 'loc_h2', 'loc_p', 'contact_h2',
-                               'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
+                               'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_otzyv', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
            locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
@@ -1082,6 +1090,7 @@ def lang_page(html, lang):
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
+           otzyv=feedback_page.PATH + '#' + lang,          # «Для жалоб и предложений» — сразу на языке страницы
            social=social_row())
 
 
@@ -1093,6 +1102,7 @@ def kk_review(html):
     where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
              'wa_book': 'текст сообщения WhatsApp из карточек кофеен /kk/', 'wa_togo': 'текст сообщения WhatsApp из карточки bakery to go /kk/',
              'page': 'страница /kk/', 'sub': 'карточка подписки в блоке «акция» на /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
+             'otzyv': 'страница %s (ҚАЗ): «Для жалоб и предложений»' % feedback_page.PATH,
              }
     rows = []
 
@@ -1110,6 +1120,7 @@ def kk_review(html):
     ui_kk = ui_dict(html, 'kk')
     for key in KK_REVIEW_UI:
         rows.append('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (key, ui_kk[key].replace('|', '\\|')))
+    rows += feedback_page.kk_review_rows()          # адрес новой точки на /otzyv/ — живёт в генераторе, не в pages_i18n.json
     fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
     for key, lab in facts()['labels'].items():
         rows.append('| `branch_facts.labels.%s` | %s | %s |' % (key, fw['labels'], lab['kk']))
@@ -1469,7 +1480,8 @@ def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
     page = with_analytics(with_hreflang(with_jsonld(with_loc(with_motion(with_social(with_icons(with_sub(with_faq(html)))))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
-           NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
+           NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS),
+           feedback_page.FILE: feedback_page.page(page)}         # /otzyv: филиалы из BRANCHES + новая точка, кнопки главной
     for lang in LANGS:
         out[os.path.join(ROOT, PAGES[MENU[lang]])] = menu_page(page, lang)
         if lang != 'ru':
