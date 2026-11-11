@@ -1027,6 +1027,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
     </div>
   </div>
 </section>
+<script src="/assets/near.bc8b445c.js" defer></script>
 <!-- Частые вопросы: данные tools/faq.json, собирает tools/seo_jsonld.py (тот же текст — FAQPage в JSON-LD), руками не править -->
 <section class="faq" id="faq">
   <div class="shell">
@@ -1137,12 +1138,6 @@ const BRANCHES = [
 function waLink(phone,text){return `https://wa.me/${phone.replace(/\D/g,'')}?text=${encodeURIComponent(text)}`}
 function branchWa(b){return waLink(b.phone,(b.wa||'Здравствуйте! Хочу забронировать столик в Del Cappuccino, ')+b.addr)}
 
-function dist(a,b){
-  const R=6371, dLat=(b[0]-a[0])*Math.PI/180, dLon=(b[1]-a[1])*Math.PI/180;
-  const s=Math.sin(dLat/2)**2+Math.cos(a[0]*Math.PI/180)*Math.cos(b[0]*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
-}
-
 /* уход: .closing до animationend или таймера; stay() — отмена */
 function gone(el,done){if(!el)return;if(RM.matches){el.classList.remove('closing');done&&done();return}el._done=done;if(el._c)return;
   el._c=1;el.classList.add('closing');const fin=()=>{if(!el._c)return;el._c=0;clearTimeout(el._t);el.removeEventListener('animationend',el._ae);el.classList.remove('closing');const d=el._done;el._done=null;d&&d()};
@@ -1160,15 +1155,15 @@ function openModal(intent){
   const status = document.getElementById('modal-status');
   const hint = {book:'Забронируйте столик в WhatsApp или по телефону', wa:'Напишите нам в WhatsApp', route:'Откройте маршрут в 2GIS'}[intent]||'';
   list.innerHTML='';
-  if(navigator.geolocation){
+  const N=window.dcNear;   /* dist и геолокация — в общем файле assets/near.*.js (tools/near.js), с карточками #locations */
+  if(N&&navigator.geolocation){
     status.textContent='Определяем ваше местоположение…';
-    navigator.geolocation.getCurrentPosition(pos=>{
-      const here=[pos.coords.latitude,pos.coords.longitude];
-      const ordered = [...BRANCHES].map(b=>({...b,d:dist(here,b.geo)})).sort((a,b)=>a.d-b.d);
+    N.locate(here=>{
+      if(!here){ status.textContent='Не удалось определить геолокацию — выберите филиал вручную. '+hint; return draw(BRANCHES,false); }
+      const ordered = [...BRANCHES].map(b=>({...b,d:N.dist(here,b.geo)})).sort((a,b)=>a.d-b.d);
       status.textContent = 'Ближайший к вам филиал — сверху. '+hint;
       draw(ordered,true);
-    }, ()=>{ status.textContent='Не удалось определить геолокацию — выберите филиал вручную. '+hint; draw(BRANCHES,false); },
-    {timeout:4000});
+    },4000);
   } else { status.textContent='Выберите филиал вручную. '+hint; draw(BRANCHES,false); }
   function draw(arr,showDist){
     /* как карточки точек (владелец 31.10): название без номера, часы — кроме 24/7, круглые значки из спрайта #i-… */
@@ -1177,7 +1172,7 @@ function openModal(intent){
       <div class="branch-row">
         <div class="br-top">
           <div class="bn"><small>${b.n.replace(/^\d+\s*·\s*/,'')}</small><b>${b.addr}</b>${b.hours!=='24/7'?`<span class="hrs">${b.hours}${b.note?` · ${b.note}`:''}</span>`:''}</div>
-          ${showDist&&b.d!==undefined?`<span class="dist ym-hide-content">${b.d.toFixed(1)} км</span>`:''}
+          ${showDist&&b.d!==undefined?`<span class="dist ym-hide-content">${N.km(b.d)}</span>`:''}
         </div>
         <div class="br-acts">
           <a class="ib route" href="${b.route}" target="_blank" rel="noopener" onclick="track('modal_route',{branch:'${b.n}'})" aria-label="Маршрут" title="Маршрут">${ic('pin')}</a>

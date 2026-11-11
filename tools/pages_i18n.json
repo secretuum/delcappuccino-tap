@@ -28,6 +28,7 @@
       "eyebrow": "обратная связь",
       "h1": "Жалобы и предложения",
       "lead": "Напишите или позвоните в филиал, где вы были, — мы ответим.",
+      "geo": "Не получилось определить, где вы, — выберите филиал из списка.",
       "call": "Позвонить",
       "back": "На главную",
       "wa_text": "Здравствуйте! У меня отзыв / предложение по филиалу {place}: "
@@ -145,6 +146,7 @@
       "eyebrow": "кері байланыс",
       "h1": "Шағымдар мен ұсыныстар",
       "lead": "Өзіңіз болған филиалға жазыңыз немесе қоңырау шалыңыз — біз жауап береміз.",
+      "geo": "Қай жерде екеніңізді анықтай алмадық — тізімнен филиалды таңдаңыз.",
       "call": "Қоңырау шалу",
       "back": "Басты бетке",
       "wa_text": "Сәлеметсіз бе! {place} филиалы бойынша пікірім / ұсынысым бар: "
@@ -262,6 +264,7 @@
       "eyebrow": "feedback",
       "h1": "Complaints & suggestions",
       "lead": "Message or call the branch you visited — we'll get back to you.",
+      "geo": "We couldn't tell where you are — pick your branch from the list.",
       "call": "Call",
       "back": "Back to home",
       "wa_text": "Hello! I have feedback / a suggestion about your branch at {place}: "

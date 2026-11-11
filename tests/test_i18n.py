@@ -115,7 +115,9 @@ class TestVersions(unittest.TestCase):
             # 11.11: + загрузчик видео «Курицы гриль» (тот же, что у подписки, на .grill-video) — плитка акции теперь и здесь
             # 11.11: + запасной переход между страницами (seo.VT_JS — там, где браузер не умеет view transitions)
             # 11.11: + язык — один выбор на весь сайт (seo.LANG_JS); без JS страница та же
-            self.assertEqual(len(re.findall(r'<script\b', page)), 9, 'аналитика (2), переход, язык, JSON-LD, заставка, видео подписки и курицы, движение')
+            # 11.11: + общий файл «ближайшая точка — сверху» (<script src=/assets/near.<хэш>.js defer>, tests/test_near.py); без JS порядок тот же
+            self.assertEqual(len(re.findall(r'<script\b', page)), 10, 'аналитика (2), переход, язык, JSON-LD, заставка, видео подписки и курицы, движение, near')
+            self.assertEqual(re.findall(r'<script\b[^>]*\bsrc=[^>]*>', page), [seo.near_tag(self.main).replace('</script>', '')], 'внешний — только near')
             self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or "querySelector('.sub-video')" in s
                                 or "querySelector('.grill-video')" in s or s == seo.VT_JS or s == seo.LANG_JS
                                 or "classList.add('rv-in')" in s for s in scripts))

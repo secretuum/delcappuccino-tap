@@ -42,11 +42,14 @@
   и переходом (HEAD_JS), ключ localStorage dc_lang. Выбор — переключатель в шапке, кнопки языка в меню, /ugolok и /otzyv,
   явная метка в адресе и открытие /, /kk/, /en/ (и текстовых меню); следуют — меню, /ugolok, /otzyv, а главные и текстовые
   меню с другим сохранённым языком сразу уходят на свою версию (location.replace). Подробно — у LANG_JS ниже.
+- Ближайшая точка — сверху (владелец 11.11.2026): общий файл assets/near.<хэш>.js из tools/near.js (там же подробно) —
+  бывшие dist() и запрос геолокации окна выбора филиала плюс сортировка карточек #locations (/, /kk/, /en/) и /otzyv по
+  близости; координаты точек — из BRANCHES и feedback_page.EXTRA_POINTS, в страницах — только <script src=… defer>.
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
 """
-import datetime, html as H, json, os, re, subprocess, sys
+import datetime, hashlib, html as H, json, os, re, subprocess, sys
 from urllib.parse import quote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -1107,7 +1110,7 @@ def lang_page(html, lang):
     </div>
   </div>
 </section>
-
+%(near)s
 %(faq)s
 <section class="contact shell" id="contacts">
   <h2>%(contact_h2)s</h2>
@@ -1142,6 +1145,7 @@ def lang_page(html, lang):
            features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
            otzyv=feedback_page.PATH + '#' + lang,          # «Для жалоб и предложений» — сразу на языке страницы
+           near=near_tag(html),                            # ближайшая точка — сверху: общий файл, за блоком точек
            social=social_row())
 
 
@@ -1540,6 +1544,67 @@ def with_motion(html):
     return html[:m.start()] + MOTION_MARK + '\n' + MOTION_JS + '\n<!-- /движение -->\n' + html[m.end():]
 
 
+# ── Ближайшая точка — сверху (владелец 11.11.2026): общий файл assets/near.<хэш>.js из исходника tools/near.js ──
+# В нём — бывшие dist() и запрос геолокации окна выбора филиала (window.dcNear: окно на главной зовёт их оттуда) и сортировка
+# карточек #locations на /, /kk/, /en/ и /otzyv по близости. В страницы — только <script src=… defer> (вес главной и /kk/
+# на пределе tests/test_perf.py / test_redesign.py): за блоком #locations и за карточками /otzyv. Координаты точек — в самом
+# файле, ключ — телефон (ссылка tel: есть в каждой карточке), источник — BRANCHES и feedback_page.EXTRA_POINTS (у кого есть geo).
+# Имя — по хэшу содержимого: точки или код поменялись — новое имя, ссылки на всех страницах генератор переставит сам; старый
+# файл генератор не удаляет (правило владельца: без удалений без согласия) — --check назовёт его, убрать: git rm.
+NEAR_SRC = os.path.join(ROOT, 'tools', 'near.js')
+NEAR_RE = re.compile(r'<script src="/assets/near\.[0-9a-f]{8}\.js" defer></script>')
+
+
+def near_points(html):
+    """{телефон: [широта, долгота]} — точки BRANCHES и EXTRA_POINTS с geo (без geo — карточка просто встанет в конец)"""
+    pts = [(b['phone'], b['geo']) for b in branches(html)]
+    pts += [(x['phone'], x['geo']) for x in feedback_page.EXTRA_POINTS if x.get('geo')]
+    if len({p for p, _ in pts}) != len(pts):
+        sys.exit('seo_jsonld: у двух точек один телефон — карточки для сортировки по близости различаются по tel:')
+    for p, (lat, lon) in pts:
+        if not (40 < lat < 56 and 46 < lon < 88):        # Казахстан: широта и долгота не перепутаны
+            sys.exit('seo_jsonld: координаты %s (%s, %s) — не Казахстан: geo — [широта, долгота]' % (p, lat, lon))
+    return {p: [lat, lon] for p, (lat, lon) in pts}
+
+
+def near_js(html, src=None):
+    """(путь, текст) общего файла: tools/near.js без комментариев-блоков, целых строк // и отступов, точки — вместо __POINTS__.
+    Сборка без разбора JS, поэтому в исходнике /* только в начале строки, */ только в конце, // только целой строкой —
+    иначе выход с ошибкой (строка 'assets/*' или хвостовой // … съели бы код молча)"""
+    src = read(NEAR_SRC) if src is None else src
+    for n, l in enumerate((src or '').split('\n'), 1):
+        if ('/*' in l and not l.lstrip().startswith('/*')) or ('*/' in l and not l.rstrip().endswith('*/')):
+            sys.exit('seo_jsonld: tools/near.js:%d — /* … */ только целыми строками (сборка снимает их регуляркой)' % n)
+    lines = [l.strip() for l in re.sub(r'/\*.*?\*/', '', src or '', flags=re.S).split('\n')]
+    for l in lines:
+        if '//' in l and not l.startswith('//'):
+            sys.exit('seo_jsonld: tools/near.js — // только целой строкой: «%s»' % l[:60])
+    body = '\n'.join(l for l in lines if l and not l.startswith('//'))
+    if body.count('__POINTS__') != 1:
+        sys.exit('seo_jsonld: в коде tools/near.js нужно одно место для точек __POINTS__')
+    text = ('/* Ближайшая точка — сверху. Собран tools/seo_jsonld.py из tools/near.js, руками не править */\n'
+            + body.replace('__POINTS__', dumps(near_points(html))) + '\n')
+    return os.path.join(ROOT, 'assets', 'near.%s.js' % hashlib.sha256(text.encode('utf-8')).hexdigest()[:8]), text
+
+
+def near_tag(html):
+    return '<script src="/assets/%s" defer></script>' % os.path.basename(near_js(html)[0])
+
+
+def with_near(html):
+    if len(NEAR_RE.findall(html)) != 1:
+        sys.exit('seo_jsonld: на главной нужен ровно один <script src="/assets/near.<хэш>.js" defer> — за блоком #locations')
+    tag = near_tag(html)
+    return NEAR_RE.sub(lambda m: tag, html)
+
+
+def stale_near(want):
+    """прежние assets/near.*.js, на которые больше никто не ссылается (генератор их не удаляет)"""
+    d = os.path.join(ROOT, 'assets')
+    return sorted(os.path.join(d, f) for f in os.listdir(d)
+                  if re.fullmatch(r'near\.[0-9a-f]{8}\.js', f) and os.path.join(d, f) not in want)
+
+
 def with_jsonld(html):
     new = block(html)
     m = BLOCK_RE.search(html)
@@ -1548,8 +1613,10 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_analytics(with_hreflang(with_jsonld(with_loc(with_motion(with_social(with_icons(with_sub(with_faq(html)))))))))
+    page = with_near(with_analytics(with_hreflang(with_jsonld(with_loc(with_motion(with_social(with_icons(with_sub(with_faq(html))))))))))
+    near_path, near_text = near_js(page)
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
+           near_path: near_text,                                  # общий файл «ближайшая точка — сверху»
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS),
            feedback_page.FILE: feedback_page.page(page)}         # /otzyv: филиалы из BRANCHES + новая точка, кнопки главной
     for lang in LANGS:
@@ -1602,6 +1669,10 @@ def read(path):
 def main():
     want = outputs(read(INDEX))
     stale = [os.path.relpath(p, ROOT) for p, text in want.items() if read(p) != text]
+    old_near = [os.path.relpath(p, ROOT) for p in stale_near(want)]
+    if old_near:
+        print('seo_jsonld: прежний общий файл больше не нужен (страницы ссылаются на новый) — убрать: git rm %s' % ' '.join(old_near))
+        stale += old_near
     if '--check' in sys.argv:
         print('seo_jsonld:', 'ok' if not stale else 'УСТАРЕЛО: %s — запустите python3 tools/seo_jsonld.py' % ', '.join(stale))
         sys.exit(1 if stale else 0)
