@@ -13,6 +13,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
 <!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
 <script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
+<script>var dcLang;function dcSave(l){dcLang=l;try{localStorage.setItem('dc_lang',l)}catch(e){}}(function(){var d=document.documentElement,o=location,m=/^#(menu(-togo|-grill)?-?)?(kk|ru|en)?$/.exec(o.hash),a;addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[hreflang]');a&&dcSave(a.hreflang)});try{dcLang=/^(kk|ru|en)$/.exec(localStorage.getItem('dc_lang'))[1]}catch(e){}if(m)m[3]&&dcSave(m[3]);else if(document.querySelector('link[hreflang]'))if(!dcLang||dcLang==d.lang)dcSave(d.lang);else try{a=document.querySelector('link[hreflang='+dcLang+']').href.replace('https://tap.delcappuccino.kz','');a!=o.pathname&&(d.hidden=1,o.replace(a+o.search+o.hash))}catch(e){}})();</script>
 <link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
@@ -207,11 +208,11 @@ footer.shell{margin-top:20px;padding-top:24px;padding-bottom:40px}   /* margin �
 <body>
 
 <div class="topbar">
-  <a class="tb-back" href="/">
+  <a class="tb-back" href="/" data-home>
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
     <span data-i18n="back">Басты бетке</span>
   </a>
-  <a class="tb-brand" href="/" aria-label="Del Cappuccino"><img src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino"></a>
+  <a class="tb-brand" href="/" data-home aria-label="Del Cappuccino"><img src="/assets/logo-lockup-256.webp" srcset="/assets/logo-lockup-128.webp 128w, /assets/logo-lockup-256.webp 256w" sizes="81px" width="256" height="127" alt="Del Cappuccino"></a>
   <div class="lang-switch" role="group" aria-label="Тіл / Язык / Language">
     <button type="button" class="lang-btn on" data-lang="kk" lang="kk" aria-pressed="true" onclick="setLang('kk')">ҚАЗ</button>
     <button type="button" class="lang-btn" data-lang="ru" lang="ru" aria-pressed="false" onclick="setLang('ru')">РУС</button>
@@ -442,8 +443,8 @@ footer.shell{margin-top:20px;padding-top:24px;padding-bottom:40px}   /* margin �
 
 <footer class="shell">
   <div class="f-row">
-    <a href="/" aria-label="Del Cappuccino"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
-    <a class="back" href="/">
+    <a href="/" data-home aria-label="Del Cappuccino"><img src="/assets/logo-mono-192.webp" width="192" height="192" loading="lazy" decoding="async" alt="dC"></a>
+    <a class="back" href="/" data-home>
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="M12 19l-7-7 7-7"/></svg>
       <span data-i18n="back">Басты бетке</span>
     </a>
@@ -578,11 +579,15 @@ function setLang(lang, quiet){
     b.setAttribute('aria-pressed', on ? 'true' : 'false');
   });
   if(dict.pageTitle) document.title = dict.pageTitle;
-  if(!quiet) track('ugolok_lang', {lang: lang});
+  if(!quiet){ dcSave(lang); track('ugolok_lang', {lang: lang}); }     /* выбор посетителя — на весь сайт */
+  /* «на главную» — главная выбранного языка (/, /kk/, /en/); казахский по умолчанию — не выбор: тогда / */
+  document.querySelectorAll('[data-home]').forEach(function(a){ a.href = dcLang === 'kk' || dcLang === 'en' ? '/' + dcLang + '/' : '/'; });
 }
 
-/* Always open in Kazakh — без события ugolok_lang: оно только про выбор языка посетителем, не про каждое открытие */
-setLang('kk', true);
+/* Язык при заходе — общий выбор сайта dcLang (скрипт языка в <head>): метка #kk / #ru / #en в адресе, иначе выбранный
+   где угодно на сайте (главная, меню, /otzyv); ничего не выбрано или нет хранилища — казахский, как раньше.
+   Без события ugolok_lang: оно только про выбор языка посетителем, не про каждое открытие */
+setLang(dcLang || 'kk', true);
 </script>
 <script>
 /* Аналитика — после load, в простое; service worker общий с главной (правила — в /sw.js) */

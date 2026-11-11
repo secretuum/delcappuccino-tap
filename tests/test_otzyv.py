@@ -400,7 +400,7 @@ class TestLanguages(Base):
             els.append({'attrs': {k: (x if x is not None else '') for k, x in n.attrs.items()}, 'text': n.all_text().strip()})
         harness = r"""
 const vm = require('vm');
-const { script, els, hash, click } = JSON.parse(process.argv[2]);
+const { lang_js, script, els, hash, click, store } = JSON.parse(process.argv[2]);
 const nodes = els.map(e => ({ attrs: Object.assign({}, e.attrs), textContent: e.text, href: e.attrs.href,
   getAttribute(k) { return k in this.attrs ? this.attrs[k] : null; }, setAttribute(k, v) { this.attrs[k] = String(v); },
   classList: { _n: null, toggle(c, on) { const n = this._n; const s = new Set((n.attrs['class'] || '').split(' ').filter(Boolean));
@@ -408,14 +408,20 @@ const nodes = els.map(e => ({ attrs: Object.assign({}, e.attrs), textContent: e.
 nodes.forEach(n => n.classList._n = n);
 const sel = { '[data-i18n]': 'data-i18n', '[data-wa]': 'data-wa', '[data-home]': 'data-home' };
 const replaced = [];
-const document = { title: '', documentElement: {}, querySelectorAll(s) {
+const document = { title: '', documentElement: {}, querySelector: () => null, querySelectorAll(s) {
   if (s === '.lang-btn') return nodes.filter(n => (n.attrs['class'] || '').split(' ').includes('lang-btn'));
   return nodes.filter(n => sel[s] in n.attrs); } };
-const ctx = { document, location: { hash }, history: { replaceState(a, b, u) { replaced.push(u); } } };
+// 11.11: язык — общий выбор сайта: скрипт языка из <head> (seo.LANG_JS) идёт до скрипта страницы; store === 'throw' — нет хранилища
+const st = store === 'throw' ? null : Object.assign({}, store || {});
+const localStorage = st ? { getItem: k => (k in st ? st[k] : null), setItem: (k, v) => { st[k] = String(v); } }
+  : { getItem() { throw new Error('SecurityError'); }, setItem() { throw new Error('SecurityError'); } };
+const ctx = { document, localStorage, addEventListener() {}, location: { hash, pathname: '/otzyv/', search: '' },
+  history: { replaceState(a, b, u) { replaced.push(u); } } };
 vm.createContext(ctx);
+vm.runInContext(lang_js, ctx);
 vm.runInContext(script, ctx);
 if (click) vm.runInContext("setLang('" + click + "')", ctx);
-console.log(JSON.stringify({ lang: document.documentElement.lang || null, title: document.title, replaced,
+console.log(JSON.stringify({ lang: document.documentElement.lang || null, title: document.title, replaced, store: st,
   nodes: nodes.map(n => ({ attrs: n.attrs, text: n.textContent, href: n.href })) }));
 """
         d = i18n_of(self.html)
@@ -423,12 +429,12 @@ console.log(JSON.stringify({ lang: document.documentElement.lang || null, title:
             h = os.path.join(tmp, 'h.js')
             with open(h, 'w', encoding='utf-8') as f:
                 f.write(harness)
-            run = lambda hash_, click=None: json.loads(subprocess.run(
-                [node, h, json.dumps({'script': script, 'els': els, 'hash': hash_, 'click': click})],
+            run = lambda hash_, click=None, store=None: json.loads(subprocess.run(
+                [node, h, json.dumps({'lang_js': seo.LANG_JS, 'script': script, 'els': els, 'hash': hash_, 'click': click, 'store': store})],
                 capture_output=True, text=True, timeout=30, check=True).stdout)
             plain = run('')
             self.assertIsNone(plain['lang'], 'без метки в адресе — русский из разметки, скрипт ничего не трогает')
-            self.assertEqual(plain['replaced'], [])
+            self.assertEqual((plain['replaced'], plain['store']), ([], {}), 'открытие /otzyv/ — не выбор языка')
             for junk in ('#constructor', '#__proto__', '#toString', '#de'):     # не язык — как без метки
                 got = run(junk)
                 self.assertIsNone(got['lang'], junk)
@@ -451,6 +457,22 @@ console.log(JSON.stringify({ lang: document.documentElement.lang || null, title:
                         self.assertEqual((('on' in a['class'].split()), a['aria-pressed']), (on, 'true' if on else 'false'))
             clicked = run('', 'en')
             self.assertEqual((clicked['lang'], clicked['replaced']), ('en', ['#en']), 'выбор языка — метка в адресе')
+            self.assertEqual(clicked['store'], {'dc_lang': 'en'}, 'выбор здесь — на весь сайт')
+            # 11.11 владелец: «если выбран в одном любом месте язык, то он автоматически везде меняется»
+            for lang in ('kk', 'en'):
+                got = run('', store={'dc_lang': lang})
+                self.assertEqual((got['lang'], got['title'], got['replaced']), (lang, d[lang]['pageTitle'], []), 'выбор с другой страницы')
+                self.assertEqual([n['href'] for n in got['nodes'] if 'data-home' in n['attrs']][:1], ['/%s/' % lang])
+            self.assertIsNone(run('', store={'dc_lang': 'ru'})['lang'], 'выбран русский — как в разметке')
+            got = run('#kk', store={'dc_lang': 'en'})
+            self.assertEqual((got['lang'], got['store']), ('kk', {'dc_lang': 'kk'}), 'метка в адресе важнее хранилища и сама — выбор')
+            for junk in ('de', '"><x', 'kk;'):
+                self.assertIsNone(run('', store={'dc_lang': junk})['lang'], 'в хранилище не язык — как без выбора: %r' % junk)
+            self.assertIsNone(run('', store='throw')['lang'], 'нет хранилища — по-старому, русский')
+            got = run('#en', store='throw')
+            self.assertEqual(got['lang'], 'en', 'нет хранилища — метка всё равно работает')
+            got = run('', 'kk', store='throw')
+            self.assertEqual((got['lang'], got['replaced']), ('kk', ['#kk']), 'нет хранилища — переключатель работает')
 
 
 if __name__ == '__main__':

@@ -1125,9 +1125,10 @@ console.log(JSON.stringify(out));
             for sym in ('i-ig', 'i-yt', 'i-th'):
                 self.assertIn('<symbol id="%s"' % sym, page)
             self.assertNotIn('<img class="mm-th"', page, 'без фото')
-            # 11.11: + запасной переход между страницами (там, где нет view transitions); меню — текстом без JS
-            self.assertEqual(len(re.findall(r'<script\b', page)), 3, '%s: аналитика (2) и переход между страницами' % l)
+            # 11.11: + запасной переход между страницами (там, где нет view transitions) и язык (seo.LANG_JS); меню — текстом без JS
+            self.assertEqual(len(re.findall(r'<script\b', page)), 4, '%s: аналитика (2), переход между страницами и язык' % l)
             self.assertIn('<script>%s</script>' % seo.VT_JS, page, l)
+            self.assertIn('<script>%s</script>' % seo.LANG_JS, page, l)
             self.assertIn('<link rel="canonical"', page)
             self.assertEqual(len(re.findall(r'hreflang="(?:ru|kk|en|x-default)" href=', page)), 4)
             self.assertLessEqual(len(page.encode('utf-8')), 64 * 1024, '%s: лёгкая' % l)
