@@ -479,6 +479,31 @@ class TestPage(unittest.TestCase):
             row = re.search(r'<li><span class="n">%s\b(.*?)</li>' % re.escape(name), read(path)).group(1)
             self.assertNotRegex(row, r'(?i)только|тек мына|only at|<em>', '%s: у курицы нет «только: …»' % path)
 
+    def test_attention_strip_flush_to_tiles(self):
+        """владелец 11.11: полосу «ВНИМАНИЕ» — «прям на низ рамок с видео»: сразу после ряда плиток, зазор 0 по каскаду на
+        компьютере, планшете и телефоне (там плитки друг под другом — полоса у низа ряда), ширина — как у ряда (тот же контейнер);
+        нижние углы обеих плиток прямые (пламя — прямой низ во всю ширину, подписка — скругление только сверху), скругление внизу
+        у полосы; при прокрутке блок акций появляется целиком (плитки и полоса не разъезжаются). На /kk/ и /en/ полосы нет"""
+        html = self.pages['ru']
+        css = css_flat(html)
+        promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
+        self.assertRegex(promo, r'\n    </div>\n    <div class="promo-run" ', 'полоса — следующий элемент сразу за рядом плиток')
+        for w in (1200, 768, 375):
+            self.assertEqual(cascade(css, 'div', ['promo-run'], w).get('margin-top'), '0', '%d px: над полосой зазора нет' % w)
+            grid = cascade(css, 'div', ['promo-grid'], w)
+            self.assertEqual((grid.get('margin-bottom'), grid.get('padding-bottom')), ('0', '0'), '%d px: под рядом плиток' % w)
+            for tag, cls in (('a', ['promo-tile', 'grill-promo']), ('div', ['promo-tile', 'sub-tile'])):
+                self.assertEqual(cascade(css, tag, cls, w).get('margin-bottom'), '0', '%d px: %s' % (w, cls[1]))
+        rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
+        self.assertIn('border-radius:var(--r-lg) var(--r-lg) 0 0', rule('.sub-tile'))
+        self.assertIn('border-radius:0 0 var(--r-lg) var(--r-lg)', rule('.promo-run'))
+        outer = re.search(r'<path class="grill-fire-outer" fill="[^"]+" d="([^"]+)"', html).group(1)
+        self.assertTrue(outer.startswith('M0 620 L910 620 '), 'низ пламени — прямая во всю ширину бокса: %s' % outer[:40])
+        self.assertIn('.promo,', seo.MOTION_SEL)
+        self.assertNotIn('.promo-tile', seo.MOTION_SEL, 'плитки не въезжают отдельно от полосы')
+        for l in ('kk', 'en'):
+            self.assertNotIn('promo-run', self.pages[l])
+
     def test_grill_deep_link_in_node(self):
         """плитка на /kk/ и /en/ ведёт на /#menu-grill-kk|-en: меню главной открывается на этом языке сразу на «Блюда на гриле»
         (раздел ищется по русскому ключу s.t в данных, перевод — только при показе); событие cta_grill — один раз, при нажатии

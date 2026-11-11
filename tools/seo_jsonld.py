@@ -1463,7 +1463,7 @@ def with_sub(html):
 # reduced-motion или нет IntersectionObserver — ничего не делает; без JS всё видно (класс скрытия ставит только скрипт).
 MOTION_MARK = '<!-- движение: появление при прокрутке, параллакс — собирает tools/seo_jsonld.py, руками не править -->'
 MOTION_RE = re.compile(re.escape(MOTION_MARK) + r'\n.*?<!-- /движение -->\n', re.S)
-MOTION_SEL = '.promo-tile,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
+MOTION_SEL = '.promo,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
 MOTION_JS = ("<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
              "if(!('IntersectionObserver'in window))return;var d=document,SEL='" + MOTION_SEL + "';"
              "function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){"
