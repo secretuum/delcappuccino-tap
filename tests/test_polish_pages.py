@@ -183,7 +183,7 @@ class TestNotFound(unittest.TestCase):
         self.assertEqual(decl(self.rules, '.hbar a', 'min-height'), '44px', 'логотип в шапке — касание 44')
         for prop in ('min-width', 'min-height'):
             self.assertEqual(decl(self.rules, '.f-row a', prop), '44px', 'логотип 28 px в подвале — касание 44')
-        self.assertEqual(decl(self.rules, 'a.btn', 'min-height'), 'var(--h-glass)')
+        self.assertEqual(decl(self.rules, 'a.btn', 'min-height'), 'var(--h-btn)')
 
     def test_full_height_on_phone(self):
         body = [b for p, b in self.rules if p == 'body'][0]

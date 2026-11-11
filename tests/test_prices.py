@@ -76,14 +76,17 @@ class TestSalePrices(unittest.TestCase):
         r, g, b = (int(red.group(1)[k:k + 2], 16) for k in (0, 2, 4))
         self.assertTrue(r > 150 and g < 80 and b < 80, 'подчёркивание должно быть красным')
 
-    def test_grill_caption(self):
-        cap = re.search(r'<p class="grill-cap">(.*?)</p>', self.html, re.S)
-        self.assertIsNotNone(cap, 'нет подписи акции <p class="grill-cap">')
-        cap = cap.group(1)
+    def test_grill_tile_price(self):
+        """плитка акции (владелец 11.11: «без рамки и текста, только цена»): метка цены — та же скидка, что у позиции в меню;
+        вся плитка — ссылка, её имя для экранного диктора — с ценой"""
+        price = re.search(r'<span class="grill-price" aria-hidden="true">(.*?)</span>\n', self.html, re.S)
+        self.assertIsNotNone(price, 'нет метки цены <span class="grill-price">')
+        new, old = GRILL_SALE['Курица гриль']
         # &nbsp; — старая и новая цены не разъезжаются по строкам на 360 px; перед ₸ — тоже неразрывный
-        self.assertIn('<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', cap)
-        self.assertIn('aria-label="Курица гриль за 3990 ₸ вместо 6000 ₸', cap)
-
+        self.assertEqual(price.group(1), '<s>%d</s>&nbsp;<span class="sale">%d&nbsp;₸</span>' % (old, new))
+        item = [it for _, _, its in self.secs for it in its if it['n'] == 'Курица гриль']
+        self.assertEqual([(it['p'], it['old']) for it in item], [(new, old)], 'цена на плитке = цена в меню')
+        self.assertIn('aria-label="Курица гриль за %d ₸ вместо %d ₸ — смотреть в меню"' % (new, old), self.html)
 
 if __name__ == '__main__':
     unittest.main()

@@ -11,6 +11,8 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
+<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
+<script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
 <link rel="preload" href="/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="/assets/fonts/geologica-700-cyrillic.646d6acf.woff2" as="font" type="font/woff2" crossorigin>
 <meta name="theme-color" content="#426349">
@@ -47,39 +49,26 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;
   --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
   --h-button:56px; --h-touch:48px;
-  /* стекло кнопок — копия токенов из :root главной (kofe-app 9206813, glass.ts; талон — зелёная, языки и «на главную» — светлые); что они равны главной — проверяет tests/test_glass.py */
-  --glass-base-plain:0.94;
-  --glass-pressed-plain:0.96;
-  --glass-highlight-pressed:0.36;
-  --glass-rgb:66 99 73;
-  --glass-rgb-pressed:58 90 64;
-  --glass-hl-top:rgba(127,168,134,0.45);
-  --glass-hl-mid:rgba(107,150,114,0.15);
-  --glass-edge:rgba(158,195,164,0.35);
-  --glass-bottom:linear-gradient(180deg,transparent 50%,rgba(14,26,16,0.22) 100%);
-  --glass-shadow:0px 10px 24px rgba(14,26,16,0.28),0px 2px 4px rgba(14,26,16,0.16);
-  --glass-inset:inset 0px 1px 0px rgba(169,203,174,0.55),inset 0px -2px 3px rgba(14,26,16,0.22);
-  --glass-shadow-pressed:0px 3px 8px rgba(14,26,16,0.22);
-  --glass-inset-pressed:inset 0px 3px 6px rgba(0,0,0,0.25),inset 0px 1px 0px rgba(255,255,255,0.25);
-  --glass-press-scale:0.97;
-  --glass-press-in:90ms;
-  --glass-press-out:300ms;
-  --glass-press-spring:cubic-bezier(.3,1.3,.5,1);
-  --h-glass:52px;
+  /* кнопки — плоские: копия токенов из :root главной (талон — зелёная, языки и «на главную» — светлые); что они равны главной — проверяет tests/test_glass.py */
+  --btn-green:var(--c-accent); --btn-green-p:#3A5A40;
+  --btn-light:var(--c-surface); --btn-light-p:var(--c-raised);
+  --h-btn:52px;
   --btn-font:var(--font-display);
-  --glass-light-rgb:245 245 243;
-  --glass-light-rgb-pressed:236 235 232;
-  --glass-light-hl-top:rgba(255,255,255,0.95);
-  --glass-light-hl-mid:rgba(255,255,255,0.4);
-  --glass-light-edge:rgba(255,255,255,0.9);
-  --glass-light-bottom:linear-gradient(180deg,transparent 50%,rgba(36,28,21,0.07) 100%);
-  --glass-light-shadow:0px 2px 6px rgba(36,28,21,0.12),0px 1px 2px rgba(36,28,21,0.1);
-  --glass-light-inset:inset 0px 1px 0px rgba(255,255,255,0.9),inset 0px -2px 3px rgba(36,28,21,0.06);
-  --glass-light-shadow-pressed:0px 1px 3px rgba(36,28,21,0.14);
-  --glass-light-inset-pressed:inset 0px 2px 5px rgba(36,28,21,0.12),inset 0px 1px 0px rgba(255,255,255,0.6);
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 html{scroll-behavior:smooth}
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:cubic-bezier(.4,0,1,1)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.vt-in body{animation:vt-in .22s cubic-bezier(.2,.8,.2,1)}
+.vt-out body{opacity:0;transition:opacity .16s cubic-bezier(.4,0,1,1)}
+@keyframes vt-in{from{opacity:0}}
+/* смена языка (владелец 11.11: «мягкая смена текста»): текст меняется сразу, страница проявляется заново; reduced-motion — без */
+@keyframes lang-in{from{opacity:0}}
+main.lang-in{animation:lang-in .24s cubic-bezier(.2,.8,.2,1)}
+@media(prefers-reduced-motion:reduce){main.lang-in{animation:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{
   background:var(--c-bg);color:var(--c-text);
@@ -95,8 +84,8 @@ h1,h2,h3{font-family:var(--font-display);font-weight:700;text-transform:lowercas
    --c-olive-text (токен главной): 5,0:1 на подложке, 5,4:1 на белом */
 :focus-visible{outline-color:var(--c-olive-text)}
 
-/* ── ШАПКА (как на главной): белое стекло, «← на главную» пилюлей · логотип · языки пилюлями ── */
-.topbar{position:sticky;top:0;z-index:100;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
+/* ── ШАПКА (как на главной): сплошной белый фон и линия снизу (плоско, 11.11), «← на главную» пилюлей · логотип · языки пилюлями ── */
+.topbar{position:sticky;top:0;z-index:100;background:var(--c-bg);border-bottom:1px solid var(--c-border);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:8px 16px;min-height:64px}
 .tb-brand{display:inline-flex;align-items:center;flex:none;min-height:44px}
 .tb-brand img{height:40px;width:auto;display:block;border-radius:10px}
 .lang-switch{display:flex;gap:4px}
@@ -138,16 +127,15 @@ main{padding:24px 0 20px}
 .talon-line{font-size:12px;color:var(--c-muted);line-height:1.5;margin-top:2px;overflow-wrap:anywhere}
 .talon-line b{color:var(--c-text);font-weight:600;font-variant-numeric:tabular-nums}
 .eyebrow,.pass-place small,.row .k{color:var(--c-olive-text)}   /* мелкие подписи — контраст ≥4,5:1 (см. :focus-visible) */
-/* кнопка талона — как кнопки главной: высота 52 (--h-glass, стекло), пилюля, Geologica строчными */
-.pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:var(--h-glass);color:var(--c-on-accent);border-radius:var(--r-pill);padding:8px 20px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.25;text-transform:lowercase;text-align:center}
+/* кнопка талона — как кнопки главной: высота 52 (--h-btn), плоская, пилюля, Geologica строчными */
+.pass-btn{margin-top:16px;display:flex;width:100%;align-items:center;justify-content:center;gap:8px;min-height:var(--h-btn);color:var(--c-on-accent);border-radius:var(--r-pill);padding:8px 20px;text-decoration:none;font-family:var(--font-display);font-weight:700;font-size:15px;line-height:1.25;text-transform:lowercase;text-align:center}
 .pass-btn svg{width:16px;height:16px;flex:none}
-/* стекло кнопок — слои дословно как на главной; тона: светлое — языки и «на главную», зелёное — талон и выбранный язык */
-:where(.pass-btn,.lang-btn,.tb-back){--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);--tone-a:var(--glass-base-plain);--tone-ap:var(--glass-pressed-plain);border:0;background-color:rgb(var(--tone-rgb) / var(--tone-a));background-image:linear-gradient(180deg,var(--tone-hl1) 0%,var(--tone-hl2) 45%,transparent 55%),var(--tone-bot);box-shadow:var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge);-webkit-tap-highlight-color:transparent;transition:scale var(--glass-press-out) var(--glass-press-spring),transform .2s ease,background-color .09s,box-shadow .09s}
-:where(.pass-btn,.lang-btn,.tb-back):active{background-color:rgb(var(--tone-rgbp) / var(--tone-ap));background-image:linear-gradient(180deg,color-mix(in srgb,var(--tone-hl1) calc(var(--glass-highlight-pressed)*100%),transparent) 0%,color-mix(in srgb,var(--tone-hl2) calc(var(--glass-highlight-pressed)*100%),transparent) 45%,transparent 55%),var(--tone-bot);box-shadow:var(--tone-shp),var(--tone-inp),inset 0 0 0 1px var(--tone-edge);scale:var(--glass-press-scale);transition:scale var(--glass-press-in) ease-out,transform .2s ease,background-color .09s,box-shadow .09s}
-@media(hover:hover){:where(.pass-btn,.lang-btn,.tb-back):hover{background-color:rgb(var(--tone-rgbp) / var(--tone-ap))}}
-@media(prefers-reduced-motion:reduce){:where(.pass-btn,.lang-btn,.tb-back):active{scale:none}}
-.lang-btn,.tb-back{--tone-rgb:var(--glass-light-rgb);--tone-rgbp:var(--glass-light-rgb-pressed);--tone-hl1:var(--glass-light-hl-top);--tone-hl2:var(--glass-light-hl-mid);--tone-edge:var(--glass-light-edge);--tone-bot:var(--glass-light-bottom);--tone-sh:var(--glass-light-shadow);--tone-in:var(--glass-light-inset);--tone-shp:var(--glass-light-shadow-pressed);--tone-inp:var(--glass-light-inset-pressed)}
-.lang-btn.on{--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow-pressed);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);color:var(--c-on-accent)}
+/* плоские кнопки — слои дословно как на главной; тона: светлый — языки и «на главную», зелёный — талон и выбранный язык */
+:where(.pass-btn,.lang-btn,.tb-back){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+:where(.pass-btn,.lang-btn,.tb-back):active{background:var(--tone-p)}
+@media(hover:hover){:where(.pass-btn,.lang-btn,.tb-back):hover{background:var(--tone-p)}}
+.lang-btn,.tb-back{--tone-bg:var(--btn-light);--tone-p:var(--btn-light-p)}
+.lang-btn.on{--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);color:var(--c-on-accent)}
 
 /* ── ИНФОРМАЦИЯ — на той же подложке ── */
 .info{background:var(--c-surface);border-radius:var(--r-lg);padding:24px}
@@ -167,7 +155,8 @@ main{padding:24px 0 20px}
 .note .ic{flex:none;font-size:18px;line-height:1.3}
 
 /* ── ПОДВАЛ — как на главной: логотип, подпись, «← на главную», © ── */
-footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:20px}
+footer{border-top:1px solid var(--c-border)}
+footer.shell{margin-top:20px;padding-top:24px;padding-bottom:40px}   /* margin и padding .shell сильнее footer{…} */
 .f-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;font-size:var(--fs-caption);color:var(--c-muted)}
 .f-row a{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px}   /* логотип 28 px и ссылка 12 px — зона касания 44 */
 .f-row img{height:28px;width:auto;border-radius:6px;display:block}
@@ -576,6 +565,8 @@ const I18N = {
 
 function setLang(lang, quiet){
   const dict = I18N[lang] || I18N.kk;
+  var mn=document.querySelector&&document.querySelector('main');   /* мягкая смена текста: проявить заново */
+  if(mn&&mn.classList&&!quiet){mn.classList.remove('lang-in');void mn.offsetWidth;mn.classList.add('lang-in')}
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     const k = el.getAttribute('data-i18n');

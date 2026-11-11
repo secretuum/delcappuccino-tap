@@ -26,6 +26,8 @@
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','G-D50YPM8RMK');
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 <!-- /аналитика -->
+<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
+<script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
 <!-- Страница собрана tools/seo_jsonld.py из массивов меню главной — руками не править, правьте index.html и пересоберите -->
 <style>
 @font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
@@ -36,27 +38,34 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 @font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-cyrillic.a187b077.woff2) format('woff2');unicode-range:U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116}
 @font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-latin.06b16db7.woff2) format('woff2');unicode-range:U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD}
 @font-face{font-family:'Montserrat';font-style:normal;font-weight:400 700;font-display:swap;src:url(/assets/fonts/montserrat-400-700-tenge.cc6138d5.woff2) format('woff2');unicode-range:U+20B8}
-:root{--font-display:'Geologica',system-ui,sans-serif;--font-body:'Montserrat',system-ui,-apple-system,sans-serif;--c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);--c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;--c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);--c-brand-cream:#FEF1E7;--c-whatsapp:#25D366;--c-input-border:#8C7E6E;--c-olive-text:#627122;--r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;--s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;--fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;--h-button:56px; --h-touch:48px;--shadow-floating:0 6px 24px rgba(49,73,47,.16);--glass-rgb:66 99 73; --glass-rgb-pressed:58 90 64;--glass-base-photo:0.74; --glass-base-light-photo:0.80; --glass-base-plain:0.94;--glass-pressed-photo:0.85; --glass-pressed-light-photo:0.90; --glass-pressed-plain:0.96;--glass-hl-top:rgba(127,168,134,0.45); --glass-hl-mid:rgba(107,150,114,0.15); --glass-highlight-pressed:0.36;--glass-bottom:linear-gradient(180deg,transparent 50%,rgba(14,26,16,0.22) 100%);--glass-edge:rgba(158,195,164,0.35);--glass-shadow:0px 10px 24px rgba(14,26,16,0.28),0px 2px 4px rgba(14,26,16,0.16);--glass-inset:inset 0px 1px 0px rgba(169,203,174,0.55),inset 0px -2px 3px rgba(14,26,16,0.22);--glass-shadow-pressed:0px 3px 8px rgba(14,26,16,0.22);--glass-inset-pressed:inset 0px 3px 6px rgba(0,0,0,0.25),inset 0px 1px 0px rgba(255,255,255,0.25);--glass-olive-rgb:132 158 41; --glass-olive-rgb-pressed:116 140 34; --glass-olive-hl-top:rgba(214,228,150,0.6); --glass-olive-hl-mid:rgba(196,214,118,0.2); --glass-olive-edge:rgba(222,234,168,0.5);--glass-wa-rgb:37 211 102; --glass-wa-rgb-pressed:31 186 89; --glass-wa-hl-top:rgba(160,246,192,0.55); --glass-wa-hl-mid:rgba(120,236,164,0.18); --glass-wa-edge:rgba(176,246,200,0.5);--glass-light-rgb:245 245 243; --glass-light-rgb-pressed:236 235 232; --glass-light-hl-top:rgba(255,255,255,0.95); --glass-light-hl-mid:rgba(255,255,255,0.4); --glass-light-edge:rgba(255,255,255,0.9);--glass-light-bottom:linear-gradient(180deg,transparent 50%,rgba(36,28,21,0.07) 100%);--glass-light-shadow:0px 2px 6px rgba(36,28,21,0.12),0px 1px 2px rgba(36,28,21,0.1);--glass-light-inset:inset 0px 1px 0px rgba(255,255,255,0.9),inset 0px -2px 3px rgba(36,28,21,0.06);--glass-light-shadow-pressed:0px 1px 3px rgba(36,28,21,0.14);--glass-light-inset-pressed:inset 0px 2px 5px rgba(36,28,21,0.12),inset 0px 1px 0px rgba(255,255,255,0.6);--glass-press-scale:0.97; --glass-press-in:90ms; --glass-press-out:300ms; --glass-press-spring:cubic-bezier(.3,1.3,.5,1);--h-glass:52px; --h-glass-small:44px;--btn-font:var(--font-display);--forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);--olive:var(--c-olive); --sage:#738E5B; --moss:#B4B86C;--ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);--surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;}
+:root{--font-display:'Geologica',system-ui,sans-serif;--font-body:'Montserrat',system-ui,-apple-system,sans-serif;--c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);--c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;--c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-flame:#F23A10; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);--c-brand-cream:#FEF1E7;--c-whatsapp:#25D366;--c-input-border:#8C7E6E;--c-olive-text:#627122;--r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;--s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;--fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;--h-button:56px; --h-touch:48px;--shadow-floating:0 6px 24px rgba(49,73,47,.16);--btn-green:var(--c-accent); --btn-green-p:#3A5A40;--btn-olive:var(--c-olive); --btn-olive-p:#96AD49;--btn-wa:var(--c-whatsapp); --btn-wa-p:#1FBA59;--btn-light:var(--c-surface); --btn-light-p:var(--c-raised);--h-btn:52px; --h-btn-sm:44px;--btn-font:var(--font-display);--ez-in:cubic-bezier(.2,.8,.2,1); --ez-out:cubic-bezier(.4,0,1,1);--forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);--olive:var(--c-olive); --sage:#738E5B; --moss:#B4B86C;--ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);--surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;}
 /* меню текстом (этап 2 редизайна): токены v5 главной, Geologica — заголовки, Montserrat — текст, фон белый; без JS и фото */
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:var(--ez-out)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:var(--ez-in)}
+.vt-in body{animation:vt-in .22s var(--ez-in)}
+.vt-out body{opacity:0;transition:opacity .16s var(--ez-out)}
+@keyframes vt-in{from{opacity:0}}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
 a{color:var(--c-accent);font-weight:600}
 header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
 .logo{display:inline-flex;margin-right:4px}
 .logo img{display:block;height:36px;width:auto;border-radius:8px}
 /* чипы как в приложении (Chip.tsx): 40, поля 16, Montserrat 500 14px; касание 48 — псевдоэлементом по 4px сверху и снизу;
-   светлое стекло — слои и тон из правил главной (glass_css), выбранный язык — зелёное */
-:where(.pill,.toc a,.lang a){--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);--tone-a:var(--glass-base-plain);--tone-ap:var(--glass-pressed-plain);border:0;background-color:rgb(var(--tone-rgb) / var(--tone-a));background-image:linear-gradient(180deg,var(--tone-hl1) 0%,var(--tone-hl2) 45%,transparent 55%),var(--tone-bot);box-shadow:var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge);-webkit-tap-highlight-color:transparent;transition:scale var(--glass-press-out) var(--glass-press-spring),transform .2s ease,background-color .09s,box-shadow .09s}
-:where(.pill,.toc a,.lang a):active{background-color:rgb(var(--tone-rgbp) / var(--tone-ap));background-image:linear-gradient(180deg,color-mix(in srgb,var(--tone-hl1) calc(var(--glass-highlight-pressed)*100%),transparent) 0%,color-mix(in srgb,var(--tone-hl2) calc(var(--glass-highlight-pressed)*100%),transparent) 45%,transparent 55%),var(--tone-bot);box-shadow:var(--tone-shp),var(--tone-inp),inset 0 0 0 1px var(--tone-edge);scale:var(--glass-press-scale);transition:scale var(--glass-press-in) ease-out,transform .2s ease,background-color .09s,box-shadow .09s}
-@media(hover:hover){:where(.pill,.toc a,.lang a):hover{background-color:rgb(var(--tone-rgbp) / var(--tone-ap))}}
-@media(prefers-reduced-motion:reduce){:where(.pill,.toc a,.lang a):active{scale:none}}
-.pill,.toc a,.lang a{--tone-rgb:var(--glass-light-rgb);--tone-rgbp:var(--glass-light-rgb-pressed);--tone-hl1:var(--glass-light-hl-top);--tone-hl2:var(--glass-light-hl-mid);--tone-edge:var(--glass-light-edge);--tone-bot:var(--glass-light-bottom);--tone-sh:var(--glass-light-shadow);--tone-in:var(--glass-light-inset);--tone-shp:var(--glass-light-shadow-pressed);--tone-inp:var(--glass-light-inset-pressed)}
+   плоские, светлый тон — слои и тон из правил главной (btn_css), выбранный язык — зелёный */
+:where(.pill,.toc a,.lang a){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+:where(.pill,.toc a,.lang a):active{background:var(--tone-p)}
+@media(hover:hover){:where(.pill,.toc a,.lang a):hover{background:var(--tone-p)}}
+.pill,.toc a,.lang a{--tone-bg:var(--btn-light);--tone-p:var(--btn-light-p)}
 .pill,.toc a,.lang a{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);color:var(--c-text);font-size:var(--fs-small);font-weight:500;text-decoration:none;white-space:nowrap}
 .pill::after,.toc a::after,.lang a::after{content:'';position:absolute;inset:-4px 0}
 .lang{display:flex;gap:4px;margin-left:auto}
 .lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption)}
-.lang a[aria-current]{--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow-pressed);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);color:var(--c-on-accent)}
+.lang a[aria-current]{--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);color:var(--c-on-accent)}
 h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase;line-height:1.2}
 h1{font-size:var(--fs-heading);margin:16px 0 8px}
 .lead{color:var(--c-muted)}
@@ -64,7 +73,7 @@ h1{font-size:var(--fs-heading);margin:16px 0 8px}
 h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
 h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
 h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:0 0 6px}
-.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
+.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface)}
 h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-bg);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
 .note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
@@ -75,7 +84,8 @@ li .n{font-weight:500}
 small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
 .p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}
 .p s{font-weight:400;color:var(--c-muted)}
-footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
+footer.wrap{margin-top:40px;margin-bottom:28px;padding-top:16px}   /* margin и padding .wrap сильнее footer{…} */
+footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
 .social{display:flex;justify-content:center;gap:12px;margin:12px 0}
 .social a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%;background:var(--c-surface);color:var(--c-text)}
 .social svg{display:block;width:22px;height:22px}
@@ -231,7 +241,7 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
 <ul>
 <li><span class="n">Люля из говядины с салатом и питой <i>· новинка</i></span><b class="p">3 200 ₸</b></li>
 <li><span class="n">Шашлычки из говядины с питой <i>· новинка</i></span><b class="p">4 000 ₸</b></li>
-<li><span class="n">Курица гриль <i>· новинка</i> <em>· только: Del Cappuccino (Толе Би, 64), ЖК Комфорт Сити (Серкебаева, 146)</em></span><b class="p">3 990 ₸ <small>вместо <s>6 000</s></small></b></li>
+<li><span class="n">Курица гриль <i>· новинка</i></span><b class="p">3 990 ₸ <small>вместо <s>6 000</s></small></b></li>
 <li><span class="n">Рибай на кости <small>300 гр</small> <i>· популярное, время ожидания от 30 минут</i></span><b class="p">3 990 ₸ <small>вместо <s>7 200</s></small></b></li>
 <li><span class="n">Ти-бон стейк с молодым картофелем <small>300 гр</small> <i>· время ожидания от 30 минут</i></span><b class="p">3 990 ₸ <small>вместо <s>7 200</s></small></b></li>
 <li><span class="n">Стейк лосося с молодым картофелем <small>250 гр</small> <i>· время ожидания от 30 минут</i></span><b class="p">7 200 ₸</b></li>

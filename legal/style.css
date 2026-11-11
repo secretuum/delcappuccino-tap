@@ -30,7 +30,8 @@
   --r-pill: 999px;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; scrollbar-width: none; }
+::-webkit-scrollbar { display: none; }   /* полос прокрутки нет нигде (владелец 11.11), прокрутка работает */
 
 html { -webkit-text-size-adjust: 100%; }
 
@@ -215,3 +216,17 @@ footer p { margin: 0; }
   main a[href^="http"]::after { content: " (" attr(href) ")"; }
   main a[href="https://tap.delcappuccino.kz"]::after { content: none; }   /* текст ссылки — сам адрес, без повтора */
 }
+
+/* Переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-old(root) { animation-duration: .18s; animation-timing-function: cubic-bezier(.4,0,1,1); }
+::view-transition-new(root) { animation-duration: .24s; animation-timing-function: cubic-bezier(.2,.8,.2,1); }
+/* где браузер не умеет view transitions (HTML документов не трогаем — без скрипта): страница только проявляется */
+@supports not (view-transition-name: none) {
+  @media (prefers-reduced-motion: no-preference) {
+    body { animation: vt-in .22s cubic-bezier(.2,.8,.2,1); }
+  }
+}
+@keyframes vt-in { from { opacity: 0; } }

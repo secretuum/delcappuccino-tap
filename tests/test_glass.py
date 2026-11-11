@@ -1,11 +1,12 @@
-"""Объёмное «стекло» всех кнопок сайта — как главная кнопка мобильного приложения (решения владельца 02.11.2026: сначала
-зелёная кнопка, затем «все кнопки — стекло своего цвета», включая меню и переключатели).
-Источник правды — kofe-app, коммит 9206813: app/src/theme/glass.ts (GLASS_BUTTON), app/src/ui/Button.tsx (порядок слоёв:
-основа, низ, блик, кромка 1px с внутренними тенями), app/src/ui/Chip.tsx (чип 48 − 8 = 40, поля 16, Montserrat 500 14px).
-Значения glass.ts переписаны ниже (GLASS) — сверяем с :root главной (единственное место токенов), /kk/, /en/, текстовыми
-меню и копиями в 404.html и /ugolok. Тона: зелёный (glass.ts), олива, WhatsApp, светлое (значения сайта — в приложении
-светлого объёмного стекла нет, там матовая панель с размытием). Слои — одно правило :where(…) на все кнопки, элемент задаёт
-только тон --tone-*. Размытия (backdrop-filter) под кнопками нет.
+"""Плоские кнопки и чипы всего сайта (владелец 11.11.2026: «кнопки сделать плоскими, без стекла и т. д.»). До этого — объёмное
+стекло своего тона (#54, #55 по kofe-app glass.ts); имя файла осталось от той задачи — на него ссылаются комментарии страниц.
+Сторожат: одно правило :where(…) на все кнопки — сплошная заливка тона (--tone-bg), наведение и нажатие — тон --tone-p;
+элемент задаёт только тон; у кнопок нет бликов, теней (box-shadow, drop-shadow), градиентов, размытия и сжатия при нажатии;
+тона — в :root главной (--btn-*: зелёный, олива, WhatsApp — фирменный #25D366, решение владельца 09.11, светлый) из цветов
+темы; текст на заливке ≥ 4,5:1 и при нажатии; /kk/ и /en/ (их CSS — подмножество главной, tools/seo_jsonld.py), текстовые
+меню (btn_css генератора), 404.html, /ugolok и /otzyv (tools/feedback_page.py, сверяет tests/test_otzyv.py) — те же слои
+дословно и те же тона. Рамка фокуса и касание — tests/test_polish_*.
+Карточки, плитки акций, шапка и фото — не кнопки: их тени и размытие здесь не проверяем (владелец по ним не решал).
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import os, re, sys, unittest
 
@@ -13,25 +14,21 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
 
-GLASS = {   # kofe-app 9206813, app/src/theme/glass.ts — GLASS_BUTTON
-    'height': 52, 'smallHeight': 44,
-    'highlight': 'linear-gradient(180deg, rgba(127,168,134,0.45) 0%, rgba(107,150,114,0.15) 45%, transparent 55%)',
-    'bottom': 'linear-gradient(180deg, transparent 50%, rgba(14,26,16,0.22) 100%)',
-    'base': {'photo': 'rgba(66,99,73,0.74)', 'lightPhoto': 'rgba(66,99,73,0.80)', 'plain': 'rgba(66,99,73,0.94)'},
-    'basePressed': {'photo': 'rgba(58,90,64,0.85)', 'lightPhoto': 'rgba(58,90,64,0.90)', 'plain': 'rgba(58,90,64,0.96)'},
-    'edge': 'rgba(158,195,164,0.35)',
-    'shadow': '0px 10px 24px rgba(14,26,16,0.28), 0px 2px 4px rgba(14,26,16,0.16)',
-    'inset': 'inset 0px 1px 0px rgba(169,203,174,0.55), inset 0px -2px 3px rgba(14,26,16,0.22)',
-    'shadowPressed': '0px 3px 8px rgba(14,26,16,0.22)',
-    'insetPressed': 'inset 0px 3px 6px rgba(0,0,0,0.25), inset 0px 1px 0px rgba(255,255,255,0.25)',
-    'highlightPressed': 0.36,
-    'press': {'scale': 0.97, 'inMs': 90},
-}
-VARIANT = {'photo': 'photo', 'lightPhoto': 'light-photo', 'plain': 'plain'}
 PAGES = {'ru': 'index.html', 'kk': 'kk/index.html', 'en': 'en/index.html'}
 TEXT_MENUS = ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html')
+COPIES = {'404.html': ['a.btn'], 'ugolok/index.html': ['.pass-btn', '.lang-btn', '.tb-back']}
+MENU_SELS = ['.pill', '.toc a', '.lang a']
+OTZYV = ('otzyv/index.html', ['.fb-btn', '.fb-btn.wa', '.fb-btn.call', '.lang-btn', '.lang-btn.on', '.tb-back'])
 
-# кнопка → тон (главная). Зелёный — по умолчанию у слоёв (.btn, .fab-menu)
+# тон → цвет темы (основа) и наведение/нажатие: тот же тон чуть темнее, у оливы — светлее (тёмный текст на прежнем
+# нажатом #748C22 давал 4,2:1). Значения нажатия — прежние «нажатые» тона стекла, кроме оливы
+THEME = {'green': '--c-accent', 'olive': '--c-olive', 'wa': '--c-whatsapp', 'light': '--c-surface'}
+PRESS = {'green': '#3A5A40', 'olive': '#96AD49', 'wa': '#1FBA59', 'light': '#ECEBE8'}
+DARKER = {'green': True, 'olive': False, 'wa': True, 'light': True}
+# цвет текста на тоне; WhatsApp — только белый логотип, контраст сознательно не проверяем (решение владельца 09.11)
+TEXT = {'green': ['--c-on-accent'], 'olive': ['--c-on-olive'], 'light': ['--c-text', '--c-muted', '--c-accent']}
+
+# кнопка → тон (главная). Зелёный — по умолчанию у слоя (.btn, .fab-menu)
 TONES = {
     'light': ['.btn.ghost', '.ib', '.pill', '.pill-point', '.lang-dd summary', '.mm-tab', '.mm-cat', '.mm-mode-btn', '.mm-lang-btn',
               '.mm-search-btn', '.mm-search-x', '.mm-x', '.mm-card-x', '.sheet .x', '.mm-only'],
@@ -42,9 +39,17 @@ TONES = {
 }
 LAYERED = ['.btn', '.fab-menu', '.ib', '.pill', '.pill-point', '.lang-dd summary', '.mm-tab', '.mm-cat', '.mm-mode-btn', '.mm-lang-btn',
            '.mm-search-btn', '.mm-search-x', '.mm-x', '.mm-card-x', '.sheet .x', '.mm-only']
-TONE_VARS = {'green': 'glass', 'light': 'glass-light', 'wa': 'glass-wa', 'olive': 'glass-olive'}
-BASE = ('background-color:rgb(var(--tone-rgb) / var(--tone-a))', 'background-image:linear-gradient(180deg,var(--tone-hl1) 0%,var(--tone-hl2) 45%,transparent 55%),var(--tone-bot)',
-        'box-shadow:var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge)', 'transition:scale var(--glass-press-out) var(--glass-press-spring)')
+LAYER = ('--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);'
+         '-webkit-tap-highlight-color:transparent;transition:background-color .15s')
+PRESSED = 'background:var(--tone-p)'
+LAYER_KEYS = [('', ''), ('', ':active'), ('@media(hover:hover)', ':hover')]
+LIGHT = '--tone-bg:var(--btn-light);--tone-p:var(--btn-light-p)'
+GREEN_ON = '--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);color:var(--c-on-accent)'
+# всё, что делало кнопку объёмной: тени, блики-градиенты, размытие и фильтры, сжатие при нажатии
+VOLUME = r'box-shadow|drop-shadow|text-shadow|gradient\(|backdrop-filter|(?:^|;)filter:|(?:^|;)scale:|background-image'
+# лупа меню на телефоне прилипает к краю ряда вкладок: полоса цвета фона без размытия справа закрывает уходящие под неё вкладки —
+# маска, не тень (единственный box-shadow у кнопок); градиент её ::before — затухание ряда слева, не поверхность кнопки
+LUPA = ('@media(max-width:680px)', '.mm-search-btn', 'position:sticky;right:0;z-index:1;box-shadow:var(--s-12) 0 0 var(--c-bg)')
 
 
 def read(p):
@@ -65,22 +70,18 @@ def root_vars(html):
 def resolve(v, value):
     for _ in range(10):
         value = re.sub(r'var\((--[\w-]+)\)', lambda m: v[m.group(1)], value)
-    return value
-
-
-def norm(s):
-    return re.sub(r'\s*,\s*', ',', re.sub(r'\s+', ' ', s.strip()))
+    return value.upper()
 
 
 def rules(css):
-    """все правила (селектор, тело), с заходом внутрь @media/@supports"""
+    """все правила (media, селектор, тело), с заходом внутрь @media/@supports"""
     out = []
     for r in seo.css_rules(css):
         pre, body = r.split('{', 1)
         if pre.startswith('@media') or pre.startswith('@supports'):
-            out += [(pre + ' ' + p, b) for p, b in rules(body[:-1])]
+            out += [(pre.strip(), p, b) for _, p, b in rules(body[:-1])]
         elif not pre.startswith('@'):
-            out.append((pre.strip(), body[:-1]))
+            out.append(('', pre.strip(), body[:-1]))
     return out
 
 
@@ -94,108 +95,108 @@ def split_sel(pre):
 
 
 def layer_rules(css):
-    """{'' | ':active' | ':hover' | 'reduce': (список селекторов, тело)} — правила :where(…) слоёв стекла"""
+    """{(media, ':active' | ':hover' | ''): (список селекторов, тело)} — правила :where(…) общего слоя кнопок"""
     out = {}
-    for pre, body in rules(css):
-        m = re.match(r'(@media\([^)]*\) )?:where\((.*)\)(:\w+)?$', pre)
+    for media, pre, body in rules(css):
+        m = re.match(r':where\((.*)\)(:\w+)?$', pre)
         if m:
-            key = 'reduce' if m.group(1) and 'reduced-motion' in m.group(1) else (m.group(3) or '')
-            out[key] = (split_sel(m.group(2)), body)
+            out[(media, m.group(2) or '')] = (split_sel(m.group(1)), body)
     return out
 
 
 def tone_of(css, sel):
-    """тон селектора: правило, где он в списке и задан --tone-rgb"""
-    hit = [b for p, b in rules(css) if ':where(' not in p and sel in split_sel(p) and '--tone-rgb:' in b]
-    if not hit:
-        return None
-    rgb = re.search(r'--tone-rgb:var\(--([\w-]+)-rgb\)', hit[-1]).group(1)
-    return {v: k for k, v in TONE_VARS.items()}[rgb]
+    """тон селектора: правило (не слой), где он в списке и задан --tone-bg"""
+    hit = [b for _, p, b in rules(css) if ':where(' not in p and sel in split_sel(p) and '--tone-bg:' in b]
+    return re.search(r'--tone-bg:var\(--btn-(\w+)\)', hit[-1]).group(1) if hit else None
 
 
-class TestGlassTokens(unittest.TestCase):
+def hexrgb(h):
+    return tuple(int(h[i:i + 2], 16) for i in (1, 3, 5))
+
+
+def lum(h):
+    def lin(c):
+        c /= 255
+        return c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4
+    r, g, b = (lin(x) for x in hexrgb(h))
+    return 0.2126 * r + 0.7152 * g + 0.0722 * b
+
+
+def contrast(a, b):
+    la, lb = sorted((lum(a), lum(b)), reverse=True)
+    return (la + 0.05) / (lb + 0.05)
+
+
+def all_pages():
+    return [*PAGES.values(), *TEXT_MENUS, *COPIES, OTZYV[0]]
+
+
+class TestTones(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.pages = {l: read(p) for l, p in PAGES.items()}
+        cls.vars = {l: root_vars(read(p)) for l, p in PAGES.items()}
 
-    def test_tokens_equal_glass_ts(self):
-        for l, html in self.pages.items():
-            v = root_vars(html)
-            rgb, rgbp = v['--glass-rgb'].split(), v['--glass-rgb-pressed'].split()
-            for key, name in VARIANT.items():
-                self.assertEqual('rgba(%s,%s)' % (','.join(rgb), v['--glass-base-' + name]), GLASS['base'][key], '%s: основа %s' % (l, key))
-                self.assertEqual('rgba(%s,%s)' % (','.join(rgbp), v['--glass-pressed-' + name]), GLASS['basePressed'][key], '%s: нажатая %s' % (l, key))
-            hl = 'linear-gradient(180deg,%s 0%%,%s 45%%,transparent 55%%)' % (v['--glass-hl-top'], v['--glass-hl-mid'])
-            self.assertEqual(norm(hl), norm(GLASS['highlight']), '%s: блик' % l)
-            for var, key in (('--glass-bottom', 'bottom'), ('--glass-edge', 'edge'), ('--glass-shadow', 'shadow'), ('--glass-inset', 'inset'),
-                             ('--glass-shadow-pressed', 'shadowPressed'), ('--glass-inset-pressed', 'insetPressed')):
-                self.assertEqual(norm(resolve(v, v[var])), norm(GLASS[key]), '%s: %s' % (l, var))
-            self.assertEqual(float(v['--glass-highlight-pressed']), GLASS['highlightPressed'])
-            self.assertEqual(float(v['--glass-press-scale']), GLASS['press']['scale'])
-            self.assertEqual(v['--glass-press-in'], '%dms' % GLASS['press']['inMs'])
-            self.assertEqual(v['--glass-press-out'], '300ms', 'назад ~300 мс')
-            y1 = float(re.match(r'cubic-bezier\(([\d.]+),([\d.]+),([\d.]+),([\d.]+)\)', v['--glass-press-spring']).group(2))
-            self.assertTrue(1 < y1 <= 1.4, 'лёгкая пружина: перелёт есть, но небольшой')
-            self.assertEqual(v['--h-glass'], '%dpx' % GLASS['height'])
-            self.assertEqual(v['--h-glass-small'], '%dpx' % GLASS['smallHeight'])
+    def test_tones_are_theme_colors(self):
+        """основа тона — цвет темы (одно место смены), нажатие — свой оттенок; WhatsApp — фирменный #25D366"""
+        for l, v in self.vars.items():
+            self.assertEqual(v['--c-whatsapp'], '#25D366', l)
+            for t, theme in THEME.items():
+                self.assertEqual(v['--btn-' + t], 'var(%s)' % theme, '%s: %s' % (l, t))
+                self.assertEqual(resolve(v, v['--btn-%s-p' % t]), PRESS[t], '%s: нажатие %s' % (l, t))
+            self.assertEqual(v['--btn-light-p'], 'var(--c-raised)', l)
 
-    def test_tone_tokens(self):
-        """на каждый тон — rgb основы и нажатой, блик (две точки), кромка; цвета основ — из токенов v5; у светлого свои низ и тени"""
-        hexrgb = lambda h: ' '.join(str(int(h[i:i + 2], 16)) for i in (1, 3, 5))
-        for l, html in self.pages.items():
-            v = root_vars(html)
-            for pre in TONE_VARS.values():
-                for suf in ('rgb', 'rgb-pressed', 'hl-top', 'hl-mid', 'edge'):
-                    self.assertIn('--%s-%s' % (pre, suf), v, l)
-            self.assertEqual(v['--glass-olive-rgb'], hexrgb(v['--c-olive']), 'олива = #849E29')
-            self.assertEqual(v['--glass-wa-rgb'], hexrgb(v['--c-whatsapp']), 'WhatsApp = #25D366')
-            self.assertEqual(v['--glass-light-rgb'], hexrgb(v['--c-surface']))
-            self.assertEqual(v['--glass-light-rgb-pressed'], hexrgb(v['--c-raised']))
-            for suf in ('bottom', 'shadow', 'inset', 'shadow-pressed', 'inset-pressed'):
-                self.assertIn('--glass-light-' + suf, v, l)
-            # блик светлее основы: у оливы и WhatsApp — светлый вариант своего цвета
-            for pre in ('glass-olive', 'glass-wa', 'glass-light'):
-                top = [int(x) for x in re.match(r'rgba\((\d+),(\d+),(\d+),', v['--%s-hl-top' % pre]).groups()]
-                self.assertGreater(sum(top), sum(int(x) for x in v['--%s-rgb' % pre].split()), pre)
+    def test_press_is_a_shade(self):
+        """наведение и нажатие — тот же тон «чуть» темнее (у оливы — светлее): заметно, но не другой цвет"""
+        v = self.vars['ru']
+        for t in THEME:
+            base, press = resolve(v, v['--btn-' + t]), resolve(v, v['--btn-%s-p' % t])
+            self.assertEqual(lum(press) < lum(base), DARKER[t], t)
+            self.assertTrue(1.05 <= contrast(base, press) <= 1.35, '%s: %.2f' % (t, contrast(base, press)))
 
-    def test_base_photo_and_btn_font(self):
-        for l, html in self.pages.items():
-            v = root_vars(html)
-            self.assertEqual(v.get('--glass-base-photo'), '0.74', '%s: --glass-base-photo — отдельной переменной, 0.74' % l)
-            self.assertEqual(v.get('--btn-font'), 'var(--font-display)', l)
+    def test_text_contrast(self):
+        """текст на заливке и на нажатой заливке ≥ 4,5:1 (WhatsApp — только логотип, решение владельца)"""
+        v = self.vars['ru']
+        for t, fgs in TEXT.items():
+            for fill in (resolve(v, v['--btn-' + t]), resolve(v, v['--btn-%s-p' % t])):
+                for fg in fgs:
+                    c = contrast(resolve(v, v[fg]), fill)
+                    self.assertGreaterEqual(c, 4.5, '%s на %s (%s): %.2f' % (fg, t, fill, c))
 
-    def test_comment_links_to_kofe_app(self):
-        root = re.search(r':root\{(.*?)\n\}', read('index.html'), re.S).group(1)
-        self.assertRegex(root, r'kofe-app 9206813 app/src/theme/glass\.ts')
+    def test_heights_and_font(self):
+        for l, v in self.vars.items():
+            self.assertEqual(v['--h-btn'], '52px', l)
+            self.assertEqual(v['--h-btn-sm'], '44px', l)
+            self.assertEqual(v['--btn-font'], 'var(--font-display)', l)
+            self.assertIn('min-height:var(--h-btn)', rule(css_of(read(PAGES[l])), '.btn'), l)
+
+    def test_no_glass_left(self):
+        """от стекла не осталось ни токенов --glass-*, ни прежних переменных тона (блик, низ, тени, прозрачность основы)"""
+        for p in all_pages():
+            css = css_of(read(p))
+            self.assertNotIn('--glass-', css, p)
+            self.assertNotRegex(css, r'--tone-(?!bg\b|p\b)', p)
+            self.assertNotRegex(css, r'\.on-(?:light-)?photo', p)
 
 
-class TestGlassButtons(unittest.TestCase):
+class TestFlatButtons(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.pages = {l: read(p) for l, p in PAGES.items()}
-        cls.css = {l: css_of(h) for l, h in cls.pages.items()}
+        cls.css = {l: css_of(read(p)) for l, p in PAGES.items()}
+        cls.layer = layer_rules(cls.css['ru'])
 
-    def test_layers_for_every_button(self):
-        """одно правило слоёв на все кнопки: основа, блик, низ, тень + inset, кромка 1px; нажатие; наведение; reduced-motion"""
-        lr = layer_rules(self.css['ru'])
-        self.assertEqual(sorted(lr), ['', ':active', ':hover', 'reduce'])
-        for key, (sels, body) in lr.items():
+    def test_one_layer_for_all_buttons(self):
+        """одно правило на все кнопки: заливка тона, нажатие и наведение (только при мыши) — тон -p; без reduced-motion — движения нет"""
+        self.assertEqual(sorted(self.layer), sorted(LAYER_KEYS))
+        for key, (sels, body) in self.layer.items():
             self.assertEqual(sels, LAYERED, key)
-        base = lr[''][1]
-        for need in BASE + ('--tone-a:var(--glass-base-plain)', '--tone-ap:var(--glass-pressed-plain)', 'border:0'):
-            self.assertIn(need, base)
-        act = lr[':active'][1]
-        for need in ('background-color:rgb(var(--tone-rgbp) / var(--tone-ap))', 'box-shadow:var(--tone-shp),var(--tone-inp),inset 0 0 0 1px var(--tone-edge)',
-                     'scale:var(--glass-press-scale)', 'transition:scale var(--glass-press-in) ease-out'):
-            self.assertIn(need, act)
-        self.assertEqual(act.count('calc(var(--glass-highlight-pressed)*100%)'), 2, 'блик при нажатии — прозрачность слоя 0,36')
-        self.assertEqual(lr[':hover'][1], 'background-color:rgb(var(--tone-rgbp) / var(--tone-ap))', 'наведение — основа нажатой')
-        self.assertEqual(lr['reduce'][1], 'scale:none')
+        self.assertEqual(self.layer[('', '')][1], LAYER)
+        self.assertEqual(self.layer[('', ':active')][1], PRESSED)
+        self.assertEqual(self.layer[('@media(hover:hover)', ':hover')][1], PRESSED)
         for l in ('kk', 'en'):     # облегчённые: те же тела, в списке — только то, что есть на странице
             lk = layer_rules(self.css[l])
-            for key in ('', ':active', ':hover', 'reduce'):
-                self.assertEqual(lk[key][1], lr[key][1], '%s %s' % (l, key))
-            self.assertEqual(lk[''][0], ['.btn', '.fab-menu', '.ib', '.pill', '.pill-point', '.lang-dd summary'], l)
+            self.assertEqual(sorted(lk), sorted(LAYER_KEYS), l)
+            for key in LAYER_KEYS:
+                self.assertEqual(lk[key], (['.btn', '.fab-menu', '.ib', '.pill', '.pill-point', '.lang-dd summary'], self.layer[key][1]), '%s %s' % (l, key))
 
     def test_button_tones(self):
         css = self.css['ru']
@@ -203,68 +204,85 @@ class TestGlassButtons(unittest.TestCase):
             for sel in sels:
                 self.assertEqual(tone_of(css, sel), t, sel)
         for sel in ('.btn', '.fab-menu'):
-            self.assertIsNone(tone_of(css, sel), '%s — зелёный по умолчанию (тон слоёв)' % sel)
-        layer = layer_rules(css)[''][1]
-        self.assertIn('--tone-rgb:var(--glass-rgb)', layer)
+            self.assertIsNone(tone_of(css, sel), '%s — зелёный по умолчанию (тон слоя)' % sel)
+        self.assertEqual(rule(css, ','.join(TONES['light'])), LIGHT)
         self.assertIn('color:var(--c-on-olive)', rule(css, '.btn.olive'))
         self.assertIn('color:#FFFFFF', rule(css, '.ib.wa'))
-        self.assertIn('--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)', rule(css, '.fab-menu'), 'плавающая «меню» — основа photo')
-        self.assertIn('--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)', rule(css, '.btn.on-photo'))
-        self.assertIn('--tone-a:var(--glass-base-light-photo);--tone-ap:var(--glass-pressed-light-photo)', rule(css, '.btn.on-light-photo'))
+        # «!» у позиций меню лежит на подложке раздела (surface) — светлая заливка с ней сливается: тонкий контур, как до стекла
+        self.assertIn('border:1.3px solid var(--c-accent)', rule(css, '.mm-only'))
         for l in ('kk', 'en'):
             for sel, t in (('.btn.ghost', 'light'), ('.ib', 'light'), ('.pill-point', 'light'), ('.lang-dd summary', 'light'),
                            ('.ib.route', 'green'), ('.ib.wa', 'wa'), ('.btn.olive', 'olive')):
                 self.assertEqual(tone_of(self.css[l], sel), t, '%s %s' % (l, sel))
             self.assertNotRegex(self.css[l], r'\.mm-|\.sheet', l)
 
-    def test_no_flat_overrides_and_no_blur(self):
-        """у кнопок нет своих плоских заливок, теней и размытия поверх слоёв (кроме липкой лупы: её тень — слои + подложка)"""
-        for l, css in self.css.items():
-            for pre, body in rules(css):
-                parts = [re.sub(r'^@media\([^)]*\) ', '', s) for s in split_sel(pre)]
-                if not any(re.sub(r':(?:hover|active)$', '', p) in LAYERED + sum(TONES.values(), []) for p in parts):
+    def test_no_volume_on_buttons(self):
+        """у кнопок (и их наведения/нажатия) на всех страницах — ни теней, ни градиентов, ни размытия, ни своей заливки
+        мимо тона, ни снятой рамки фокуса; псевдоэлементы кнопок (касание, крестики) — тоже без теней и размытия"""
+        menu_light = MENU_SELS
+        buttons = set(LAYERED + sum(TONES.values(), []) + sum(COPIES.values(), []) + menu_light + OTZYV[1] + ['.lang a[aria-current]'])
+        checked = 0
+        for p in all_pages():
+            for media, pre, body in rules(css_of(read(p))):
+                if pre.startswith(':where('):
+                    self.assertNotRegex(body, VOLUME, '%s: слой %s' % (p, pre))
                     continue
-                self.assertNotIn('backdrop-filter', body, '%s: %s' % (l, pre))
-                self.assertNotRegex(body, r'(?:^|;)background:', '%s: %s — плоская заливка' % (l, pre))
-                if 'box-shadow' in body and not pre.startswith(':where') and ':where(' not in pre:
-                    self.assertIn('var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge)', body, '%s: %s' % (l, pre))
+                for part in split_sel(pre):
+                    base = re.sub(r':(?:hover|active|focus-visible|focus)$', '', part)
+                    pseudo = re.match(r'(.*?)::?(before|after)$', base)
+                    if pseudo and pseudo.group(1) in buttons:
+                        self.assertNotRegex(body, r'box-shadow|backdrop-filter|(?:^|;)filter:', '%s: %s' % (p, part))
+                        if (pseudo.group(1), pseudo.group(2)) != ('.mm-search-btn', 'before'):
+                            self.assertNotIn('gradient(', body, '%s: %s' % (p, part))
+                        continue
+                    if base not in buttons:
+                        continue
+                    checked += 1
+                    where = '%s: %s %s' % (p, media, part)
+                    if (media, part) == LUPA[:2]:
+                        self.assertEqual(body, LUPA[2], where)
+                    else:
+                        self.assertNotRegex(body, VOLUME, where)
+                    self.assertNotRegex(body, r'(?:^|;)background(?:-color)?:', '%s — своя заливка мимо тона' % where)
+                    self.assertNotRegex(body, r'outline:\s*(?:none|0)', '%s — рамку фокуса не снимать' % where)
+        self.assertGreater(checked, 90)
 
-    def test_404_and_ugolok_same_glass(self):
-        main = root_vars(self.pages['ru'])
-        lr = layer_rules(self.css['ru'])
-        light = rule(self.css['ru'], ','.join(TONES['light']))
-        for path, sels in (('404.html', ['a.btn']), ('ugolok/index.html', ['.pass-btn', '.lang-btn', '.tb-back'])):
+    def test_lupa_mask_present(self):
+        mob = [b for m, p, b in rules(self.css['ru']) if m == LUPA[0] and p == LUPA[1]]
+        self.assertEqual(mob, [LUPA[2]])
+
+    def test_404_and_ugolok_same_as_main(self):
+        main = root_vars(read('index.html'))
+        for path, sels in COPIES.items():
             html = read(path)
             v, css = root_vars(html), css_of(html)
-            glass = {k: x for k, x in v.items() if k.startswith('--glass-') or k in ('--h-glass', '--btn-font')}
-            self.assertGreaterEqual(len(glass), 18, path)
-            for k, x in glass.items():
-                self.assertEqual(x, main[k], '%s: %s — как на главной' % (path, k))
+            need = ['--btn-green', '--btn-green-p', '--h-btn', '--btn-font'] + (['--btn-light', '--btn-light-p'] if '.lang-btn' in sels else [])
+            own = sorted(k for k in v if k.startswith('--btn-') or k.startswith('--h-btn'))
+            self.assertEqual(own, sorted(need), '%s: копия только нужных токенов' % path)
+            for k in need:
+                self.assertEqual(v[k], main[k], '%s: %s — дословно как на главной' % (path, k))
+                if k.startswith('--btn-') and k != '--btn-font':
+                    self.assertEqual(resolve(v, v[k]), resolve(main, main[k]), '%s: %s — тот же цвет' % (path, k))
             lk = layer_rules(css)
-            for key in ('', ':active', ':hover', 'reduce'):
-                self.assertEqual(lk[key], (sels, lr[key][1]), '%s: слои %s — дословно как на главной' % (path, key))
-            for pre, body in rules(css):
-                self.assertNotIn('backdrop-filter', body if any(s in pre for s in sels) else '', path)
+            self.assertEqual(sorted(lk), sorted(LAYER_KEYS), path)
+            for key in LAYER_KEYS:
+                self.assertEqual(lk[key], (sels, self.layer[key][1]), '%s: слой %s — дословно как на главной' % (path, key))
         ug = css_of(read('ugolok/index.html'))
-        self.assertEqual(rule(ug, '.lang-btn,.tb-back'), light, '/ugolok: языки и «на главную» — светлое стекло')
-        self.assertTrue(rule(ug, '.lang-btn.on').startswith('--tone-rgb:var(--glass-rgb);'), 'выбранный язык — зелёный')
-        for sel in ('.pass-btn', '.lang-btn', '.tb-back'):
-            self.assertNotRegex(rule(ug, sel), r'(?:^|;)background:', sel)
-        self.assertIn('min-height:var(--h-glass)', rule(ug, '.pass-btn'))
-        self.assertIn('min-height:var(--h-glass)', rule(css_of(read('404.html')), 'a.btn'))
+        self.assertEqual(rule(ug, '.lang-btn,.tb-back'), LIGHT, '/ugolok: языки и «на главную» — светлые')
+        self.assertEqual(rule(ug, '.lang-btn.on'), GREEN_ON, 'выбранный язык — зелёный')
+        self.assertIn('min-height:var(--h-btn)', rule(ug, '.pass-btn'))
+        self.assertIn('min-height:var(--h-btn)', rule(css_of(read('404.html')), 'a.btn'))
 
-    def test_text_menus_glass(self):
-        lr = layer_rules(self.css['ru'])
-        light = rule(self.css['ru'], ','.join(TONES['light']))
-        sels = ['.pill', '.toc a', '.lang a']
+    def test_text_menus_same_as_main(self):
         for p in TEXT_MENUS:
             css = css_of(read(p))
             lk = layer_rules(css)
-            for key in ('', ':active', ':hover', 'reduce'):
-                self.assertEqual(lk[key], (sels, lr[key][1]), '%s %s' % (p, key))
-            self.assertIn('{' + light + '}', css, '%s: светлый тон — как у главной' % p)
-            self.assertTrue(rule(css, '.lang a[aria-current]').startswith('--tone-rgb:var(--glass-rgb);'), p)
-            self.assertNotRegex(rule(css, '.pill,.toc a,.lang a'), r'(?:^|;)background:', p)
+            self.assertEqual(sorted(lk), sorted(LAYER_KEYS), p)
+            for key in LAYER_KEYS:
+                self.assertEqual(lk[key], (MENU_SELS, self.layer[key][1]), '%s %s' % (p, key))
+            self.assertEqual(rule(css, ','.join(MENU_SELS)), LIGHT, '%s: светлый тон — как у главной' % p)
+            self.assertEqual(rule(css, '.lang a[aria-current]'), GREEN_ON, p)
+            self.assertEqual(root_vars(read(p))['--btn-light'], 'var(--c-surface)', '%s: токены — из :root главной' % p)
 
 
 class TestChips(unittest.TestCase):
@@ -283,15 +301,13 @@ class TestChips(unittest.TestCase):
             self.assertEqual(rule(self.css, sel), "content:'';position:absolute;inset:calc(var(--s-8) / -2) 0", sel)
         self.assertIn('font-family:var(--font-body)', rule(self.css, '.mm-tab,.mm-cat'))
 
-    def test_rows_leave_room_for_touch_and_shadow(self):
-        """ряды вкладок и разделов прокручиваются (overflow-x): касание (4px) и тень чипа должны лечь в поля ряда"""
+    def test_rows_leave_room_for_touch(self):
+        """ряды вкладок и разделов прокручиваются (overflow-x): касание чипа (4px сверху) должно лечь в поля ряда"""
         rows = rule(self.css, '.mm-tabs,.mm-cats')
         self.assertIn('padding:var(--s-4) var(--s-24) var(--s-8)', rows)
         mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', self.css))
         self.assertIn('.mm-tabs,.mm-cats{padding:var(--s-4) var(--s-12) var(--s-8)', mob)
         self.assertNotRegex(mob, r'\.mm-tab\{padding', 'поля чипа на телефоне — тоже 16')
-        v = root_vars(self.html)
-        self.assertEqual(v['--glass-light-shadow'], '0px 2px 6px rgba(36,28,21,0.12),0px 1px 2px rgba(36,28,21,0.1)', 'тень светлого — в 8px')
 
     def test_mode_and_lang_like_chips(self):
         r = rule(self.css, '.mm-mode-btn,.mm-lang-btn')

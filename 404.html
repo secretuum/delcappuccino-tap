@@ -16,6 +16,8 @@
 function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}
 track('page_not_found',{path:location.pathname});</script>
 <!-- /аналитика -->
+<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->
+<script>(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();</script>
 <style>
 /* Шрифты self-host — те же файлы и подмножества, что у главной (tools/fetch_fonts.py geologica montserrat) */
 @font-face{font-family:'Geologica';font-style:normal;font-weight:700;font-display:swap;src:url(/assets/fonts/geologica-700-cyrillic-ext.7b1b699d.woff2) format('woff2');unicode-range:U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F}
@@ -33,34 +35,26 @@ track('page_not_found',{path:location.pathname});</script>
   --c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-border:rgba(66,99,73,.18);
   --c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF; --c-olive:#849E29; --c-olive-text:#627122;
   --r-lg:22px; --r-pill:999px; --h-button:56px; --h-touch:48px;
-  /* стекло кнопок — копия токенов из :root главной (kofe-app 9206813, glass.ts; кнопка «на главную» — зелёная); что они равны главной — проверяет tests/test_glass.py */
-  --glass-base-plain:0.94;
-  --glass-pressed-plain:0.96;
-  --glass-highlight-pressed:0.36;
-  --glass-rgb:66 99 73;
-  --glass-rgb-pressed:58 90 64;
-  --glass-hl-top:rgba(127,168,134,0.45);
-  --glass-hl-mid:rgba(107,150,114,0.15);
-  --glass-edge:rgba(158,195,164,0.35);
-  --glass-bottom:linear-gradient(180deg,transparent 50%,rgba(14,26,16,0.22) 100%);
-  --glass-shadow:0px 10px 24px rgba(14,26,16,0.28),0px 2px 4px rgba(14,26,16,0.16);
-  --glass-inset:inset 0px 1px 0px rgba(169,203,174,0.55),inset 0px -2px 3px rgba(14,26,16,0.22);
-  --glass-shadow-pressed:0px 3px 8px rgba(14,26,16,0.22);
-  --glass-inset-pressed:inset 0px 3px 6px rgba(0,0,0,0.25),inset 0px 1px 0px rgba(255,255,255,0.25);
-  --glass-press-scale:0.97;
-  --glass-press-in:90ms;
-  --glass-press-out:300ms;
-  --glass-press-spring:cubic-bezier(.3,1.3,.5,1);
-  --h-glass:52px;
+  /* кнопки — плоские: копия токенов из :root главной (кнопка «на главную» — зелёная); что они равны главной — проверяет tests/test_glass.py */
+  --btn-green:var(--c-accent); --btn-green-p:#3A5A40;
+  --h-btn:52px;
   --btn-font:var(--font-display);
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:cubic-bezier(.4,0,1,1)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:cubic-bezier(.2,.8,.2,1)}
+.vt-in body{animation:vt-in .22s cubic-bezier(.2,.8,.2,1)}
+.vt-out body{opacity:0;transition:opacity .16s cubic-bezier(.4,0,1,1)}
+@keyframes vt-in{from{opacity:0}}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
 /* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — --c-olive-text (токен главной, 5,0:1 на подложке) */
 :focus-visible{outline-color:var(--c-olive-text)}
-/* шапка — как на главной: белое стекло, логотип ссылкой на главную */
-header{position:sticky;top:0;background:color-mix(in srgb,var(--c-bg) 92%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+/* шапка — как на главной: сплошной белый фон и линия снизу (плоско, 11.11), логотип ссылкой на главную */
+header{position:sticky;top:0;background:var(--c-bg);border-bottom:1px solid var(--c-border)}
 .hbar{display:flex;align-items:center;max-width:1160px;margin:0 auto;padding:8px 24px;min-height:64px}
 .hbar a{display:flex;align-items:center;min-height:44px}   /* зона касания логотипа — 44 */
 .hbar img{height:40px;width:auto;display:block;border-radius:10px}
@@ -72,12 +66,11 @@ p.tag{color:var(--c-olive-text)}
 h1{font-family:var(--font-display);font-weight:700;font-size:36px;line-height:1.1;letter-spacing:-.01em;text-transform:lowercase;color:var(--c-text);margin-bottom:12px}
 h1 span{color:var(--c-accent)}
 p.lead{font-size:15px;color:var(--c-muted);line-height:1.65;max-width:340px;margin:0 auto 28px}
-/* кнопка — как на главной: зелёное стекло (слои — дословно правила главной), высота 52, пилюля, Geologica строчными; без backdrop-filter */
-a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-glass);padding:8px 28px;border-radius:var(--r-pill);color:var(--c-on-accent);font-family:var(--btn-font);font-size:16px;font-weight:700;text-transform:lowercase;text-decoration:none}
-:where(a.btn){--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);--tone-a:var(--glass-base-plain);--tone-ap:var(--glass-pressed-plain);border:0;background-color:rgb(var(--tone-rgb) / var(--tone-a));background-image:linear-gradient(180deg,var(--tone-hl1) 0%,var(--tone-hl2) 45%,transparent 55%),var(--tone-bot);box-shadow:var(--tone-sh),var(--tone-in),inset 0 0 0 1px var(--tone-edge);-webkit-tap-highlight-color:transparent;transition:scale var(--glass-press-out) var(--glass-press-spring),transform .2s ease,background-color .09s,box-shadow .09s}
-:where(a.btn):active{background-color:rgb(var(--tone-rgbp) / var(--tone-ap));background-image:linear-gradient(180deg,color-mix(in srgb,var(--tone-hl1) calc(var(--glass-highlight-pressed)*100%),transparent) 0%,color-mix(in srgb,var(--tone-hl2) calc(var(--glass-highlight-pressed)*100%),transparent) 45%,transparent 55%),var(--tone-bot);box-shadow:var(--tone-shp),var(--tone-inp),inset 0 0 0 1px var(--tone-edge);scale:var(--glass-press-scale);transition:scale var(--glass-press-in) ease-out,transform .2s ease,background-color .09s,box-shadow .09s}
-@media(hover:hover){:where(a.btn):hover{background-color:rgb(var(--tone-rgbp) / var(--tone-ap))}}
-@media(prefers-reduced-motion:reduce){:where(a.btn):active{scale:none}}
+/* кнопка — как на главной: плоская зелёная (слои — дословно правила главной), высота 52, пилюля, Geologica строчными */
+a.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-btn);padding:8px 28px;border-radius:var(--r-pill);color:var(--c-on-accent);font-family:var(--btn-font);font-size:16px;font-weight:700;text-transform:lowercase;text-decoration:none}
+:where(a.btn){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
+:where(a.btn):active{background:var(--tone-p)}
+@media(hover:hover){:where(a.btn):hover{background:var(--tone-p)}}
 /* подвал — как на главной */
 footer{border-top:1px solid var(--c-border);padding:24px}
 .f-row{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;max-width:1112px;margin:0 auto;font-size:12px;color:var(--c-muted)}

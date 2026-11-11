@@ -33,8 +33,11 @@
 - Аналитика (блок в <head> всех страниц, включая /ugolok): gtag и единая track() — все события в Google Analytics;
   цели YM_GOALS (18 событий → 13 целей, одна цель на одно действие) ещё и в Яндекс Метрику; на /ugolok trackLinks:false;
   404.html — тот же блок и при загрузке событие page_not_found {path} (цель not_found). Включить Метрику: YM_ID = <номер счётчика> ниже,
-  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 8 собираемых страницах (с 404.html) появится ym init (вебвизор,
+  затем python3 tools/seo_jsonld.py && python3 tools/sw_version.py — на всех 9 собираемых страницах (с 404.html и /otzyv) появится ym init (вебвизор,
   карта кликов, ссылки), tag.js грузится после load. Пока YM_ID = None, кода Метрики на страницах нет (тест).
+- /otzyv — «Для жалоб и предложений» (11.11.2026): собирает tools/feedback_page.py — филиалы из BRANCHES и новая точка из
+  его EXTRA_POINTS (только там), тексты — pages_i18n.json (otzyv); кнопка в подвале /, /kk/, /en/ — над рядом ссылок
+  с «Уголком потребителя», событие feedback_open.
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -44,6 +47,7 @@ from urllib.parse import quote
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import feature_icons  # noqa: E402  значки «Формата»
+import feedback_page  # noqa: E402  /otzyv — «Для жалоб и предложений» (11.11.2026): адрес SLUG, новая точка, сборка страницы
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
@@ -81,10 +85,23 @@ YM_GOALS = {'cta_order': 'order_app', 'cta_book': 'book_open',
             'lang_switch': 'lang_switch', 'menu_lang': 'lang_switch', 'faq_open': 'faq_open',
             'cta_ugolok': 'ugolok', 'ugolok_talon': 'ugolok',
             'page_not_found': 'not_found'}     # 404: один раз при загрузке, параметр path — путь без строки запроса
+# /otzyv (11.11.2026): feedback_open (кнопка в подвале), feedback_wa и feedback_call {branch:'01'…'05'|'sputnik'} — пока только
+# в Google Analytics: в плане целей владельца их нет; нужна цель — одна строка здесь и в PLAN tests/test_analytics.py
 NOT_FOUND_JS = "track('page_not_found',{path:location.pathname})"
 
 AN_MARK = '<!-- аналитика: Google Analytics и цели Яндекс Метрики — собирает tools/seo_jsonld.py, руками не править -->'
-AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n', re.S)
+AN_RE = re.compile(r'<!-- аналитика: Google Analytics[^\n]*-->\n.*?<!-- /аналитика -->\n(?:<!-- переход между страницами[^\n]*-->\n<script>.*?</script>\n)?', re.S)
+# Переход между страницами (владелец 11.11) там, где браузер не умеет view transitions между документами (Firefox и старые):
+# новая страница проявляется (класс vt-in), клик по ссылке на другую страницу сайта — страница гаснет 160 мс (vt-out),
+# потом переход; не трогаем: #метки, target, Ctrl/⌘/Shift/Alt, среднюю кнопку, download, tel:/wa.me (другой origin),
+# ссылки, чьё нажатие уже обработано (preventDefault); «Назад» из bfcache — снять vt-out; запас — вернуть страницу через 3 с;
+# reduced-motion — ничего. Где есть CSSViewTransitionRule — работает @view-transition, скрипт выходит сразу
+VT_JS = ("(function(){var d=document.documentElement;if('CSSViewTransitionRule'in window||matchMedia('(prefers-reduced-motion: reduce)').matches)return;"
+         "d.classList.add('vt-in');addEventListener('pageshow',function(e){if(e.persisted)d.classList.remove('vt-out')});"
+         "addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('a[href]');if(!a||e.defaultPrevented||e.button||e.ctrlKey||e.metaKey||e.shiftKey||e.altKey"
+         "||a.target||a.hasAttribute('download')||a.origin!==location.origin||a.pathname===location.pathname)return;"
+         "e.preventDefault();d.classList.add('vt-out');setTimeout(function(){location.href=a.href},160);setTimeout(function(){d.classList.remove('vt-out')},3000)})})();")
+VT_HEAD = '<!-- переход между страницами без view transitions — собирает tools/seo_jsonld.py -->\n<script>' + VT_JS + '</script>\n'
 GA_LINE_RE = re.compile(r"<script>window\.dataLayer=window\.dataLayer\|\|\[\];function gtag\(\)\{dataLayer\.push\(arguments\)\}"
                         r"gtag\('js',new Date\(\)\);gtag\('config','G-[A-Z0-9]+'\);(?:function track\(n,p\)\{[^<]*\})?</script>\n")
 UGOLOK = os.path.join(ROOT, 'ugolok', 'index.html')
@@ -95,11 +112,13 @@ LANGS = ('ru', 'kk', 'en')
 HOME = {'ru': SITE, 'kk': SITE + 'kk/', 'en': SITE + 'en/'}
 MENU = {'ru': MENU_URL, 'kk': SITE + 'kk/menyu', 'en': SITE + 'en/menu'}
 MENU_HASH = {'ru': '#menu', 'kk': '#menu-kk', 'en': '#menu-en'}      # глубокие ссылки: меню главной сразу на этом языке
+GRILL_HASH = '#menu-grill'      # + '-kk' / '-en': меню главной сразу на «Блюда на гриле» (плитка «Курицы гриль» на /kk/ и /en/)
 LOCALE = {'ru': 'ru_RU', 'kk': 'kk_KZ', 'en': 'en_GB'}       # английский — британское написание (flavour, favourite)
 HREF_MARK = '<!-- hreflang: версии главной на ru/kk/en — tools/seo_jsonld.py -->'
 HREF_RE = re.compile(re.escape(HREF_MARK) + r'\n.*?<!-- /hreflang -->\n', re.S)
 PAGES = {SITE: 'index.html', SITE + 'ugolok': 'ugolok/index.html', MENU_URL: 'menyu/index.html',
-         HOME['kk']: 'kk/index.html', HOME['en']: 'en/index.html', MENU['kk']: 'kk/menyu/index.html', MENU['en']: 'en/menu/index.html'}
+         HOME['kk']: 'kk/index.html', HOME['en']: 'en/index.html', MENU['kk']: 'kk/menyu/index.html', MENU['en']: 'en/menu/index.html',
+         SITE + feedback_page.SLUG: feedback_page.SLUG + '/index.html'}       # /otzyv — как /ugolok: canonical без слэша
 
 
 def js_array(html, name):
@@ -549,15 +568,14 @@ def tokens_css(html):
     return re.sub(r'\s*\n\s*', '', re.search(r':root\{.*?\}', css, re.S).group(0))
 
 
-def glass_css(html, sel, light=''):
-    """слои стекла кнопок главной (:where(…) — основа, нажатие, наведение, reduced-motion) для своих селекторов sel;
+def btn_css(html, sel, light=''):
+    """слои плоских кнопок главной (:where(…) — заливка тона, нажатие, наведение) для своих селекторов sel;
     light — селекторы светлого тона (тело правила тона светлых кнопок главной). Один источник вида — правила главной"""
     css = re.sub(r'\s*\n\s*', '', re.sub(r'/\*.*?\*/', '', html[html.index('<style>') + 7:html.index('</style>')], flags=re.S))
     w = ':where(%s)' % sel
-    rules = [w + '{' + re.search(r':where\([^)]*\)\{(--tone-rgb[^}]*)\}', css).group(1) + '}',
+    rules = [w + '{' + re.search(r':where\([^)]*\)\{(--tone-bg[^}]*)\}', css).group(1) + '}',
              w + ':active{' + re.search(r':where\([^)]*\):active\{([^}]*)\}', css).group(1) + '}',
-             '@media(hover:hover){%s:hover{%s}}' % (w, re.search(r':where\([^)]*\):hover\{([^}]*)\}', css).group(1)),
-             '@media(prefers-reduced-motion:reduce){%s:active{scale:none}}' % w]
+             '@media(hover:hover){%s:hover{%s}}' % (w, re.search(r':where\([^)]*\):hover\{([^}]*)\}', css).group(1))]
     if light:
         rules.append(light + '{' + re.search(r'(?:^|\})\.btn\.ghost,[^{]*\{([^}]*)\}', css).group(1) + '}')
     return '\n'.join(rules)
@@ -664,21 +682,29 @@ def menu_page(html, lang='ru'):
 %(fonts)s
 %(tokens)s
 /* меню текстом (этап 2 редизайна): токены v5 главной, Geologica — заголовки, Montserrat — текст, фон белый; без JS и фото */
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:var(--ez-out)}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:var(--ez-in)}
+.vt-in body{animation:vt-in .22s var(--ez-in)}
+.vt-out body{opacity:0;transition:opacity .16s var(--ez-out)}
+@keyframes vt-in{from{opacity:0}}
 .wrap{max-width:860px;margin:0 auto;padding:0 16px}
 a{color:var(--c-accent);font-weight:600}
 header{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:12px 0}
 .logo{display:inline-flex;margin-right:4px}
 .logo img{display:block;height:36px;width:auto;border-radius:8px}
 /* чипы как в приложении (Chip.tsx): 40, поля 16, Montserrat 500 14px; касание 48 — псевдоэлементом по 4px сверху и снизу;
-   светлое стекло — слои и тон из правил главной (glass_css), выбранный язык — зелёное */
-%(glass)s
+   плоские, светлый тон — слои и тон из правил главной (btn_css), выбранный язык — зелёный */
+%(btn)s
 .pill,.toc a,.lang a{position:relative;display:inline-flex;align-items:center;justify-content:center;min-height:40px;padding:0 16px;border-radius:var(--r-pill);color:var(--c-text);font-size:var(--fs-small);font-weight:500;text-decoration:none;white-space:nowrap}
 .pill::after,.toc a::after,.lang a::after{content:'';position:absolute;inset:-4px 0}
 .lang{display:flex;gap:4px;margin-left:auto}
 .lang a{min-width:44px;padding:0 8px;font-size:var(--fs-caption)}
-.lang a[aria-current]{--tone-rgb:var(--glass-rgb);--tone-rgbp:var(--glass-rgb-pressed);--tone-hl1:var(--glass-hl-top);--tone-hl2:var(--glass-hl-mid);--tone-edge:var(--glass-edge);--tone-bot:var(--glass-bottom);--tone-sh:var(--glass-shadow-pressed);--tone-in:var(--glass-inset);--tone-shp:var(--glass-shadow-pressed);--tone-inp:var(--glass-inset-pressed);color:var(--c-on-accent)}
+.lang a[aria-current]{--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);color:var(--c-on-accent)}
 h1,h2,h3,h4{font-family:var(--font-display);font-weight:700;text-transform:lowercase;line-height:1.2}
 h1{font-size:var(--fs-heading);margin:16px 0 8px}
 .lead{color:var(--c-muted)}
@@ -686,7 +712,7 @@ h1{font-size:var(--fs-heading);margin:16px 0 8px}
 h2{font-size:24px;margin:32px 0 8px;padding-top:16px;border-top:1px solid var(--c-border)}
 h3{font-size:var(--fs-title);color:var(--c-accent);margin:24px 0 4px}
 h4{display:flex;justify-content:space-between;align-items:baseline;gap:12px;font-size:20px;margin:0 0 6px}
-.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}
+.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface)}
 h4 small{display:inline-flex;align-items:center;min-height:22px;margin-left:6px;padding:0 8px;border-radius:var(--r-pill);background:var(--c-bg);font-family:var(--font-body);font-weight:600;text-transform:none;vertical-align:2px}
 .note{font-size:13px;color:var(--c-muted);margin:2px 0}
 ul{list-style:none}
@@ -697,7 +723,8 @@ li .n{font-weight:500}
 small,li i,li em{font-size:13px;color:var(--c-muted);font-style:normal;font-weight:400}
 .p{white-space:nowrap;font-family:var(--font-body);font-weight:600;text-transform:none;font-variant-numeric:tabular-nums}
 .p s{font-weight:400;color:var(--c-muted)}
-footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
+footer.wrap{margin-top:40px;margin-bottom:28px;padding-top:16px}   /* margin и padding .wrap сильнее footer{…} */
+footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);line-height:1.9;text-align:center}
 .social{display:flex;justify-content:center;gap:12px;margin:12px 0}
 .social a{display:inline-flex;align-items:center;justify-content:center;width:48px;height:48px;border-radius:50%%;background:var(--c-surface);color:var(--c-text)}
 .social svg{display:block;width:22px;height:22px}
@@ -727,21 +754,23 @@ footer{margin:40px 0 28px;padding-top:16px;border-top:1px solid var(--c-border);
        'og_description': H.escape(mp['og_description']), 'back': e(mp['back']), 'photo_menu': e(mp['photo_menu']),
        'h1': e(mp['h1']), 'lead': mp['lead'].replace('{menu_link}', menu_link),
        'f_home': e(mp['home']), 'f_faq': e(mp['faq']), 'f_order': e(mp['order']),
-       'tokens': tokens_css(html), 'glass': glass_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
+       'tokens': tokens_css(html), 'btn': btn_css(html, '.pill,.toc a,.lang a', '.pill,.toc a,.lang a'), 'icons': social_sprite(), 'social': menu_social(), 'sw': menu_lang_switch(lang),
        'lang_label': H.escape(i18n()['kk' if lang == 'kk' else 'en']['page']['lang_label']) if lang != 'ru' else 'Язык',
-       'analytics': analytics_head(YM_ID), 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
+       'analytics': analytics_head(YM_ID) + VT_HEAD, 'ga_loader': GA_LOADER % GA_ID, 'og_image': OG_IMAGE}
 
 
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
-# точки (кнопки-значки), вопросы, контакты, подвал (без оверлея меню, модалки, «Курицы гриль» и фото «Фирменный стиль»)
-CSS_KEEP = re.compile(r'^(?::root|:focus-visible|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
+# точки (кнопки-значки), вопросы, контакты, подвал, плитка «Курицы гриль» без строки «ВНИМАНИЕ» (без оверлея меню, модалки
+# и фото «Фирменный стиль»)
+CSS_KEEP = re.compile(r'^(?::root|:focus-visible|::-webkit-scrollbar|::view-transition-(?:old|new)\(root\)|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
                       r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
+                      r'grill-promo|grill-frame|grill-fire|grill-fire-outer|grill-win|grill-video|grill-price|sale|'
                       r'icons|ic|ib|pill|social|rv|rv-in|rv-fast|px-on|'
                       r'story|story-grid|story-photo|stats|features|f-head|f-grid|f-ic|'
                       r'locations|loc-head|loc-grid|loc-card|loc-meta|loc-about|loc-amen|loc-links|faq|faq-box|faq-sum|faq-more|faq-head|faq-list|faq-a|contact|contact-actions|'
-                      r'f-row|hide-mobile))(?![\w-])')
-CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out')     # анимации заставки
+                      r'f-row|f-otzyv|hide-mobile|vt-in|vt-out))(?![\w-])')
+CSS_KEYFRAMES = ('moped-in', 'fade-in', 'intro-out', 'drop', 'vt-in')     # анимации заставки, списка языков, смены страницы
 
 
 def hreflang(urls):
@@ -773,7 +802,7 @@ def analytics_head(ym_id=None, track_links=True, on_load=None):
 def with_analytics(html, track_links=True, on_load=None):
     """заменить блок аналитики (или прежнюю строку gtag в <head>) на analytics_head(YM_ID); track_links=False — /ugolok:
     адреса PDF-талонов с именами ИП не уходят в Метрику (главный, 23.10.2026)"""
-    new, head = analytics_head(YM_ID, track_links, on_load), html.split('</head>')[0]
+    new, head = analytics_head(YM_ID, track_links, on_load) + VT_HEAD, html.split('</head>')[0]
     m = AN_RE.search(head) or GA_LINE_RE.search(head)
     if not m:
         sys.exit('seo_jsonld: в <head> нет блока аналитики и строки gtag — некуда поставить analytics_head')
@@ -806,20 +835,22 @@ def css_rules(css):
 def keep_rule(rule):
     pre, body = rule.split('{', 1)
     pre = pre.strip()
-    if pre.startswith(('@media', '@supports')):     # @media — телефон, hover, reduced-motion (стекло кнопок); @supports — на будущее
+    if pre.startswith(('@media', '@supports')):     # @media — телефон, hover (наведение кнопок), reduced-motion; @supports — на будущее
         inner = [r for r in (keep_rule(x) for x in css_rules(body[:-1])) if r]
         return pre + '{\n' + '\n'.join(inner) + '\n}' if inner else None
     if pre.startswith('@keyframes'):
         return rule if pre.split()[1] in CSS_KEYFRAMES else None
+    if pre.startswith('@view-transition'):          # переход между страницами — как на главной
+        return rule
     if pre.startswith('@'):
         return None
-    w = re.match(r':where\((.*)\)(:[\w-]+)?$', pre)     # слои стекла кнопок: :where(список) — в списке только нужное странице
+    w = re.match(r':where\((.*)\)(:[\w-]+)?$', pre)     # слои кнопок: :where(список) — в списке только нужное странице
     if w:
         sels = [s for s in w.group(1).split(',') if CSS_KEEP.match(s.strip())]
         return ':where(%s)%s{%s' % (','.join(sels), w.group(2) or '', body) if sels else None
     if not any(CSS_KEEP.match(s.strip()) for s in pre.split(',')):
         return None
-    if body.startswith('--tone-'):                         # тона стекла: из общего списка — только нужное странице
+    if body.startswith('--tone-'):                         # тона кнопок: из общего списка — только нужное странице
         return ','.join(s for s in pre.split(',') if CSS_KEEP.match(s.strip())) + '{' + body
     return rule
 
@@ -1011,7 +1042,7 @@ def lang_page(html, lang):
   <section class="promo shell" aria-labelledby="promo-h">
     <div class="row-head"><h2 id="promo-h">%(promo_h2)s</h2></div>
     <div class="promo-grid">
-%(sub)s    </div>
+%(grill)s%(sub)s    </div>
   </section>
 
   <section class="story shell" id="about">
@@ -1057,6 +1088,7 @@ def lang_page(html, lang):
 %(social)s</section>
 
 <footer class="shell">
+  <div class="f-otzyv"><a class="btn ghost" href="%(otzyv)s" onclick="track('feedback_open')">%(footer_otzyv)s</a></div>
   <div class="f-row">
     <a href="%(home)s" aria-label="%(home_label)s">%(mono)s</a>
     <span>%(footer_tag)s</span>
@@ -1072,17 +1104,18 @@ def lang_page(html, lang):
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
                                'about_h2', 'about_p', 'features_h2', 'loc_h2', 'loc_p', 'contact_h2',
-                               'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
+                               'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_otzyv', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
-           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID), ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
+           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID) + VT_HEAD, ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           sub=sub_card(lang), icons=ICONS, motion=MOTION_JS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
+           grill=grill_card(html, lang), sub=sub_card(lang), icons=ICONS, motion=MOTION_JS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
+           otzyv=feedback_page.PATH + '#' + lang,          # «Для жалоб и предложений» — сразу на языке страницы
            social=social_row())
 
 
@@ -1094,6 +1127,7 @@ def kk_review(html):
     where = {'phrases': 'подстановки в тексты (часы, точки, «и»)', 'branch_note': 'карточка точки 05 на /kk/',
              'wa_book': 'текст сообщения WhatsApp из карточек кофеен /kk/', 'wa_togo': 'текст сообщения WhatsApp из карточки bakery to go /kk/',
              'page': 'страница /kk/', 'sub': 'карточка подписки в блоке «акция» на /kk/', 'faq': 'частые вопросы на /kk/ (и FAQPage в разметке)', 'menu_page': 'текстовое меню /kk/menyu',
+             'otzyv': 'страница %s (ҚАЗ): «Для жалоб и предложений»' % feedback_page.PATH,
              }
     rows = []
 
@@ -1111,6 +1145,7 @@ def kk_review(html):
     ui_kk = ui_dict(html, 'kk')
     for key in KK_REVIEW_UI:
         rows.append('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (key, ui_kk[key].replace('|', '\\|')))
+    rows += feedback_page.kk_review_rows()          # адрес новой точки на /otzyv/ — живёт в генераторе, не в pages_i18n.json
     fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
     for key, lab in facts()['labels'].items():
         rows.append('| `branch_facts.labels.%s` | %s | %s |' % (key, fw['labels'], lab['kk']))
@@ -1391,6 +1426,7 @@ SUB_JS = ("<script>(function(){var v=document.querySelector('.sub-video');if(!v|
           "function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}"
           "function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}"
           "if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
+GRILL_JS = SUB_JS.replace("'.sub-video'", "'.grill-video'")      # видео «Курицы гриль» на /kk/ и /en/ — тот же загрузчик
 
 
 def sub_card(lang):
@@ -1413,6 +1449,24 @@ def sub_card(lang):
             % (V['poster'], V['w'], V['h'], V['webm'], V['mp4'], e(S['title']), line, SUB_JS))
 
 
+GRILL_RE = re.compile(r'\n      <a class="promo-tile grill-promo" [^>]*>\n(.*?)\n      </a>\n', re.S)
+
+
+def grill_card(html, lang):
+    """плитка «Курица гриль» для /kk/ и /en/ — та же, что на главной (пламя, видео, цена; текста нет — от языка не зависит):
+    ссылка на меню главной сразу на «Блюда на гриле» и на языке страницы (/#menu-grill-kk), имя для экранного диктора —
+    название из MENU_TR, цена и «смотреть меню» страницы; видео — по видимости, как у плитки подписки"""
+    m = GRILL_RE.search(html)
+    if not m:
+        sys.exit('seo_jsonld: на главной нет плитки <a class="promo-tile grill-promo"> — поправьте grill_card()')
+    it = next((x for sec in sections(html, 'MENU_KITCHEN') for x in sec['items'] if x['n'] == 'Курица гриль'), None)
+    if not it:
+        sys.exit('seo_jsonld: в MENU_KITCHEN нет «Курица гриль» — плитку акции на /kk/ и /en/ не собрать')
+    label = '%s, %s ₸ — %s' % (tr_dict(html, lang)['Курица гриль'], fmt_p(it['p']).replace('\u00a0', ' '), i18n()[lang]['page']['menu'])
+    return ('    <a class="promo-tile grill-promo" href="/%s-%s" onclick="track(\'cta_grill\')" aria-label="%s">\n%s\n    </a>\n%s\n'
+            % (GRILL_HASH, lang, H.escape(label), root_paths(m.group(1)), GRILL_JS))
+
+
 def with_sub(html):
     m = SUB_RE.search(html)
     if not m:
@@ -1430,7 +1484,7 @@ def with_sub(html):
 # reduced-motion или нет IntersectionObserver — ничего не делает; без JS всё видно (класс скрытия ставит только скрипт).
 MOTION_MARK = '<!-- движение: появление при прокрутке, параллакс — собирает tools/seo_jsonld.py, руками не править -->'
 MOTION_RE = re.compile(re.escape(MOTION_MARK) + r'\n.*?<!-- /движение -->\n', re.S)
-MOTION_SEL = '.promo-tile,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
+MOTION_SEL = '.promo,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
 MOTION_JS = ("<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
              "if(!('IntersectionObserver'in window))return;var d=document,SEL='" + MOTION_SEL + "';"
              "function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){"
@@ -1470,7 +1524,8 @@ def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
     page = with_analytics(with_hreflang(with_jsonld(with_loc(with_motion(with_social(with_icons(with_sub(with_faq(html)))))))))
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
-           NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS)}
+           NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS),
+           feedback_page.FILE: feedback_page.page(page)}         # /otzyv: филиалы из BRANCHES + новая точка, кнопки главной
     for lang in LANGS:
         out[os.path.join(ROOT, PAGES[MENU[lang]])] = menu_page(page, lang)
         if lang != 'ru':

@@ -2,7 +2,7 @@
  * картинки и шрифты — из кэша.
  *
  * ПРАВИЛА ПО ПУТЯМ (важно для всех терминалов — menu/ и img/menu/ обновляются без смены имён файлов):
- *   любая навигация (/, /kk/, /en/, /menyu, /ugolok, 404), ./  *.html  *.json (menu/cards.json)  manifest.webmanifest
+ *   любая навигация (/, /kk/, /en/, /menyu, /ugolok, /otzyv, 404), ./  *.html  *.json (menu/cards.json)  manifest.webmanifest
  *                                      — network-first с тайм-аутом NET_TIMEOUT: сначала сеть, свежий ответ — в кэш
  *                                        оболочки; сеть молчит дольше NET_TIMEOUT или её нет — из кэша (офлайн
  *                                        работает), страницы нет в кэше — главная из кэша; ответы не 2xx не кэшируются.
@@ -23,7 +23,7 @@
  * tests/test_perf.py предупреждает, если забыли). Новый SW ставится сразу (skipWaiting), при активации
  * удаляет старые dc-shell-* и dc-rt-*; кэш картинок между версиями страницы переживает.
  */
-var VERSION = 'b7432b8a28';
+var VERSION = '6113aabbc7';
 var SHELL = 'dc-shell-' + VERSION;
 var RT = 'dc-rt-v1';
 var PRECACHE = [

@@ -42,6 +42,68 @@ def root_vars(html):
     return dict(re.findall(r'(--[\w-]+):\s*([^;]+?)\s*;', re.search(r':root\{(.*?)\}', style(html), re.S).group(1)))
 
 
+def css_flat(html):
+    """<style> страницы без комментариев и переводов строк (для разбора правил)"""
+    css = html[html.index('<style>') + 7:html.index('</style>')]
+    return re.sub(r'\s*\n\s*', '', re.sub(r'/\*.*?\*/', '', css, flags=re.S))
+
+
+def split_vals(v):
+    """значения сокращения по пробелам, не разрывая calc(…) и env(…)"""
+    out, depth, cur = [], 0, ''
+    for ch in v.strip():
+        depth += (ch == '(') - (ch == ')')
+        if ch == ' ' and not depth:
+            out, cur = (out + [cur]) if cur else out, ''
+        else:
+            cur += ch
+    return out + [cur] if cur else out
+
+
+def cascade(css, tag, classes, width):
+    """итоговые padding-*/margin-* у элемента <tag class="classes"> (сам по себе, без предков и состояний) при ширине окна
+    width: правила верхнего уровня и @media с max-/min-width, победитель — по специфичности, затем по порядку в файле;
+    сокращения padding/margin/padding-block раскладываются по сторонам. Так видно, что .shell перебивает footer{…}"""
+    sides = ('top', 'right', 'bottom', 'left')
+
+    def walk(css, ok=True):
+        for r in seo.css_rules(css):
+            pre, body = r.split('{', 1)
+            pre = pre.strip()
+            if pre.startswith('@media'):
+                conds = re.findall(r'\(([^)]*)\)', pre)
+                fits = bool(conds) and 'print' not in pre and all(re.match(r'(max|min)-width:\d+px$', c) for c in conds) and all(
+                    (width <= int(c.split(':')[1][:-2])) if c.startswith('max') else (width >= int(c.split(':')[1][:-2])) for c in conds)
+                yield from walk(body[:-1], ok and fits)
+            elif not pre.startswith('@') and ok:
+                yield pre, body[:-1]
+
+    hits = []
+    for i, (pre, body) in enumerate(walk(css)):
+        for sel in (x.strip() for x in pre.split(',')):
+            m = re.match(r'^(\*|[a-z][a-z0-9]*)?((?:\.[\w-]+)*)$', sel)
+            if not m or not sel:
+                continue
+            t, cls = m.group(1), [c for c in m.group(2).split('.') if c]
+            if t not in (None, '*', tag) or not set(cls) <= set(classes):
+                continue
+            hits.append(((len(cls), int(t not in (None, '*'))), i, body))
+    got = {}
+    for _, _, body in sorted(hits, key=lambda h: (h[0], h[1])):
+        for decl in filter(None, body.split(';')):
+            prop, val = (x.strip() for x in decl.split(':', 1))
+            if prop in ('padding', 'margin'):
+                v = split_vals(val)
+                v = {1: v * 4, 2: v * 2, 3: v + v[1:2], 4: v}[len(v)]
+                got.update({'%s-%s' % (prop, side): x for side, x in zip(sides, v)})
+            elif prop == 'padding-block':
+                v = split_vals(val)
+                got.update({'padding-top': v[0], 'padding-bottom': v[-1]})
+            elif re.match(r'(padding|margin)-(top|right|bottom|left)$', prop):
+                got[prop] = val
+    return got
+
+
 def find_node():
     ver = lambda p: [int(x) for x in re.findall(r'\d+', p.split('/node/')[-1].split('/')[0])]
     return shutil.which('node') or (sorted(glob.glob(os.path.expanduser('~/.nvm/versions/node/*/bin/node')), key=ver) or [None])[-1]
@@ -330,18 +392,18 @@ class TestPage(unittest.TestCase):
 
     def test_promo_tiles(self):
         """акции (владелец 31.10): две плитки делят ширину контейнера пополам с зазором колонок hero, без серых подложек;
-        «Курица гриль» — сама огненная рамка, подпись (название, цена, адреса, кнопка-пилюля) внутри окна с видео внизу на
-        затемнении; подписка — та же форма 910×620 на фирменном зелёном. Ширины по CSS: 2000 и 1280 → (1112 − 32) / 2 = 540;
+        «Курица гриль» — сама огненная рамка, в окне видео и одна цена (11.11: подписи нет), плитка — ссылка на меню, с 11.11 и
+        на /kk/, /en/; подписка — та же форма 910×620 на фирменном зелёном. Ширины по CSS: 2000 и 1280 → (1112 − 32) / 2 = 540;
         ≤ 900 (как hero) — одна под другой: 768 → 720, 360 → 328"""
         for l, html in self.pages.items():
             promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
             self.assertIn('<div class="row-head"><h2 id="promo-h">%s</h2></div>' % self.i18n[l]['sub']['h2'], promo, '%s: «акции» — множественное' % l)
             self.assertNotIn('promo-card', promo)
             self.assertIn('<div class="promo-tile sub-tile">', promo)
+            self.assertEqual(re.findall(r'\n\s*<(?:div|a) class="promo-tile ([\w-]+)"', promo), ['grill-promo', 'sub-tile'], l)
         self.assertEqual([self.i18n[l]['sub']['h2'] for l in ('ru', 'kk', 'en')], ['акции', 'акциялар', 'offers'])
         html = self.pages['ru']
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
-        self.assertEqual(re.findall(r'\n\s*<div class="promo-tile ([\w-]+)"', promo), ['grill-promo', 'sub-tile'])
         css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
         rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
         hero = rule('.hero')
@@ -352,18 +414,11 @@ class TestPage(unittest.TestCase):
         self.assertIn('aspect-ratio:910/620', rule('.grill-frame'))
         self.assertNotRegex(rule('.promo-tile'), r'background|padding', 'у плитки нет подложки — огненная рамка и есть плитка')
         self.assertIn('background:var(--c-accent)', rule('.sub-tile'))
-        cap = rule('.grill-cap')
-        self.assertIn('position:absolute', cap)
-        self.assertIn('bottom:0', cap)
-        self.assertIn('linear-gradient(to top', cap, 'затемнение для читаемости')
-        # 1.11 (владелец): «смотреть в меню» — простая светлая ссылка, без плашки; подпись — по центру у низа окна
-        link = rule('.promo-a')
-        self.assertNotRegex(link, r'background|border-radius', 'ссылка без плашки-пилюли')
-        self.assertIn('text-decoration:underline', link)
-        self.assertIn('color:#FFFFFF', link)
-        self.assertIn('text-align:center', cap)
-        self.assertIn('align-items:center', cap)
-        self.assertIn('bottom:0', cap)
+        self.assertNotIn('.grill-cap', css, '11.11: подписи на видео нет — только цена')
+        price = rule('.grill-price')
+        for need in ('position:absolute', 'left:4%', 'bottom:6%', 'background:#FFE500', 'white-space:nowrap'):
+            self.assertIn(need, price, 'метка цены — компактная, сплошная, в углу окна')
+        self.assertIn('cursor:pointer', rule('.grill-promo'))
         # пламя целиком (с языками) — во весь бокс SVG 910×620, рамка = плитка: края, верх и низ — как у плитки подписки
         sys.path.insert(0, os.path.join(ROOT, 'tools'))
         import flame_frame as ff
@@ -381,25 +436,137 @@ class TestPage(unittest.TestCase):
         mid = re.search(r'@media\(max-width:900px\)\{(.*?)\}\}', css, re.S).group(1)
         self.assertIn('.promo-grid{grid-template-columns:1fr', mid, 'на телефоне и планшете — одна под другой, как hero')
 
-    def test_grill_text_inside_fire_frame(self):
+    def test_grill_tile_price_only_and_link(self):
+        """владелец 11.11: «полупрозрачная рамка и текст занимают слишком много места курицы — лучше без неё, оставить только
+        цену; само видео кликабельное». В окне огня — видео и метка цены, подписи нет; вся плитка — ссылка: на главной открывает
+        меню на «Блюда на гриле» (openGrill, событие cta_grill), на /kk/ и /en/ — меню главной на своём языке сразу на гриле;
+        имя для экранного диктора — название и цена; фокус с клавиатуры — у ссылки. «Курица гриль» — во всех кофейнях (11.11)"""
+        hash_re = re.search(r'const MENU_HASH=/(.*?)/;', self.pages['ru']).group(1)
+        labels = {'ru': 'Курица гриль за 3990 ₸ вместо 6000 ₸ — смотреть в меню', 'kk': 'Грильдегі тауық, 3 990 ₸ — Мәзірді қарау',
+                  'en': 'Grilled chicken, 3 990 ₸ — See the menu'}
+        for l, html in self.pages.items():
+            tile = re.search(r'\n *<a class="promo-tile grill-promo" ([^>]*)>\n(.*?)\n *</a>\n', html, re.S)
+            self.assertIsNotNone(tile, '%s: плитка «Курицы гриль» — ссылка' % l)
+            attrs, body = dict(re.findall(r'([\w-]+)="([^"]*)"', tile.group(1))), tile.group(2)
+            self.assertEqual(attrs['aria-label'], labels[l], l)
+            self.assertRegex(attrs['href'].lstrip('/'), hash_re, '%s: ссылка проходит через MENU_HASH главной' % l)
+            self.assertIn('-grill', attrs['href'], l)
+            self.assertIn("track('cta_grill')" if l != 'ru' else 'openGrill()', attrs['onclick'], l)
+            self.assertNotRegex(body, r'<(?:a|button|input)\b|tabindex="0"', '%s: внутри ссылки нет других элементов управления' % l)
+            self.assertNotRegex(body, r'grill-cap|promo-t|promo-s|Толе Би|Серкебаева|Tole Bi|смотреть в меню', '%s: подписи на видео нет' % l)
+            self.assertEqual(re.findall(r'<span class="grill-price" aria-hidden="true">(.*?)</span>\n', body),
+                             ['<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>'], l)
+            self.assertIn('<video class="grill-video"', body)
+            self.assertNotIn('grill-ticker', body, 'бегущая строка — не в огне')
+        self.assertEqual(re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['kk'], re.S).group(1).replace('"/assets/', '"assets/'),
+                         re.search(r'\n *<a class="promo-tile grill-promo" [^>]*>\n(.*?)\n *</a>', self.pages['ru'], re.S).group(1), 'на /kk/ — та же плитка, что на главной')
+        # строка «ВНИМАНИЕ» — полосой под обеими плитками на всю ширину контейнера и только на главной (текст русский)
         html = self.pages['ru']
-        i = html.index('<div class="grill-win">')
-        win_end = html.index('\n          </div>\n        </div>\n      </div>', i)
-        win = html[i:win_end]
-        cap = re.search(r'<p class="grill-cap">(.*?)</p>', win, re.S)
-        self.assertIsNotNone(cap, 'подпись — внутри окна огненной рамки')
-        for need in ('<b class="promo-t">Курица гриль</b>', '<s>6000</s>&nbsp;<span class="sale">3990&nbsp;₸</span>', 'Толе Би, 64', 'Серкебаева, 146',
-                     '<a class="promo-a" href="#menu"', 'смотреть в меню'):
-            self.assertIn(need, cap.group(1))
-        self.assertNotIn('grill-ticker', win, 'бегущая строка — не в огне')
-        # строка — полосой под обеими плитками на всю ширину контейнера, только там, где есть «Курица гриль»
         promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
         self.assertRegex(promo, r'</div>\n    <div class="promo-run" onclick="openGrill\(\)"><div class="grill-ticker" aria-hidden="true">')
         self.assertGreater(promo.index('class="promo-run"'), promo.index('<!-- /подписка -->'))
         for l in ('kk', 'en'):
             self.assertNotIn('grill-ticker', self.pages[l])
-        css = style(html)
-        self.assertIn('@media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}', css)
+        self.assertIn('@media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}', style(html))
+        # во всех кофейнях: у позиции нет only, в разметке — нет availableAtOrFrom, в текстовых меню — нет «только: …»
+        self.assertRegex(html, r"\{n:'Курица гриль', p:3990, old:6000, m:\['new'\]\}")
+        ld = json.loads(re.search(r'<script type="application/ld\+json">\n(.*?)\n</script>', html, re.S).group(1))
+        menu = next(n for n in ld['@graph'] if n.get('@id', '').endswith('#menu'))
+        it = [i for s in menu['hasMenuSection'] for i in s['hasMenuItem'] if i['name'] == 'Курица гриль']
+        self.assertEqual(len(it), 1)
+        self.assertNotIn('availableAtOrFrom', json.dumps(it[0]), 'курица — во всех кофейнях')
+        for path, name in (('menyu/index.html', 'Курица гриль'), ('kk/menyu/index.html', 'Грильдегі тауық'), ('en/menu/index.html', 'Grilled chicken')):
+            row = re.search(r'<li><span class="n">%s\b(.*?)</li>' % re.escape(name), read(path)).group(1)
+            self.assertNotRegex(row, r'(?i)только|тек мына|only at|<em>', '%s: у курицы нет «только: …»' % path)
+
+    def test_attention_strip_flush_to_tiles(self):
+        """владелец 11.11: полосу «ВНИМАНИЕ» — «прям на низ рамок с видео»: сразу после ряда плиток, зазор 0 по каскаду на
+        компьютере, планшете и телефоне (там плитки друг под другом — полоса у низа ряда), ширина — как у ряда (тот же контейнер);
+        нижние углы обеих плиток прямые (пламя — прямой низ во всю ширину, подписка — скругление только сверху), скругление внизу
+        у полосы; при прокрутке блок акций появляется целиком (плитки и полоса не разъезжаются). На /kk/ и /en/ полосы нет"""
+        html = self.pages['ru']
+        css = css_flat(html)
+        promo = re.search(r'<section class="promo shell"[^>]*>(.*?)</section>', html, re.S).group(1)
+        self.assertRegex(promo, r'\n    </div>\n    <div class="promo-run" ', 'полоса — следующий элемент сразу за рядом плиток')
+        for w in (1200, 768, 375):
+            self.assertEqual(cascade(css, 'div', ['promo-run'], w).get('margin-top'), '0', '%d px: над полосой зазора нет' % w)
+            grid = cascade(css, 'div', ['promo-grid'], w)
+            self.assertEqual((grid.get('margin-bottom'), grid.get('padding-bottom')), ('0', '0'), '%d px: под рядом плиток' % w)
+            for tag, cls in (('a', ['promo-tile', 'grill-promo']), ('div', ['promo-tile', 'sub-tile'])):
+                self.assertEqual(cascade(css, tag, cls, w).get('margin-bottom'), '0', '%d px: %s' % (w, cls[1]))
+        rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
+        self.assertIn('border-radius:var(--r-lg) var(--r-lg) 0 0', rule('.sub-tile'))
+        self.assertIn('border-radius:0 0 var(--r-lg) var(--r-lg)', rule('.promo-run'))
+        outer = re.search(r'<path class="grill-fire-outer" fill="[^"]+" d="([^"]+)"', html).group(1)
+        self.assertTrue(outer.startswith('M0 620 L910 620 '), 'низ пламени — прямая во всю ширину бокса: %s' % outer[:40])
+        self.assertIn('.promo,', seo.MOTION_SEL)
+        self.assertNotIn('.promo-tile', seo.MOTION_SEL, 'плитки не въезжают отдельно от полосы')
+        for l in ('kk', 'en'):
+            self.assertNotIn('promo-run', self.pages[l])
+
+    def test_branches_large(self):
+        """владелец 11.11 (окно выбора филиала): «очень скромно написано, очень мелко — надо крупно всё сделать, эти филиалы»:
+        название 22, адрес 17–18, примечания 15, круглые кнопки 56 со значком 26, «Меню» той же высоты; то же у карточек точек
+        главной (/kk/, /en/) и /otzyv; касание ≥ 44, текст — тёмный или приглушённый на белом (≥ 4,5:1)"""
+        sizes = lambda css, sel: dict(re.findall(r'(font-size|width|height|min-height):([^;}]+)', re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)))
+        css = css_flat(self.pages['ru'])
+        want = {'.sheet h3': {'font-size': 'var(--fs-heading)'}, '.sheet .tag': {'font-size': 'var(--fs-body)'}, '.sheet .status': {'font-size': '15px'},
+                '.branch-row .bn small': {'font-size': 'var(--fs-title)'}, '.branch-row .bn b': {'font-size': '17px'},
+                '.branch-row .bn .hrs': {'font-size': '15px'}, '.branch-row .dist': {'font-size': '15px'},
+                '.loc-card .ib,.branch-row .ib': {'width': '56px', 'height': '56px'}, '.loc-card .ic,.branch-row .ic': {'width': '26px', 'height': '26px'},
+                '.loc-card .pill,.branch-row .pill': {'min-height': '56px', 'font-size': 'var(--fs-body)'}}
+        for l, html in self.pages.items():
+            c = css_flat(html)
+            loc = {'.loc-card small': {'font-size': 'var(--fs-title)'}, '.loc-card h3': {'font-size': '18px'}, '.loc-meta': {'font-size': '15px'},
+                   '.loc-about': {'font-size': '15px'}, '.loc-amen': {'font-size': 'var(--fs-small)'}}
+            for sel, need in dict(loc, **(want if l == 'ru' else {k: v for k, v in want.items() if k.startswith('.loc-card')})).items():
+                got = sizes(c, sel)
+                for k, v in need.items():
+                    self.assertEqual(got.get(k), v, '%s: %s %s' % (l, sel, k))
+        v = root_vars(self.pages['ru'])
+        self.assertEqual((v['--fs-title'], v['--fs-heading'], v['--fs-body']), ('22px', '28px', '16px'))
+        oz = css_flat(read('otzyv/index.html'))
+        for sel, need in {'.fb-card h2': {'font-size': '22px'}, '.fb-addr': {'font-size': '18px'}, '.fb-phone': {'font-size': '15px'},
+                          '.fb-btn': {'min-height': '56px', 'font-size': '17px'}, '.fb-btn .ic': {'width': '22px', 'height': '22px'}}.items():
+            got = sizes(oz, sel)
+            for k, val in need.items():
+                self.assertEqual(got.get(k), val, '/otzyv: %s %s' % (sel, k))
+        # текст карточек — --c-text / --c-muted / --c-accent на белом: ≥ 4,5:1
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import test_polish_main as pm
+        for tok in ('--c-text', '--c-muted', '--c-accent'):
+            self.assertGreaterEqual(pm.contrast(pm.hexrgb(v[tok]), pm.hexrgb(v['--c-bg'])), 4.5, tok)
+
+    def test_grill_deep_link_in_node(self):
+        """плитка на /kk/ и /en/ ведёт на /#menu-grill-kk|-en: меню главной открывается на этом языке сразу на «Блюда на гриле»
+        (раздел ищется по русскому ключу s.t в данных, перевод — только при показе); событие cta_grill — один раз, при нажатии
+        на плитку, а не при переходе по ссылке. Скрипты главной целиком, на заглушке DOM из tests/test_polish_main.py"""
+        node = find_node()
+        if not node:
+            self.skipTest('нет node')
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))     # заглушка DOM — из соседнего теста, как бы ни запускали
+        import test_polish_main as pm
+        harness = pm.FOCUS_HARNESS.split('ctx.window = ctx;')[0]
+        harness = harness.replace('requestAnimationFrame: () => 0', 'requestAnimationFrame: f => (f(), 0)')
+        harness = harness.replace("location: { hash: '', pathname: '/', search: '' }", "location: { hash: process.argv[3], pathname: '/', search: '' }")
+        harness += """ctx.window = ctx; vm.createContext(ctx); scripts.forEach(s => vm.runInContext(s, ctx));
+const R = c => vm.runInContext(c, ctx);
+const ev = R('dataLayer').map(a => [...a]).filter(a => a[0] === 'event');
+console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classList.contains('open'), tab: R('menuTab'), cat: R('menuCat'),
+  grill: R("MENU_KITCHEN.findIndex(s=>s.t==='Блюда на гриле')"), events: ev.map(e => e[1])}));
+"""
+        with tempfile.TemporaryDirectory() as d:
+            h = os.path.join(d, 'g.js')
+            with open(h, 'w', encoding='utf-8') as f:
+                f.write(harness)
+            for hsh, lang in (('#menu-grill-kk', 'kk'), ('#menu-grill-en', 'en'), ('#menu-grill', 'ru')):
+                r = subprocess.run([node, h, os.path.join(ROOT, 'index.html'), hsh], capture_output=True, text=True, timeout=60)
+                self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+                got = json.loads(r.stdout.strip().splitlines()[-1])
+                self.assertEqual((got['lang'], got['open'], got['tab']), (lang, True, 'kitchen'), hsh)
+                self.assertGreaterEqual(got['grill'], 0)
+                self.assertEqual(got['cat'], got['grill'], '%s: меню — на «Блюда на гриле»' % hsh)
+                self.assertNotIn('cta_grill', got['events'], '%s: переход по ссылке — не нажатие на плитку' % hsh)
 
     def test_no_247_and_numbers_in_cards_and_modal(self):
         for l, html in self.pages.items():
@@ -415,7 +582,8 @@ class TestPage(unittest.TestCase):
         css = style(self.pages['ru'])
         self.assertIn('background:var(--c-bg)', re.search(r'\.locations\{([^}]*)\}', css).group(1), 'фон секции — белый')
         card = re.search(r'\.loc-card\{([^}]*)\}', css).group(1)
-        self.assertIn('box-shadow:var(--shadow-floating)', card)
+        self.assertIn('border:1px solid var(--c-border)', card, '11.11: плоско — рамка вместо тени')
+        self.assertNotIn('box-shadow', card)
         self.assertIn('text-align:center', card)
         self.assertIn('justify-content:center', re.search(r'\.loc-links\{([^}]*)\}', css).group(1))
         draw = re.search(r'function draw\(arr,showDist\)\{(.*?)\n  \}\n', self.pages['ru'], re.S).group(1)
@@ -429,9 +597,9 @@ class TestPage(unittest.TestCase):
         css = style(self.pages['ru'])
         self.assertEqual(root_vars(self.pages['ru'])['--c-whatsapp'], '#25D366', 'цвет WhatsApp — фирменный (владелец 31.10; 09.11 вернул после пробы #128C7E)')
         for l, html in self.pages.items():
-            # 2.11: стекло в цвете WhatsApp (тон --glass-wa-*, основа = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
+            # 11.11: плоская заливка в цвете WhatsApp (тон --btn-wa = --c-whatsapp, сверяет tests/test_glass.py), логотип белый
             wa = re.search(r'(?:^|\})\.ib\.wa\{([^}]*)\}', style(html)).group(1)
-            self.assertTrue(wa.startswith('--tone-rgb:var(--glass-wa-rgb);') and wa.endswith('color:#FFFFFF'), l)
+            self.assertTrue(wa.startswith('--tone-bg:var(--btn-wa);') and wa.endswith('color:#FFFFFF'), l)
             self.assertNotRegex(html, r'class="btn[^"]*"[^>]*>WhatsApp<', '%s: текстовых кнопок WhatsApp нет' % l)
 
     def test_contacts_social_icons(self):
@@ -489,25 +657,66 @@ class TestPage(unittest.TestCase):
                 self.assertIn(need, mob, l)
         self.assertEqual(root_vars(self.pages['ru'])['--fs-heading'], '28px')
 
-    def test_fab_menu_glass_pill(self):
-        """плавающая «меню» на телефоне (решение владельца 02.11): зелёное стекло, как главная кнопка (токены --glass-*), основа photo —
-        плавает над любым содержимым; текст белый, высота 44 = smallHeight, длиннее (≥ 160); без backdrop-filter и прежнего @supports"""
+    def test_fab_menu_right_corner(self):
+        """плавающая «меню» на телефоне: зелёная таблетка (02.11), плоская (11.11; тон — из общего слоя кнопок, tests/test_glass.py),
+        справа внизу (владелец 11.11: «повесим справа»): 16 от правого и нижнего края плюс вырез экрана (safe-area), без прежней
+        центровки left:50% и сдвига; текст белый, высота 44, длиннее (≥ 160). Не перекрывает: прочее с position:fixed — окна
+        и подсказка меню поверх неё (z-index выше), а подвал на телефоне снизу оставляет под ней место"""
         for l, html in self.pages.items():
             css = re.sub(r'/\*.*?\*/', '', style(html), flags=re.S)
             fab = re.search(r'(?:^|\})\.fab-menu\{([^}]*)\}', css).group(1)
-            self.assertIn('height:var(--h-glass-small)', fab, l)
-            self.assertEqual(root_vars(html)['--h-glass-small'], '44px', l)
+            self.assertIn('height:var(--h-btn-sm)', fab, l)
+            self.assertEqual(root_vars(html)['--h-btn-sm'], '44px', l)
             self.assertGreaterEqual(int(re.search(r'min-width:(\d+)px', fab).group(1)), 160)
-            for need in ('left:50%', 'transform:translateX(-50%)', 'env(safe-area-inset-bottom)', 'font-weight:700', 'font-size:16px',
-                         '--tone-a:var(--glass-base-photo);--tone-ap:var(--glass-pressed-photo)'):
+            for need in ('position:fixed', 'right:calc(var(--s-16) + env(safe-area-inset-right))',
+                         'bottom:calc(var(--s-16) + env(safe-area-inset-bottom))', 'font-weight:700', 'font-size:16px'):
                 self.assertIn(need, fab, l)
+            self.assertNotRegex(fab, r'(?:^|;)(?:left|transform|--tone-)', '%s: без центровки, сдвига и своего тона' % l)
+            z = int(re.search(r'z-index:(\d+)', fab).group(1))
+            others = [(sel, body) for sel, body in re.findall(r'([^{}]+)\{([^{}]*position:fixed[^{}]*)\}', css) if '.fab-menu' not in sel]
+            self.assertTrue(others or l != 'ru', l)
+            for sel, body in others:
+                self.assertGreater(int(re.search(r'z-index:(\d+)', body).group(1)), z, '%s: %s — закреплено и не поверх «меню»' % (l, sel))
+            mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css))
+            self.assertIn('.fab-menu{display:inline-flex}', mob, l)
+            # итоговый нижний отступ подвала на телефоне — по каскаду (footer class="shell": .shell перебивал footer{…}, 11.11)
+            bottom = cascade(css_flat(html), 'footer', ['shell'], 375)['padding-bottom']
+            room = int(re.match(r'calc\((\d+)px \+ env\(safe-area-inset-bottom\)\)$', bottom).group(1))
+            self.assertGreaterEqual(room, 16 + 44 + 8, '%s: последние строки подвала — над «меню», не под ней' % l)
             shared = re.search(r'(?:^|\})\.btn,\.fab-menu\{([^}]*)\}', css).group(1)
             self.assertIn('color:var(--c-on-accent)', shared, 'текст белый')
             self.assertIn('font-family:var(--btn-font)', shared)
             self.assertNotIn('@supports', css, '%s: прежнего светлого матового стекла нет' % l)
-            self.assertNotRegex(css, r'rgba\(245,245,243', l)
             self.assertRegex(html, r'class="fab-menu"[^>]*onclick="track\(\'cta_menu\',\{src:\'hbar_m\'\}\)[^"]*"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>', l)
             self.assertIn('<symbol id="i-menu"', html, l)
+
+    def test_footer_spacing_survives_shell(self):
+        """подвал — <footer class="shell"> (на /ugolok и /otzyv тоже, в текстовых меню — class="wrap"): padding:0 … у .shell и .wrap
+        по специфичности сильнее footer{…}, и отступы подвала пропадали — кнопка «Для жалоб и предложений» прилипала к линии
+        (владелец 11.11: «чуть отсоедини от полосы»), а 88 px под «меню» на телефоне не применялись. Проверка — по итоговому
+        каскаду на ширине компьютера и телефона, не по тексту правила; горизонтальные поля .shell / .wrap не тронуты"""
+        want = {   # страница: (классы подвала, {ширина: ожидаемые стороны})
+            'index.html': (['shell'], {1200: {'padding-top': 'var(--s-24)', 'padding-bottom': 'var(--s-24)', 'padding-left': 'var(--s-24)', 'padding-right': 'var(--s-24)'},
+                                       375: {'padding-top': 'var(--s-24)', 'padding-bottom': 'calc(88px + env(safe-area-inset-bottom))',
+                                             'padding-left': 'var(--s-16)', 'padding-right': 'var(--s-16)'}}),
+            'ugolok/index.html': (['shell'], {w: {'padding-top': '24px', 'padding-bottom': '40px', 'margin-top': '20px', 'padding-left': x, 'padding-right': x}
+                                              for w, x in ((1200, '24px'), (375, '16px'))}),
+            'otzyv/index.html': (['shell'], {w: {'padding-top': '24px', 'padding-bottom': '40px', 'margin-top': '8px', 'padding-left': x, 'padding-right': x}
+                                             for w, x in ((1200, '24px'), (375, '16px'))}),
+            'menyu/index.html': (['wrap'], {w: {'padding-top': '16px', 'margin-top': '40px', 'margin-bottom': '28px', 'margin-left': 'auto', 'padding-left': '16px'}
+                                            for w in (1200, 375)}),
+            '404.html': ([], {w: {'padding-top': '24px', 'padding-bottom': '24px'} for w in (1200, 375)}),
+        }
+        for twin, of in (('kk/index.html', 'index.html'), ('en/index.html', 'index.html'), ('kk/menyu/index.html', 'menyu/index.html'),
+                         ('en/menu/index.html', 'menyu/index.html')):
+            want[twin] = want[of]
+        for p, (cls, by_width) in want.items():
+            html = read(p)
+            self.assertIn('<footer%s>' % (' class="%s"' % ' '.join(cls) if cls else ''), html, p)
+            for w, sides in by_width.items():
+                got = cascade(css_flat(html), 'footer', cls, w)
+                for side, val in sides.items():
+                    self.assertEqual(got.get(side), val, '%s, %d px: %s подвала' % (p, w, side))
 
     def test_menu_overlay_in_node(self):
         """этап 2: оверлей меню на заглушке DOM — открыть, фото-превью у позиций с фото, вкладки, режим togo, язык kk/en,
@@ -645,11 +854,12 @@ R("switchMenuMode('cafe'); switchMenuLang('en'); menuSearch('cappuccino')"); out
 R("menuSearch('капучино')"); out.enRu = els['mm-cols'].innerHTML;
 R("switchMenuLang('kk'); menuSearch('нон')"); out.kkNone = els['mm-cols'].innerHTML;
 R("switchMenuLang('ru')");
-out.closed = R("closeSearch()"); out.tabsBack = els['mm-tabs'].innerHTML; out.catsBack = els['mm-cats'].hidden; out.feedBack = els['mm-cols'].innerHTML;
+out.closed = R("closeSearch()"); timers.splice(0).forEach(f => f());   // 11.11: вкладки возвращаются, когда поле ушло (таймер)
+out.tabsBack = els['mm-tabs'].innerHTML; out.catsBack = els['mm-cats'].hidden; out.feedBack = els['mm-cols'].innerHTML;
 R("openSearch(); menuSearch('капу')");
 els['menu-modal'].classList.contains = c => c === 'open';               // меню открыто — Esc сначала закрывает поиск
 els['mm-card'].hidden = true; els['mm-pop'].hidden = true;             // карточки и попапа «!» нет
-keyL.forEach(f => f({ key: 'Escape', stopPropagation() {} }));
+keyL.forEach(f => f({ key: 'Escape', stopPropagation() {} })); timers.splice(0).forEach(f => f());
 out.escTabs = els['mm-tabs'].innerHTML; out.escQ = R("menuQ");
 console.log(JSON.stringify(out));
 """
@@ -735,13 +945,13 @@ console.log(JSON.stringify(out));
             self.assertIn('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (k, v), review)
 
     def test_section_plates(self):
-        """владелец 1.11: каждый раздел меню — на мягкой подложке (чуть темнее белого, скругление 22, едва заметная тень),
+        """владелец 1.11: каждый раздел меню — на мягкой подложке (чуть темнее белого, скругление 22; тень убрана 11.11 — плоско),
         линии внутри тоньше и светлее; заголовок части — вне подложки; результаты поиска — одна подложка; текстовые меню — так же"""
         css = re.sub(r'/\*.*?\*/', '', style(self.pages['ru']), flags=re.S)
         sec = re.search(r'(?:^|\})\.mm-sec\{([^}]*)\}', css).group(1)
-        for need in ('break-inside:avoid', 'border-radius:var(--r-lg)', 'background:var(--c-surface)', 'box-shadow:0 2px 16px rgba(36,28,21,.04)',
-                     'padding:var(--s-24)', 'margin-bottom:var(--s-24)'):
+        for need in ('break-inside:avoid', 'border-radius:var(--r-lg)', 'background:var(--c-surface)', 'padding:var(--s-24)', 'margin-bottom:var(--s-24)'):
             self.assertIn(need, sec)
+        self.assertNotIn('box-shadow', sec)
         mob = ''.join(re.findall(r'@media\(max-width:680px\)\{(.*?)\}\}', css, re.S))
         self.assertIn('.mm-sec{margin-bottom:var(--s-16);padding:var(--s-16)}', mob)
         self.assertIn('border-bottom:1px solid rgba(36,28,21,.06)', re.search(r'(?:^|\})\.mm-it\{([^}]*)\}', css).group(1))
@@ -758,7 +968,7 @@ console.log(JSON.stringify(out));
             self.assertTrue(all('<ul>' in s_ for s_ in secs), path)
             self.assertEqual(sum(s_.count('<li>') for s_ in secs), page.count('<li>'), '%s: все строки — внутри подложек' % path)
             mcss = style(page)
-            self.assertIn('.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface);box-shadow:0 2px 16px rgba(36,28,21,.04)}', mcss)
+            self.assertIn('.sec{margin:16px 0;padding:16px 20px;border-radius:var(--r-lg);background:var(--c-surface)}', mcss)
             self.assertIn('li:last-child{border-bottom:0}', mcss)
 
     def test_motion_in_node(self):
@@ -830,8 +1040,8 @@ console.log(JSON.stringify(out));
         self.assertIn('.rv-fast.rv-in{transition-duration:.35s}', css)
         self.assertIn('@media(prefers-reduced-motion:reduce){.rv{opacity:1!important;transform:none!important}', css)
         hov = re.search(r'@media\(hover:hover\)\{(.*?)\}\}', css, re.S).group(1)
-        self.assertIn('transform:translateY(-4px)', hov)
-        self.assertIn('.ib:hover{transform:scale(1.05)', hov)
+        # 11.11 (владелец: «все плоским»): при наведении ни подъёма, ни тени, ни увеличения — только цвет кнопок
+        self.assertNotRegex(hov, r'transform|translate|scale|shadow')
         self.assertNotRegex(re.search(r'\.rv\.rv-in\{([^}]*)\}', css).group(1), r'(?:^|;)(?:top|margin|height|width):', 'только transform и opacity')
         for l, html in self.pages.items():
             self.assertEqual(html.count(seo.MOTION_JS), 1, l)
@@ -915,7 +1125,9 @@ console.log(JSON.stringify(out));
             for sym in ('i-ig', 'i-yt', 'i-th'):
                 self.assertIn('<symbol id="%s"' % sym, page)
             self.assertNotIn('<img class="mm-th"', page, 'без фото')
-            self.assertEqual(len(re.findall(r'<script\b', page)), 2, '%s: только аналитика (2), меню — текстом без JS' % l)
+            # 11.11: + запасной переход между страницами (там, где нет view transitions); меню — текстом без JS
+            self.assertEqual(len(re.findall(r'<script\b', page)), 3, '%s: аналитика (2) и переход между страницами' % l)
+            self.assertIn('<script>%s</script>' % seo.VT_JS, page, l)
             self.assertIn('<link rel="canonical"', page)
             self.assertEqual(len(re.findall(r'hreflang="(?:ru|kk|en|x-default)" href=', page)), 4)
             self.assertLessEqual(len(page.encode('utf-8')), 64 * 1024, '%s: лёгкая' % l)
@@ -950,8 +1162,8 @@ console.log(JSON.stringify(out));
         css = style(self.pages['ru'])
         ib = re.search(r'\}\.ib\{([^}]*)\}', css).group(1)
         self.assertIn('width:var(--h-touch);height:var(--h-touch)', ib, 'касание 48 px')
-        self.assertNotIn('background', ib, '2.11: светлое стекло — тоном (tests/test_glass.py), без плоской заливки')
-        self.assertRegex(css, r'\.ib\.route,[^{]*\{--tone-rgb:var\(--glass-rgb\);[^}]*color:var\(--c-on-accent\)\}', 'маршрут — зелёное стекло')
+        self.assertNotIn('background', ib, 'заливка — тоном из общего слоя кнопок (tests/test_glass.py), не своя')
+        self.assertRegex(css, r'\.ib\.route,[^{]*\{--tone-bg:var\(--btn-green\);[^}]*color:var\(--c-on-accent\)\}', 'маршрут — зелёный')
         lic = read('docs/LICENSES-media.md')
         for need in ('Lucide', 'ISC', 'Simple Icons', 'CC0', 'map-pin', 'phone', 'whatsapp'):
             self.assertIn(need, lic)
@@ -994,7 +1206,7 @@ console.log(JSON.stringify(out));
             self.assertNotRegex(html, r'(?i)lottie|brewing-coffee|sub-anim', '%s: от Lottie ничего не осталось' % l)
         css = style(self.pages['ru'])
         self.assertIn('.sub-video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover', css)
-        self.assertIn('linear-gradient(to top', re.search(r'\.tile-cap\{([^}]*)\}', css).group(1), 'затемнение под подписью')
+        self.assertIn('background:rgba(20,14,10,.75)', re.search(r'\.tile-cap\{([^}]*)\}', css).group(1), 'ровная плашка под подписью (11.11)')
         self.assertNotIn('latte-pour', re.search(r'PRECACHE\s*=\s*\[(.*?)\]', read('sw.js'), re.S).group(1))
         for gone in ('assets/lottie_light.23cd2c01.js', 'assets/brewing-coffee.df6fc172.json', 'assets/brewing-coffee-poster.b7411dfe.webp',
                      'assets/brewing-coffee.2e74c5d9.json', 'assets/brewing-coffee-poster.f762aef7.webp', 'tools/lottie_brand.py'):
@@ -1054,8 +1266,8 @@ console.log(JSON.stringify(out));
         self.assertNotRegex(html, r'mm-where|whereHTML|mm-mark|ME<br>NU|mm-logo|to_togo\}|to_cafe\}')
         self.assertIn("function openMenu(mode){", html, 'сигнатура openMenu(mode) — прежняя')
         css = style(html)
-        # 2.11: активная — зелёное стекло, текст белый; остальные — светлое стекло (тона и слои — tests/test_glass.py)
-        self.assertRegex(css, r'\}[^{}]*\.mm-tab\.on,\.mm-cat\.on,[^{]*\{--tone-rgb:var\(--glass-rgb\);[^}]*color:var\(--c-on-accent\)\}')
+        # 11.11: активная — зелёная, текст белый; остальные — светлые, плоские (тона и слои — tests/test_glass.py)
+        self.assertRegex(css, r'\}[^{}]*\.mm-tab\.on,\.mm-cat\.on,[^{]*\{--tone-bg:var\(--btn-green\);[^}]*color:var\(--c-on-accent\)\}')
         base = re.search(r'\}\.mm-tab,\.mm-cat\{([^}]*)\}', css).group(1)
         self.assertNotIn('background', base)
         self.assertNotRegex(base, r'width:\d', 'по ширине текста')

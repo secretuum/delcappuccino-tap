@@ -174,24 +174,27 @@ class TestPage(unittest.TestCase):
         self.assertIn('<p class="tag">кофейни в Алматы · coffee &amp; food</p>\n      <h1>', self.html)
 
     def test_menu_deep_link(self):
-        # /#menu, /#menu-togo и с языком в конце (/#menu-kk, /#menu-togo-en) — при загрузке и по hashchange
-        self.assertIn("const MENU_HASH=/^#menu(-togo)?(?:-(kk|ru|en))?$/;", self.html)
+        # /#menu, /#menu-togo, /#menu-grill и с языком в конце (/#menu-kk, /#menu-togo-en, /#menu-grill-kk) — при загрузке и по hashchange
+        self.assertIn("const MENU_HASH=/^#menu(-togo|-grill)?(?:-(kk|ru|en))?$/;", self.html)
         f = re.search(r'function menuFromHash\(\)\{(.*?)\n\}', self.html, re.S)
         self.assertIsNotNone(f)
         self.assertIn("openMenu(m[1]?'togo':undefined)", f.group(1))
+        self.assertIn("if(m[1]==='-grill'){ showGrill(); return; }", f.group(1), '«Курица гриль» с /kk/ и /en/ — меню сразу на гриле')
+        self.assertIn('function openGrill(){ track(\'cta_grill\'); showGrill(); }', self.html, 'событие — только при нажатии, не при переходе по ссылке')
         self.assertIn("localStorage.setItem('dc_menu_lang', m[2])", f.group(1))
         self.assertIn("menuFromHash(); addEventListener('hashchange',menuFromHash);", self.html)
 
     def test_canonical_and_sitemap(self):
         canon = {}
         for path in ('index.html', 'ugolok/index.html', 'menyu/index.html', 'kk/index.html', 'en/index.html',
-                     'kk/menyu/index.html', 'en/menu/index.html'):
+                     'kk/menyu/index.html', 'en/menu/index.html', 'otzyv/index.html'):
             links = re.findall(r'<link rel="canonical" href="([^"]+)">', read(path).split('</head>')[0])
             self.assertEqual(len(links), 1, path)
             canon[path] = links[0]
         self.assertEqual(canon, {'index.html': SITE, 'ugolok/index.html': SITE + 'ugolok', 'menyu/index.html': SITE + 'menyu',
                                  'kk/index.html': SITE + 'kk/', 'en/index.html': SITE + 'en/',
-                                 'kk/menyu/index.html': SITE + 'kk/menyu', 'en/menu/index.html': SITE + 'en/menu'})
+                                 'kk/menyu/index.html': SITE + 'kk/menyu', 'en/menu/index.html': SITE + 'en/menu',
+                                 'otzyv/index.html': SITE + 'otzyv'})     # «Для жалоб и предложений», 11.11.2026
         sm = read('sitemap.xml')
         urls = re.findall(r'<url>(.*?)</url>', sm, re.S)
         self.assertEqual(sorted(re.search(r'<loc>([^<]*)</loc>', u).group(1) for u in urls), sorted(canon.values()))
@@ -388,12 +391,14 @@ class TestMenuPage(unittest.TestCase):
             self.assertIn(tag, head)
         # JS только аналитика (как на /ugolok, тот же ID, что на главной); меню — текстом, без скриптов
         scripts = re.findall(r'<script>(.*?)</script>', self.page, re.S)
-        self.assertEqual(len(scripts), 2)
-        self.assertEqual(len(re.findall(r'<script\b', self.page)), 2, 'других скриптов на /menyu нет')
+        self.assertEqual(len(scripts), 3)
+        self.assertIn(seo.VT_JS, scripts, '11.11: запасной переход между страницами (без view transitions)')
+        self.assertEqual(len(re.findall(r'<script\b', self.page)), 3, 'других скриптов на /menyu нет')
         ga = re.search(r"gtag\('config','(G-[A-Z0-9]+)'\)", self.html.split('</head>')[0]).group(1)
         self.assertIn("gtag('config','%s')" % ga, scripts[0])
-        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[1])
-        self.assertIn("addEventListener('load'", scripts[1])
+        self.assertEqual(scripts[1], seo.VT_JS, 'в <head> — сразу за аналитикой')
+        self.assertIn('googletagmanager.com/gtag/js?id=%s' % ga, scripts[2])
+        self.assertIn("addEventListener('load'", scripts[2])
         self.assertNotRegex(self.page, r'(src|href)="(?!/|https://|#)', 'пути только от корня: /menyu отдаётся без слэша')
 
     def test_all_items_with_prices(self):
