@@ -19,11 +19,12 @@
  *                                        видео через SW ломают воспроизведение на iPhone; на страницах сайта их нет
  *
  * Кэши: 'dc-shell-<VERSION>' — оболочка (HTML, cards.json, manifest), 'dc-rt-vN' — картинки и шрифты.
- * VERSION — хэш index.html, его ставит tools/sw_version.py (запускать после правки index.html; тест
+ * VERSION — хэш index.html, его ставит tools/sw_version.py (он же вписывает в PRECACHE имена assets/home.*.js и
+ * assets/site.*.js — код главной; запускать после правки index.html и после tools/seo_jsonld.py; тест
  * tests/test_perf.py предупреждает, если забыли). Новый SW ставится сразу (skipWaiting), при активации
  * удаляет старые dc-shell-* и dc-rt-*; кэш картинок между версиями страницы переживает.
  */
-var VERSION = '915f67e48a';
+var VERSION = '479a2c647d';
 var SHELL = 'dc-shell-' + VERSION;
 var RT = 'dc-rt-v1';
 var PRECACHE = [
@@ -38,7 +39,11 @@ var PRECACHE = [
   'assets/moped-side.5c84289d.svg',
   'assets/logo-lockup-256.webp',
   'assets/logo-mono-192.webp',
-  'assets/halal-104.webp'
+  'assets/halal-104.webp',
+  // код главной и общий код /, /kk/, /en/ (вынесены из страниц 11.11.2026): в оболочке, чтобы меню офлайн работало, как
+  // когда код был встроен в index.html; имена вписывает tools/sw_version.py по тегам index.html
+  'assets/home.e29d45a4.js',
+  'assets/site.4337af88.js'
 ];
 var HASHED = new RegExp('\\.[0-9a-f]{8}\\.(woff2|webp|png|jpg|svg|js|css)$');
 var NET_TIMEOUT = 3000;   // мс: дольше ждать сеть для страницы не стоит — отдаём из кэша, свежее допишется в кэш в фоне

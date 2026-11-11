@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import seo_jsonld as seo  # noqa: E402
-from test_perf import find_node  # noqa: E402
+from test_perf import as_run, find_node  # noqa: E402
 
 # путь страницы → файл; у страниц с версиями по языкам есть <link rel=alternate hreflang>
 PAGES = {'/': 'index.html', '/kk/': 'kk/index.html', '/en/': 'en/index.html', '/menyu': 'menyu/index.html',
@@ -39,7 +39,7 @@ def page_data(path):
     head = html.split('</head>')[0]
     scripts = inline_scripts(html)
     if path == '/':
-        run = scripts                                              # главная — все скрипты: меню, глубокие ссылки
+        run = inline_scripts(as_run(html))                         # главная — все скрипты и код assets/home.*.js: меню, глубокие ссылки
     else:                                                          # остальные — аналитика (track), скрипт языка, заставка, язык страницы
         run = [s for s in scripts if 'function track(' in s or s == seo.LANG_JS or "classList.add('intro-on')" in s or 'const I18N' in s]
     return {'lang': re.search(r'<html lang="(\w+)"', html).group(1),

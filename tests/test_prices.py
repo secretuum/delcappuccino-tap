@@ -2,7 +2,10 @@
 (красное подчёркивание). Скидка на гриле 22.10.2026: «Курица гриль», «Рибай на кости», «Ти-бон стейк» — 3990;
 сырые «Рибай»/«Ти-бон» в «Мясо» и «Стейк лосося» владелец не менял.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
-import os, re, unittest
+import os, re, sys, unittest
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  главная с кодом из assets/{home,site}.<хэш>.js
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 INDEX = os.path.join(ROOT, 'index.html')
@@ -66,7 +69,7 @@ class TestSalePrices(unittest.TestCase):
                     self.assertGreater(it['old'], it['p'], '%s · %s' % (t, it['n']))
 
     def test_sale_class_rendered_and_red(self):
-        self.assertIn('<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>', self.html)
+        self.assertIn('<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>', as_run(self.html), 'код меню — tools/home.js')
         rule = re.search(r'^\.sale\{([^}]*)\}', self.html, re.M)
         self.assertIsNotNone(rule, 'нет правила .sale')
         self.assertIn('underline', rule.group(1))

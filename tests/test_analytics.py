@@ -7,6 +7,8 @@ import glob, json, os, re, shutil, subprocess, sys, tempfile, unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  страница с кодом из assets/{home,site}.<хэш>.js, как её исполняет браузер
 
 PAGES = ['index.html', 'ugolok/index.html', 'menyu/index.html', 'kk/index.html', 'en/index.html',
          'kk/menyu/index.html', 'en/menu/index.html', '404.html']
@@ -80,7 +82,7 @@ console.log(JSON.stringify(out));
 class TestAnalytics(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.pages = {p: read(p) for p in PAGES}
+        cls.pages = {p: as_run(read(p)) for p in PAGES}     # события в коде главной — в assets/home.<хэш>.js
 
     def test_one_block_in_head_everywhere(self):
         for p, html in self.pages.items():

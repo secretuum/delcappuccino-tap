@@ -6,6 +6,8 @@ import datetime, json, os, re, sys, unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  главная с кодом из assets/{home,site}.<хэш>.js
 
 SITE = 'https://tap.delcappuccino.kz/'
 
@@ -175,16 +177,17 @@ class TestPage(unittest.TestCase):
 
     def test_menu_deep_link(self):
         # /#menu, /#menu-togo, /#menu-grill и с языком в конце (/#menu-kk, /#menu-togo-en, /#menu-grill-kk) — при загрузке и по hashchange
-        self.assertIn("const MENU_HASH=/^#menu(-togo|-grill)?(?:-(kk|ru|en))?$/;", self.html)
-        f = re.search(r'function menuFromHash\(\)\{(.*?)\n\}', self.html, re.S)
+        html = as_run(self.html)          # код меню — assets/home.<хэш>.js (tools/home.js)
+        self.assertIn("const MENU_HASH=/^#menu(-togo|-grill)?(?:-(kk|ru|en))?$/;", html)
+        f = re.search(r'function menuFromHash\(\)\{(.*?)\n\}', html, re.S)
         self.assertIsNotNone(f)
         self.assertIn("openMenu(m[1]?'togo':undefined)", f.group(1))
         self.assertIn("if(m[1]==='-grill'){ showGrill(); return; }", f.group(1), '«Курица гриль» с /kk/ и /en/ — меню сразу на гриле')
-        self.assertIn('function openGrill(){ track(\'cta_grill\'); showGrill(); }', self.html, 'событие — только при нажатии, не при переходе по ссылке')
+        self.assertIn('function openGrill(){ track(\'cta_grill\'); showGrill(); }', html, 'событие — только при нажатии, не при переходе по ссылке')
         # 11.11: язык из адреса — общий выбор сайта (dcSave, seo.LANG_JS), а не отдельная память меню dc_menu_lang
         self.assertIn("if(m[2]) dcSave(menuLang=m[2]);", f.group(1))
-        self.assertNotIn('dc_menu_lang', self.html)
-        self.assertIn("menuFromHash(); addEventListener('hashchange',menuFromHash);", self.html)
+        self.assertNotIn('dc_menu_lang', html)
+        self.assertIn("menuFromHash(); addEventListener('hashchange',menuFromHash);", html)
 
     def test_canonical_and_sitemap(self):
         canon = {}

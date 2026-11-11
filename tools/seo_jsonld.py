@@ -45,6 +45,11 @@
 - Ближайшая точка — сверху (владелец 11.11.2026): общий файл assets/near.<хэш>.js из tools/near.js (там же подробно) —
   бывшие dist() и запрос геолокации окна выбора филиала плюс сортировка карточек #locations (/, /kk/, /en/) и /otzyv по
   близости; координаты точек — из BRANCHES и feedback_page.EXTRA_POINTS, в страницах — только <script src=… defer>.
+- Код — отдельными файлами с хэшем (11.11.2026, запас веса главной и /kk/ без подъёма пределов): код главной (меню, карточка
+  блюда, окно филиалов, поиск) — исходник tools/home.js → assets/home.<хэш>.js (данные меню и точек остаются в index.html);
+  общий код /, /kk/, /en/ (появление при прокрутке, параллакс, видео плиток, загрузка gtag.js после load) — из MOTION_JS,
+  SUB_JS, GRILL_JS, GA_LOADER ниже → assets/site.<хэш>.js. В страницах — <script src=… defer>; ранние скрипты <head> (аналитика
+  gtag/track, переход, язык, заставка) — встроенные, как были. Старые файлы с хэшем генератор не удаляет — --check их назовёт.
 Разбор не по шаблону (позиций меньше, чем {n:'…} в массиве; точка без адреса) — выход с ошибкой, а не тихий пропуск.
 lastmod в sitemap.xml: дата последнего коммита страницы, а если в ней есть незакоммиченные правки — сегодня.
 Только stdlib.
@@ -944,6 +949,19 @@ def intro_js(html):
     return m.group(0) + '\n'
 
 
+def light(page):
+    """/kk/ и /en/ облегчённые (11.11.2026, запас веса /kk/ ≥ 5 КБ — выноса кода не хватило: встроенного кода там было ~3,6 КБ):
+    в спрайте значков — только те, на которые ссылается сама страница (как css_subset для стилей; лупа и фото меню — только на
+    главной, кода, который рисует значки, на этих страницах нет); в <body> — без отступов перед тегами (перевод строки остаётся,
+    пробелы между тегами браузер и так схлопывает, white-space:pre на этих страницах нет — вид тот же)"""
+    head, body = page.split('</head>', 1)
+    m = re.search(r'<svg class="icons"[^>]*>.*?</svg>', body, re.S)
+    rest = body[:m.start()] + body[m.end():]
+    sprite = re.sub(r'<symbol id="([\w-]+)".*?</symbol>', lambda s: s.group(0) if 'href="#%s"' % s.group(1) in rest else '', m.group(0), flags=re.S)
+    body = re.sub(r'(?m)^[ \t]+(?=<)', '', body[:m.start()] + sprite + body[m.end():])
+    return head + '</head>' + body
+
+
 def lang_page(html, lang):
     """/kk/ и /en/ — облегчённая главная на своём языке: текст в HTML без JS, вид — стили главной; меню — ссылкой на главную"""
     c = lang_ctx(html, lang)
@@ -987,7 +1005,7 @@ def lang_page(html, lang):
     stats = ('<div><b>24/7</b><span>%s</span></div>\n  <div><b>%d</b><span>%s</span></div>\n  <div><b%s>all day</b><span>%s</span></div>'
              % (P['stat_cafes'], len(bs), P['stat_points'], '' if lang == 'en' else ' lang="en"', P['stat_breakfast']))
     faq_html = faq_block(items, (P['faq_h2'], P['faq_p']))
-    return '''<!DOCTYPE html>
+    return light('''<!DOCTYPE html>
 <html lang="%(lang)s">
 <head>
 <meta charset="UTF-8">
@@ -1127,8 +1145,7 @@ def lang_page(html, lang):
   </div>
 </footer>
 <a class="fab-menu" href="%(menu_link)s" onclick="track('cta_menu',{src:'hbar_m'})"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>%(nav_menu)s</a>
-%(motion)s
-%(ga_loader)s
+%(site)s
 </body>
 </html>
 ''' % dict({k: P[k] for k in ('hero_tag', 'hero_h1', 'hero_lead', 'book', 'menu', 'order', 'halal', 'badge_cafes', 'badge_days',
@@ -1136,17 +1153,17 @@ def lang_page(html, lang):
                                'footer_tag', 'footer_menu', 'footer_ugolok', 'footer_otzyv', 'footer_offer', 'footer_privacy', 'footer_contacts', 'nav_menu', 'nav_about', 'nav_features',
                                'nav_locations', 'nav_faq', 'pill_b', 'pill_s')},
            lang=lang, title=H.escape(P['title']), description=H.escape(P['description']), url=HOME[lang], hreflang=hreflang(HOME),
-           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID) + HEAD_JS, ga_loader=GA_LOADER % GA_ID, fonts=fonts, css=css_subset(html),
+           locale=LOCALE[lang], og_image=OG_IMAGE, analytics=analytics_head(YM_ID) + HEAD_JS, fonts=fonts, css=css_subset(html),
            jsonld=lang_jsonld(html, lang, P, items), home=home, home_label=H.escape(P['home_label']),
            lang_label=H.escape(P['lang_label']), logo_d=logo_d, menu_link=menu_link, sw=sw, cur=cur,
            preload=preload, intro_js=intro_js(html), intro=intro, logo_art=logo_art,
-           grill=grill_card(html, lang), sub=sub_card(lang), icons=ICONS, motion=MOTION_JS, promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
+           grill=grill_card(html, lang), sub=sub_card(lang), icons=ICONS, site=site_tag(), promo_h2=H.escape(i18n()[lang]['sub']['h2'], quote=False),
            order_url=ORDER_URL, halal_img=halal_img, story_img=story_img, stats=stats,
            features='\n'.join('        <article>%s<h3>%s</h3><p>%s</p></article>' % (feature_icon(i), h, p) for i, (h, p) in enumerate(feats)),
            cards='\n'.join(card(b) for b in bs), faq=faq_html, mono=mono, menu_page='/' + MENU[lang][len(SITE):],
            otzyv=feedback_page.PATH + '#' + lang,          # «Для жалоб и предложений» — сразу на языке страницы
            near=near_tag(html),                            # ближайшая точка — сверху: общий файл, за блоком точек
-           social=social_row())
+           social=social_row()))
 
 
 KK_REVIEW_UI = ('search', 'search_none')       # новые строки MENU_UI.kk — тоже на вычитку
@@ -1391,10 +1408,11 @@ LOC_RE = re.compile(re.escape(LOC_MARK) + r'\n.*?<!-- /точки -->\n', re.S)
 
 
 def wa_link(html, b):
-    """как branchWa/waLink на странице: wa.me/<цифры телефона>?text=<encodeURIComponent(b.wa || текст по умолчанию + адрес)>"""
-    m = re.search(r"function branchWa\(b\)\{return waLink\(b\.phone,\(b\.wa\|\|'((?:[^'\\]|\\.)*)'\)\+b\.addr\)\}", html)
+    """как branchWa/waLink окна выбора филиала (код главной — tools/home.js): wa.me/<цифры телефона>?text=<encodeURIComponent(b.wa
+    || текст по умолчанию + адрес)>; html — главная (параметр — для прежних вызовов)"""
+    m = re.search(r"function branchWa\(b\)\{return waLink\(b\.phone,\(b\.wa\|\|'((?:[^'\\]|\\.)*)'\)\+b\.addr\)\}", read(HOME_SRC) or '')
     if not m:
-        sys.exit('seo_jsonld: branchWa на странице записан иначе — обновите wa_link, чтобы ссылки WhatsApp в карточках совпадали с модалкой')
+        sys.exit('seo_jsonld: branchWa в tools/home.js записан иначе — обновите wa_link, чтобы ссылки WhatsApp в карточках совпадали с окном')
     default = unq(m.group(1))
     return 'https://wa.me/%s?text=%s' % (re.sub(r'\D', '', b['phone']), quote((b['wa'] or default) + b['addr'], safe="-_.!~*'()"))
 
@@ -1450,13 +1468,14 @@ SUB_VIDEO = {'webm': '/assets/latte-pour.0aa34e2d.webm', 'mp4': '/assets/latte-p
              'poster': '/assets/latte-pour-poster.eace987c.webp', 'w': 960, 'h': 654}
 SUB_MARK = '<!-- Плитка подписки (видео налива кофе) — собирает tools/seo_jsonld.py, руками не править -->'
 SUB_RE = re.compile(re.escape(SUB_MARK) + r'\n.*?<!-- /подписка -->\n', re.S)
-# загрузчик видео: после load, по IntersectionObserver — play, вне экрана — pause; reduced-motion или нет IO — постер
+# загрузчик видео: после load, по IntersectionObserver — play, вне экрана — pause; reduced-motion или нет IO — постер;
+# стоит в общем файле assets/site.<хэш>.js (site_js), в страницах его нет
 SUB_JS = ("<script>(function(){var v=document.querySelector('.sub-video');if(!v||!('IntersectionObserver'in window))return;"
           "try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}v.muted=true;"
           "function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}"
           "function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}"
           "if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>")
-GRILL_JS = SUB_JS.replace("'.sub-video'", "'.grill-video'")      # видео «Курицы гриль» на /kk/ и /en/ — тот же загрузчик
+GRILL_JS = SUB_JS.replace("'.sub-video'", "'.grill-video'")      # видео «Курицы гриль» на /kk/ и /en/ — тот же загрузчик (на главной — свой, tools/home.js)
 
 
 def sub_card(lang):
@@ -1475,8 +1494,8 @@ def sub_card(lang):
             'клип — tools/build_sub_video.py; docs/LICENSES-media.md -->\n'
             '      <video class="sub-video" poster="%s" width="%d" height="%d" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">\n'
             '        <source src="%s" type="video/webm">\n        <source src="%s" type="video/mp4">\n      </video>\n'
-            '      <p class="tile-cap"><b class="promo-t">%s</b> %s</p>\n    </div>\n%s\n'
-            % (V['poster'], V['w'], V['h'], V['webm'], V['mp4'], e(S['title']), line, SUB_JS))
+            '      <p class="tile-cap"><b class="promo-t">%s</b> %s</p>\n    </div>\n'
+            % (V['poster'], V['w'], V['h'], V['webm'], V['mp4'], e(S['title']), line))
 
 
 GRILL_RE = re.compile(r'\n      <a class="promo-tile grill-promo" [^>]*>\n(.*?)\n      </a>\n', re.S)
@@ -1493,8 +1512,8 @@ def grill_card(html, lang):
     if not it:
         sys.exit('seo_jsonld: в MENU_KITCHEN нет «Курица гриль» — плитку акции на /kk/ и /en/ не собрать')
     label = '%s, %s ₸ — %s' % (tr_dict(html, lang)['Курица гриль'], fmt_p(it['p']).replace('\u00a0', ' '), i18n()[lang]['page']['menu'])
-    return ('    <a class="promo-tile grill-promo" href="/%s-%s" onclick="track(\'cta_grill\')" aria-label="%s">\n%s\n    </a>\n%s\n'
-            % (GRILL_HASH, lang, H.escape(label), root_paths(m.group(1)), GRILL_JS))
+    return ('    <a class="promo-tile grill-promo" href="/%s-%s" onclick="track(\'cta_grill\')" aria-label="%s">\n%s\n    </a>\n'
+            % (GRILL_HASH, lang, H.escape(label), root_paths(m.group(1))))
 
 
 def with_sub(html):
@@ -1512,14 +1531,14 @@ def with_sub(html):
 # requestAnimationFrame + translate3d, scroll passive, только пока блок на экране. Меню-оверлей: подложки разделов —
 # так же, но 16 px и 350 мс, лесенка не длиннее 3 (window.revealMenu, вызывает renderFeed).
 # reduced-motion или нет IntersectionObserver — ничего не делает; без JS всё видно (класс скрытия ставит только скрипт).
-MOTION_MARK = '<!-- движение: появление при прокрутке, параллакс — собирает tools/seo_jsonld.py, руками не править -->'
-MOTION_RE = re.compile(re.escape(MOTION_MARK) + r'\n.*?<!-- /движение -->\n', re.S)
+# Снятие классов — без пустого имени: classList.remove('') бросает DOMException, и rv / rv-in оставались на карточках (до 11.11).
+# Код — в общем файле assets/site.<хэш>.js (site_js ниже) на /, /kk/, /en/; в <script>…</script> — только для сборки и тестов.
 MOTION_SEL = '.promo,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact'
 MOTION_JS = ("<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}"
              "if(!('IntersectionObserver'in window))return;var d=document,SEL='" + MOTION_SEL + "';"
              "function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){"
              "es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);el.classList.add('rv-in');"
-             "setTimeout(function(){el.classList.remove('rv','rv-in',cls);el.style.removeProperty('--rv-d')},1000)})},"
+             "setTimeout(function(){el.classList.remove('rv','rv-in');if(cls)el.classList.remove(cls);el.style.removeProperty('--rv-d')},1000)})},"
              "{root:root||null,threshold:.15,rootMargin:'0px 0px -10% 0px'});"
              "els.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vh*.9)return;var i=0,s=el.previousElementSibling;"
              "while(s){if(s.matches&&s.matches(el.parentNode&&el.parentNode.matches&&el.parentNode.matches('.mm-cols')?'.mm-sec':SEL))i++;s=s.previousElementSibling}"
@@ -1537,11 +1556,71 @@ MOTION_JS = ("<script>(function(){try{if(matchMedia('(prefers-reduced-motion: re
              "addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});upd()})();</script>")
 
 
-def with_motion(html):
-    m = MOTION_RE.search(html)
-    if not m:
-        sys.exit('seo_jsonld: на главной нет маркеров «%s … <!-- /движение -->»' % MOTION_MARK[:40])
-    return html[:m.start()] + MOTION_MARK + '\n' + MOTION_JS + '\n<!-- /движение -->\n' + html[m.end():]
+# ── Код — отдельными файлами с хэшем (11.11.2026: запас веса главной и /kk/ без подъёма пределов) ──
+# Образец — near.js ниже: имя файла по хэшу содержимого (sw.js держит такие файлы в кэше навсегда), в страницах — только
+# <script src="/assets/<имя>.<хэш>.js" defer>; содержимое поменялось — новое имя, ссылки генератор переставит сам, старый файл
+# не удаляет (правило владельца: без удалений без согласия) — --check назовёт его, убрать: git rm.
+# defer выполняется после разбора страницы, до DOMContentLoaded — разметка уже есть, порядок файлов — порядок тегов.
+# home — код главной из исходника tools/home.js (там же подробно; данные меню и точек остаются в index.html — их правят там
+#   и читают генераторы); копия байт в байт с заголовком. Тег — сразу за встроенными данными. Ранний клик до выполнения
+#   файла: заглушки goHome / openModal / openMenu / openGrill перед <header> главной складывают вызов в window.dcQ.
+# site — общий код /, /kk/, /en/: MOTION_JS (появление, параллакс, revealMenu), видео плиток SUB_JS и GRILL_JS (у видео
+#   «Курицы гриль» на главной свой загрузчик в tools/home.js — без ожидания load, как с #29, поэтому GRILL_JS — только там,
+#   где нет меню-оверлея), загрузка gtag.js после load (GA_LOADER; gtag() и track() — в <head>, встроенные, как были).
+#   Тег — в конце <body>.
+HOME_SRC = os.path.join(ROOT, 'tools', 'home.js')
+HASHED_JS = ('near', 'home', 'site')            # файлы кода с хэшем, которые собирает генератор
+
+
+def js_asset(name, text):
+    """(путь assets/<name>.<хэш8>.js, текст): имя — по sha256 содержимого"""
+    return os.path.join(ROOT, 'assets', '%s.%s.js' % (name, hashlib.sha256(text.encode('utf-8')).hexdigest()[:8])), text
+
+
+def js_tag(path):
+    return '<script src="/assets/%s" defer></script>' % os.path.basename(path)
+
+
+def with_js_tag(html, name, path, where):
+    """единственный тег <script src="/assets/<name>.<хэш>.js" defer> страницы — на текущее имя файла"""
+    rx = re.compile(r'<script src="/assets/%s\.[0-9a-f]{8}\.js" defer></script>' % name)
+    if len(rx.findall(html)) != 1:
+        sys.exit('seo_jsonld: на главной нужен ровно один <script src="/assets/%s.<хэш>.js" defer> — %s' % (name, where))
+    tag = js_tag(path)
+    return rx.sub(lambda m: tag, html)
+
+
+def home_js():
+    """(путь, текст) кода главной: tools/home.js байт в байт с заголовком"""
+    src = read(HOME_SRC)
+    if not src or 'function openMenu(' not in src:
+        sys.exit('seo_jsonld: нет tools/home.js с кодом главной (function openMenu…)')
+    return js_asset('home', '/* Код главной. Собран tools/seo_jsonld.py из tools/home.js, руками не править */\n' + src)
+
+
+def with_home(html):
+    return with_js_tag(html, 'home', home_js()[0], 'сразу за встроенными данными меню (BRANCHES, MENU_*)')
+
+
+def script_body(s):
+    return re.fullmatch(r'<script>(.*)</script>', s, re.S).group(1)
+
+
+def site_js():
+    """(путь, текст) общего кода /, /kk/, /en/ — те же скрипты, что раньше стояли в страницах встроенными"""
+    ga = re.search(r'\(function\(\)\{\n.*\n\}\)\(\);', GA_LOADER % GA_ID, re.S).group(0)
+    return js_asset('site', '/* Общий код /, /kk/, /en/: появление при прокрутке и параллакс, видео плиток, загрузка gtag.js после load. '
+                            'Собран tools/seo_jsonld.py, руками не править */\n'
+                    + '\n'.join([script_body(MOTION_JS), script_body(SUB_JS),
+                                 "if(!document.getElementById('menu-modal'))" + script_body(GRILL_JS), ga]) + '\n')
+
+
+def site_tag():
+    return js_tag(site_js()[0])
+
+
+def with_site(html):
+    return with_js_tag(html, 'site', site_js()[0], 'в конце <body>')
 
 
 # ── Ближайшая точка — сверху (владелец 11.11.2026): общий файл assets/near.<хэш>.js из исходника tools/near.js ──
@@ -1552,7 +1631,6 @@ def with_motion(html):
 # Имя — по хэшу содержимого: точки или код поменялись — новое имя, ссылки на всех страницах генератор переставит сам; старый
 # файл генератор не удаляет (правило владельца: без удалений без согласия) — --check назовёт его, убрать: git rm.
 NEAR_SRC = os.path.join(ROOT, 'tools', 'near.js')
-NEAR_RE = re.compile(r'<script src="/assets/near\.[0-9a-f]{8}\.js" defer></script>')
 
 
 def near_points(html):
@@ -1584,25 +1662,22 @@ def near_js(html, src=None):
         sys.exit('seo_jsonld: в коде tools/near.js нужно одно место для точек __POINTS__')
     text = ('/* Ближайшая точка — сверху. Собран tools/seo_jsonld.py из tools/near.js, руками не править */\n'
             + body.replace('__POINTS__', dumps(near_points(html))) + '\n')
-    return os.path.join(ROOT, 'assets', 'near.%s.js' % hashlib.sha256(text.encode('utf-8')).hexdigest()[:8]), text
+    return js_asset('near', text)
 
 
 def near_tag(html):
-    return '<script src="/assets/%s" defer></script>' % os.path.basename(near_js(html)[0])
+    return js_tag(near_js(html)[0])
 
 
 def with_near(html):
-    if len(NEAR_RE.findall(html)) != 1:
-        sys.exit('seo_jsonld: на главной нужен ровно один <script src="/assets/near.<хэш>.js" defer> — за блоком #locations')
-    tag = near_tag(html)
-    return NEAR_RE.sub(lambda m: tag, html)
+    return with_js_tag(html, 'near', near_js(html)[0], 'за блоком #locations')
 
 
-def stale_near(want):
-    """прежние assets/near.*.js, на которые больше никто не ссылается (генератор их не удаляет)"""
+def stale_js(want):
+    """прежние assets/{near,home,site}.<хэш>.js, на которые больше никто не ссылается (генератор их не удаляет)"""
     d = os.path.join(ROOT, 'assets')
     return sorted(os.path.join(d, f) for f in os.listdir(d)
-                  if re.fullmatch(r'near\.[0-9a-f]{8}\.js', f) and os.path.join(d, f) not in want)
+                  if re.fullmatch(r'(?:%s)\.[0-9a-f]{8}\.js' % '|'.join(HASHED_JS), f) and os.path.join(d, f) not in want)
 
 
 def with_jsonld(html):
@@ -1613,10 +1688,11 @@ def with_jsonld(html):
 
 def outputs(html):
     """{путь: ожидаемый текст} — всё, что собирает генератор"""
-    page = with_near(with_analytics(with_hreflang(with_jsonld(with_loc(with_motion(with_social(with_icons(with_sub(with_faq(html))))))))))
+    page = with_site(with_home(with_near(with_analytics(with_hreflang(with_jsonld(with_loc(with_social(with_icons(with_sub(with_faq(html)))))))))))
     near_path, near_text = near_js(page)
     out = {INDEX: page, LLMS: llms(page), KK_REVIEW: kk_review(page), UGOLOK: with_analytics(read(UGOLOK), track_links=False),
            near_path: near_text,                                  # общий файл «ближайшая точка — сверху»
+           **dict([home_js(), site_js()]),                        # код главной и общий код /, /kk/, /en/
            NOT_FOUND: with_analytics(read(NOT_FOUND), on_load=NOT_FOUND_JS),
            feedback_page.FILE: feedback_page.page(page)}         # /otzyv: филиалы из BRANCHES + новая точка, кнопки главной
     for lang in LANGS:
@@ -1669,10 +1745,10 @@ def read(path):
 def main():
     want = outputs(read(INDEX))
     stale = [os.path.relpath(p, ROOT) for p, text in want.items() if read(p) != text]
-    old_near = [os.path.relpath(p, ROOT) for p in stale_near(want)]
-    if old_near:
-        print('seo_jsonld: прежний общий файл больше не нужен (страницы ссылаются на новый) — убрать: git rm %s' % ' '.join(old_near))
-        stale += old_near
+    old_js = [os.path.relpath(p, ROOT) for p in stale_js(want)]
+    if old_js:
+        print('seo_jsonld: прежние файлы кода больше не нужны (страницы ссылаются на новые) — убрать: git rm %s' % ' '.join(old_js))
+        stale += old_js
     if '--check' in sys.argv:
         print('seo_jsonld:', 'ok' if not stale else 'УСТАРЕЛО: %s — запустите python3 tools/seo_jsonld.py' % ', '.join(stale))
         sys.exit(1 if stale else 0)

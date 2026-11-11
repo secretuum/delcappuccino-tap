@@ -194,7 +194,7 @@ class TestPhones(Base):
     def test_new_point_in_branches_stops_build(self):
         # точку внесли в BRANCHES — генератор не должен показать её дважды: выход с ошибкой «уберите из EXTRA_POINTS»
         line = "  {n:'06 · Sputnik Mall', addr:'Мамыр-1, 8а', phone:'%s', geo:[43.2,76.8], hours:'24/7'},\n" % NEW_PHONE
-        changed = self.main.replace('\n];\n\nfunction waLink', '\n' + line.rstrip('\n') + '\n];\n\nfunction waLink', 1)
+        changed = re.sub(r'(const BRANCHES = \[.*?)(\n\];)', lambda m: m.group(1) + '\n' + line.rstrip('\n') + m.group(2), self.main, count=1, flags=re.S)
         self.assertNotEqual(changed, self.main)
         with self.assertRaises(SystemExit) as e:
             fb.points(changed)
@@ -262,9 +262,10 @@ class TestButtons(Base):
         for p, (hash_, label) in FOOTER.items():
             html = read(p)
             foot = re.search(r'<footer\b.*?</footer>', html, re.S).group(0)
-            want = ('<div class="f-otzyv"><a class="btn ghost" href="%s%s" onclick="track(\'feedback_open\')">%s</a></div>\n  <div class="f-row">'
+            want = ('<div class="f-otzyv"><a class="btn ghost" href="%s%s" onclick="track(\'feedback_open\')">%s</a></div>\n'
                     % (fb.PATH, hash_, label))
-            self.assertIn(want, foot, '%s: кнопка над рядом ссылок с «Уголком потребителя»' % p)
+            # следующая строка — ряд ссылок; отступ не важен (на /kk/ и /en/ отступов в <body> нет — seo.light)
+            self.assertRegex(foot, re.escape(want) + r' *<div class="f-row">', '%s: кнопка над рядом ссылок с «Уголком потребителя»' % p)
             self.assertEqual(html.count('href="%s' % fb.PATH), 1, '%s: ссылка на %s — одна' % (p, fb.PATH))
             self.assertEqual(html.count("track('feedback_open')"), 1, p)
             css = css_of(html)
