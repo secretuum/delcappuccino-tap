@@ -166,6 +166,15 @@ class TestNearFile(unittest.TestCase):
         with self.assertRaises(SystemExit):
             seo.near_points(swapped)
 
+    def test_builder_refuses_comment_markers_inside_code(self):
+        """сборка снимает комментарии регуляркой — маркеры внутри строк и хвостовые // должны останавливать её, а не резать код"""
+        ok = "/* шапка */\n(function () {\n  // строка\n  var P = __POINTS__;\n})();\n"
+        self.assertIn('var P = {', seo.near_js(self.main, ok)[1])
+        for bad in ("var P = __POINTS__, a = 'assets/*';", "var P = __POINTS__; // хвост", "var P = __POINTS__, u = 'https://x';",
+                    "var P = __POINTS__; /* хвост */", "return /*\n*/ P;\nvar P = __POINTS__;"):
+            with self.subTest(bad=bad), self.assertRaises(SystemExit):
+                seo.near_js(self.main, bad)
+
     def test_privacy_in_source(self):
         """ни хранилищ, ни сети: координаты остаются в памяти страницы; в аналитику — одно событие с исходом"""
         code = re.sub(r'/\*.*?\*/', '', self.src, flags=re.S)

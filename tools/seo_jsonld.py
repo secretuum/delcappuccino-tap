@@ -1567,9 +1567,18 @@ def near_points(html):
     return {p: [lat, lon] for p, (lat, lon) in pts}
 
 
-def near_js(html):
-    """(путь, текст) общего файла: tools/near.js без комментариев-блоков, целых строк // и отступов, точки — вместо __POINTS__"""
-    lines = (l.strip() for l in re.sub(r'/\*.*?\*/', '', read(NEAR_SRC) or '', flags=re.S).split('\n'))
+def near_js(html, src=None):
+    """(путь, текст) общего файла: tools/near.js без комментариев-блоков, целых строк // и отступов, точки — вместо __POINTS__.
+    Сборка без разбора JS, поэтому в исходнике /* только в начале строки, */ только в конце, // только целой строкой —
+    иначе выход с ошибкой (строка 'assets/*' или хвостовой // … съели бы код молча)"""
+    src = read(NEAR_SRC) if src is None else src
+    for n, l in enumerate((src or '').split('\n'), 1):
+        if ('/*' in l and not l.lstrip().startswith('/*')) or ('*/' in l and not l.rstrip().endswith('*/')):
+            sys.exit('seo_jsonld: tools/near.js:%d — /* … */ только целыми строками (сборка снимает их регуляркой)' % n)
+    lines = [l.strip() for l in re.sub(r'/\*.*?\*/', '', src or '', flags=re.S).split('\n')]
+    for l in lines:
+        if '//' in l and not l.startswith('//'):
+            sys.exit('seo_jsonld: tools/near.js — // только целой строкой: «%s»' % l[:60])
     body = '\n'.join(l for l in lines if l and not l.startswith('//'))
     if body.count('__POINTS__') != 1:
         sys.exit('seo_jsonld: в коде tools/near.js нужно одно место для точек __POINTS__')
