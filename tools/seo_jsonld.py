@@ -1122,7 +1122,7 @@ def kk_review(html):
     for key in KK_REVIEW_UI:
         rows.append('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (key, ui_kk[key].replace('|', '\\|')))
     rows += feedback_page.kk_review_rows()          # адрес новой точки на /otzyv/ — живёт в генераторе, не в pages_i18n.json
-    fw ={'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
+    fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
     for key, lab in facts()['labels'].items():
         rows.append('| `branch_facts.labels.%s` | %s | %s |' % (key, fw['labels'], lab['kk']))
     for num, pf in facts()['points'].items():

@@ -429,6 +429,11 @@ console.log(JSON.stringify({ lang: document.documentElement.lang || null, title:
             plain = run('')
             self.assertIsNone(plain['lang'], 'без метки в адресе — русский из разметки, скрипт ничего не трогает')
             self.assertEqual(plain['replaced'], [])
+            for junk in ('#constructor', '#__proto__', '#toString', '#de'):     # не язык — как без метки
+                got = run(junk)
+                self.assertIsNone(got['lang'], junk)
+                self.assertTrue(all('undefined' not in str(n.get('href', '')) for n in got['nodes']), junk)
+                self.assertEqual(got['title'], '', '%s: заголовок не трогали' % junk)
             for lang in ('kk', 'en'):
                 got = run('#' + lang)
                 self.assertEqual((got['lang'], got['title']), (lang, d[lang]['pageTitle']))

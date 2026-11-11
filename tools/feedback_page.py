@@ -296,7 +296,7 @@ footer{border-top:1px solid var(--c-border);padding:24px 0 40px;margin-top:8px}
 const I18N = %(i18n)s;
 /* язык: тексты [data-i18n], ссылки WhatsApp [data-wa] (сообщение на этом языке), «на главную» [data-home] — на главную языка */
 function setLang(lang, quiet){
-  const d = I18N[lang] || I18N.ru;
+  const d = Object.prototype.hasOwnProperty.call(I18N, lang) ? I18N[lang] : I18N.ru;
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     const k = el.getAttribute('data-i18n');
@@ -316,7 +316,7 @@ function setLang(lang, quiet){
   if(!quiet){ try{ history.replaceState(null, '', '#' + lang); }catch(e){} }
 }
 /* с подвала /kk/ и /en/ приходят с #kk / #en — сразу свой язык; без метки — русский, как в разметке */
-(function(){ var h = (location.hash || '').slice(1); if(h !== 'ru' && I18N[h]) setLang(h, true); })();
+(function(){ var h = (location.hash || '').slice(1); if(h !== 'ru' && Object.prototype.hasOwnProperty.call(I18N, h)) setLang(h, true); })();
 </script>
 <script>
 /* Аналитика — после load, в простое; service worker общий с главной (правила — в /sw.js) */
@@ -329,7 +329,7 @@ function setLang(lang, quiet){
 </script>
 </body>
 </html>
-''' % {'title': e(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID),
+''' % {'title': H.escape(t['title']), 'description': H.escape(t['description']), 'url': url, 'analytics': S.analytics_head(S.YM_ID),
        'preload': preload, 'og_image': S.OG_IMAGE, 'fonts': S.font_faces(html), 'tokens': S.tokens_css(html), 'glass': glass,
        'sprite': sprite(), 'arrow': ARROW, 'back': e(t['back']), 'langs': langs, 'eyebrow': e(t['eyebrow']), 'h1': e(t['h1']),
        'lead': e(t['lead']), 'cards': '\n'.join(card(T, p) for p in ps), 'i18n': i18n_js, 'ga': S.GA_ID}
