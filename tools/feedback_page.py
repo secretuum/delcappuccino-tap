@@ -231,13 +231,13 @@ h1,h2{font-family:var(--font-display);font-weight:700;text-transform:lowercase;l
 /* карточки точек — как карточки точек главной: белые, рамка 1px (плоско, 11.11); кнопки — плоские, высотой 52, переносятся целиком */
 main{padding:24px 0 32px}
 .fb-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
-.fb-card{display:flex;flex-direction:column;padding:20px;border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
-.fb-card h2{font-size:19px;line-height:1.2;color:var(--c-text)}
-.fb-addr{margin-top:4px;font-size:var(--fs-body);font-weight:500;color:var(--c-muted);line-height:1.4}
-.fb-phone{margin-top:2px;font-size:var(--fs-small);color:var(--c-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
-.fb-links{display:flex;flex-wrap:wrap;gap:8px;margin-top:auto;padding-top:16px}
-.fb-btn{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--h-btn);padding:8px 16px;border-radius:var(--r-pill);font-family:var(--btn-font);font-size:15px;font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;white-space:nowrap;color:var(--c-text)}
-.fb-btn .ic{width:18px;height:18px;flex:none}
+.fb-card{display:flex;flex-direction:column;padding:24px;border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
+.fb-card h2{font-size:22px;line-height:1.2;color:var(--c-text)}
+.fb-addr{margin-top:6px;font-size:18px;font-weight:500;color:var(--c-muted);line-height:1.4}
+.fb-phone{margin-top:4px;font-size:15px;color:var(--c-muted);font-variant-numeric:tabular-nums;white-space:nowrap}
+.fb-links{display:flex;flex-wrap:wrap;gap:12px;margin-top:auto;padding-top:20px}
+.fb-btn{flex:1 1 auto;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:56px;padding:8px 16px;border-radius:var(--r-pill);font-family:var(--btn-font);font-size:17px;font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;white-space:nowrap;color:var(--c-text)}
+.fb-btn .ic{width:22px;height:22px;flex:none}
 %(btn)s
 /* подвал — как на /ugolok */
 footer{border-top:1px solid var(--c-border)}
@@ -261,7 +261,7 @@ footer.shell{margin-top:8px;padding-top:24px;padding-bottom:40px}   /* margin и
   .topbar{gap:8px;padding:7px 10px}
   .tb-back{font-size:12px;padding:6px 10px 6px 8px;gap:5px}
   .lang-btn{padding:6px 9px}
-  .fb-card{padding:16px}
+  .fb-card{padding:20px}
 }
 </style>
 </head>

@@ -331,7 +331,7 @@ class TestMobile(Base):
         css, v = css_of(self.html), root_vars(self.html)
         rule = lambda sel: next(b for p, b in rules(css) if p == sel)
         self.assertEqual(v['--h-btn'], '52px')
-        self.assertIn('min-height:var(--h-btn)', rule('.fb-btn'))
+        self.assertIn('min-height:56px', rule('.fb-btn'), 'филиалы крупно (владелец 11.11): кнопки 56')
         self.assertIn('white-space:nowrap', rule('.fb-btn'), 'подпись кнопки не рвётся — кнопка переносится целиком')
         self.assertIn('flex-wrap:wrap', rule('.fb-links'))
         self.assertIn('min-height:40px', rule('.lang-btn'))
@@ -348,9 +348,9 @@ class TestMobile(Base):
         for vw in (360, 375, 390, 414, 430):
             shell = 16
             self.assertLessEqual(280, vw - 2 * shell, '%d px: минимум колонки 280 px' % vw)
-            inner = vw - 2 * shell - 2 * (16 if vw <= 374 else 20)
+            inner = vw - 2 * shell - 2 * (20 if vw <= 374 else 24)     # 11.11: карточки крупнее — поля 20 / 24
             for t in labels:
-                need = 2 * 16 + 18 + 8 + len(t) * 0.66 * 15
+                need = 2 * 16 + 22 + 8 + len(t) * 0.66 * 17          # поля кнопки, значок 22, зазор, подпись 17 px
                 self.assertLessEqual(need, inner, '%d px: кнопка «%s» шире карточки' % (vw, t))
         # шапка: «← на главную» (самая длинная подпись) + языки — как на /ugolok, от 360 px
         back = max(len(self.texts[l]['back']) for l in fb.LANGS)

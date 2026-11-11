@@ -259,18 +259,22 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 /* колонкой: карточки ряда одной высоты, кнопки прижаты к низу — у точек разное число строк удобств */
 .loc-card{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-24) var(--s-16);border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
 .loc-card small{font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;line-height:1.2;text-transform:lowercase;color:var(--c-text)}
-.loc-card h3{font-family:var(--font-body);font-size:var(--fs-body);font-weight:500;text-transform:none;letter-spacing:0;color:var(--c-muted);margin:var(--s-4) 0 var(--s-2)}
-.loc-meta{font-size:var(--fs-small);color:var(--c-muted);line-height:1.5;margin:0 0 var(--s-8)}
+.loc-card h3{font-family:var(--font-body);font-size:18px;font-weight:500;text-transform:none;letter-spacing:0;color:var(--c-muted);margin:var(--s-4) 0 var(--s-2)}
+.loc-meta{font-size:15px;color:var(--c-muted);line-height:1.5;margin:0 0 var(--s-8)}
 .loc-meta b{color:var(--c-text);font-weight:600}
-.loc-about{font-size:var(--fs-small);line-height:1.5;margin:0 0 var(--s-8)}
+.loc-about{font-size:15px;line-height:1.5;margin:0 0 var(--s-8)}
 /* удобства точки из tools/branch_facts.json: «детская зона · VIP-залы · Wi-Fi · парковка» — переносятся по словам */
-.loc-amen{font-size:var(--fs-caption);color:var(--c-accent);line-height:1.5;margin:0 0 var(--s-16)}
+.loc-amen{font-size:var(--fs-small);color:var(--c-accent);line-height:1.5;margin:0 0 var(--s-16)}
 .loc-amen span{white-space:nowrap}
 .loc-card:last-child:nth-child(odd){grid-column:1/-1}
 /* кнопки точки — круглые значки 48 px: маршрут — зелёный, звонок — светлый, WhatsApp — тон WhatsApp;
    «Меню» у bakery — текстовая пилюля. Значки — SVG-спрайт .icons (Lucide ISC, Simple Icons CC0), цвет — currentColor */
 .icons{position:absolute;width:0;height:0;overflow:hidden}
-.loc-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s-8);margin-top:auto}
+.loc-links{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s-12);margin-top:auto}
+/* филиалы крупно (11.11): кнопки 56, значки 26, «Меню» той же высоты */
+.loc-card .ib,.branch-row .ib{width:56px;height:56px}
+.loc-card .ic,.branch-row .ic{width:26px;height:26px}
+.loc-card .pill,.branch-row .pill{min-height:56px;padding:0 var(--s-24);font-size:var(--fs-body);font-weight:600}
 .ib{flex:none;display:inline-flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;color:var(--c-text)}
 .ic{display:block;width:22px;height:22px}
 /* чип = Chip.tsx: 40, касание 48 */
@@ -324,17 +328,17 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 @media(min-width:640px){.modal{align-items:center}.sheet{border-radius:var(--r-lg)}.sheet::before{display:none}}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
 .sheet .x{position:absolute;top:12px;right:12px;border-radius:var(--r-pill);color:var(--c-text);cursor:pointer}
-.sheet .tag{margin-bottom:var(--s-4)}
-.sheet h3{font-size:var(--fs-title);line-height:1.2;margin-bottom:var(--s-4);color:var(--c-text)}
-.sheet .status{font-size:var(--fs-small);color:var(--c-muted);margin-bottom:var(--s-16)}
+.sheet .tag{margin-bottom:var(--s-4);font-size:var(--fs-body)}
+.sheet h3{font-size:var(--fs-heading);line-height:1.2;margin-bottom:var(--s-4);color:var(--c-text)}
+.sheet .status{font-size:15px;color:var(--c-muted);margin-bottom:var(--s-16)}
 /* строки окна — как карточки точек: название без номера, адрес, часы (кроме 24/7), ряд круглых значков по центру */
-.branch-row{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-16);margin-top:var(--s-8);border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
-.br-top{display:flex;flex-direction:column;align-items:center;gap:var(--s-4);margin-bottom:var(--s-12)}
-.br-acts{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s-8)}
-.branch-row .bn small{display:block;font-family:var(--font-display);font-size:var(--fs-body);font-weight:700;text-transform:lowercase;color:var(--c-text)}
-.branch-row .bn b{display:block;margin-top:var(--s-2);font-weight:500;font-size:var(--fs-small);color:var(--c-muted)}
-.branch-row .bn .hrs{display:block;font-size:var(--fs-caption);color:var(--c-muted);margin-top:var(--s-2);line-height:1.4}
-.branch-row .dist{font-size:var(--fs-caption);font-weight:600;color:var(--c-accent);white-space:nowrap;background:var(--c-bg);border-radius:var(--r-pill);padding:var(--s-4) var(--s-8)}
+.branch-row{display:flex;flex-direction:column;align-items:center;text-align:center;padding:var(--s-24) var(--s-16);margin-top:var(--s-12);border-radius:var(--r-lg);background:var(--c-bg);border:1px solid var(--c-border)}
+.br-top{display:flex;flex-direction:column;align-items:center;gap:var(--s-4);margin-bottom:var(--s-16)}
+.br-acts{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:var(--s-12)}
+.branch-row .bn small{display:block;font-family:var(--font-display);font-size:var(--fs-title);font-weight:700;text-transform:lowercase;color:var(--c-text)}
+.branch-row .bn b{display:block;margin-top:var(--s-4);font-weight:500;font-size:17px;color:var(--c-muted)}
+.branch-row .bn .hrs{display:block;font-size:15px;color:var(--c-muted);margin-top:var(--s-2);line-height:1.4}
+.branch-row .dist{font-size:15px;font-weight:600;color:var(--c-accent);white-space:nowrap;background:var(--c-bg);border-radius:var(--r-pill);padding:var(--s-4) var(--s-8)}
 
 @media(max-width:900px){
   .hero{grid-template-columns:1fr;gap:var(--s-24)}

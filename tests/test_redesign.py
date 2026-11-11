@@ -504,6 +504,39 @@ class TestPage(unittest.TestCase):
         for l in ('kk', 'en'):
             self.assertNotIn('promo-run', self.pages[l])
 
+    def test_branches_large(self):
+        """владелец 11.11 (окно выбора филиала): «очень скромно написано, очень мелко — надо крупно всё сделать, эти филиалы»:
+        название 22, адрес 17–18, примечания 15, круглые кнопки 56 со значком 26, «Меню» той же высоты; то же у карточек точек
+        главной (/kk/, /en/) и /otzyv; касание ≥ 44, текст — тёмный или приглушённый на белом (≥ 4,5:1)"""
+        sizes = lambda css, sel: dict(re.findall(r'(font-size|width|height|min-height):([^;}]+)', re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)))
+        css = css_flat(self.pages['ru'])
+        want = {'.sheet h3': {'font-size': 'var(--fs-heading)'}, '.sheet .tag': {'font-size': 'var(--fs-body)'}, '.sheet .status': {'font-size': '15px'},
+                '.branch-row .bn small': {'font-size': 'var(--fs-title)'}, '.branch-row .bn b': {'font-size': '17px'},
+                '.branch-row .bn .hrs': {'font-size': '15px'}, '.branch-row .dist': {'font-size': '15px'},
+                '.loc-card .ib,.branch-row .ib': {'width': '56px', 'height': '56px'}, '.loc-card .ic,.branch-row .ic': {'width': '26px', 'height': '26px'},
+                '.loc-card .pill,.branch-row .pill': {'min-height': '56px', 'font-size': 'var(--fs-body)'}}
+        for l, html in self.pages.items():
+            c = css_flat(html)
+            loc = {'.loc-card small': {'font-size': 'var(--fs-title)'}, '.loc-card h3': {'font-size': '18px'}, '.loc-meta': {'font-size': '15px'},
+                   '.loc-about': {'font-size': '15px'}, '.loc-amen': {'font-size': 'var(--fs-small)'}}
+            for sel, need in dict(loc, **(want if l == 'ru' else {k: v for k, v in want.items() if k.startswith('.loc-card')})).items():
+                got = sizes(c, sel)
+                for k, v in need.items():
+                    self.assertEqual(got.get(k), v, '%s: %s %s' % (l, sel, k))
+        v = root_vars(self.pages['ru'])
+        self.assertEqual((v['--fs-title'], v['--fs-heading'], v['--fs-body']), ('22px', '28px', '16px'))
+        oz = css_flat(read('otzyv/index.html'))
+        for sel, need in {'.fb-card h2': {'font-size': '22px'}, '.fb-addr': {'font-size': '18px'}, '.fb-phone': {'font-size': '15px'},
+                          '.fb-btn': {'min-height': '56px', 'font-size': '17px'}, '.fb-btn .ic': {'width': '22px', 'height': '22px'}}.items():
+            got = sizes(oz, sel)
+            for k, val in need.items():
+                self.assertEqual(got.get(k), val, '/otzyv: %s %s' % (sel, k))
+        # текст карточек — --c-text / --c-muted / --c-accent на белом: ≥ 4,5:1
+        sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+        import test_polish_main as pm
+        for tok in ('--c-text', '--c-muted', '--c-accent'):
+            self.assertGreaterEqual(pm.contrast(pm.hexrgb(v[tok]), pm.hexrgb(v['--c-bg'])), 4.5, tok)
+
     def test_grill_deep_link_in_node(self):
         """плитка на /kk/ и /en/ ведёт на /#menu-grill-kk|-en: меню главной открывается на этом языке сразу на «Блюда на гриле»
         (раздел ищется по русскому ключу s.t в данных, перевод — только при показе); событие cta_grill — один раз, при нажатии
