@@ -195,7 +195,8 @@ def page(html):
 <style>
 %(fonts)s
 %(tokens)s
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 html{scroll-behavior:smooth}
 /* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}

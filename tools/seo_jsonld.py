@@ -671,7 +671,8 @@ def menu_page(html, lang='ru'):
 %(fonts)s
 %(tokens)s
 /* меню текстом (этап 2 редизайна): токены v5 главной, Geologica — заголовки, Montserrat — текст, фон белый; без JS и фото */
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 body{background:var(--c-bg);color:var(--c-text);font:15px/1.5 var(--font-body);-webkit-font-smoothing:antialiased}
 /* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
@@ -747,7 +748,7 @@ footer{border-top:1px solid var(--c-border);font-size:13px;color:var(--c-muted);
 # селекторы главной, которые нужны облегчённым /kk/ и /en/: токены, шапка, заставка, hero, карточка подписки, «О нас», «Формат»,
 # точки (кнопки-значки), вопросы, контакты, подвал, плитка «Курицы гриль» без строки «ВНИМАНИЕ» (без оверлея меню, модалки
 # и фото «Фирменный стиль»)
-CSS_KEEP = re.compile(r'^(?::root|:focus-visible|::view-transition-(?:old|new)\(root\)|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
+CSS_KEEP = re.compile(r'^(?::root|:focus-visible|::-webkit-scrollbar|::view-transition-(?:old|new)\(root\)|\*|html|body|a|h1|h2|h3|header|nav|footer|\.(?:shell|disp|hbar|brand|logo-d|pill-point|top-nav|'
                       r'lang-sw|lang-dd|lang-list|btn|fab-menu|intro|intro-on|logo-art|logo-art-text|logo-art-moped|tag|lead|actions|'
                       r'halal-badge|hero|hero-zone|hero-text|hero-badge|promo|promo-grid|promo-tile|sub-tile|tile-cap|promo-t|promo-s|promo-a|row-head|sub-video|'
                       r'grill-promo|grill-frame|grill-fire|grill-win|grill-video|grill-price|sale|'

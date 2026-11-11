@@ -104,6 +104,21 @@ class TestNothingVolumetric(unittest.TestCase):
             js = ''.join(re.findall(r'<script\b[^>]*>(.*?)</script>', html, re.S))
             self.assertNotRegex(js, r'\.style\.(?:boxShadow|textShadow|filter|backdropFilter|backgroundImage)\b', '%s: тень из скрипта' % p)
 
+    def test_no_scrollbars_anywhere(self):
+        """владелец 11.11: «эту полосу листания надо убрать вообще и не только отсюда» — на каждой странице одно правило на все
+        элементы и саму страницу (scrollbar-width для Firefox, ::-webkit-scrollbar для Chrome и Safari), без точечных; прокрутка
+        колесом, пальцем и клавиатурой остаётся (overflow не трогаем)"""
+        for p in PAGES:
+            rs = rules(css_of(read(p)))
+            star = [b for m, pre, b in rs if pre == '*' and not m]
+            self.assertTrue(star and 'scrollbar-width:none' in star[-1], '%s: * { scrollbar-width:none }' % p)
+            self.assertIn(('', '::-webkit-scrollbar', 'display:none'), rs, p)
+            extra = [pre for m, pre, b in rs if ('scrollbar' in pre or 'scrollbar-width' in b) and pre not in ('*', '::-webkit-scrollbar')]
+            self.assertEqual(extra, [], '%s: точечные правила полос — свести в одно' % p)
+        legal = re.sub(r'\s+', ' ', read('legal/style.css'))
+        self.assertIn('* { box-sizing: border-box; scrollbar-width: none; }', legal)
+        self.assertIn('::-webkit-scrollbar { display: none; }', legal)
+
     def test_no_lift_on_hover(self):
         """наведение — только цвет (кнопки, ссылки, строки меню): без подъёма, увеличения и тени"""
         for p in PAGES:

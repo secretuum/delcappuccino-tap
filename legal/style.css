@@ -30,7 +30,8 @@
   --r-pill: 999px;
 }
 
-* { box-sizing: border-box; }
+* { box-sizing: border-box; scrollbar-width: none; }
+::-webkit-scrollbar { display: none; }   /* полос прокрутки нет нигде (владелец 11.11), прокрутка работает */
 
 html { -webkit-text-size-adjust: 100%; }
 

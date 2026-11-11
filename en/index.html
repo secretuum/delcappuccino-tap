@@ -70,7 +70,8 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);
   --surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}
 html{scroll-behavior:smooth}
 @media(prefers-reduced-motion:no-preference){
 @view-transition{navigation:auto}
@@ -269,8 +270,7 @@ h1{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-8)}
 .tile-cap{padding:var(--s-12) var(--s-16)}
 .story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .story h2,.f-head h2,.loc-head h2,.contact h2,.row-head h2{font-size:var(--fs-title)}
-.f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
-.f-grid::-webkit-scrollbar,.sc-row::-webkit-scrollbar{display:none}
+.f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8)}
 .f-grid article{flex:0 0 80%;scroll-snap-align:start;padding:var(--s-16) var(--s-16) var(--s-24)}
 .f-ic{width:48px;height:48px;margin-bottom:var(--s-8)}
 .f-grid h3{font-size:var(--fs-title)}

@@ -79,7 +79,8 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);
   --surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;
 }
-*{box-sizing:border-box;margin:0;padding:0}
+*{box-sizing:border-box;margin:0;padding:0;scrollbar-width:none}
+::-webkit-scrollbar{display:none}   /* полос прокрутки нет нигде (11.11), прокрутка работает */
 html{scroll-behavior:smooth}
 /* переход между страницами (11.11) */
 @media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
@@ -366,8 +367,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .tile-cap{padding:var(--s-12) var(--s-16)}
   .story{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .story h2,.f-head h2,.loc-head h2,.contact h2,.row-head h2{font-size:var(--fs-title)}
-  .f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8);scrollbar-width:none}
-  .f-grid::-webkit-scrollbar,.sc-row::-webkit-scrollbar{display:none}
+  .f-grid,.sc-row{display:flex;gap:var(--s-8);overflow-x:auto;scroll-snap-type:x mandatory;scroll-padding-left:var(--s-16);margin:0 calc(-1 * var(--s-16));padding:0 var(--s-16) var(--s-8)}
   .f-grid article{flex:0 0 80%;scroll-snap-align:start;padding:var(--s-16) var(--s-16) var(--s-24)}
   .f-ic{width:48px;height:48px;margin-bottom:var(--s-8)}
   .f-grid h3{font-size:var(--fs-title)}
@@ -411,9 +411,8 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
    (заливка surface, активная — forest с белым текстом, без обводок, по ширине текста) */
 .mm-head{position:sticky;top:0;z-index:5;background:var(--c-bg);border-bottom:1px solid var(--c-border)}
 .mm-top{display:flex;align-items:center;gap:var(--s-8);max-width:1150px;margin:0 auto;padding:var(--s-8) var(--s-24) var(--s-4)}
-.mm-tabs,.mm-cats{position:relative;display:flex;align-items:center;gap:var(--s-8);overflow-x:auto;scrollbar-width:none;max-width:1150px;margin:0 auto;padding:var(--s-4) var(--s-24) var(--s-8)}
+.mm-tabs,.mm-cats{position:relative;display:flex;align-items:center;gap:var(--s-8);overflow-x:auto;max-width:1150px;margin:0 auto;padding:var(--s-4) var(--s-24) var(--s-8)}
 .mm-cats{margin-top:calc(-1 * var(--s-4))}
-.mm-tabs::-webkit-scrollbar,.mm-cats::-webkit-scrollbar{display:none}
 .mm-tab,.mm-cat{position:relative;flex:none;display:inline-flex;align-items:center;height:calc(var(--h-touch) - var(--s-8));padding:0 var(--s-16);border-radius:var(--r-pill);color:var(--c-text);font-family:var(--font-body);font-size:var(--fs-small);font-weight:500;white-space:nowrap;cursor:pointer}
 .mm-tab::after,.mm-cat::after{content:'';position:absolute;inset:calc(var(--s-8) / -2) 0}
 /* поиск: круглая кнопка-лупа после вкладок; в режиме поиска ряд вкладок — поле ввода с крестиком */
@@ -444,7 +443,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .mm-feed>.mm-part:first-of-type .mm-part-h{margin-top:var(--s-24)}
 .mm-part-h::after{content:'';flex:1;height:1px;background:var(--c-border)}
 /* легенда — одной строкой пилюль-подсказок */
-.mm-legend-row{display:flex;flex-wrap:nowrap;gap:var(--s-16);overflow-x:auto;scrollbar-width:none;margin:0 0 var(--s-8);font-size:var(--fs-caption);line-height:1.6;color:var(--c-muted);white-space:nowrap}
+.mm-legend-row{display:flex;flex-wrap:nowrap;gap:var(--s-16);overflow-x:auto;margin:0 0 var(--s-8);font-size:var(--fs-caption);line-height:1.6;color:var(--c-muted);white-space:nowrap}
 .mm-legend-row span{flex:none}
 /* над меню — одна карточка: аллергия и сервисный сбор (адреса точек — в карточках на главной) */
 .mm-intro{margin-bottom:var(--s-4)}
