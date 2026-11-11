@@ -2,8 +2,11 @@
 Контраст кнопки WhatsApp, разметка без дублей id, у картинок alt и размеры, у кнопок type, окна — диалоги с возвратом фокуса,
 видимый фокус, касание, reduced-motion, неразрывный пробел перед ₸, соцсети-превью на всех страницах.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
-import glob, json, os, re, shutil, subprocess, tempfile, unittest
+import glob, json, os, re, shutil, subprocess, sys, tempfile, unittest
 from html.parser import HTMLParser
+
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  главная с кодом из assets/{home,site}.<хэш>.js, как её исполняет браузер
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PAGES = ['index.html', 'kk/index.html', 'en/index.html', 'menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html']
@@ -12,6 +15,19 @@ PAGES = ['index.html', 'kk/index.html', 'en/index.html', 'menyu/index.html', 'kk
 def read(p):
     with open(os.path.join(ROOT, p), encoding='utf-8') as f:
         return f.read()
+
+
+def main_run():
+    """главная, как её исполняет браузер (встроенные скрипты, затем файлы кода defer)"""
+    return as_run(read('index.html'))
+
+
+def main_file(d):
+    """путь к main_run() во временной папке — для прогонов в node"""
+    path = os.path.join(d, 'index.html')
+    with open(path, 'w', encoding='utf-8') as f:
+        f.write(main_run())
+    return path
 
 
 def css_of(html):
@@ -134,7 +150,7 @@ class TestMarkup(unittest.TestCase):
             self.assertRegex(read(p), r'<html lang="(ru|kk|en)">', p)
 
     def test_buttons_drawn_by_script_have_type(self):
-        js = ''.join(re.findall(r'<script>(.*?)</script>', read('index.html'), re.S))
+        js = ''.join(re.findall(r'<script>(.*?)</script>', main_run(), re.S))
         for b in re.findall(r'<button\b[^>]*>', js):
             self.assertIn('type="button"', b, b)
 
@@ -159,7 +175,7 @@ class TestMarkup(unittest.TestCase):
         """перед ₸ — неразрывный пробел (в тексте страниц; подписи aria-label не в счёт)"""
         for p, pg in self.pages.items():
             self.assertNotRegex(''.join(pg.text), r'\d[ \t\n]₸', p)
-        self.assertIn('}&nbsp;₸</div>`', read('index.html'), 'цена в карточке блюда')
+        self.assertIn('}&nbsp;₸</div>`', main_run(), 'цена в карточке блюда')
 
     def test_social_preview(self):
         from PIL import Image
@@ -200,7 +216,7 @@ class TestFocusAndMotion(unittest.TestCase):
             self.assertIn('html{scroll-behavior:auto', media, p)
         css = css_of(read('index.html'))
         self.assertIn('@media(prefers-reduced-motion:reduce){.mm-tabs,.mm-cats{scroll-behavior:auto}.sheet,.mm-card-box{animation:none}}', css)
-        js = ''.join(re.findall(r'<script>(.*?)</script>', read('index.html'), re.S))
+        js = ''.join(re.findall(r'<script>(.*?)</script>', main_run(), re.S))
         for line in js.split('\n'):
             if "'smooth'" in line:
                 self.assertIn('RM.matches', line, 'прокрутка скриптом смотрит на reduced-motion: ' + line.strip()[:120])
@@ -267,7 +283,7 @@ class TestDialogFocus(unittest.TestCase):
             h = os.path.join(d, 'f.js')
             with open(h, 'w', encoding='utf-8') as f:
                 f.write(FOCUS_HARNESS)
-            r = subprocess.run([node, h, os.path.join(ROOT, 'index.html')], capture_output=True, text=True, timeout=60)
+            r = subprocess.run([node, h, main_file(d)], capture_output=True, text=True, timeout=60)
         self.assertEqual(r.returncode, 0, r.stderr[-1500:])
         got = json.loads(r.stdout)
         self.assertEqual(got['modalOpen'], 'modal .x', 'окно филиалов: фокус на «закрыть»')

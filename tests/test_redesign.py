@@ -11,6 +11,8 @@ import glob, gzip, json, os, re, shutil, struct, subprocess, sys, tempfile, unit
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  страница с кодом из assets/{home,site}.<хэш>.js, как её исполняет браузер
 
 PAGES = {'ru': 'index.html', 'kk': 'kk/index.html', 'en': 'en/index.html'}
 V5 = {   # app/src/theme/v5.ts
@@ -329,6 +331,7 @@ class TestPage(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.pages = {l: read(p) for l, p in PAGES.items()}
+        cls.live = {l: as_run(h) for l, h in cls.pages.items()}      # + файлы кода defer (11.11: код главной вынесен)
         cls.i18n = seo.i18n()
 
     def test_seo_and_analytics_kept(self):
@@ -441,7 +444,7 @@ class TestPage(unittest.TestCase):
         цену; само видео кликабельное». В окне огня — видео и метка цены, подписи нет; вся плитка — ссылка: на главной открывает
         меню на «Блюда на гриле» (openGrill, событие cta_grill), на /kk/ и /en/ — меню главной на своём языке сразу на гриле;
         имя для экранного диктора — название и цена; фокус с клавиатуры — у ссылки. «Курица гриль» — во всех кофейнях (11.11)"""
-        hash_re = re.search(r'const MENU_HASH=/(.*?)/;', self.pages['ru']).group(1)
+        hash_re = re.search(r'const MENU_HASH=/(.*?)/;', self.live['ru']).group(1)
         labels = {'ru': 'Курица гриль за 3990 ₸ вместо 6000 ₸ — смотреть в меню', 'kk': 'Грильдегі тауық, 3 990 ₸ — Мәзірді қарау',
                   'en': 'Grilled chicken, 3 990 ₸ — See the menu'}
         for l, html in self.pages.items():
@@ -560,7 +563,7 @@ console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classLi
             with open(h, 'w', encoding='utf-8') as f:
                 f.write(harness)
             for hsh, lang in (('#menu-grill-kk', 'kk'), ('#menu-grill-en', 'en'), ('#menu-grill', 'ru')):
-                r = subprocess.run([node, h, os.path.join(ROOT, 'index.html'), hsh], capture_output=True, text=True, timeout=60)
+                r = subprocess.run([node, h, pm.main_file(d), hsh], capture_output=True, text=True, timeout=60)
                 self.assertEqual(r.returncode, 0, r.stderr[-1500:])
                 got = json.loads(r.stdout.strip().splitlines()[-1])
                 self.assertEqual((got['lang'], got['open'], got['tab']), (lang, True, 'kitchen'), hsh)
@@ -586,12 +589,12 @@ console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classLi
         self.assertNotIn('box-shadow', card)
         self.assertIn('text-align:center', card)
         self.assertIn('justify-content:center', re.search(r'\.loc-links\{([^}]*)\}', css).group(1))
-        draw = re.search(r'function draw\(arr,showDist\)\{(.*?)\n  \}\n', self.pages['ru'], re.S).group(1)
+        draw = re.search(r'function draw\(arr,showDist\)\{(.*?)\n  \}\n', self.live['ru'], re.S).group(1)
         self.assertIn("<small>${b.n.replace(/^\\d+\\s*·\\s*/,'')}</small>", draw, 'окно выбора филиала — без номеров')
         self.assertIn("${b.hours!=='24/7'?", draw, 'окно — без «24/7»')
         for cls, ev, ic in (('ib route', 'modal_route', 'pin'), ('ib', 'modal_call', 'phone'), ('ib wa', 'modal_wa', 'wa')):
             self.assertRegex(draw, r'<a class="%s" [^>]*onclick="track\(\'%s\'[^>]*aria-label="[^"]+" title="[^"]+">\$\{ic\(\'%s\'\)\}</a>' % (cls, ev, ic))
-        self.assertNotIn('br-btn', self.pages['ru'], 'старых кнопок окна нет')
+        self.assertNotIn('br-btn', self.live['ru'], 'старых кнопок окна нет')
 
     def test_whatsapp_green(self):
         css = style(self.pages['ru'])
@@ -765,7 +768,7 @@ console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classLi
         node = find_node()
         if not node:
             self.skipTest('нет node')
-        html = self.pages['ru']
+        html = self.live['ru']
         cards = json.loads(read('menu/cards.json'))
         harness = r"""
 const fs = require('fs'), vm = require('vm');
@@ -853,7 +856,7 @@ console.log(JSON.stringify(out));
         node = find_node()
         if not node:
             self.skipTest('нет node')
-        html = self.pages['ru']
+        html = self.live['ru']
         harness = r"""
 const fs = require('fs'), vm = require('vm');
 const { html, cards } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
@@ -978,7 +981,7 @@ console.log(JSON.stringify(out));
                 self.assertLessEqual(right, vw - 12)
                 self.assertGreaterEqual(right - 38, 0, '%s: лупа целиком в экране на %d px' % (l, vw))
         # лупа — последней в ряду вкладок (после «Полуфабрикаты»)
-        self.assertIn("`<button type=\"button\" class=\"mm-search-btn\"", html)
+        self.assertIn("`<button type=\"button\" class=\"mm-search-btn\"", self.live['ru'], 'лупа — в коде меню (tools/home.js)')
 
     def test_kk_review_has_search_strings(self):
         review = read('menu/kk_review.md')
@@ -998,7 +1001,7 @@ console.log(JSON.stringify(out));
         self.assertIn('border-bottom:1px solid rgba(36,28,21,.06)', re.search(r'(?:^|\})\.mm-it\{([^}]*)\}', css).group(1))
         self.assertIn('.mm-it:last-child{border-bottom:0}', css)
         self.assertNotIn('background', re.search(r'(?:^|\})\.mm-part-h\{([^}]*)\}', css).group(1), 'заголовок части — вне подложки')
-        html = self.pages['ru']
+        html = self.live['ru']
         self.assertIn('<section class="mm-sec${dupT?', html, 'каждый раздел — секция-подложка')
         self.assertIn('<section class="mm-sec mm-results">', html, 'результаты поиска — одна подложка')
         self.assertIn('columns:3', re.search(r'(?:^|\})\.mm-cols\{([^}]*)\}', css).group(1), 'колонки сохранены')
@@ -1102,10 +1105,13 @@ console.log(JSON.stringify(out));
         # 11.11 (владелец: «все плоским»): при наведении ни подъёма, ни тени, ни увеличения — только цвет кнопок
         self.assertNotRegex(hov, r'transform|translate|scale|shadow')
         self.assertNotRegex(re.search(r'\.rv\.rv-in\{([^}]*)\}', css).group(1), r'(?:^|;)(?:top|margin|height|width):', 'только transform и opacity')
+        site = seo.site_js()[1]
+        self.assertEqual(site.count(seo.script_body(seo.MOTION_JS)), 1, 'движение — в общем файле assets/site.<хэш>.js')
         for l, html in self.pages.items():
-            self.assertEqual(html.count(seo.MOTION_JS), 1, l)
-            self.assertLess(html.index(seo.MOTION_JS), html.index('</body>'))
-        self.assertIn('if(window.revealMenu) revealMenu();', self.pages['ru'], 'подложки меню появляются при прокрутке')
+            self.assertNotIn(seo.MOTION_JS, html, '%s: встроенного скрипта движения нет' % l)
+            self.assertEqual(html.count(seo.site_tag()), 1, l)
+            self.assertTrue(html.rstrip().endswith(seo.site_tag() + '\n</body>\n</html>'), '%s: общий файл — в конце <body>' % l)
+        self.assertIn('if(window.revealMenu) revealMenu();', self.live['ru'], 'подложки меню появляются при прокрутке')
 
     def test_menu_overlay_css(self):
         """этап 2: разделы не капсом и без разрядки, строки без подчёркиваний, NEW пилюлей olive, легенда пилюлями,
@@ -1152,10 +1158,10 @@ console.log(JSON.stringify(out));
         self.assertIn('background:var(--c-accent);color:var(--c-on-accent)', rule('.mm-card-p'))
         self.assertIn('border-radius:var(--r-lg)', rule('.mm-card-pic'))
         self.assertNotRegex(css.replace('--c-brand-cream:#FEF1E7', ''), r'(?i)#FEF1E7|#F7E7D8|#F7EFE2|254,\s*241,\s*231', 'крема в меню нет (кроме токена бренда)')
-        self.assertNotRegex(self.pages['ru'], OLD_FONTS)
-        self.assertIn('<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>', self.pages['ru'])
+        self.assertNotRegex(self.live['ru'], OLD_FONTS)
+        self.assertIn('<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>', self.live['ru'])
         for sig in ('function openMenu(mode){', 'function openCard(name, opener, sec){'):
-            self.assertIn(sig, self.pages['ru'], 'сигнатура прежняя')
+            self.assertIn(sig, self.live['ru'], 'сигнатура прежняя')
 
     def test_text_menus_on_tokens(self):
         """этап 2: /menyu, /kk/menyu, /en/menu — токены v5 главной, Geologica + Montserrat, фон белый, без крема; шапка —
@@ -1261,7 +1267,9 @@ console.log(JSON.stringify(out));
                 self.assertIn(a, attrs, l)
             self.assertNotIn('autoplay', attrs, '%s: играет только на экране — через IntersectionObserver' % l)
             self.assertEqual((vid.group(2), vid.group(3)), (V['webm'], V['mp4']))
-            self.assertIn(seo.SUB_JS, html, l)
+            self.assertNotIn(seo.SUB_JS, html, l)
+            self.assertIn(seo.script_body(seo.SUB_JS), seo.site_js()[1], 'загрузчик — в общем файле assets/site.<хэш>.js')
+            self.assertIn(seo.site_tag(), html, l)
             self.assertNotRegex(html, r'<link[^>]+latte-pour', '%s: видео не в preload' % l)
             self.assertNotRegex(html, r'(?i)lottie|brewing-coffee|sub-anim', '%s: от Lottie ничего не осталось' % l)
         css = style(self.pages['ru'])
@@ -1317,7 +1325,7 @@ console.log(JSON.stringify(out));
     def test_menu_overlay_header(self):
         """шапка меню: одна строка «Кофейни / Bakery to go · язык · закрыть», ниже вкладки и разделы — пилюлями;
         кнопки «Меню Жандосова» и блока «ME / NU» с адресами нет; аллергия и сервисный сбор — одной строкой"""
-        html = self.pages['ru']
+        html = self.live['ru']
         head = re.search(r'<div class="mm-head">(.*?)\n  </div>\n  <div class="mm-body">', html, re.S).group(1)
         top = re.search(r'<div class="mm-top">(.*?)\n    </div>\n', head, re.S).group(1)
         self.assertEqual(re.findall(r'\n      <(?:div|button) class="([\w-]+)"', top), ['mm-mode', 'mm-lang-wrap', 'mm-x'])
@@ -1348,7 +1356,7 @@ console.log(JSON.stringify(out));
         node = find_node()
         if not node:
             self.skipTest('нет node')
-        html = self.pages['ru']
+        html = self.live['ru']
         harness = r"""
 const fs = require('fs'), vm = require('vm');
 const { html } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));

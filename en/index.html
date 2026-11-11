@@ -390,7 +390,6 @@ html{scroll-behavior:auto}
           </div>
         </div>
     </a>
-<script>(function(){var v=document.querySelector('.grill-video');if(!v||!('IntersectionObserver'in window))return;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}v.muted=true;function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>
     <div class="promo-tile sub-tile">
       <!-- видео: Mixkit «Latte art» (https://mixkit.co/free-stock-video/latte-art-810/), Mixkit Stock Video Free License; клип — tools/build_sub_video.py; docs/LICENSES-media.md -->
       <video class="sub-video" poster="/assets/latte-pour-poster.eace987c.webp" width="960" height="654" muted loop playsinline preload="none" tabindex="-1" aria-hidden="true">
@@ -399,7 +398,6 @@ html{scroll-behavior:auto}
       </video>
       <p class="tile-cap"><b class="promo-t">coffee subscription</b> <span class="promo-s">coming soon, in the app</span></p>
     </div>
-<script>(function(){var v=document.querySelector('.sub-video');if(!v||!('IntersectionObserver'in window))return;try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}v.muted=true;function play(){var p=v.play();if(p&&p.catch)p.catch(function(){})}function start(){new IntersectionObserver(function(es){es[es.length-1].isIntersecting?play():v.pause()},{threshold:.25}).observe(v)}if(document.readyState==='complete')start();else addEventListener('load',start)})();</script>
     </div>
   </section>
 
@@ -548,14 +546,6 @@ html{scroll-behavior:auto}
   </div>
 </footer>
 <a class="fab-menu" href="/#menu-en" onclick="track('cta_menu',{src:'hbar_m'})"><svg class="ic" aria-hidden="true" focusable="false"><use href="#i-menu"/></svg>Menu</a>
-<script>(function(){try{if(matchMedia('(prefers-reduced-motion: reduce)').matches)return}catch(e){return;}if(!('IntersectionObserver'in window))return;var d=document,SEL='.promo,.story-photo,.stats>div,.f-grid article,.sc-row img,.loc-card,.faq-box,.contact';function prep(els,cls,root,step,max){var vh=(root?root.clientHeight:window.innerHeight)||0,io=new IntersectionObserver(function(es){es.forEach(function(e){if(!e.isIntersecting)return;var el=e.target;io.unobserve(el);el.classList.add('rv-in');setTimeout(function(){el.classList.remove('rv','rv-in');if(cls)el.classList.remove(cls);el.style.removeProperty('--rv-d')},1000)})},{root:root||null,threshold:.15,rootMargin:'0px 0px -10% 0px'});els.forEach(function(el){var r=el.getBoundingClientRect();if(r.top<vh*.9)return;var i=0,s=el.previousElementSibling;while(s){if(s.matches&&s.matches(el.parentNode&&el.parentNode.matches&&el.parentNode.matches('.mm-cols')?'.mm-sec':SEL))i++;s=s.previousElementSibling}el.style.setProperty('--rv-d',(i%max)*step+'ms');el.classList.add('rv');if(cls)el.classList.add(cls);io.observe(el)})}prep([].slice.call(d.querySelectorAll(SEL)),'',null,75,4);window.revealMenu=function(){var m=d.getElementById('menu-modal');if(!m)return;prep([].slice.call(m.querySelectorAll('.mm-sec')),'rv-fast',m,60,3)};if(!matchMedia('(min-width:901px)').matches)return;var px=[].slice.call(d.querySelectorAll('.hero-zone .logo-art,.story-photo img')),on=[],tick=false;if(!px.length)return;d.documentElement.classList.add('px-on');function upd(){tick=false;px.forEach(function(el,k){if(!on[k])return;var f=el.parentNode.getBoundingClientRect();var p=Math.max(-1,Math.min(1,(f.top+f.height/2-window.innerHeight/2)/window.innerHeight));el.style.setProperty('--py',(p*-.06*f.height).toFixed(1)+'px')})}var pio=new IntersectionObserver(function(es){es.forEach(function(e){on[px.indexOf(e.target)]=e.isIntersecting})});px.forEach(function(el){pio.observe(el)});addEventListener('scroll',function(){if(!tick){tick=true;requestAnimationFrame(upd)}},{passive:true});upd()})();</script>
-<script>
-/* Аналитика — после load, в простое, как на /ugolok: видно переходы на меню из поиска и ИИ-ассистентов */
-(function(){
-  function loadGtag(){var s=document.createElement('script');s.src='https://www.googletagmanager.com/gtag/js?id=G-D50YPM8RMK';s.async=true;document.head.appendChild(s)}
-  function idle(){('requestIdleCallback'in window)?requestIdleCallback(loadGtag,{timeout:4000}):setTimeout(loadGtag,1500)}
-  if(document.readyState==='complete')idle();else addEventListener('load',idle);
-})();
-</script>
+<script src="/assets/site.4337af88.js" defer></script>
 </body>
 </html>

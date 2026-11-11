@@ -7,6 +7,8 @@ import html as H, json, os, re, sys, unittest
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  главная с кодом из assets/{home,site}.<хэш>.js
 SITE = 'https://tap.delcappuccino.kz/'
 HOME = {'ru': ('index.html', SITE), 'kk': ('kk/index.html', SITE + 'kk/'), 'en': ('en/index.html', SITE + 'en/')}
 MENU = {'ru': ('menyu/index.html', SITE + 'menyu'), 'kk': ('kk/menyu/index.html', SITE + 'kk/menyu'),
@@ -116,16 +118,19 @@ class TestVersions(unittest.TestCase):
             # 11.11: + запасной переход между страницами (seo.VT_JS — там, где браузер не умеет view transitions)
             # 11.11: + язык — один выбор на весь сайт (seo.LANG_JS); без JS страница та же
             # 11.11: + общий файл «ближайшая точка — сверху» (<script src=/assets/near.<хэш>.js defer>, tests/test_near.py); без JS порядок тот же
-            self.assertEqual(len(re.findall(r'<script\b', page)), 10, 'аналитика (2), переход, язык, JSON-LD, заставка, видео подписки и курицы, движение, near')
-            self.assertEqual(re.findall(r'<script\b[^>]*\bsrc=[^>]*>', page), [seo.near_tag(self.main).replace('</script>', '')], 'внешний — только near')
-            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or "querySelector('.sub-video')" in s
-                                or "querySelector('.grill-video')" in s or s == seo.VT_JS or s == seo.LANG_JS
-                                or "classList.add('rv-in')" in s for s in scripts))
-            self.assertIn(seo.MOTION_JS, page)
-            self.assertIn(seo.MOTION_JS, self.main, 'движение — тот же скрипт, что на главной')
-            self.assertIn(seo.SUB_JS, page)
-            self.assertIn(seo.SUB_JS, self.main, 'видео подписки — тот же загрузчик, что на главной')
-            self.assertIn(seo.GRILL_JS, page)
+            # 11.11 (запас веса): движение, загрузчики видео подписки и курицы и загрузка gtag.js — один общий файл с главной
+            # assets/site.<хэш>.js (defer); встроенными остались ранние скрипты <head> и JSON-LD
+            self.assertEqual(len(re.findall(r'<script\b', page)), 7, 'аналитика, переход, язык, заставка, JSON-LD, near, общий код')
+            self.assertEqual(re.findall(r'<script\b[^>]*\bsrc=[^>]*>', page),
+                             [t.replace('</script>', '') for t in (seo.near_tag(self.main), seo.site_tag())], 'внешние — near и общий код')
+            self.assertTrue(all('gtag' in s or '"@context"' in s or "classList.add('intro-on')" in s or s == seo.VT_JS or s == seo.LANG_JS
+                                for s in scripts))
+            site = seo.site_js()[1]
+            for js in (seo.MOTION_JS, seo.SUB_JS, seo.GRILL_JS):
+                self.assertNotIn(js, page)
+                self.assertIn(seo.script_body(js), site, 'движение и видео — в общем файле')
+            self.assertIn('googletagmanager.com/gtag/js?id=%s' % seo.GA_ID, site, 'gtag.js — после load, из общего файла')
+            self.assertIn(seo.site_tag(), self.main, 'общий код — тот же файл, что на главной')
             intro = [s for s in scripts if 'intro-on' in s]
             self.assertEqual(len(intro), 1)
             self.assertIn('<script>%s</script>' % intro[0], self.main.split('</head>')[0], 'заставка — тот же скрипт, что на главной')
@@ -147,7 +152,7 @@ class TestVersions(unittest.TestCase):
             self.assertIn('href="https://delcappuccino.kz/"', page)
             self.assertIn('href="/%s"' % MENU[l][1][len(SITE):], page, 'ссылка на текстовое меню')
             # каждая ссылка на меню главной проходит через MENU_HASH из её JS — иначе меню не откроется
-            js_re = re.search(r'const MENU_HASH=/(.*?)/;', self.main).group(1)
+            js_re = re.search(r'const MENU_HASH=/(.*?)/;', as_run(self.main)).group(1)
             for h in re.findall(r'href="/(#menu[^"]*)"', page):
                 self.assertRegex(h, js_re, '%s: %s' % (l, h))
             for wa in re.findall(r'href="(https://wa\.me/[^"]+)"', page):

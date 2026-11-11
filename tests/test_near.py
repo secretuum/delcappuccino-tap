@@ -20,6 +20,8 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.insert(0, os.path.join(ROOT, 'tools'))
 import seo_jsonld as seo  # noqa: E402
 import feedback_page as fb  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from test_perf import as_run  # noqa: E402  главная с кодом из assets/{home,site}.<хэш>.js, как её исполняет браузер
 
 WITH = ['index.html', 'kk/index.html', 'en/index.html', 'otzyv/index.html']
 WITHOUT = ['menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html', 'ugolok/index.html', '404.html']
@@ -114,7 +116,7 @@ class TestNearFile(unittest.TestCase):
         self.assertRegex(os.path.basename(self.path), r'^near\.[0-9a-f]{8}\.js$', 'имя с хэшем — sw.js держит его в кэше навсегда')
         sw = read('sw.js')
         self.assertRegex('/assets/' + os.path.basename(self.path), re.search(r"var HASHED = new RegExp\('(.*)'\);", sw).group(1).replace('\\\\', '\\'))
-        self.assertEqual(seo.stale_near(seo.outputs(self.main)), [])
+        self.assertEqual(seo.stale_js(seo.outputs(self.main)), [])
 
     def test_tag_only_where_cards_are(self):
         tag = seo.near_tag(self.main)
@@ -133,7 +135,7 @@ class TestNearFile(unittest.TestCase):
 
     def test_main_reuses_shared_file(self):
         """dist и геолокация окна выбора филиала вынесены — на главной их больше нет, окно зовёт window.dcNear"""
-        m = self.main
+        m = as_run(self.main)            # код окна — в assets/home.<хэш>.js (tools/home.js)
         self.assertNotIn('function dist(', m)
         self.assertNotIn('getCurrentPosition', m)
         self.assertNotIn('toFixed(1)} км', m)
@@ -290,7 +292,7 @@ const state = () => ({
 })();
 """
 
-# Окно выбора филиала главной: все встроенные скрипты index.html на общей заглушке (как в tests/test_analytics.py) + near.js
+# Окно выбора филиала главной: все встроенные скрипты index.html и код assets/home.*.js на общей заглушке (как в tests/test_analytics.py) + near.js
 MODAL_HARNESS = r"""
 const fs = require('fs'), vm = require('vm');
 const { html, near, geo } = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
@@ -478,7 +480,7 @@ class TestNearInNode(unittest.TestCase):
     # ── окно выбора филиала главной — на общем файле ──
     def test_modal_uses_shared_file(self):
         bn = [b['phone'] for b in seo.branches(self.main)]
-        out = self.run_js(MODAL_HARNESS, {'html': self.main, 'near': self.code, 'geo': NEAR_03})
+        out = self.run_js(MODAL_HARNESS, {'html': as_run(self.main), 'near': self.code, 'geo': NEAR_03})
         order = re.findall(r'href="tel:([^"]+)"', out['list'])
         self.assertEqual(order, sorted(bn, key=lambda p: haversine(NEAR_03, self.points[p])))
         self.assertEqual(re.findall(r'<span class="dist ym-hide-content">([^<]*)</span>', out['list']),
@@ -486,11 +488,11 @@ class TestNearInNode(unittest.TestCase):
         self.assertTrue(out['status'].startswith('Ближайший к вам филиал — сверху.'))
         self.assertEqual(out['gcp'], [{'timeout': 4000, 'maximumAge': 300000}], 'тайм-аут окна — прежние 4 с')
         self.assertNotIn(fb.EXTRA_POINTS[0]['phone'], out['list'], 'Sputnik в окне выбора нет')
-        out = self.run_js(MODAL_HARNESS, {'html': self.main, 'near': self.code, 'geo': 'denied'})
+        out = self.run_js(MODAL_HARNESS, {'html': as_run(self.main), 'near': self.code, 'geo': 'denied'})
         self.assertEqual(re.findall(r'href="tel:([^"]+)"', out['list']), bn)
         self.assertTrue(out['status'].startswith('Не удалось определить геолокацию — выберите филиал вручную.'))
         self.assertNotIn('class="dist', out['list'])
-        out = self.run_js(MODAL_HARNESS, {'html': self.main, 'near': None, 'geo': NEAR_03})
+        out = self.run_js(MODAL_HARNESS, {'html': as_run(self.main), 'near': None, 'geo': NEAR_03})
         self.assertEqual(re.findall(r'href="tel:([^"]+)"', out['list']), bn, 'общий файл не загрузился — окно работает, как без геолокации')
         self.assertTrue(out['status'].startswith('Выберите филиал вручную.'))
         self.assertEqual(out['gcp'], [])

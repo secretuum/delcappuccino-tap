@@ -16,6 +16,8 @@ manifest.webmanifest — валидный JSON с существующими и�
 версия кэша в sw.js соответствует хэшу index.html (tools/sw_version.py) — иначе предупреждение.
 Стратегия sw.js (TestServiceWorkerStrategy): страницы, HTML и menu/cards.json — сначала сеть с тайм-аутом, офлайн — из
 кэша; картинки — из кэша с обновлением в фоне; ассеты с хэшем — только кэш. Поведение гоняется в node (если он есть).
+Код страниц (TestCodeFiles, 11.11.2026): assets/home.<хэш>.js и assets/site.<хэш>.js — пределы gzip, теги defer, оболочка SW,
+ранний клик до выполнения кода. as_run(html) — страница, как её исполняет браузер (для прогонов на заглушке DOM в других тестах).
 """
 import glob, gzip, hashlib, json, os, re, shutil, subprocess, sys, tempfile, unittest
 from html.parser import HTMLParser
@@ -491,6 +493,26 @@ def find_node():
     return shutil.which('node') or (sorted(glob.glob(os.path.expanduser('~/.nvm/versions/node/*/bin/node')), key=ver) or [None])[-1]
 
 
+# Код страниц — файлы с хэшем (11.11.2026, tools/seo_jsonld.py): assets/home.<хэш>.js — код главной, assets/site.<хэш>.js —
+# общий код /, /kk/, /en/; в страницах — <script src="/assets/…" defer>. near.*.js тесты грузят сами (tests/test_near.py).
+CODE_TAG_RE = re.compile(r'<script src="/assets/((?:home|site)\.[0-9a-f]{8}\.js)" defer></script>')
+
+
+def deferred_js(html):
+    """тексты файлов кода страницы (home, site) — по порядку тегов"""
+    out = []
+    for name in CODE_TAG_RE.findall(html):
+        with open(os.path.join(ROOT, 'assets', name), encoding='utf-8') as f:
+            out.append(f.read())
+    return out
+
+
+def as_run(html):
+    """страница, как её исполняет браузер: встроенные скрипты по ходу разбора, затем файлы defer по порядку тегов — они
+    встают встроенными в конец <body> (для прогонов на заглушке DOM и поиска кода страницы)"""
+    return html.replace('</body>', ''.join('<script>%s</script>\n' % t for t in deferred_js(html)) + '</body>', 1)
+
+
 # Прогон sw.js в node с подставными caches / fetch / таймерами: какой ответ получает страница и что остаётся в кэше.
 SW_HARNESS = r"""
 const fs = require('fs'), vm = require('vm');
@@ -673,6 +695,161 @@ class TestServiceWorkerStrategy(unittest.TestCase):
             self.assertTrue(r.get('passthrough'), '%s: /media/app/ не перехватывается (fetch-обработчик выходит без respondWith)' % name)
             self.assertEqual((r['fetched'], r['waits']), (0, 0), '%s: SW сам не ходит в сеть и не пишет в кэш' % name)
         self.assertFalse(self.res['image_swr'].get('passthrough'), 'картинки вне /media/app/ SW по-прежнему перехватывает')
+
+
+# ── Код страниц — файлы с хэшем (11.11.2026: запас веса главной и /kk/ — выносом, пределы test_weight не поднимали) ──
+# Предел — gzip -9, как у страниц: вес не должен бесконтрольно переехать в файлы. Было при выносе: home 12,5 КБ, site 1,5 КБ.
+CODE_GZIP_LIMIT = {'home': 14 * 1024, 'site': 2 * 1024}
+CODE_PAGES = {'home': ['index.html'], 'site': ['index.html', 'kk/index.html', 'en/index.html']}
+NO_CODE_PAGES = ['404.html', 'ugolok/index.html', 'menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html', 'otzyv/index.html']
+
+# Ранний клик: встроенные скрипты главной без файлов кода, нажатия (onclick из разметки), потом код главной — на заглушке DOM
+# из tests/test_polish_main.py (FOCUS_HARNESS до ctx.window); argv: страница, код главной, нажатия (JSON), адрес #…
+EARLY_TAIL = r"""
+ctx.window = ctx; vm.createContext(ctx); scripts.forEach(s => vm.runInContext(s, ctx));
+const home = fs.readFileSync(process.argv[3], 'utf8'), clicks = JSON.parse(process.argv[4]);
+const R = c => vm.runInContext(c, ctx), out = { errors: [] };
+for (const h of clicks) { try { R('(function(event){' + h + '}).call(null, { preventDefault() {} })'); } catch (e) { out.errors.push(String(e).split('\n')[0]); } }
+out.queued = R('(window.dcQ || []).map(c => c[0] + "(" + [...c[1]].join(",") + ")")');
+vm.runInContext(home, ctx);
+out.menu = els['menu-modal'].classList.contains('open');
+out.modal = els['modal'].classList.contains('open');
+out.dcQ = R('window.dcQ');
+out.events = R('dataLayer').map(a => [...a]).filter(a => a[0] === 'event').map(a => a[1]);
+out.real = R('[openMenu, openModal, openGrill, goHome].map(f => String(f).indexOf("dcQ") < 0)');
+console.log(JSON.stringify(out));
+"""
+
+
+class TestCodeFiles(unittest.TestCase):
+    """код главной (tools/home.js → assets/home.<хэш>.js) и общий код /, /kk/, /en/ (assets/site.<хэш>.js): в страницах —
+    <script src defer>, имя по хэшу, вес под пределом, sw.js кладёт их в оболочку; ранний клик до выполнения кода не ломается"""
+
+    @classmethod
+    def setUpClass(cls):
+        sys.path.insert(0, os.path.join(ROOT, 'tools'))
+        import seo_jsonld as seo
+        cls.seo = seo
+        cls.files = {'home': seo.home_js(), 'site': seo.site_js()}
+        cls.read = staticmethod(lambda p: open(os.path.join(ROOT, p), encoding='utf-8').read())
+        cls.main = cls.read('index.html')
+
+    def test_files_from_generator(self):
+        for name, (path, text) in self.files.items():
+            self.assertRegex(os.path.basename(path), r'^%s\.[0-9a-f]{8}\.js$' % name, 'имя с хэшем — sw.js держит файл в кэше навсегда')
+            with open(path, encoding='utf-8') as f:
+                self.assertEqual(f.read(), text, '%s: python3 tools/seo_jsonld.py' % name)
+            self.assertEqual(glob.glob(os.path.join(ROOT, 'assets', '%s.*.js' % name)), [path], '%s: один файл (старый — git rm)' % name)
+            node = find_node()           # разбор JS — самим node (регулярки и шаблонные строки запасной проверке не по зубам)
+            if node:
+                r = subprocess.run([node, '--check', path], capture_output=True, text=True, timeout=30)
+                self.assertEqual(r.returncode, 0, '%s: %s' % (name, r.stderr[-800:]))
+        self.assertEqual(self.files['home'][1].split('\n', 1)[1], self.read('tools/home.js'), 'код главной — tools/home.js байт в байт')
+
+    def test_gzip_limits(self):
+        for name, (path, text) in self.files.items():
+            gz = len(gzip.compress(text.encode('utf-8'), 9))
+            self.assertLessEqual(gz, CODE_GZIP_LIMIT[name], '%s: %d байт gzip > %d — вес переехал в файл кода' % (name, gz, CODE_GZIP_LIMIT[name]))
+
+    def test_tags_defer_on_their_pages(self):
+        for name, (path, _) in self.files.items():
+            tag = '<script src="/assets/%s" defer></script>' % os.path.basename(path)
+            for p in CODE_PAGES[name]:
+                html = self.read(p)
+                self.assertEqual(html.count('/assets/%s.' % name), 1, p)
+                self.assertEqual(html.count(tag), 1, '%s: %s — тег с defer на текущее имя' % (p, name))
+            for p in NO_CODE_PAGES:
+                self.assertNotIn('/assets/%s.' % name, self.read(p), p)
+        site = '<script src="/assets/%s" defer></script>' % os.path.basename(self.files['site'][0])
+        for p in CODE_PAGES['site']:
+            self.assertTrue(self.read(p).endswith('\n%s\n</body>\n</html>\n' % site), '%s: общий код — в конце <body>' % p)
+        home = os.path.basename(self.files['home'][0])
+        self.assertRegex(self.main, r"\n\};\n</script>\n<script src=\"/assets/%s\" defer></script>\n" % re.escape(home),
+                         'код главной — сразу за встроенными данными меню')
+
+    def test_main_keeps_data_not_code(self):
+        """в index.html — данные (их правят там и читают генераторы), ранние скрипты <head>, заглушки раннего клика и пилюля
+        точки (текст в шапке — до отрисовки); кода меню, окна, карточки, поиска, движения и видео в странице нет"""
+        inline = re.findall(r'<script>([\s\S]*?)</script>', self.main)
+        data = [s for s in inline if 'const MENU_KITCHEN = [' in s]
+        self.assertEqual(len(data), 1)
+        self.assertNotRegex(data[0], r'\bfunction\b|=>', 'в скрипте данных — только данные')
+        for name in ('BRANCHES', 'MENU_KITCHEN', 'MENU_BAR', 'MENU_DESSERT', 'MENU_FROZEN', 'TOGO_DESSERT', 'TOGO_FROZEN', 'TOGO_BAR'):
+            self.assertIn('const %s = [' % name, data[0], name)
+        code = '\n'.join(inline)
+        for sig in ('function openMenu(', 'function openModal(', 'function openCard(', 'function renderFeed(', 'function menuSearch(',
+                    'function openGrill(', 'function goHome(', 'function waLink(', "querySelector('.grill-video')", 'loadGtag'):
+            self.assertNotIn(sig, code, 'в странице: ' + sig)
+            self.assertIn(sig, as_run(self.main), 'в файлах кода: ' + sig)
+        for js in (self.seo.MOTION_JS, self.seo.SUB_JS):
+            self.assertNotIn(self.seo.script_body(js), code)
+        self.assertIn("register('sw.js')", code, 'service worker — регистрируется, как раньше')
+
+    def test_sw_precaches_code(self):
+        sw = self.read('sw.js')
+        pre = re.search(r'PRECACHE\s*=\s*\[(.*?)\]', sw, re.S).group(1)
+        for name, (path, _) in self.files.items():
+            self.assertIn("'assets/%s'" % os.path.basename(path), pre, '%s: в оболочке — меню офлайн, как с кодом в странице' % name)
+            self.assertRegex('/assets/' + os.path.basename(path), re.search(r"var HASHED = new RegExp\('(.*)'\);", sw).group(1).replace('\\\\', '\\'))
+        r = subprocess.run([sys.executable, os.path.join(ROOT, 'tools', 'sw_version.py'), '--check'], capture_output=True, text=True)
+        self.assertEqual(r.returncode, 0, r.stdout + r.stderr)
+
+    def test_stubs_cover_early_buttons(self):
+        """кнопки, которые видны до кода главной (всё до окон): их функции — заглушки перед <header> (вызов ждёт кода в dcQ)"""
+        html = self.main
+        stub = re.search(r"\[((?:'\w+',?)+)\]\.forEach\(function\(n\)\{w\[n\]=function\(\)\{q\.push\(\[n,\[\]\.slice\.call\(arguments\)\]\)\}\}\)", html)
+        self.assertIsNotNone(stub, 'заглушки раннего клика')
+        self.assertLess(stub.start(), html.index('<header>'), 'заглушки — до первой кнопки')
+        names = set(re.findall(r"'(\w+)'", stub.group(1)))
+        markup = re.sub(r'<script\b.*?</script>', '', html.split('<div class="modal" id="modal"')[0], flags=re.S)
+        called = set()
+        for h in re.findall(r'\son(?:click|input|toggle)="([^"]*)"', markup):
+            called |= set(re.findall(r'(?<![\w.])([A-Za-z_]\w*)\(', h))
+        self.assertEqual(called - {'track', 'if'}, names, 'у каждой функции из onclick видимых кнопок — заглушка, и лишних нет')
+        home = self.files['home'][1]
+        for n in names:
+            self.assertRegex(home, r'\nfunction %s\(' % n, n)
+        for h in re.findall(r'\son(?:click|input)="([^"]*)"', html.split('<div class="modal" id="modal"')[1].split('</body>')[0]):
+            for n in set(re.findall(r'(?<![\w.])([A-Za-z_]\w*)\(', h)) - {'track'}:
+                self.assertRegex(home, r'\nfunction %s\(' % n, 'окна открываются только кодом — их кнопки зовут его функции: ' + n)
+
+    def test_early_click_in_node(self):
+        node = find_node()
+        if not node:
+            self.skipTest('нет node')
+        import test_polish_main as pm
+        harness = pm.FOCUS_HARNESS.split('ctx.window = ctx;')[0].replace("location: { hash: '', pathname: '/', search: '' }",
+                                                                           "location: { hash: process.argv[5], pathname: '/', search: '' }")
+        self.assertIn('process.argv[5]', harness)
+        on = lambda rx: re.search(rx + r'[^>]*onclick="([^"]*)"', self.main).group(1)
+        fab, pill = on(r'<button class="fab-menu"'), on(r'<button class="pill-point" id="pill-point"')
+        grill, brand = on(r'<a class="promo-tile grill-promo"'), on(r'<a class="brand"')
+        with tempfile.TemporaryDirectory() as d:
+            h, home = os.path.join(d, 'e.js'), self.files['home'][0]
+            with open(h, 'w', encoding='utf-8') as f:
+                f.write(harness + EARLY_TAIL)
+
+            def run(clicks, hsh=''):
+                r = subprocess.run([node, h, INDEX, home, json.dumps(clicks), hsh], capture_output=True, text=True, timeout=60)
+                self.assertEqual(r.returncode, 0, r.stderr[-1500:])
+                return json.loads(r.stdout.strip().splitlines()[-1])
+            got = run([fab])
+            self.assertEqual((got['errors'], got['queued']), ([], ['openMenu()']), 'нажатие до кода — без ошибки, вызов ждёт')
+            self.assertEqual((got['menu'], got['modal'], got['dcQ']), (True, False, None), 'код загрузился — меню открылось')
+            self.assertEqual(got['events'], ['cta_menu', 'menu_open'], 'события те же: нажатие и открытие — по разу')
+            self.assertEqual(got['real'], [True] * 4, 'заглушки заменены функциями кода')
+            got = run([pill, fab])
+            self.assertEqual((got['errors'], got['queued']), ([], ['openModal(route)', 'openMenu()']))
+            self.assertEqual((got['menu'], got['modal']), (True, False), 'выполняется последнее нажатие, окна не громоздятся')
+            self.assertEqual(got['events'], ['cta_route', 'cta_menu', 'menu_open'])
+            got = run([fab], '#menu')
+            self.assertEqual((got['menu'], got['events']), (True, ['cta_menu', 'menu_open']), 'меню уже открыто по #menu — второго открытия нет')
+            got = run([grill])
+            self.assertEqual((got['errors'], got['menu'], got['events']), ([], True, ['cta_grill', 'menu_open']), '«Курица гриль» — тоже ждёт кода')
+            got = run([brand])
+            self.assertEqual((got['errors'], got['queued'], got['menu']), ([], ['goHome()'], False))
+            got = run([])
+            self.assertEqual((got['errors'], got['menu'], got['modal'], got['events']), ([], False, False, []), 'без нажатий — ничего не открылось')
 
 
 if __name__ == '__main__':

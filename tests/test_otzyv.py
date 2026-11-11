@@ -194,7 +194,7 @@ class TestPhones(Base):
     def test_new_point_in_branches_stops_build(self):
         # точку внесли в BRANCHES — генератор не должен показать её дважды: выход с ошибкой «уберите из EXTRA_POINTS»
         line = "  {n:'06 · Sputnik Mall', addr:'Мамыр-1, 8а', phone:'%s', geo:[43.2,76.8], hours:'24/7'},\n" % NEW_PHONE
-        changed = self.main.replace('\n];\n\nfunction waLink', '\n' + line.rstrip('\n') + '\n];\n\nfunction waLink', 1)
+        changed = re.sub(r'(const BRANCHES = \[.*?)(\n\];)', lambda m: m.group(1) + '\n' + line.rstrip('\n') + m.group(2), self.main, count=1, flags=re.S)
         self.assertNotEqual(changed, self.main)
         with self.assertRaises(SystemExit) as e:
             fb.points(changed)

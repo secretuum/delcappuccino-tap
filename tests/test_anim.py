@@ -129,7 +129,7 @@ class TestAnimationCss(unittest.TestCase):
         self.assertEqual(rs['.modal,.mm-card'], 'contain:layout paint', 'оверлеи (у меню — нет: в нём fixed-карточка и «!»)')
         self.assertEqual(rs['.ovl .grill-ticker span'], 'animation-play-state:paused')
         self.assertNotIn('will-change', rs.get('.menu-modal', '') + rs.get('#mm-cols', ''), 'постоянного will-change на больших узлах нет')
-        js = read('index.html')
+        js = pm.main_run()
         self.assertIn("RM.matches?go():requestAnimationFrame(()=>requestAnimationFrame(go))", js, 'вход — через двойной rAF')
         self.assertIn("gone(c, ()=>{ c.classList.add('pre'); scrollToMenuEl(document.getElementById(id), false); enter(c); });", js,
                       'к разделу: прыжок прокрутки — пока лента невидима')
@@ -160,7 +160,7 @@ class TestAnimationCss(unittest.TestCase):
         for p in ('index.html', 'kk/index.html', 'en/index.html'):
             self.assertIn(('.lang-list', 'animation:none;transition:none'),
                           [(q, b) for m, q, b in rules(css_of(read(p))) if m == '@media(prefers-reduced-motion:reduce)'], p)
-        js = read('index.html')
+        js = pm.main_run()
         self.assertIn("function gone(el,done){if(!el)return;if(RM.matches){el.classList.remove('closing');done&&done();return}", js)
         self.assertIn("matchMedia('(prefers-reduced-motion: reduce)').matches)return;", seo.VT_JS)
 
@@ -248,7 +248,7 @@ class TestAnimationInNode(unittest.TestCase):
                 f.write(h + HARNESS_TAIL)
             with open(cards, 'w', encoding='utf-8') as f:
                 f.write(read('menu/cards.json'))
-            r = subprocess.run([node, js, os.path.join(ROOT, 'index.html'), cards], capture_output=True, text=True, timeout=60)
+            r = subprocess.run([node, js, pm.main_file(d), cards], capture_output=True, text=True, timeout=60)
         self.assertEqual(r.returncode, 0, r.stderr[-1500:])
         return json.loads(r.stdout.strip().splitlines()[-1])
 
