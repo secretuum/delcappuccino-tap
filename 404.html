@@ -39,6 +39,10 @@ track('page_not_found',{path:location.pathname});</script>
   --btn-font:var(--font-display);
 }
 *{box-sizing:border-box;margin:0;padding:0}
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;display:flex;flex-direction:column}
 :focus-visible{outline:2px solid var(--c-olive);outline-offset:2px}
 /* контраст: светлая олива на подложке — 2,8:1; рамка фокуса (≥3:1) и мелкая подпись (≥4,5:1) — --c-olive-text (токен главной, 5,0:1 на подложке) */

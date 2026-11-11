@@ -197,6 +197,14 @@ def page(html):
 %(tokens)s
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+/* смена языка (владелец 11.11: «мягкая смена текста»): текст меняется сразу, страница проявляется заново; reduced-motion — без */
+@keyframes lang-in{from{opacity:0}}
+main.lang-in{animation:lang-in .24s ease-out}
+@media(prefers-reduced-motion:reduce){main.lang-in{animation:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
 a{color:inherit}
@@ -298,6 +306,8 @@ const I18N = %(i18n)s;
 /* язык: тексты [data-i18n], ссылки WhatsApp [data-wa] (сообщение на этом языке), «на главную» [data-home] — на главную языка */
 function setLang(lang, quiet){
   const d = Object.prototype.hasOwnProperty.call(I18N, lang) ? I18N[lang] : I18N.ru;
+  var mn=document.querySelector&&document.querySelector('main');   /* мягкая смена текста: проявить заново */
+  if(mn&&mn.classList&&!quiet){mn.classList.remove('lang-in');void mn.offsetWidth;mn.classList.add('lang-in')}
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     const k = el.getAttribute('data-i18n');

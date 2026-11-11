@@ -134,7 +134,7 @@ class TestNothingVolumetric(unittest.TestCase):
         self.assertEqual((decl(fb, 'background'), decl(fb, 'border')), ('var(--c-bg)', line), '/otzyv: карточка точки')
         css = css_of(read('index.html'))
         self.assertEqual(decl(rule(css, '.mm-pop'), 'border'), line, 'подсказка «!»')
-        lang = rule(css, '.mm-lang.open', '@media(max-width:680px)')
+        lang = rule(css, '.mm-lang.open,.mm-lang.closing', '@media(max-width:680px)')   # .closing — пока список уходит (11.11)
         self.assertEqual((decl(lang, 'border'), decl(lang, 'margin')), (line, '-1px'), 'язык меню: рамка, кнопки не сдвигаются')
         self.assertEqual(decl(rule(css, '.mm-sec'), 'background'), 'var(--c-surface)')
         for p in ('menyu/index.html', 'kk/menyu/index.html', 'en/menu/index.html'):

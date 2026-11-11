@@ -215,3 +215,10 @@ footer p { margin: 0; }
   main a[href^="http"]::after { content: " (" attr(href) ")"; }
   main a[href="https://tap.delcappuccino.kz"]::after { content: none; }   /* текст ссылки — сам адрес, без повтора */
 }
+
+/* Переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
+}
+::view-transition-old(root) { animation-duration: .18s; animation-timing-function: ease-in; }
+::view-transition-new(root) { animation-duration: .24s; animation-timing-function: ease-out; }

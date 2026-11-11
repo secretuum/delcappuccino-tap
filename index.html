@@ -65,9 +65,7 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
   --fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;
   --h-button:56px; --h-touch:48px;
   --shadow-floating:0 6px 24px rgba(49,73,47,.16);
-  /* кнопки и чипы — плоские (владелец 11.11.2026; до этого — объёмное стекло, #54/#55): сплошная заливка тона, -p — наведение
-     и нажатие (зелёный, WhatsApp, светлый — темнее; олива — светлее: тёмный текст на ней держит 4,5:1). Тона — цвета темы;
-     WhatsApp — фирменный #25D366 (владелец 09.11). Копии — в 404.html и /ugolok, /otzyv — генератор (tests/test_glass.py сверяет) */
+  /* кнопки плоские (11.11): тон и -p — наведение/нажатие (олива светлее — контраст); копии — 404, /ugolok (tests/test_glass.py) */
   --btn-green:var(--c-accent); --btn-green-p:#3A5A40;
   --btn-olive:var(--c-olive); --btn-olive-p:#96AD49;
   --btn-wa:var(--c-whatsapp); --btn-wa-p:#1FBA59;
@@ -83,6 +81,10 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+/* переход между страницами (11.11) */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);font-size:var(--fs-body);line-height:1.5;-webkit-font-smoothing:antialiased}
 .disp{font-family:var(--font-display)}
 a{color:inherit}
@@ -128,6 +130,11 @@ header{position:sticky;top:0;z-index:50;background:var(--c-bg);border-bottom:1px
 .lang-dd summary{list-style:none;display:flex;align-items:center;justify-content:center;width:var(--h-touch);height:var(--h-touch);border-radius:50%;color:var(--c-text);font-size:var(--fs-caption);font-weight:700;letter-spacing:.02em;cursor:pointer;user-select:none}
 .lang-dd summary::-webkit-details-marker{display:none}
 .lang-list{position:absolute;right:0;top:calc(100% + var(--s-8));z-index:60;display:flex;flex-direction:column;min-width:136px;padding:var(--s-8);background:var(--c-bg);border:1px solid var(--c-border);border-radius:var(--r-md)}
+.lang-dd[open] .lang-list{animation:drop .24s ease-out}
+.lang-dd:not([open]) .lang-list{opacity:0;transform:translateY(-6px);transition:opacity .18s ease-in,transform .18s ease-in}
+.lang-dd::details-content{transition:content-visibility .18s allow-discrete}
+@keyframes drop{from{opacity:0;transform:translateY(-6px)}}
+@media(prefers-reduced-motion:reduce){.lang-list{animation:none;transition:none}}
 .lang-list a{display:flex;align-items:center;gap:var(--s-8);min-height:var(--h-touch);padding:0 var(--s-12);border-radius:var(--r-sm);font-size:var(--fs-small);font-weight:600;text-decoration:none;color:var(--c-text)}
 .lang-list a:hover{background:var(--c-surface)}
 .lang-list a[aria-current]{color:var(--c-accent)}
@@ -135,8 +142,7 @@ header{position:sticky;top:0;z-index:50;background:var(--c-bg);border-bottom:1px
 
 /* ── КНОПКИ: высота 52, пилюля, подпись строчными (--btn-font) ── */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-8);min-height:var(--h-btn);padding:var(--s-8) var(--s-24);border-radius:var(--r-pill);font-size:var(--fs-body);font-weight:700;line-height:1.2;text-transform:lowercase;text-decoration:none;text-align:center;cursor:pointer}
-/* ── ПЛОСКИЕ кнопки и чипы (владелец 11.11): сплошная заливка тона, наведение (@media hover ниже) и нажатие — тон -p;
-   без бликов, теней, градиентов и размытия. Одно правило на все кнопки, элемент задаёт только тон --tone-bg / --tone-p ── */
+/* ── плоские кнопки: одно правило на все, элемент задаёт только тон --tone-bg / --tone-p ── */
 :where(.btn,.fab-menu,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only){--tone-bg:var(--btn-green);--tone-p:var(--btn-green-p);border:0;background:var(--tone-bg);-webkit-tap-highlight-color:transparent;transition:background-color .15s}
 :where(.btn,.fab-menu,.ib,.pill,.pill-point,.lang-dd summary,.mm-tab,.mm-cat,.mm-mode-btn,.mm-lang-btn,.mm-search-btn,.mm-search-x,.mm-x,.mm-card-x,.sheet .x,.mm-only):active{background:var(--tone-p)}
 /* тона: светлый (серые кнопки), зелёный (выбранные и маршрут), WhatsApp, олива; .btn и .fab-menu — зелёные по умолчанию */
@@ -146,8 +152,7 @@ header{position:sticky;top:0;z-index:50;background:var(--c-bg);border-bottom:1px
 .btn.olive{--tone-bg:var(--btn-olive);--tone-p:var(--btn-olive-p);color:var(--c-on-olive)}
 .btn.ghost{color:var(--c-text)}
 .btn,.fab-menu{color:var(--c-on-accent);font-family:var(--btn-font)}
-/* меню — плавающая плоская таблетка, только телефон; справа внизу (владелец 11.11), отступ 16 от края и выреза экрана;
-   подвал на телефоне снизу оставляет под ней 88 px */
+/* меню — плавающая таблетка справа внизу, только телефон (подвал оставляет под ней 88 px) */
 .fab-menu{display:none;position:fixed;right:calc(var(--s-16) + env(safe-area-inset-right));bottom:calc(var(--s-16) + env(safe-area-inset-bottom));z-index:90;align-items:center;justify-content:center;gap:var(--s-8);min-width:176px;height:var(--h-btn-sm);padding:0 var(--s-24);border-radius:var(--r-pill);font-size:16px;font-weight:700;line-height:1;text-transform:lowercase;text-decoration:none;white-space:nowrap;cursor:pointer}
 .fab-menu .ic{width:18px;height:18px}
 
@@ -195,12 +200,11 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
    Внутри окна: видео (object-fit:cover) и цена меткой — режутся контуром пламени; без подписи, свечения и тени
    (владелец 11.11: «все плоским», «только цену»). Вся плитка — ссылка на меню гриля; /kk/ и /en/ берут её генератором.
    Видео: preload=none, play() по IntersectionObserver, при reduced-motion — постер. ── */
-/* вся плитка — ссылка на меню «Блюда на гриле» (владелец 11.11: «видео кликабельное»); имя для экранного диктора — aria-label */
+/* вся плитка — ссылка на меню гриля, имя — aria-label */
 .grill-promo{display:block;cursor:pointer;text-decoration:none}
 /* пламя целиком (с языками) — во весь бокс 910×620 (tools/flame_frame.py, правка 1.11): рамка = плитка, края, верх
    и низ — как у плитки подписки */
-/* цена — плоская жёлтая метка в цвет кромки огня в левом нижнем углу окна (владелец 11.11: «без рамки и текста, только цена»):
-   тёмный текст на #FFE500 — ≥ 4,5:1 (tests/test_flat.py); угол окна скруглён на 5 % — метка отстоит на 4 % и 6 % */
+/* цена — жёлтая метка в углу окна (11.11: «только цена») */
 .grill-price{position:absolute;left:4%;bottom:6%;z-index:1;display:inline-flex;align-items:baseline;gap:var(--s-8);padding:var(--s-4) var(--s-12);border-radius:var(--r-pill);background:#FFE500;color:var(--c-text);font-family:var(--font-display);font-size:clamp(15px,1vw + 8px,20px);font-weight:700;line-height:1.2;white-space:nowrap}
 .grill-price s{font-weight:400;color:var(--c-muted)}
 .grill-frame{position:relative;aspect-ratio:910/620}
@@ -211,8 +215,7 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .grill-ticker span{display:inline-block;padding-right:.6em;animation:grill-run 9s linear infinite}
 @keyframes grill-run{to{transform:translateX(-100%)}}
 @media(prefers-reduced-motion:reduce){.grill-ticker span{animation:none}}
-/* бегущая строка «ВНИМАНИЕ» — под обеими плитками на всю ширину ряда, вплотную к их низу (владелец 11.11: «прям на низ рамок»):
-   нижние углы плиток прямые, скругление — внизу у полосы; на красной полосе (жёлтый на белом не читается; на --c-danger — 4,8:1) */
+/* «ВНИМАНИЕ» — вплотную к низу плиток (11.11), скругление внизу; жёлтый на --c-danger — 4,8:1 */
 .promo-run{border-radius:0 0 var(--r-lg) var(--r-lg);background:var(--c-danger);overflow:hidden;cursor:pointer}
 
 /* ── О НАС ── */
@@ -298,7 +301,7 @@ h1{font-size:44px;line-height:1.08;color:var(--c-text);margin-bottom:var(--s-16)
 .contact h2{font-size:var(--fs-heading);line-height:1.15;margin-bottom:var(--s-16)}
 /* соцсети — круглые значки в ряд по центру (Instagram, YouTube, Threads) */
 .social{display:flex;justify-content:center;flex-wrap:wrap;gap:var(--s-12)}
-/* подвал — <footer class="shell">: padding .shell сильнее footer{…}, поэтому отступы сверху и снизу — footer.shell */
+/* подвал — footer.shell: padding .shell сильнее footer{…} */
 footer{border-top:1px solid var(--c-border)}
 footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .f-row{display:flex;justify-content:space-between;align-items:center;font-size:var(--fs-caption);color:var(--c-muted);flex-wrap:wrap;gap:var(--s-12)}
@@ -315,7 +318,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .modal{position:fixed;inset:0;z-index:100;display:none;align-items:flex-end;justify-content:center}
 .modal.open{display:flex}
 .backdrop{position:absolute;inset:0;background:var(--c-scrim);border:0}
-.sheet{position:relative;background:var(--c-bg);color:var(--c-text);width:100%;max-width:480px;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-32) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .25s ease;max-height:86vh;max-height:86dvh;overflow:auto;overscroll-behavior:contain}
+.sheet{position:relative;background:var(--c-bg);color:var(--c-text);width:100%;max-width:480px;border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-32) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .24s ease-out;max-height:86vh;max-height:86dvh;overflow:auto;overscroll-behavior:contain}
 .sheet::before{content:'';position:absolute;top:8px;left:50%;width:40px;height:4px;margin-left:-20px;border-radius:4px;background:var(--c-border)}
 @media(min-width:640px){.modal{align-items:center}.sheet{border-radius:var(--r-lg)}.sheet::before{display:none}}
 @keyframes up{from{transform:translateY(24px);opacity:0}to{transform:translateY(0);opacity:1}}
@@ -479,7 +482,7 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .mm-card{position:fixed;inset:0;z-index:150;display:flex;align-items:flex-end;justify-content:center}
 .mm-card[hidden]{display:none}
 .mm-card-bg{position:absolute;inset:0;background:var(--c-scrim)}
-.mm-card-box{position:relative;width:100%;max-width:520px;max-height:90vh;max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:var(--c-bg);color:var(--c-text);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-16) var(--s-16) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .25s ease;font-family:var(--font-body)}
+.mm-card-box{position:relative;width:100%;max-width:520px;max-height:90vh;max-height:90dvh;overflow:auto;overscroll-behavior:contain;background:var(--c-bg);color:var(--c-text);border-radius:var(--r-lg) var(--r-lg) 0 0;padding:var(--s-16) var(--s-16) var(--s-24);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom));animation:up .24s ease-out;font-family:var(--font-body)}
 .mm-card-box:focus{outline:none}
 .mm-card-x{position:absolute;top:var(--s-24);right:var(--s-24);z-index:1;border-radius:50%;color:var(--c-text);cursor:pointer}
 /* ── крестики закрытия (модалка филиалов, шапка меню, карточка): один размер, центр без привязки к базовой линии шрифта ── */
@@ -523,16 +526,30 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
   .mm-mode-btn{flex:1;min-width:0;padding:0 var(--s-8);font-size:13px}
   .mm-lang-wrap{width:44px;height:40px}
   .mm-lang{position:absolute;top:0;right:0;flex-direction:column;z-index:10}
-  .mm-lang:not(.open) .mm-lang-btn:not(.on){display:none}
-  .mm-lang.open{border-radius:var(--r-md);background:var(--c-bg);border:1px solid var(--c-border);margin:-1px}
+  .mm-lang:not(.open):not(.closing) .mm-lang-btn:not(.on){display:none}
+  .mm-lang.open,.mm-lang.closing{border-radius:var(--r-md);background:var(--c-bg);border:1px solid var(--c-border);margin:-1px}
   /* лупа на узком экране всегда видна: прилипает к правому краю ряда вкладок, вкладки уходят под неё (градиент слева,
-     слева и справа — белые полосы: слева ::before 8 px, справа box-shadow без размытия цветом фона — маска, не тень) */
+     белые полосы слева и справа; box-shadow без размытия — маска, не тень) */
   .mm-search-btn{position:sticky;right:0;z-index:1;box-shadow:var(--s-12) 0 0 var(--c-bg)}
   .mm-search-btn::before{content:'';position:absolute;top:0;bottom:0;right:100%;width:var(--s-8);background:var(--c-bg);pointer-events:none}
   .mm-sec{margin-bottom:var(--s-16);padding:var(--s-16)}
   .mm-sec h4{font-size:20px}
 }
 @media(max-width:359px){.mm-mode-btn{padding:0 var(--s-4);font-size:12px}}
+/* ── появление и уход (11.11): .closing держит элемент, пока он уходит (gone/stay в скрипте) ── */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}}
+@keyframes sink{to{opacity:0;transform:translateY(12px)}}
+@keyframes down{to{opacity:0;transform:translateY(24px)}}
+@keyframes out{to{opacity:0}}
+.menu-modal.open,#mm-cols.entering{animation:rise .24s ease-out}
+.modal.open .backdrop,.mm-card-bg,.mm-pop,.mm-search,.mm-lang.open .mm-lang-btn:not(.on){animation:fade-in .24s ease-out}
+.closing{pointer-events:none}
+.menu-modal.closing,.mm-pop.closing{display:block}
+.modal.closing,.mm-card.closing{display:flex}
+.menu-modal.closing{animation:sink .18s ease-in forwards}
+.modal.closing .sheet,.mm-card.closing .mm-card-box{animation:down .18s ease-in forwards}
+.modal.closing .backdrop,.mm-card.closing .mm-card-bg,.mm-pop.closing,#mm-cols.closing,.mm-search.closing,.mm-lang.closing .mm-lang-btn:not(.on){animation:out .18s ease-in forwards}
+@media(prefers-reduced-motion:reduce){.menu-modal,.modal *,.mm-card *,.mm-pop,#mm-cols,.mm-search,.mm-lang-btn{animation:none!important}}
 @media(prefers-reduced-motion:reduce){.mm-tabs,.mm-cats{scroll-behavior:auto}.sheet,.mm-card-box{animation:none}}
 </style>
 <!-- schema.org: организация, точки из BRANCHES и меню с ценами — tools/seo_jsonld.py, руками не править -->
@@ -1110,11 +1127,16 @@ function dist(a,b){
   return R*2*Math.atan2(Math.sqrt(s),Math.sqrt(1-s));
 }
 
+/* уход: .closing до animationend или таймера, потом done(); stay() — отмена */
+function gone(el,done){if(!el)return;if(RM.matches){el.classList.remove('closing');done&&done();return}el._done=done;if(el._c)return;
+  el._c=1;el.classList.add('closing');const fin=()=>{if(!el._c)return;el._c=0;clearTimeout(el._t);el.removeEventListener('animationend',el._ae);el.classList.remove('closing');const d=el._done;el._done=null;d&&d()};
+  el._ae=e=>{if(/^(out|sink|down)$/.test(e.animationName))fin()};el.addEventListener('animationend',el._ae);el._t=setTimeout(fin,260)}
+function stay(el){if(!el||!el._c)return;el._c=0;clearTimeout(el._t);el.removeEventListener('animationend',el._ae);el.classList.remove('closing');el._done=null}
 function openModal(intent){
   intent=intent||'route';
   const m=document.getElementById('modal');
   if(!m.classList.contains('open')) modalOpener=document.activeElement;
-  m.classList.add('open'); m.querySelector('.x').focus();
+  stay(m); m.classList.add('open'); m.querySelector('.x').focus();
   const list = document.getElementById('branch-list');
   const status = document.getElementById('modal-status');
   const hint = {book:'Забронируйте столик в WhatsApp или по телефону', wa:'Напишите нам в WhatsApp', route:'Откройте маршрут в 2GIS'}[intent]||'';
@@ -1148,7 +1170,7 @@ function openModal(intent){
   }
 }
 let modalOpener=null;
-function closeModal(){const m=document.getElementById('modal');if(!m.classList.contains('open'))return;m.classList.remove('open');if(modalOpener&&modalOpener.focus)modalOpener.focus();modalOpener=null}
+function closeModal(){const m=document.getElementById('modal');if(!m.classList.contains('open'))return;m.classList.remove('open');gone(m);if(modalOpener&&modalOpener.focus)modalOpener.focus();modalOpener=null}
 /* Tab — по кругу внутри окна */
 function trapTab(e,box){if(e.key!=='Tab')return;const f=[...box.querySelectorAll('a[href],button,input,[tabindex="0"]')].filter(x=>x.offsetParent&&x.tabIndex>=0),n=f.length-1,i=f.indexOf(document.activeElement);if(n>=0&&(e.shiftKey?i<=0:i<0||i===n)){e.preventDefault();f[e.shiftKey?n:0].focus()}}
 document.getElementById('modal').addEventListener('keydown',e=>trapTab(e,document.querySelector('#modal .sheet')));
@@ -2101,8 +2123,11 @@ function openSearch(){
 function closeSearch(){
   if(menuQ===null) return false;
   menuQ=null; clearTimeout(searchTimer);
-  document.getElementById('mm-cats').hidden=false;
-  renderTabs(); renderFeed(); renderCats(); lockSpy(); document.getElementById('menu-modal').scrollTop=0;
+  const f=document.querySelector('#mm-tabs .mm-search'), q=document.getElementById('mm-q'); if(q&&q.blur) q.blur();
+  const back=()=>{ if(menuQ!==null) return;
+    document.getElementById('mm-cats').hidden=false;
+    renderTabs(); renderFeed(); renderCats(); lockSpy(); document.getElementById('menu-modal').scrollTop=0; };
+  f ? gone(f, back) : back();
   return true;
 }
 function searchHits(q){
@@ -2164,14 +2189,21 @@ function menuSpy(){
   setActive(part.dataset.tab, cat);
 }
 
+/* к разделу: лента гаснет, место меняется, лента въезжает */
+function menuJump(id){
+  const c=document.getElementById('mm-cols');
+  c.classList.remove('entering');
+  gone(c, ()=>{ scrollToMenuEl(document.getElementById(id), false); if(!RM.matches){ void c.offsetWidth; c.classList.add('entering'); } });
+}
 function switchMenuTab(tab){
   setActive(tab, 0);
-  scrollToMenuEl(document.getElementById('mm-part-'+tab));
+  menuJump('mm-part-'+tab);
   track('menu_tab',{mode:menuMode, tab});
 }
-function goMenuCat(i){
+function goMenuCat(i, now){
   setActive(menuTab, i);
-  scrollToMenuEl(document.getElementById(`mm-sec-${menuTab}-${i}`));
+  if(now) scrollToMenuEl(document.getElementById(`mm-sec-${menuTab}-${i}`), false);
+  else menuJump(`mm-sec-${menuTab}-${i}`);
   track('menu_cat',{mode:menuMode, tab:menuTab, cat:curTabs()[menuTab][i].t});
 }
 
@@ -2194,6 +2226,7 @@ let menuOpener=null;
 function openMenu(mode){
   const m=document.getElementById('menu-modal');
   if(!m.classList.contains('open')) menuOpener=document.activeElement;
+  stay(m);
   applyMenuLang();
   setMenuMode(mode);
   m.classList.add('open');
@@ -2209,7 +2242,7 @@ function closeMenu(){
   const m=document.getElementById('menu-modal'), was=m.classList.contains('open');
   closeCard(); hidePop(); closeLangMenu();
   if(menuQ!==null){ menuQ=null; clearTimeout(searchTimer); document.getElementById('mm-cats').hidden=false; }
-  m.classList.remove('open');
+  m.classList.remove('open'); if(was) gone(m);
   document.body.style.overflow='';
   if(MENU_HASH.test(location.hash))history.replaceState(null,'',location.pathname+location.search);
   if(was&&menuOpener&&menuOpener.focus) menuOpener.focus();
@@ -2251,7 +2284,7 @@ function showPop(btn, pin){
   if(popBtn && popBtn!==btn){ popBtn.setAttribute('aria-expanded','false'); popBtn.removeAttribute('aria-describedby'); }
   popBtn=btn; popPinned=pin;
   pop.innerHTML = `<b>${MENU_UI[menuLang].only}</b>` + btn.dataset.only.split(',').map(id=>`<div>${branchLabel(id)}</div>`).join('');
-  pop.hidden=false;
+  stay(pop); pop.hidden=false;
   btn.setAttribute('aria-expanded','true'); btn.setAttribute('aria-describedby','mm-pop');
   const r=btn.getBoundingClientRect(), w=pop.offsetWidth, h=pop.offsetHeight;
   const vw=document.documentElement.clientWidth, vh=window.innerHeight;
@@ -2262,7 +2295,7 @@ function showPop(btn, pin){
 function hidePop(){
   const pop=document.getElementById('mm-pop');
   if(!pop || pop.hidden) return false;
-  pop.hidden=true;
+  pop.hidden=true; gone(pop);
   if(popBtn){ popBtn.setAttribute('aria-expanded','false'); popBtn.removeAttribute('aria-describedby'); }
   popBtn=null; popPinned=false;
   return true;
@@ -2354,7 +2387,7 @@ function openCard(name, opener, sec){
   const wrap=document.getElementById('mm-card'), box=document.getElementById('mm-card-box');
   cardName=key; cardOpener=opener||document.activeElement;
   box.innerHTML=cardHTML(key);
-  wrap.hidden=false;
+  stay(wrap); wrap.hidden=false;
   document.getElementById('menu-modal').style.overflow='hidden';
   box.scrollTop=0; box.focus();
   track('menu_card',{name:key});
@@ -2363,7 +2396,7 @@ function openCard(name, opener, sec){
 function closeCard(){
   const wrap=document.getElementById('mm-card');
   if(!wrap || wrap.hidden) return false;
-  wrap.hidden=true; cardName=null;
+  wrap.hidden=true; gone(wrap); cardName=null;
   document.getElementById('menu-modal').style.overflow='';
   if(cardOpener && cardOpener.focus) cardOpener.focus();
   cardOpener=null;
@@ -2386,12 +2419,12 @@ function syncLangAria(){
 function closeLangMenu(){
   const l=document.querySelector('.mm-lang');
   if(!l.classList.contains('open')) return false;
-  l.classList.remove('open'); syncLangAria(); return true;
+  l.classList.remove('open'); gone(l); syncLangAria(); return true;
 }
 function menuLangClick(lang){
   const l=document.querySelector('.mm-lang');
-  if(mmMobile.matches && lang===menuLang && !l.classList.contains('open')){ l.classList.add('open'); syncLangAria(); return; }
-  l.classList.remove('open');
+  if(mmMobile.matches && lang===menuLang && !l.classList.contains('open')){ stay(l); l.classList.add('open'); syncLangAria(); return; }
+  if(l.classList.contains('open')){ l.classList.remove('open'); gone(l); }
   if(lang!==menuLang) switchMenuLang(lang);
   syncLangAria();
 }
@@ -2471,7 +2504,7 @@ function openGrill(){ track('cta_grill'); showGrill(); }
 function showGrill(){
   openMenu();
   var i=MENU_KITCHEN.findIndex(function(s){return s.t==='Блюда на гриле'});
-  if(i>=0)requestAnimationFrame(function(){goMenuCat(i)});
+  if(i>=0)requestAnimationFrame(function(){goMenuCat(i,true)});
 }
 menuFromHash(); addEventListener('hashchange',menuFromHash);
 /* Пилюля точки в шапке: последняя точка, с которой работали (кнопки карточки или окна выбора филиала), — адрес и

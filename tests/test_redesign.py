@@ -821,11 +821,12 @@ R("switchMenuMode('cafe'); switchMenuLang('en'); menuSearch('cappuccino')"); out
 R("menuSearch('капучино')"); out.enRu = els['mm-cols'].innerHTML;
 R("switchMenuLang('kk'); menuSearch('нон')"); out.kkNone = els['mm-cols'].innerHTML;
 R("switchMenuLang('ru')");
-out.closed = R("closeSearch()"); out.tabsBack = els['mm-tabs'].innerHTML; out.catsBack = els['mm-cats'].hidden; out.feedBack = els['mm-cols'].innerHTML;
+out.closed = R("closeSearch()"); timers.splice(0).forEach(f => f());   // 11.11: вкладки возвращаются, когда поле ушло (таймер)
+out.tabsBack = els['mm-tabs'].innerHTML; out.catsBack = els['mm-cats'].hidden; out.feedBack = els['mm-cols'].innerHTML;
 R("openSearch(); menuSearch('капу')");
 els['menu-modal'].classList.contains = c => c === 'open';               // меню открыто — Esc сначала закрывает поиск
 els['mm-card'].hidden = true; els['mm-pop'].hidden = true;             // карточки и попапа «!» нет
-keyL.forEach(f => f({ key: 'Escape', stopPropagation() {} }));
+keyL.forEach(f => f({ key: 'Escape', stopPropagation() {} })); timers.splice(0).forEach(f => f());
 out.escTabs = els['mm-tabs'].innerHTML; out.escQ = R("menuQ");
 console.log(JSON.stringify(out));
 """

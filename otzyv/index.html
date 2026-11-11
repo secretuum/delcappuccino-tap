@@ -41,6 +41,14 @@ function track(n,p){if(typeof gtag!=='undefined')gtag('event',n,p||{})}</script>
 :root{--font-display:'Geologica',system-ui,sans-serif;--font-body:'Montserrat',system-ui,-apple-system,sans-serif;--c-bg:#FFFFFF; --c-surface:#F5F5F3; --c-raised:#ECEBE8; --c-disabled:#E5E3DF; --c-border:rgba(66,99,73,.18);--c-text:#241C15; --c-muted:#5C5245; --c-accent:#426349; --c-accent-dk:#31492F; --c-on-accent:#FFFFFF;--c-olive:#849E29; --c-on-olive:#1D2408; --c-danger:#C2140F; --c-scrim:rgba(36,28,21,.4); --c-glass:rgba(255,255,255,.92);--c-brand-cream:#FEF1E7;--c-whatsapp:#25D366;--c-input-border:#8C7E6E;--c-olive-text:#627122;--r-sm:12px; --r-md:16px; --r-lg:22px; --r-pill:999px;--s-2:2px; --s-4:4px; --s-8:8px; --s-12:12px; --s-16:16px; --s-24:24px; --s-32:32px;--fs-caption:12px; --fs-small:14px; --fs-body:16px; --fs-title:22px; --fs-heading:28px;--h-button:56px; --h-touch:48px;--shadow-floating:0 6px 24px rgba(49,73,47,.16);--btn-green:var(--c-accent); --btn-green-p:#3A5A40;--btn-olive:var(--c-olive); --btn-olive-p:#96AD49;--btn-wa:var(--c-whatsapp); --btn-wa-p:#1FBA59;--btn-light:var(--c-surface); --btn-light-p:var(--c-raised);--h-btn:52px; --h-btn-sm:44px;--btn-font:var(--font-display);--forest:#426349; --forest-dk:var(--c-accent-dk); --cream:var(--c-surface); --cream-2:var(--c-raised);--olive:var(--c-olive); --sage:#738E5B; --moss:#B4B86C;--ink:var(--c-text); --ink-2:var(--c-muted); --line:var(--c-border);--surface:var(--c-bg); --r:var(--r-md); --sale:#C2140F;}
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
+/* переход между страницами сайта (владелец 11.11): плавная смена без JS; браузер не умеет или reduced-motion — сразу */
+@media(prefers-reduced-motion:no-preference){@view-transition{navigation:auto}}
+::view-transition-old(root){animation-duration:.18s;animation-timing-function:ease-in}
+::view-transition-new(root){animation-duration:.24s;animation-timing-function:ease-out}
+/* смена языка (владелец 11.11: «мягкая смена текста»): текст меняется сразу, страница проявляется заново; reduced-motion — без */
+@keyframes lang-in{from{opacity:0}}
+main.lang-in{animation:lang-in .24s ease-out}
+@media(prefers-reduced-motion:reduce){main.lang-in{animation:none}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
 body{background:var(--c-bg);color:var(--c-text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;line-height:1.5;overflow-x:hidden}
 a{color:inherit}
@@ -202,6 +210,8 @@ const I18N = {"ru":{"pageTitle":"Жалобы и предложения — Del 
 /* язык: тексты [data-i18n], ссылки WhatsApp [data-wa] (сообщение на этом языке), «на главную» [data-home] — на главную языка */
 function setLang(lang, quiet){
   const d = Object.prototype.hasOwnProperty.call(I18N, lang) ? I18N[lang] : I18N.ru;
+  var mn=document.querySelector&&document.querySelector('main');   /* мягкая смена текста: проявить заново */
+  if(mn&&mn.classList&&!quiet){mn.classList.remove('lang-in');void mn.offsetWidth;mn.classList.add('lang-in')}
   document.documentElement.lang = lang;
   document.querySelectorAll('[data-i18n]').forEach(function(el){
     const k = el.getAttribute('data-i18n');
