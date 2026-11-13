@@ -5103,26 +5103,6 @@
       "en": "puff pastry, milk, egg yolk, sugar, corn starch, raspberries"
     }
   },
-  "Мини пирог яблоко-слива с шоколадом": {
-    "w": "260 г",
-    "kbju": {
-      "kcal": 881,
-      "p": 12,
-      "f": 45,
-      "c": 106
-    },
-    "est": true,
-    "d": {
-      "ru": "Мини-пирог с яблоком, сливой и шоколадом.",
-      "kk": "Алма, қара өрік және шоколад қосылған мини-бәліш.",
-      "en": "Mini pie with apple, plum and chocolate."
-    },
-    "ing": {
-      "ru": "мука пшеничная, масло сливочное, сахар, яйцо куриное, яблоко, слива, шоколад тёмный",
-      "kk": "бидай ұны, сары май, қант, жұмыртқа, алма, қара өрік, қара шоколад",
-      "en": "wheat flour, butter, sugar, egg, apple, plum, dark chocolate"
-    }
-  },
   "Мини вишневый пирог": {
     "img": "img/menu/mini-vishnevyj-pirog.webp",
     "img480": "img/menu/mini-vishnevyj-pirog-480.webp",

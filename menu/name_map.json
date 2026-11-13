@@ -1007,73 +1007,53 @@
   "iiko": null,
   "drive_file": "бар/спрайт 0.25.jpg"
  },
- "Малина-розмарин-лимон": {
+ "Киш куриный": {
   "iiko": null,
-  "drive_file": "бар/авторский чай/малина лимон розмарин.png"
- },
- "Мини киш с семгой": {
-  "iiko": null,
-  "drive_file": "dcbakery/Киш с сёмгой мини.webp"
- },
- "Сытный пирог три сыра": {
-  "iiko": null,
-  "drive_file": "vypechka/Сытный пирог три сыра/IMG_4523.jpeg"
- },
- "Слойка с малиной": {
-  "iiko": null,
-  "drive_file": "vypechka/Слойка с малиной/IMG_4549.jpeg"
- },
- "Мини киш куриный": {
-  "iiko": null,
-  "drive_file": "dcbakery/Киш с курицей мини.webp"
- },
- "Слойка со сгущенкой": {
-  "iiko": null,
-  "drive_file": "vypechka/Слойка со сгущенкой/IMG_4561.jpeg"
- },
- "Мини круассан с клубникой": {
-  "iiko": null,
-  "drive_file": "dcbakery/Мини-круассан с клубникой.webp"
- },
- "Мини пирог фисташка-яблоко": {
-  "iiko": null,
-  "drive_file": "vypechka/Мини пирог фисташка-яблоко/IMG_4564.jpeg"
+  "drive_file": "dcbakery/Киш с курицей целый.webp"
  },
  "Киш с индейкой": {
   "iiko": null,
   "drive_file": "dcbakery/Киш с индейкой целый.webp"
  },
- "Орешки классические": {
+ "Киш с семгой": {
   "iiko": null,
-  "drive_file": "vypechka/Орешки/IMG_4579.jpeg"
+  "drive_file": "dcbakery/Киш с сёмгой целый.webp"
  },
- "Творожный пирог мини": {
+ "Малина-розмарин-лимон": {
   "iiko": null,
-  "drive_file": "dcbakery/Мини-пирог творожный с малиной и черникой.webp"
+  "drive_file": "бар/авторский чай/малина лимон розмарин.png"
  },
- "Сытный пирог куриный мини": {
+ "Мини вишневый пирог": {
   "iiko": null,
-  "drive_file": "dcbakery/Сытный пирог с курицей и грибами.webp"
+  "drive_file": "vypechka/Карамельный пирог с вишней/IMG_4567.jpeg"
  },
- "Слойка черничная": {
+ "Мини киш куриный": {
   "iiko": null,
-  "drive_file": "dcbakery/Черничная слойка.webp"
+  "drive_file": "dcbakery/Киш с курицей мини.webp"
  },
- "Слойка с курицей и грибами": {
+ "Мини киш с индейкой": {
   "iiko": null,
-  "drive_file": "vypechka/Слойка с курицей и грибами/IMG_4506.jpeg"
+  "drive_file": "dcbakery/Киш с индейкой мини.webp"
  },
- "Сытный пирог семга мини": {
+ "Мини киш с семгой": {
   "iiko": null,
-  "drive_file": "dcbakery/Сытный пирог с сёмгой.webp"
+  "drive_file": "dcbakery/Киш с сёмгой мини.webp"
  },
- "Слойка с творогом": {
+ "Мини круассан с клубникой": {
   "iiko": null,
-  "drive_file": "dcbakery/Слойка с творогом.webp"
+  "drive_file": "dcbakery/Мини-круассан с клубникой.webp"
  },
  "Мини круассан с соленой карамелью": {
   "iiko": null,
   "drive_file": "dcbakery/Мини-круассан с солёной карамелью и арахисом.webp"
+ },
+ "Мини пирог фисташка-яблоко": {
+  "iiko": null,
+  "drive_file": "vypechka/Мини пирог фисташка-яблоко/IMG_4564.jpeg"
+ },
+ "Орешки классические": {
+  "iiko": null,
+  "drive_file": "vypechka/Орешки/IMG_4579.jpeg"
  },
  "Слойка вишня": {
   "iiko": null,
@@ -1083,20 +1063,40 @@
   "iiko": null,
   "drive_file": "dcbakery/Слойка с индейкой.webp"
  },
- "Киш куриный": {
+ "Слойка с курицей и грибами": {
   "iiko": null,
-  "drive_file": "dcbakery/Киш с курицей целый.webp"
+  "drive_file": "vypechka/Слойка с курицей и грибами/IMG_4506.jpeg"
  },
- "Мини киш с индейкой": {
+ "Слойка с малиной": {
   "iiko": null,
-  "drive_file": "dcbakery/Киш с индейкой мини.webp"
+  "drive_file": "vypechka/Слойка с малиной/IMG_4549.jpeg"
  },
- "Киш с семгой": {
+ "Слойка с творогом": {
   "iiko": null,
-  "drive_file": "dcbakery/Киш с сёмгой целый.webp"
+  "drive_file": "dcbakery/Слойка с творогом.webp"
  },
- "Мини вишневый пирог": {
+ "Слойка со сгущенкой": {
   "iiko": null,
-  "drive_file": "vypechka/Карамельный пирог с вишней/IMG_4567.jpeg"
+  "drive_file": "vypechka/Слойка со сгущенкой/IMG_4561.jpeg"
+ },
+ "Слойка черничная": {
+  "iiko": null,
+  "drive_file": "dcbakery/Черничная слойка.webp"
+ },
+ "Сытный пирог куриный мини": {
+  "iiko": null,
+  "drive_file": "dcbakery/Сытный пирог с курицей и грибами.webp"
+ },
+ "Сытный пирог семга мини": {
+  "iiko": null,
+  "drive_file": "dcbakery/Сытный пирог с сёмгой.webp"
+ },
+ "Сытный пирог три сыра": {
+  "iiko": null,
+  "drive_file": "vypechka/Сытный пирог три сыра/IMG_4523.jpeg"
+ },
+ "Творожный пирог мини": {
+  "iiko": null,
+  "drive_file": "dcbakery/Мини-пирог творожный с малиной и черникой.webp"
  }
 }
