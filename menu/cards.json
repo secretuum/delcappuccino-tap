@@ -4895,6 +4895,598 @@
       "en": "egg, sugar, wheat flour, cocoa powder, baking powder, sunflower oil, heavy cream, hard cheese, pistachio paste, kadaif pastry, butter, dark chocolate"
     }
   },
+  "Орешки классические": {
+    "img": "img/menu/oreshki-klassicheskie.webp",
+    "img480": "img/menu/oreshki-klassicheskie-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "20 г",
+    "kbju": {
+      "kcal": 79,
+      "p": 1,
+      "f": 3,
+      "c": 11
+    },
+    "est": true,
+    "d": {
+      "ru": "Золотистые хрустящие половинки с нежной начинкой из варёной сгущёнки.",
+      "kk": "Қайнатылған қоюлатылған сүт салынған алтын түсті, қытырлақ жаңғақ пішінді печенье.",
+      "en": "Golden, crunchy halves with a delicate boiled condensed milk filling."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, сахар, яйцо куриное, сгущённое молоко",
+      "kk": "бидай ұны, сары май, қант, жұмыртқа, қоюландырылған сүт",
+      "en": "wheat flour, butter, sugar, egg, condensed milk"
+    }
+  },
+  "Мини круассан с соленой карамелью": {
+    "img": "img/menu/mini-kruassan-s-solenoj-karamelyu.webp",
+    "img480": "img/menu/mini-kruassan-s-solenoj-karamelyu-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "65 г",
+    "kbju": {
+      "kcal": 287,
+      "p": 7,
+      "f": 16,
+      "c": 30
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная солёная карамель и дроблёный арахис в хрустящем круассане.",
+      "kk": "Қытырлақ круассандағы нәзік тұзды карамель мен ұсақталған жержаңғақ.",
+      "en": "Delicate salted caramel and crushed peanuts in a crisp croissant."
+    },
+    "ing": {
+      "ru": "круассан, карамельный соус, арахис",
+      "kk": "круассан, карамель тұздығы, жержаңғақ",
+      "en": "croissant, caramel sauce, peanuts"
+    }
+  },
+  "Мини круассан с клубникой": {
+    "img": "img/menu/mini-kruassan-s-klubnikoj.webp",
+    "img480": "img/menu/mini-kruassan-s-klubnikoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "65 г",
+    "kbju": {
+      "kcal": 249,
+      "p": 5,
+      "f": 13,
+      "c": 29
+    },
+    "est": true,
+    "d": {
+      "ru": "Воздушный мини-круассан с ароматным клубничным джемом и хрустящими лепестками миндаля.",
+      "kk": "Хош иісті құлпынай джемі мен қытырлақ бадам жапырақшалары қосылған үлпілдек мини-круассан.",
+      "en": "Airy mini croissant with fragrant strawberry jam and crunchy almond flakes."
+    },
+    "ing": {
+      "ru": "круассан, клубника, сахар, миндаль",
+      "kk": "круассан, құлпынай, қант, бадам",
+      "en": "croissant, strawberry, sugar, almonds"
+    }
+  },
+  "Слойка вишня": {
+    "img": "img/menu/slojka-vishnya.webp",
+    "img480": "img/menu/slojka-vishnya-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "110 г",
+    "kbju": {
+      "kcal": 446,
+      "p": 5,
+      "f": 26,
+      "c": 48
+    },
+    "est": true,
+    "d": {
+      "ru": "Хрустящее золотистое слоёное тесто с сочным вишнёвым конфитюром и приятной ягодной кислинкой.",
+      "kk": "Шырынды шие конфитюрі салынған алтын түсті қытырлақ қатпарлы қамыр, жидектің жағымды қышқылтым дәмімен.",
+      "en": "Crisp golden puff pastry with juicy cherry confiture and a pleasant berry tartness."
+    },
+    "ing": {
+      "ru": "тесто слоёное, вишня, сахар",
+      "kk": "қабатты қамыр, шие, қант",
+      "en": "puff pastry, cherries, sugar"
+    }
+  },
+  "Слойка с творогом": {
+    "img": "img/menu/slojka-s-tvorogom.webp",
+    "img480": "img/menu/slojka-s-tvorogom-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "110 г",
+    "kbju": {
+      "kcal": 414,
+      "p": 11,
+      "f": 25,
+      "c": 36
+    },
+    "est": true,
+    "d": {
+      "ru": "Золотистое слоёное тесто с нежной творожной начинкой.",
+      "kk": "Нәзік сүзбе салмасы бар алтын түсті қатпарлы қамыр.",
+      "en": "Golden puff pastry with a delicate cottage cheese filling."
+    },
+    "ing": {
+      "ru": "тесто слоёное, творог, сахар, яйцо куриное",
+      "kk": "қабатты қамыр, сүзбе, қант, жұмыртқа",
+      "en": "puff pastry, cottage cheese, sugar, egg"
+    }
+  },
+  "Слойка со сгущенкой": {
+    "img": "img/menu/slojka-so-sguschenkoj.webp",
+    "img480": "img/menu/slojka-so-sguschenkoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "110 г",
+    "kbju": {
+      "kcal": 487,
+      "p": 7,
+      "f": 28,
+      "c": 52
+    },
+    "est": true,
+    "d": {
+      "ru": "Хрустящее слоёное тесто с насыщенной карамельной начинкой из варёной сгущёнки.",
+      "kk": "Қайнатылған қоюлатылған сүттен жасалған қанық карамель салмасы бар қытырлақ қатпарлы қамыр.",
+      "en": "Crisp puff pastry with a rich caramel filling of boiled condensed milk."
+    },
+    "ing": {
+      "ru": "тесто слоёное, сгущённое молоко, сахар",
+      "kk": "қабатты қамыр, қоюландырылған сүт, қант",
+      "en": "puff pastry, condensed milk, sugar"
+    }
+  },
+  "Слойка черничная": {
+    "img": "img/menu/slojka-chernichnaya.webp",
+    "img480": "img/menu/slojka-chernichnaya-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "130 г",
+    "kbju": {
+      "kcal": 446,
+      "p": 6,
+      "f": 26,
+      "c": 48
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежный заварной крем и сочная черника в хрустящем слоёном тесте.",
+      "kk": "Қытырлақ қатпарлы қамырдағы нәзік заварной крем мен шырынды қаражидек.",
+      "en": "Delicate custard and juicy blueberries in crisp puff pastry."
+    },
+    "ing": {
+      "ru": "тесто слоёное, молоко, желток, сахар, крахмал кукурузный, черника",
+      "kk": "қабатты қамыр, сүт, жұмыртқа сарысы, қант, жүгері крахмалы, қаражидек",
+      "en": "puff pastry, milk, egg yolk, sugar, corn starch, blueberries"
+    }
+  },
+  "Слойка с малиной": {
+    "img": "img/menu/slojka-s-malinoj.webp",
+    "img480": "img/menu/slojka-s-malinoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "130 г",
+    "kbju": {
+      "kcal": 445,
+      "p": 6,
+      "f": 26,
+      "c": 47
+    },
+    "est": true,
+    "d": {
+      "ru": "Воздушное слоёное тесто, нежный заварной крем и сочная малина.",
+      "kk": "Үлпілдек қатпарлы қамыр, нәзік заварной крем және шырынды таңқурай.",
+      "en": "Airy puff pastry, delicate custard and juicy raspberries."
+    },
+    "ing": {
+      "ru": "тесто слоёное, молоко, желток, сахар, крахмал кукурузный, малина",
+      "kk": "қабатты қамыр, сүт, жұмыртқа сарысы, қант, жүгері крахмалы, таңқурай",
+      "en": "puff pastry, milk, egg yolk, sugar, corn starch, raspberries"
+    }
+  },
+  "Мини пирог яблоко-слива с шоколадом": {
+    "w": "260 г",
+    "kbju": {
+      "kcal": 881,
+      "p": 12,
+      "f": 45,
+      "c": 106
+    },
+    "est": true,
+    "d": {
+      "ru": "Мини-пирог с яблоком, сливой и шоколадом.",
+      "kk": "Алма, қара өрік және шоколад қосылған мини-бәліш.",
+      "en": "Mini pie with apple, plum and chocolate."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, сахар, яйцо куриное, яблоко, слива, шоколад тёмный",
+      "kk": "бидай ұны, сары май, қант, жұмыртқа, алма, қара өрік, қара шоколад",
+      "en": "wheat flour, butter, sugar, egg, apple, plum, dark chocolate"
+    }
+  },
+  "Мини вишневый пирог": {
+    "img": "img/menu/mini-vishnevyj-pirog.webp",
+    "img480": "img/menu/mini-vishnevyj-pirog-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "260 г",
+    "kbju": {
+      "kcal": 925,
+      "p": 13,
+      "f": 45,
+      "c": 116
+    },
+    "est": true,
+    "d": {
+      "ru": "Карамельный крем с вишней с приятной кислинкой, дополненный хрустящими миндальными лепестками.",
+      "kk": "Жағымды қышқылтым шиесі бар карамель кремі, қытырлақ бадам жапырақшаларымен толықтырылған.",
+      "en": "Caramel cream with pleasantly tart cherries, topped with crunchy almond flakes."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, сахар, яйцо куриное, карамельный соус, вишня, миндаль",
+      "kk": "бидай ұны, сары май, қант, жұмыртқа, карамель тұздығы, шие, бадам",
+      "en": "wheat flour, butter, sugar, egg, caramel sauce, cherries, almonds"
+    }
+  },
+  "Мини пирог фисташка-яблоко": {
+    "img": "img/menu/mini-pirog-fistashka-yabloko.webp",
+    "img480": "img/menu/mini-pirog-fistashka-yabloko-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "270 г",
+    "kbju": {
+      "kcal": 1110,
+      "p": 17,
+      "f": 67,
+      "c": 110
+    },
+    "est": true,
+    "d": {
+      "ru": "Фисташковый крем с нежными карамелизированными яблоками.",
+      "kk": "Нәзік карамельденген алма қосылған пісте кремі.",
+      "en": "Pistachio cream with tender caramelised apples."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, сахар, яйцо куриное, фисташковая паста, яблоко",
+      "kk": "бидай ұны, сары май, қант, жұмыртқа, пісте пастасы, алма",
+      "en": "wheat flour, butter, sugar, egg, pistachio paste, apple"
+    }
+  },
+  "Творожный пирог мини": {
+    "img": "img/menu/tvorozhnyj-pirog-mini.webp",
+    "img480": "img/menu/tvorozhnyj-pirog-mini-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "270 г",
+    "kbju": {
+      "kcal": 837,
+      "p": 22,
+      "f": 43,
+      "c": 90
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная творожная основа, дополненная сочной малиной и ароматной черникой.",
+      "kk": "Шырынды таңқурай мен хош иісті қаражидек қосылған нәзік сүзбе негізі.",
+      "en": "A delicate cottage cheese base with juicy raspberries and fragrant blueberries."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, сахар, яйцо куриное, творог, малина, черника",
+      "kk": "бидай ұны, сары май, қант, жұмыртқа, сүзбе, таңқурай, қаражидек",
+      "en": "wheat flour, butter, sugar, egg, cottage cheese, raspberries, blueberries"
+    }
+  },
+  "Слойка с индейкой": {
+    "img": "img/menu/slojka-s-indejkoj.webp",
+    "img480": "img/menu/slojka-s-indejkoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "100 г",
+    "kbju": {
+      "kcal": 384,
+      "p": 15,
+      "f": 27,
+      "c": 22
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная индейка с аппетитным миксом расплавленных сыров, дополненная ароматным кунжутом, в хрустящем слоёном тесте.",
+      "kk": "Қытырлақ қатпарлы қамырдағы нәзік күркетауық еті мен ерітілген ірімшіктер қоспасы, үстіне хош иісті күнжіт себілген.",
+      "en": "Tender turkey with a mix of melted cheeses and fragrant sesame in crisp puff pastry."
+    },
+    "ing": {
+      "ru": "тесто слоёное, индейка, моцарелла, сыр твёрдый, кунжут, зелень",
+      "kk": "қабатты қамыр, күркетауық еті, моцарелла, қатты ірімшік, күнжіт, көк шөп",
+      "en": "puff pastry, turkey, mozzarella, hard cheese, sesame seeds, fresh herbs"
+    }
+  },
+  "Слойка с курицей и грибами": {
+    "img": "img/menu/slojka-s-kuricej-i-gribami.webp",
+    "img480": "img/menu/slojka-s-kuricej-i-gribami-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "155 г",
+    "kbju": {
+      "kcal": 501,
+      "p": 17,
+      "f": 35,
+      "c": 30
+    },
+    "est": true,
+    "d": {
+      "ru": "Сочная начинка из курицы и грибов под нежной моцареллой в хрустящем тесте.",
+      "kk": "Қытырлақ қамырдағы тауық еті мен саңырауқұлақтан жасалған шырынды салма, үстінде нәзік моцарелла.",
+      "en": "A juicy chicken and mushroom filling under soft mozzarella in crisp pastry."
+    },
+    "ing": {
+      "ru": "тесто слоёное, курица, шампиньоны, моцарелла, лук репчатый",
+      "kk": "қабатты қамыр, тауық еті, саңырауқұлақ, моцарелла, пияз",
+      "en": "puff pastry, chicken, mushrooms, mozzarella, onion"
+    }
+  },
+  "Сытный пирог три сыра": {
+    "img": "img/menu/sytnyj-pirog-tri-syra.webp",
+    "img480": "img/menu/sytnyj-pirog-tri-syra-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "280 г",
+    "kbju": {
+      "kcal": 755,
+      "p": 31,
+      "f": 35,
+      "c": 79
+    },
+    "est": true,
+    "d": {
+      "ru": "Сочный шпинат, тягучая моцарелла, пикантная брынза и нежный творог под сливочным соусом.",
+      "kk": "Шырынды шпинат, созылыңқы моцарелла, өткір дәмді брынза және нәзік сүзбе кілегейлі тұздықпен.",
+      "en": "Juicy spinach, stretchy mozzarella, tangy brynza and soft cottage cheese under a cream sauce."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, молоко, дрожжи, шпинат, моцарелла, фета, творог, сливки 10%",
+      "kk": "бидай ұны, сары май, жұмыртқа, сүт, ашытқы, саумалдық, моцарелла, фета ірімшігі, сүзбе, кілегей 10%",
+      "en": "wheat flour, butter, egg, milk, yeast, spinach, mozzarella, feta cheese, cottage cheese, light cream"
+    }
+  },
+  "Сытный пирог куриный мини": {
+    "img": "img/menu/sytnyj-pirog-kurinyj-mini.webp",
+    "img480": "img/menu/sytnyj-pirog-kurinyj-mini-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "280 г",
+    "kbju": {
+      "kcal": 785,
+      "p": 31,
+      "f": 37,
+      "c": 83
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная запечённая курица, ароматные обжаренные грибы и золотистый лук в нежном соусе бешамель, дополненные расплавленной моцареллой.",
+      "kk": "Пешке пісірілген нәзік тауық еті, хош иісті қуырылған саңырауқұлақ пен алтын түсті пияз бешамель тұздығында, үстіне ерітілген моцарелла қосылған.",
+      "en": "Tender baked chicken, fragrant fried mushrooms and golden onion in a béchamel sauce, topped with melted mozzarella."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, молоко, дрожжи, курица, шампиньоны, лук репчатый, соус бешамель, моцарелла",
+      "kk": "бидай ұны, сары май, жұмыртқа, сүт, ашытқы, тауық еті, саңырауқұлақ, пияз, бешамель тұздығы, моцарелла",
+      "en": "wheat flour, butter, egg, milk, yeast, chicken, mushrooms, onion, béchamel sauce, mozzarella"
+    }
+  },
+  "Сытный пирог семга мини": {
+    "img": "img/menu/sytnyj-pirog-semga-mini.webp",
+    "img480": "img/menu/sytnyj-pirog-semga-mini-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "285 г",
+    "kbju": {
+      "kcal": 763,
+      "p": 32,
+      "f": 34,
+      "c": 80
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная сёмга, отварное яйцо, свежий зелёный лук и ароматный укроп в сочетании с нежным творожным соусом.",
+      "kk": "Нәзік албырт, қайнатылған жұмыртқа, балғын көк пияз бен хош иісті аскөк жұмсақ сүзбе тұздығымен үйлескен.",
+      "en": "Tender salmon, boiled egg, fresh spring onion and fragrant dill with a soft cottage cheese sauce."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, молоко, дрожжи, лосось, лук зелёный, укроп, творог, сметана",
+      "kk": "бидай ұны, сары май, жұмыртқа, сүт, ашытқы, албырт, жасыл пияз, аскөк, сүзбе, қаймақ",
+      "en": "wheat flour, butter, egg, milk, yeast, salmon, green onion, dill, cottage cheese, sour cream"
+    }
+  },
+  "Мини киш с индейкой": {
+    "img": "img/menu/mini-kish-s-indejkoj.webp",
+    "img480": "img/menu/mini-kish-s-indejkoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "265 г",
+    "kbju": {
+      "kcal": 604,
+      "p": 24,
+      "f": 37,
+      "c": 42
+    },
+    "est": true,
+    "d": {
+      "ru": "Сочная индейка и нежная цветная капуста в фирменном соусе для киша. Мини-формат для витрины.",
+      "kk": "Киштің фирмалық тұздығындағы шырынды күркетауық еті мен нәзік түсті қырыққабат. Витринаға арналған мини-формат.",
+      "en": "Juicy turkey and tender cauliflower in our signature quiche sauce. Mini format for the display case."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, сливки 10%, индейка, цветная капуста, сыр твёрдый",
+      "kk": "бидай ұны, сары май, жұмыртқа, кілегей 10%, күркетауық еті, түсті қырыққабат, қатты ірімшік",
+      "en": "wheat flour, butter, egg, light cream, turkey, cauliflower, hard cheese"
+    }
+  },
+  "Мини киш куриный": {
+    "img": "img/menu/mini-kish-kurinyj.webp",
+    "img480": "img/menu/mini-kish-kurinyj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "265 г",
+    "kbju": {
+      "kcal": 674,
+      "p": 25,
+      "f": 45,
+      "c": 42
+    },
+    "est": true,
+    "d": {
+      "ru": "Запечённая курица, обжаренные грибы и золотистый лук в сочетании с нашим фирменным соусом. Мини-формат для витрины.",
+      "kk": "Пешке пісірілген тауық еті, қуырылған саңырауқұлақ пен алтын түсті пияз біздің фирмалық тұздығымызбен үйлескен. Витринаға арналған мини-формат.",
+      "en": "Baked chicken, fried mushrooms and golden onion with our signature sauce. Mini format for the display case."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, сливки 10%, курица, шампиньоны, лук репчатый, сыр твёрдый",
+      "kk": "бидай ұны, сары май, жұмыртқа, кілегей 10%, тауық еті, саңырауқұлақ, пияз, қатты ірімшік",
+      "en": "wheat flour, butter, egg, light cream, chicken, mushrooms, onion, hard cheese"
+    }
+  },
+  "Мини киш с семгой": {
+    "img": "img/menu/mini-kish-s-semgoj.webp",
+    "img480": "img/menu/mini-kish-s-semgoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "265 г",
+    "kbju": {
+      "kcal": 596,
+      "p": 23,
+      "f": 36,
+      "c": 44
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная сёмга, сочный шпинат и брокколи в фирменном соусе для киша. Украшен яркими томатами черри. Мини-формат для витрины.",
+      "kk": "Киштің фирмалық тұздығындағы нәзік албырт, шырынды шпинат пен брокколи. Үсті ашық түсті черри қызанақтарымен безендірілген. Витринаға арналған мини-формат.",
+      "en": "Tender salmon, juicy spinach and broccoli in our signature quiche sauce. Decorated with bright cherry tomatoes. Mini format for the display case."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, сливки 10%, лосось, шпинат, брокколи, томаты черри, сыр твёрдый",
+      "kk": "бидай ұны, сары май, жұмыртқа, кілегей 10%, албырт, саумалдық, брокколи, шери қызанағы, қатты ірімшік",
+      "en": "wheat flour, butter, egg, light cream, salmon, spinach, broccoli, cherry tomatoes, hard cheese"
+    }
+  },
+  "Киш с индейкой": {
+    "img": "img/menu/kish-s-indejkoj.webp",
+    "img480": "img/menu/kish-s-indejkoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "1000 г",
+    "kbju": {
+      "kcal": 1979,
+      "p": 92,
+      "f": 105,
+      "c": 163
+    },
+    "est": true,
+    "d": {
+      "ru": "Сочная индейка и нежная цветная капуста в фирменном соусе для киша. Целый киш для нарезки.",
+      "kk": "Киштің фирмалық тұздығындағы шырынды күркетауық еті мен нәзік түсті қырыққабат. Бөліктеп кесуге арналған тұтас киш.",
+      "en": "Juicy turkey and tender cauliflower in our signature quiche sauce. A whole quiche for slicing."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, сливки 10%, индейка, цветная капуста, сыр твёрдый",
+      "kk": "бидай ұны, сары май, жұмыртқа, кілегей 10%, күркетауық еті, түсті қырыққабат, қатты ірімшік",
+      "en": "wheat flour, butter, egg, light cream, turkey, cauliflower, hard cheese"
+    }
+  },
+  "Киш куриный": {
+    "img": "img/menu/kish-kurinyj.webp",
+    "img480": "img/menu/kish-kurinyj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "1300 г",
+    "kbju": {
+      "kcal": 3103,
+      "p": 121,
+      "f": 197,
+      "c": 209
+    },
+    "est": true,
+    "d": {
+      "ru": "Запечённая курица, обжаренные грибы и золотистый лук в сочетании с нашим фирменным соусом. Целый киш для нарезки.",
+      "kk": "Пешке пісірілген тауық еті, қуырылған саңырауқұлақ пен алтын түсті пияз біздің фирмалық тұздығымызбен үйлескен. Бөліктеп кесуге арналған тұтас киш.",
+      "en": "Baked chicken, fried mushrooms and golden onion with our signature sauce. A whole quiche for slicing."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, сливки 10%, курица, шампиньоны, лук репчатый, сыр твёрдый",
+      "kk": "бидай ұны, сары май, жұмыртқа, кілегей 10%, тауық еті, саңырауқұлақ, пияз, қатты ірімшік",
+      "en": "wheat flour, butter, egg, light cream, chicken, mushrooms, onion, hard cheese"
+    }
+  },
+  "Киш с семгой": {
+    "img": "img/menu/kish-s-semgoj.webp",
+    "img480": "img/menu/kish-s-semgoj-480.webp",
+    "ar": [
+      960,
+      960
+    ],
+    "w": "1150 г",
+    "kbju": {
+      "kcal": 2642,
+      "p": 99,
+      "f": 164,
+      "c": 190
+    },
+    "est": true,
+    "d": {
+      "ru": "Нежная сёмга, сочный шпинат и брокколи в фирменном соусе для киша. Украшен яркими томатами черри. Целый киш для нарезки.",
+      "kk": "Киштің фирмалық тұздығындағы нәзік албырт, шырынды шпинат пен брокколи. Үсті ашық түсті черри қызанақтарымен безендірілген. Бөліктеп кесуге арналған тұтас киш.",
+      "en": "Tender salmon, juicy spinach and broccoli in our signature quiche sauce. Decorated with bright cherry tomatoes. A whole quiche for slicing."
+    },
+    "ing": {
+      "ru": "мука пшеничная, масло сливочное, яйцо куриное, сливки 10%, лосось, шпинат, брокколи, томаты черри, сыр твёрдый",
+      "kk": "бидай ұны, сары май, жұмыртқа, кілегей 10%, албырт, саумалдық, брокколи, шери қызанағы, қатты ірімшік",
+      "en": "wheat flour, butter, egg, light cream, salmon, spinach, broccoli, cherry tomatoes, hard cheese"
+    }
+  },
   "Меренговый рулет @ Торты (целиком)": {
     "img": "img/menu/merengovyj-rulet-torty-celikom.webp",
     "img480": "img/menu/merengovyj-rulet-torty-celikom-480.webp",
