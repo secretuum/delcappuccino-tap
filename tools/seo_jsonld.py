@@ -1167,6 +1167,10 @@ def lang_page(html, lang):
 
 
 KK_REVIEW_UI = ('search', 'search_none')       # новые строки MENU_UI.kk — тоже на вычитку
+KK_REVIEW_SECTIONS = ('Выпечка',)               # новые разделы меню: название раздела и позиции из MENU_TR.kk — на вычитку (13.11.2026)
+# выпечка: казахские названия — из каталога DC Bakery как есть (products.ts → nameKk, раздел — их kk.json; решение владельца 13.11.2026);
+# здесь — то, чего в каталоге нет и что переведено у нас
+KK_REVIEW_OWN = ('Мини пирог яблоко-слива с шоколадом',)
 
 
 def kk_review(html):
@@ -1192,6 +1196,12 @@ def kk_review(html):
     ui_kk = ui_dict(html, 'kk')
     for key in KK_REVIEW_UI:
         rows.append('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (key, ui_kk[key].replace('|', '\\|')))
+    tr_kk = tr_dict(html, 'kk')
+    for sec, items in menu_sections(html):
+        if sec in KK_REVIEW_SECTIONS:
+            for ru in [sec] + [it[0] for it in items]:
+                src = 'свой перевод — товара в каталоге DC Bakery нет' if ru in KK_REVIEW_OWN else 'из DC Bakery'
+                rows.append('| `MENU_TR.kk.%s` | меню главной и /kk/menyu, раздел «%s» (ҚАЗ) — %s | %s |' % (ru, sec, src, tr_kk[ru].replace('|', '\\|')))
     rows += feedback_page.kk_review_rows()          # адрес новой точки на /otzyv/ — живёт в генераторе, не в pages_i18n.json
     fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
     for key, lab in facts()['labels'].items():
@@ -1211,7 +1221,7 @@ def kk_review(html):
             '  список, старая цена.\n'
             '- `<br>`, `<span>`, `<a href>` — разметка, её оставить.\n'
             '- Названия блюд, разделов меню и адреса точек берутся из прежнего словаря меню (`MENU_TR.kk` в `index.html`), '
-            'в этот список не входят.\n\n'
+            'в этот список не входят — кроме новых разделов (`KK_REVIEW_SECTIONS`: %s), их правят прямо в `MENU_TR.kk`.\n\n' % ', '.join('«%s»' % x for x in KK_REVIEW_SECTIONS) +
             '| Ключ | Где на сайте | Текст |\n|---|---|---|\n' + '\n'.join(rows) + '\n')
 
 

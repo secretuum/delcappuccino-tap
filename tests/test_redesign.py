@@ -1197,7 +1197,8 @@ console.log(JSON.stringify(out));
             self.assertIn('<script>%s</script>' % seo.LANG_JS, page, l)
             self.assertIn('<link rel="canonical"', page)
             self.assertEqual(len(re.findall(r'hreflang="(?:ru|kk|en|x-default)" href=', page)), 4)
-            self.assertLessEqual(len(page.encode('utf-8')), 64 * 1024, '%s: лёгкая' % l)
+            # 13.11.2026: +выпечка, 46 строк; решение владельца (было 64 КБ)
+            self.assertLessEqual(len(page.encode('utf-8')), 72 * 1024, '%s: лёгкая' % l)
 
     def test_location_names_without_numbers(self):
         for l, html in self.pages.items():
