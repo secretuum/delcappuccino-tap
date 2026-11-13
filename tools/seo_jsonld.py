@@ -1170,7 +1170,8 @@ KK_REVIEW_UI = ('search', 'search_none')       # новые строки MENU_UI
 KK_REVIEW_SECTIONS = ('Выпечка',)               # новые разделы меню: название раздела и позиции из MENU_TR.kk — на вычитку (13.11.2026)
 # выпечка: казахские названия — из каталога DC Bakery как есть (products.ts → nameKk, раздел — их kk.json; решение владельца 13.11.2026);
 # здесь — то, чего в каталоге нет и что переведено у нас
-KK_REVIEW_OWN = ('Мини пирог яблоко-слива с шоколадом',)
+KK_REVIEW_OWN = ()
+KK_REVIEW_LEGEND = ('▲ — содержит арахис',)     # новые строки легенды меню (MENU_TR.kk) — на вычитку (13.11.2026)
 
 
 def kk_review(html):
@@ -1202,6 +1203,8 @@ def kk_review(html):
             for ru in [sec] + [it[0] for it in items]:
                 src = 'свой перевод — товара в каталоге DC Bakery нет' if ru in KK_REVIEW_OWN else 'из DC Bakery'
                 rows.append('| `MENU_TR.kk.%s` | меню главной и /kk/menyu, раздел «%s» (ҚАЗ) — %s | %s |' % (ru, sec, src, tr_kk[ru].replace('|', '\\|')))
+    for ru in KK_REVIEW_LEGEND:
+        rows.append('| `MENU_TR.kk.%s` | легенда меню главной и пометка в /kk/menyu (ҚАЗ) — свой перевод | %s |' % (ru, tr_kk[ru].replace('|', '\\|')))
     rows += feedback_page.kk_review_rows()          # адрес новой точки на /otzyv/ — живёт в генераторе, не в pages_i18n.json
     fw = {'labels': 'метка удобства на карточке точки /kk/', 'about': 'описание точки на карточке /kk/'}
     for key, lab in facts()['labels'].items():
