@@ -901,7 +901,6 @@ console.log(JSON.stringify(out));
         self.assertIn('<b>≈', cap, 'оценочные ккал на плашке — «≈»')
         self.assertRegex(cap, r'<p class="est">КБЖУ ориентировочно</p></div></div>$', 'оценочные КБЖУ — пометка под строками КБЖУ (чипа нет)')
         self.assertNotIn('mm-chip est', cap)
-        self.assertIn('<b>≈', cap, 'оценочные ккал на плашке — «≈»')
         self.assertIn('<div class="mm-card-p">', got['togoCard'], 'карточка в режиме togo — цена из меню bakery')
         no_pic = got['noPic']
         self.assertNotIn('mm-card-pic', no_pic, 'без фото — без колонки фото и плашек')
