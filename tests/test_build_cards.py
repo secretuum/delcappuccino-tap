@@ -248,7 +248,8 @@ class TestCalc(Base):
 
 
     def test_cutout_kept_while_source_same(self):
-        """вырезка menu/cutout_photos.py («+cut1» / «+fb1» в sources.json) не перезаписывается исходником, пока источник тот же"""
+        """вырезка menu/cutout_photos.py («+cut1» / «+fb1» в sources.json) и кремовый фон menu/cream_bg.py («+cut2+cr1»)
+        не перезаписываются исходником, пока источник тот же"""
         try:
             from PIL import Image
         except ImportError:
@@ -258,25 +259,29 @@ class TestCalc(Base):
         item = [{"key": "c", "name": "Тест: вырезка", "photo": src, "portion": {"value": 100, "unit": "г"},
                  "per_portion": {"kcal": 1, "protein": 1, "fat": 1, "carbs": 1}}]
         iiko = self.w('iiko-cut.json', export(item))
-        self.build(iiko=iiko, no_photos=False)
-        man = os.path.join(self.img, 'sources.json')
-        with open(man, encoding='utf-8') as f:
-            sources = json.load(f)
         sl = 'test-vyrezka'
-        sign = sources[sl].split(' [', 1)[0]
-        sources[sl] = sign + '+cut1 [960, 960]'                       # как пишет cutout_photos.py
-        with open(man, 'w', encoding='utf-8') as f:
-            json.dump(sources, f, ensure_ascii=False)
+        man = os.path.join(self.img, 'sources.json')
         dst = os.path.join(self.img, sl + '.webp')
-        Image.new('RGBA', (960, 960), (0, 0, 0, 0)).save(dst, 'WEBP')   # «вырезка» с прозрачным фоном
-        with open(dst, 'rb') as f:
-            before = f.read()
-        cards, rep = self.build(iiko=iiko, no_photos=False)
-        with open(dst, 'rb') as f:
-            self.assertEqual(f.read(), before, 'вырезку не перезаписали')
-        self.assertEqual(cards['Тест: вырезка']['ar'], [960, 960], 'ar — от холста вырезки')
-        with open(man, encoding='utf-8') as f:
-            self.assertTrue(json.load(f)[sl].endswith('+cut1 [960, 960]'))
+        for mark, fill in (('+cut1', (0, 0, 0, 0)), ('+cut2+cr1', (237, 228, 212, 255))):
+            with self.subTest(mark=mark):
+                if os.path.exists(man):
+                    os.remove(man)
+                self.build(iiko=iiko, no_photos=False)
+                with open(man, encoding='utf-8') as f:
+                    sources = json.load(f)
+                sign = sources[sl].split(' [', 1)[0]
+                sources[sl] = sign + mark + ' [960, 960]'                     # как пишет cutout_photos.py / cream_bg.py
+                with open(man, 'w', encoding='utf-8') as f:
+                    json.dump(sources, f, ensure_ascii=False)
+                Image.new('RGBA', (960, 960), fill).save(dst, 'WEBP')         # «вырезка» / кремовый фон
+                with open(dst, 'rb') as f:
+                    before = f.read()
+                cards, rep = self.build(iiko=iiko, no_photos=False)
+                with open(dst, 'rb') as f:
+                    self.assertEqual(f.read(), before, 'вырезку не перезаписали')
+                self.assertEqual(cards['Тест: вырезка']['ar'], [960, 960], 'ar — от холста вырезки')
+                with open(man, encoding='utf-8') as f:
+                    self.assertTrue(json.load(f)[sl].endswith(mark + ' [960, 960]'))
 
 
 class TestRealRef(unittest.TestCase):

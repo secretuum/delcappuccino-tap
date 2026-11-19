@@ -1,14 +1,16 @@
 """Фото карточек блюд после menu/cutout_photos.py: все img/menu/*.webp из cards.json — webp в разумных пределах
 (q85 без потолка с 1.11.2026: ≤250 КБ, -480 ≤100 КБ — защита от случайного PNG-веса),
 квадратные, ar в cards.json совпадает с размером файла, у каждого фото в sources.json отметка обработки («+cut1» —
-вырезано, «+fb1» — фолбэк без вырезки, «+kp1» — фото Kaspi QR как есть: квадрат + webp, menu/build_cards.py, 19.11.2026). Вырезанные — с альфа-каналом и прозрачным фоном (углы холста); фолбэк непрозрачен
-по определению (фон снимка доведён до белого), libwebp сохраняет его без альфы.
+вырезано, «+fb1» — фолбэк без вырезки, «+kp1» — фото Kaspi QR как есть: квадрат + webp, menu/build_cards.py, 19.11.2026;
+«+cr1» последней — фон перекрашен в кремовый как у Kaspi, menu/cream_bg.py, 19.11.2026). Вырезанные без «+cr» — с альфа-каналом
+и прозрачным фоном (углы холста); фолбэк непрозрачен по определению (фон снимка доведён до белого), libwebp сохраняет его
+без альфы; «+cr» — непрозрачные, углы — цвета cream_bg.CREAM.
 Запуск из корня репозитория: python3 -m unittest discover -s tests -v"""
 import json, os, re, unittest
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 IMG = os.path.join(ROOT, 'img', 'menu')
-MARK = re.compile(r'\+(cut|fb|kp)\d+ \[(\d+), (\d+)\]$')
+MARK = re.compile(r'\+(cut|fb|kp|cr)\d+ \[(\d+), (\d+)\]$')
 
 try:
     from PIL import Image
@@ -35,7 +37,8 @@ class TestMenuPhotos(unittest.TestCase):
     def test_webp_in_limits_cutouts_with_alpha(self):
         bad = []
         for key, c in self.cards.items():
-            cut = '+cut' in self.sources.get(self.slug(c), '')
+            sig = self.sources.get(self.slug(c), '')
+            cut = '+cut' in sig and '+cr' not in sig
             for rel, limit in ((c['img'], 250 * 1024), (c['img'][:-5] + '-480.webp', 100 * 1024)):
                 p = os.path.join(ROOT, rel)
                 if not os.path.isfile(p):
@@ -62,7 +65,7 @@ class TestMenuPhotos(unittest.TestCase):
             sig = self.sources.get(self.slug(c), '')
             m = MARK.search(sig)
             if not m:
-                bad.append(f'{key}: в sources.json нет отметки +cut/+fb/+kp: {sig[-40:]!r}')
+                bad.append(f'{key}: в sources.json нет отметки +cut/+fb/+kp/+cr: {sig[-40:]!r}')
             elif [int(m.group(2)), int(m.group(3))] != list(c['ar']):
                 bad.append(f'{key}: размер в sources.json {m.group(2)}×{m.group(3)} ≠ ar {c["ar"]}')
         self.assertEqual(bad, [])
@@ -74,7 +77,7 @@ class TestMenuPhotos(unittest.TestCase):
             with Image.open(os.path.join(ROOT, c['img'])) as im:
                 if im.width != im.height:
                     bad.append(f'{key}: холст не квадратный {im.size}')
-                if '+cut' in sig and 'A' in im.getbands():     # без альфы — ловит test_webp_in_limits_cutouts_with_alpha
+                if '+cut' in sig and '+cr' not in sig and 'A' in im.getbands():   # без альфы — ловит test_webp_in_limits_cutouts_with_alpha
                     a = im.getchannel('A')
                     w, h = im.size
                     corners = [a.getpixel(p) for p in ((0, 0), (w - 1, 0), (0, h - 1), (w - 1, h - 1))]
@@ -154,6 +157,106 @@ class TestKaspiSquare(unittest.TestCase):
     def test_plain_frame_without_subject(self):
         out = self.sq(Image.new('RGB', (1600, 900), (240, 225, 205)))    # рамки нет — центральный квадрат
         self.assertEqual(out.size, (900, 900))
+
+
+@unittest.skipIf(Image is None, 'нужен Pillow')
+class TestCreamBg(unittest.TestCase):
+    """кремовый фон (menu/cream_bg.py, 19.11.2026): у перекрашенных («+cr») углы — CREAM, без альфы; на синтетике — фон
+    становится CREAM, а предмет (насыщенное, тёмное) не меняется"""
+    @classmethod
+    def setUpClass(cls):
+        import sys
+        sys.path.insert(0, os.path.join(ROOT, 'menu'))
+        import cream_bg
+        cls.cb = cream_bg
+        with open(os.path.join(ROOT, 'menu', 'cards.json'), encoding='utf-8') as f:
+            cls.cards = {k: v for k, v in json.load(f).items() if v.get('img')}
+        with open(os.path.join(IMG, 'sources.json'), encoding='utf-8') as f:
+            cls.sources = json.load(f)
+
+    def near(self, c, ref, tol):
+        return max(abs(a - b) for a, b in zip(c, ref)) <= tol
+
+    def test_recolored_files_cream_corners(self):
+        bad, n = [], 0
+        for key, c in self.cards.items():
+            sl = os.path.basename(c['img'])[:-5]
+            if '+cr' not in self.sources.get(sl, ''):
+                continue
+            n += 1
+            for rel in (c['img'], c['img'][:-5] + '-480.webp'):
+                with Image.open(os.path.join(ROOT, rel)) as im:
+                    if 'A' in im.getbands():
+                        bad.append(f'{rel}: осталась альфа')
+                    im = im.convert('RGB')
+                    w, h = im.size
+                    if not self.near(self.cb.border_color(im), self.cb.CREAM, 3):   # медиана краёв; webp q85 — допуск
+                        bad.append(f'{rel}: фон по краям {self.cb.border_color(im)} ≠ {self.cb.CREAM}')
+                    # углы: хотя бы три из четырёх (в четвёртом бывает край блюдца или тень, как у latte)
+                    off = [p for p in ((1, 1), (w - 2, 1), (1, h - 2), (w - 2, h - 2)) if not self.near(im.getpixel(p), self.cb.CREAM, 6)]
+                    if len(off) > 1:
+                        bad.append(f'{rel}: углы {off} не {self.cb.CREAM}')
+        self.assertGreater(n, 40)
+        self.assertEqual(bad, [])
+
+    def test_no_white_or_transparent_left(self):
+        """все фото карточек — на кремовом: белый фон или прозрачность — только у оставленных (cream_bg.KEEP)"""
+        bad = []
+        for key, c in self.cards.items():
+            sl = os.path.basename(c['img'])[:-5]
+            if sl in self.cb.KEEP:
+                continue
+            with Image.open(os.path.join(ROOT, c['img'])) as im:
+                if 'A' in im.getbands() and im.getchannel('A').getextrema()[0] < 250:
+                    bad.append(f'{sl}: прозрачный фон')
+                    continue
+                if min(self.cb.border_color(im.convert('RGB'))) >= self.cb.WHITE_MIN:
+                    bad.append(f'{sl}: белый фон')
+        self.assertEqual(bad, [])
+
+    def test_cutout_on_cream_subject_untouched(self):
+        from PIL import ImageDraw
+        im = Image.new('RGBA', (400, 400), (0, 0, 0, 0))
+        ImageDraw.Draw(im).rectangle((120, 80, 280, 320), fill=(150, 40, 30, 255))      # предмет 160×240, доля 0,6
+        out = self.cb.on_cream(im, fill=0.6)
+        self.assertEqual(out.mode, 'RGB')
+        self.assertEqual(out.size, (400, 400))
+        for p in ((0, 0), (399, 0), (0, 399), (399, 399)):
+            self.assertEqual(out.getpixel(p), self.cb.CREAM)
+        self.assertEqual(out.getpixel((200, 200)), (150, 40, 30))                     # предмет не тронут
+        self.assertEqual(out.getpixel((200, 84)), (150, 40, 30))                      # и не сдвинут
+        self.assertEqual(out.getpixel((200, 76)), self.cb.CREAM)
+
+    def test_cutout_scaled_to_fill(self):
+        from PIL import ImageDraw
+        im = Image.new('RGBA', (400, 400), (0, 0, 0, 0))
+        ImageDraw.Draw(im).rectangle((100, 100, 299, 299), fill=(20, 90, 40, 255))       # доля 0,5
+        out = self.cb.on_cream(im, fill=0.8)
+        box = self.cb.solid_box(Image.eval(out.convert('L'), lambda v: 255 if v < 150 else 0), thr=128)
+        self.assertAlmostEqual((box[1] - box[0]) / 400, 0.8, delta=0.02)
+        self.assertAlmostEqual((box[0] + box[1]) / 2, 200, delta=2)                    # по центру
+
+    def test_white_bg_recolored_subject_untouched(self):
+        from PIL import ImageDraw
+        im = Image.new('RGB', (300, 300), (255, 255, 255))
+        d = ImageDraw.Draw(im)
+        d.ellipse((40, 40, 260, 260), fill=(250, 250, 250), outline=(225, 225, 225))   # белая тарелка
+        d.rectangle((110, 110, 190, 190), fill=(150, 40, 30))                          # еда
+        d.rectangle((120, 270, 180, 280), fill=(200, 200, 200))                        # мягкая тень
+        out, share = self.cb.recolor_white(im)
+        for p in ((0, 0), (299, 0), (0, 299), (299, 299)):
+            self.assertEqual(out.getpixel(p), self.cb.CREAM)
+        self.assertEqual(out.getpixel((150, 150)), (150, 40, 30))                     # еда не тронута
+        plate = out.getpixel((70, 150))                                              # белая посуда теплеет, как у Kaspi,
+        self.assertTrue(self.near(plate, [250 * c / 255 for c in self.cb.CREAM], 2), plate)   # но тон к фону — как был
+        r, g, b = out.getpixel((150, 275))
+        self.assertTrue(r > g > b and r < 237, (r, g, b))                             # тень — тёплая, темнее фона
+        self.assertGreater(share, 0.3)
+
+    def test_cream_bg_left_alone(self):
+        im = Image.new('RGB', (200, 200), self.cb.CREAM)
+        out, share = self.cb.recolor_white(im)
+        self.assertIsNone(out)                                                       # уже кремовый — не трогаем
 
 
 if __name__ == '__main__':

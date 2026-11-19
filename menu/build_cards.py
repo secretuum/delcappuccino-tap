@@ -37,6 +37,7 @@
     → img/menu/<slug>.webp через PIL, ≤100 КБ, ≤960 px; img/menu/sources.json помнит источник
     каждого webp — перекодируем, когда источник сменился или по --refresh-photos; без PIL — без фото;
     вырезанные menu/cutout_photos.py (прозрачный фон, единый цвет, по центру; в sources.json «+cut1» / «+fb1»)
+    и перекрашенные на кремовый фон menu/cream_bg.py («+cr1», 19.11.2026)
     сохраняются как есть, пока источник тот же — --refresh-photos их перезапишет исходником;
     фото Kaspi QR (drive_file kaspi/…, 19.11.2026) — без вырезки: квадрат во всю высоту кадра по центру блюда
     (kaspi_square) и webp q85, отметка «+kp1» в sources.json;
@@ -650,6 +651,13 @@ def save_kaspi_webp(data, dst):
     im = kaspi_square(im.convert('RGB'))
     if im.width < MIN_PX:
         raise TooSmall(f'{im.width}×{im.height} px')
+    return write_square_webp(im, dst)
+
+
+def write_square_webp(im, dst):
+    """квадрат RGB → dst (≤960) и dst-480.webp, q85 (меньше — только если не влезло в KASPI_LIMITS);
+    → (байт 960-версии, [w, h] 960-версии). Общий для фото Kaspi и кремового фона (menu/cream_bg.py)"""
+    from PIL import Image
     first, ar = None, None
     for (px, _, suf), limit in zip(SIZES, KASPI_LIMITS):
         out = dst[:-5] + suf + '.webp' if suf else dst
@@ -706,12 +714,15 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
     if have and not refresh and cur.startswith(sign + ' '):   # манифест: «<источник>:<формат> [w, h]»
         return rel, rel480, json.loads(cur[len(sign) + 1:])
     # вырезка menu/cutout_photos.py: «<источник>:<формат>+cut1 [w, h]» (или +fb1 — фолбэк без вырезки) — готовый файл
-    # с прозрачным фоном и выровненным цветом; оставляем, пока источник тот же (rembg для сборки не нужен)
-    cut = re.match(re.escape(sign) + r'\+(?:cut|fb)\d+ (\[.*\])$', cur)
+    # с прозрачным фоном и выровненным цветом; «…+cr1» — кремовый фон menu/cream_bg.py (и у фото Kaspi: «…+kp1+cr1»);
+    # оставляем, пока источник тот же (rembg и cream_bg для сборки не нужны)
+    cut = re.match(re.escape(sign) + r'(?:\+(?:cut|fb|cr)\d+)+ (\[.*\])$', cur)
     if have and not refresh and cut:
         return rel, rel480, json.loads(cut.group(1))
-    if have and cut is None and not kaspi and re.search(r'\+(?:cut|fb)\d+ ', cur):
+    if have and cut is None and not kaspi and re.search(r'\+(?:cut|fb|cr)\d+ ', cur):
         rep.add(f'  источник фото сменился — вырезку перезаписываем исходником, запустите menu/cutout_photos.py: {item["name"]}')
+    if have and cut is None and kaspi and '+cr' in cur:
+        rep.add(f'  источник фото Kaspi сменился — кремовый фон пропадёт, запустите menu/cream_bg.py: {item["name"]}')
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
         return (rel, rel480, json.loads(cur.split(' ', 1)[1]) if have and ' ' in cur else None) if have else (None, None, None)
