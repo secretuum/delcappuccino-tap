@@ -1166,7 +1166,10 @@ def lang_page(html, lang):
            social=social_row()))
 
 
-KK_REVIEW_UI = ('search', 'search_none')       # новые строки MENU_UI.kk — тоже на вычитку
+# новые строки MENU_UI.kk — тоже на вычитку: поиск по меню (1.11), карточка блюда в виде DC Bakery (19.11.2026)
+KK_REVIEW_UI = {'search': 'поиск в меню главной (ҚАЗ)', 'search_none': 'поиск в меню главной (ҚАЗ)',
+                'card_per': 'карточка блюда (ҚАЗ): подпись у цены, % — порция', 'card_est': 'карточка блюда (ҚАЗ): чип «КБЖУ ориентировочно»',
+                'card_more': 'карточка блюда (ҚАЗ): раскрывающийся пункт «Состав и КБЖУ»'}
 KK_REVIEW_SECTIONS = ('Выпечка',)               # новые разделы меню: название раздела и позиции из MENU_TR.kk — на вычитку (13.11.2026)
 # выпечка: казахские названия — из каталога DC Bakery как есть (products.ts → nameKk, раздел — их kk.json; решение владельца 13.11.2026);
 # здесь — то, чего в каталоге нет и что переведено у нас
@@ -1195,8 +1198,8 @@ def kk_review(html):
     walk(i18n()['kk'], [])
     # строки интерфейса меню главной, добавленные при редизайне (поиск по меню, 1.11) — живут в MENU_UI.kk в index.html
     ui_kk = ui_dict(html, 'kk')
-    for key in KK_REVIEW_UI:
-        rows.append('| `MENU_UI.kk.%s` | поиск в меню главной (ҚАЗ) | %s |' % (key, ui_kk[key].replace('|', '\\|')))
+    for key, where_ui in KK_REVIEW_UI.items():
+        rows.append('| `MENU_UI.kk.%s` | %s | %s |' % (key, where_ui, ui_kk[key].replace('|', '\\|')))
     tr_kk = tr_dict(html, 'kk')
     for sec, items in menu_sections(html):
         if sec in KK_REVIEW_SECTIONS:
