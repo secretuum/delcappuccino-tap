@@ -580,6 +580,8 @@ def main():
     for sl in sorted(sources):
         if (only and sl not in only) or sl not in used:   # фото без карточки (сироп) не трогаем
             continue
+        if '+kp' in sources[sl] and sl not in only:      # фото Kaspi «как есть» (build_cards.py, 19.11.2026) — только по --only
+            continue
         sign = base_sign(sources[sl])
         try:
             raw = Image.open(io.BytesIO(bc.fetch_bytes(source_of(sign, a.photos))))

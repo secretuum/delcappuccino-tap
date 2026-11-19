@@ -38,6 +38,8 @@
     каждого webp — перекодируем, когда источник сменился или по --refresh-photos; без PIL — без фото;
     вырезанные menu/cutout_photos.py (прозрачный фон, единый цвет, по центру; в sources.json «+cut1» / «+fb1»)
     сохраняются как есть, пока источник тот же — --refresh-photos их перезапишет исходником;
+    фото Kaspi QR (drive_file kaspi/…, 19.11.2026) — без вырезки: квадрат во всю высоту кадра по центру блюда
+    (kaspi_square) и webp q85, отметка «+kp1» в sources.json;
   • записи старого cards.json с "_stub": true сохраняются, пока выгрузка не даст такое же название;
     у собранных записей _stub нет.
 
@@ -571,6 +573,98 @@ def save_webp(data, dst, max_px=960, max_bytes=90 * 1024):
     return first, ar
 
 
+# Фото Kaspi QR (menu/menu_photos/kaspi/…, 19.11.2026): уже обработаны (студийный фон 16:9) — только кадрирование в квадрат
+# во всю высоту кадра по центру предмета (масштаб съёмки Kaspi сохраняется) и webp q85, без вырезки; отметка «+kp1»
+KASPI_PREFIX = 'kaspi/'
+KASPI_MARK = 'kp1'
+KASPI_Q = 85
+KASPI_LIMITS = (250 * 1024, 100 * 1024)                    # пределы tests/test_menu_photos.py: 960 и 480
+
+
+def subject_box(im, thr=28):
+    """рамка предмета (x0, x1, y0, y1) по отличию от фона (медиана цвета краёв кадра); None — не нашлась"""
+    from PIL import Image, ImageChops, ImageFilter
+    k = 8
+    sm = im.convert('RGB').resize((max(1, im.width // k), max(1, im.height // k)))
+    w, h = sm.size
+    border = [sm.getpixel((x, y)) for x in range(w) for y in (0, h - 1)] + [sm.getpixel((x, y)) for y in range(h) for x in (0, w - 1)]
+    bg = tuple(sorted(c[i] for c in border)[len(border) // 2] for i in range(3))
+    d = ImageChops.difference(sm, Image.new('RGB', sm.size, bg)).convert('L').filter(ImageFilter.MedianFilter(3))
+    b = d.point(lambda v: 255 if v > thr else 0).getbbox()
+    if not b:
+        return None
+    sx, sy = im.width / w, im.height / h
+    return round(b[0] * sx), round(b[2] * sx), round(b[1] * sy), round(b[3] * sy)
+
+
+def kaspi_square(im, pad=0.04):
+    """квадрат со стороной по короткой стороне кадра, по центру предмета; предмет шире квадрата — квадрат шире на
+    поля pad, а недостающее по короткой стороне — продолжением крайних строк/столбцов фона (фон Kaspi ровный)"""
+    from PIL import Image
+    W, H = im.size
+    box = subject_box(im) or (0, W, 0, H)
+    cx, cy = (box[0] + box[1]) / 2, (box[2] + box[3]) / 2
+    long_ = (box[1] - box[0]) if W >= H else (box[3] - box[2])
+    side = min(max(min(W, H), round(long_ * (1 + 2 * pad))), max(W, H))
+    if W >= H:
+        x = int(min(max(cx - side / 2, 0), W - side))
+        crop = im.crop((x, 0, x + side, H))
+        if side == H:
+            return crop
+        out = Image.new('RGB', (side, side))
+        top = (side - H) // 2
+        out.paste(crop, (0, top))
+        bot = side - H - top
+        if top:
+            out.paste(crop.crop((0, 0, side, 1)).resize((side, top)), (0, 0))
+        if bot:
+            out.paste(crop.crop((0, H - 1, side, H)).resize((side, bot)), (0, top + H))
+        return out
+    y = int(min(max(cy - side / 2, 0), H - side))
+    crop = im.crop((0, y, W, y + side))
+    if side == W:
+        return crop
+    out = Image.new('RGB', (side, side))
+    left = (side - W) // 2
+    out.paste(crop, (left, 0))
+    right = side - W - left
+    if left:
+        out.paste(crop.crop((0, 0, 1, side)).resize((left, side)), (0, 0))
+    if right:
+        out.paste(crop.crop((W - 1, 0, W, side)).resize((right, side)), (left + W, 0))
+    return out
+
+
+def save_kaspi_webp(data, dst):
+    """фото Kaspi → квадрат (kaspi_square) → dst (≤960) и dst-480.webp, q85; → (байт 960-версии, [w, h] 960-версии)"""
+    from PIL import Image, ImageOps
+    im = ImageOps.exif_transpose(Image.open(io.BytesIO(data)))
+    if im.mode in ('RGBA', 'LA', 'P'):
+        im = im.convert('RGBA')
+        bg = Image.new('RGBA', im.size, (255, 255, 255, 255))
+        bg.alpha_composite(im)
+        im = bg
+    im = kaspi_square(im.convert('RGB'))
+    if im.width < MIN_PX:
+        raise TooSmall(f'{im.width}×{im.height} px')
+    first, ar = None, None
+    for (px, _, suf), limit in zip(SIZES, KASPI_LIMITS):
+        out = dst[:-5] + suf + '.webp' if suf else dst
+        one = im.copy()
+        if one.width > px:
+            one = one.resize((px, px), Image.LANCZOS)
+        for q in (KASPI_Q, 80, 75, 70, 60):
+            buf = io.BytesIO()
+            one.save(buf, 'WEBP', quality=q, method=6)
+            if buf.tell() <= limit:
+                break
+        with open(out, 'wb') as f:
+            f.write(buf.getvalue())
+        if first is None:
+            first, ar = buf.tell(), list(one.size)
+    return first, ar
+
+
 def photo_source(item, photos_dir, drive_file):
     """(источник, подпись) — файл из папки Диска приоритетнее ссылки iiko (новее, актуальное меню)"""
     if drive_file:
@@ -588,6 +682,9 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
     {slug: подпись источника + ' ' + [w,h]}: перекодируем, когда источник или формат сменился или webp нет."""
     src, sign = photo_source(item, photos_dir or '', drive_file)
     sign = f'{sign}:{PHOTO_FMT}' if sign else sign
+    kaspi = bool(sign and sign.startswith('drive:' + KASPI_PREFIX))
+    if kaspi:
+        sign += '+' + KASPI_MARK
     if drive_file and not (sign or '').startswith('drive:'):
         rep.add(f'  нет файла {drive_file} в папке фото: {item["name"]}', error=True)
     if not src:
@@ -617,7 +714,7 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
         rep.add(f'  нет PIL — фото не обработано: {item["name"]}', error=True)
         return (rel, rel480, None) if have else (None, None, None)
     try:
-        size, ar = save_webp(fetch_bytes(src), dst)
+        size, ar = (save_kaspi_webp if kaspi else save_webp)(fetch_bytes(src), dst)
         sources[sl] = f'{sign} {json.dumps(list(ar))}'
         rep.add(f'  фото: {rel} ({size // 1024} КБ, {os.path.getsize(dst480) // 1024} КБ@480) ← {sign.split(":", 1)[0]}')
         return rel, rel480, list(ar)
