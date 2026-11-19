@@ -13,6 +13,10 @@
 Результат — поле "drive_file" в menu/name_map.json (путь относительно menu/menu_photos/) рядом с
 ключом iiko: {название_сайта: {"iiko": key|null, "drive_file": "кухня/Рибай на кости.png"|null}}.
 Отчёт (спорные, ненайденные, лишние файлы) — menu/photo_map_report.md.
+Фото Kaspi QR (19.11.2026, подпапка menu_photos/kaspi/<раздел>/<позиция>/<файл>) — главный источник: сопоставляются
+отдельно (позицию называет папка; сначала свой раздел — KASPI_SECTIONS), ручные пары — menu/kaspi_overrides.json, и
+перекрывают старые пары, в том числе ручные из name_map_overrides.json; где пары Kaspi нет — старое фото. Отчёт —
+menu/kaspi_photo_report.md. Без подпапки kaspi/ всё как раньше.
 --listing <json> — сухой прогон по листингу Диска (title/fileSize) без файлов. Только stdlib; PIL — для разрешения.
 """
 import argparse, difflib, json, os, re, sys
@@ -29,6 +33,73 @@ WHOLE_RE = re.compile(r'целы[ей]|цельн|целая|\b1\s*кг\b|\bто
 WHOLE_SECTION = 'торты (целиком)'
 EXT_RANK = {'.png': 0, '.jpg': 0, '.jpeg': 0, '.webp': 1, '.jfif': 2}
 STRICT_SECTIONS = {'полуфабрикаты', 'мясо'}   # сырьё: только точное совпадение (котлеты-полуфабрикат ≠ котлеты с пюре)
+
+
+# ── Фото Kaspi QR (папка Диска «KASPI QR PHOTO DC», 19.11.2026) — главный источник, старые фото — запасные ──
+# Лежат в menu/menu_photos/kaspi/<раздел>/<позиция>/<Позиция - N>.<ext>; позицию называет папка, а не файл.
+PRIMARY = 'kaspi'
+# раздел Kaspi → разделы сайта: сначала ищем фото в «своём» разделе (у дублей — «Классический» Ice tea ≠ Раф, «Медовик»
+# кусок ≠ целый торт); разделов-акций/комбо/наборов на сайте нет — их фото в сопоставление не идут
+KASPI_SECTIONS = {
+    'DC Bakery — выпечка': ('Выпечка',), 'Айс ти': ('Ice tea',), 'Боулы': ('Боулы',), 'Гарниры': ('Гарниры',),
+    'Глинтвейн': ('Глинтвейн б/а',), 'Горячие блюда': ('Горячие блюда', 'Домашние блюда'), 'Десерты': ('Десерты',),
+    'Дополнительно к чаю': ('Дополнения',), 'Завтраки': ('Завтраки',), 'Закуски': ('Сэндвичи / Закуски',),
+    'Кофе': ('Классический кофе',), 'Лимонады': ('Лимонады',), 'Милкшейки': ('Милкшейки',),
+    'Мясные блюда на гриле': ('Блюда на гриле',), 'Мясо': ('Мясо',), 'Напитки': ('Напитки',),
+    'Напитки — холодный кофе': ('Холодные кофейные напитки', 'Спешл напитки'), 'Паназия': ('Паназия',),
+    'Паста Фреш': ('Паста фреш',), 'Пицца': ('Пицца',), 'Полуфабрикаты': ('Полуфабрикаты',), 'Раф': ('Раф',),
+    'Рыбные блюда на гриле': ('Блюда на гриле',), 'Салаты': ('Салаты',), 'Сладкие завтраки': ('Сладкие завтраки',),
+    'Сладкий кофе': ('Спешл напитки', 'Холодные кофейные напитки'), 'Смузи': ('Смузи',), 'Соусы': ('Соусы',),
+    'Супы': ('Супы',), 'Торты целиком': ('Торты (целиком)',), 'Фаст фуд': ('Сэндвичи / Закуски', 'Сэндвичи'), 'Фреши': ('Фреши',),
+    'Хлеба': ('Хлеба',), 'Чаи': ('Авторские чаи', 'Листовые чаи'), 'На компанию': ('На компанию',),
+}
+SHOT_RE = re.compile(r'\s+-\s*(\d+)$')
+KASPI_MIN_SIDE = 480          # короче — в карточке мыло (Borjomi 341, морс 225, фреш 477×329): берём старое фото
+
+
+def kaspi_records(files):
+    """записи scan_* из подпапки kaspi/ → с разделом, позицией (форма — по папке позиции), номером кадра, «студийный»"""
+    out = []
+    for f in files:
+        parts = f['path'].split('/')
+        if parts[0] != PRIMARY or len(parts) < 4:
+            continue
+        sec, pos = parts[1], parts[-2]
+        m = SHOT_RE.search(os.path.splitext(parts[-1])[0])
+        out.append(dict(f, primary=True, ksec=sec, kpos=pos, shot=int(m.group(1)) if m else 0,
+                        form=norm_file(pos + '.jpg'), whole=(sec == 'Торты целиком'),
+                        studio=bool(f['h'] and 1.7 <= f['w'] / f['h'] <= 1.8)))   # обработанный кадр 16:9; 642×480, 2400×1792 — сырые
+    return out
+
+
+def match_primary(site, files, cutoff=0.88):
+    """Kaspi ↔ сайт: по каждому разделу сайта — сначала фото «своих» разделов Kaspi (KASPI_SECTIONS), потом остаток
+    по всем разделам Kaspi, у которых на сайте есть пара (такие пары — спорные). → ({ключ: path}, {ключ: (как, раздел Kaspi)})"""
+    known = [f for f in files if f['ksec'] in KASPI_SECTIONS and min(f['w'], f['h']) >= KASPI_MIN_SIDE]
+    sec_of = {}
+    secs_of = {}
+    for sec, name in site:
+        secs_of.setdefault(name, []).append(sec)
+    for sec, name in site:
+        key = (name + mn.SEP + sec) if len(set(secs_of[name])) > 1 else name
+        sec_of.setdefault(key, sec)
+    by_path = {f['path']: f for f in files}
+    result, how = {}, {}
+    for sec in dict.fromkeys(s for s, _ in site):
+        own = [dict(f) for f in known if sec in KASPI_SECTIONS[f['ksec']]]
+        if not own:
+            continue
+        r, rep, _ = match(site, own, cutoff)
+        for key, path in r.items():
+            if sec_of.get(key) == sec:
+                result[key] = path
+                how[key] = ('literal' if key in rep['literal'] else rep['how'][key], by_path[path]['ksec'])
+    r, rep, _ = match(site, [dict(f) for f in known], cutoff)
+    for key, path in r.items():
+        if key not in result:
+            result[key] = path
+            how[key] = ('cross', by_path[path]['ksec'])
+    return result, how
 
 
 def norm_file(title):
@@ -89,15 +160,18 @@ def scan_listing(path):
 
 
 def rank(rec, how):
+    if rec.get('primary'):        # Kaspi: обработанный студийный кадр 16:9 → большее разрешение (png 1672 — новее, тарелка целиком) → номер кадра
+        return (0 if rec.get('studio') else 1, -(rec['w'] * rec['h']), rec.get('shot', 0))
     return (EXT_RANK.get(rec['ext'], 3), 0 if how == 'form' else 1, 1 if '~' in rec['path'] else 0, -(rec['w'] * rec['h']), -rec['size'])
 
 
 def match(site, files, cutoff=0.88):
     """site: [(раздел, имя)]; files: записи scan_*; → ({ключ: path}, report, stats); ключ — mn.site_keys (с разделом у дублей)"""
-    for f in files:
-        f['form'] = norm_file(f['path'])
-        f['whole'] = bool(WHOLE_RE.search(f['path']))
-    files = [f for f in files if f['form'] and not SKIP_RE.search(os.path.basename(f['path'])) and not SKIP_RE.search(f['form'])]
+    for f in files:               # форма и «целый торт» у фото Kaspi заданы заранее (по папке позиции и разделу)
+        if not f.get('primary'):
+            f['form'] = norm_file(f['path'])
+            f['whole'] = bool(WHOLE_RE.search(f['path']))
+    files = [f for f in files if f['form'] and (f.get('primary') or not SKIP_RE.search(os.path.basename(f['path'])) and not SKIP_RE.search(f['form']))]
 
     secs_of = {}
     for sec, name in site:
@@ -172,7 +246,7 @@ def match(site, files, cutoff=0.88):
                 return forms[hits[0]], 'head', hits[0]
         return None, None, None
 
-    result, report = {}, {'literal': [], 'fuzzy': [], 'missing': [], 'ambiguous': []}
+    result, report = {}, {'literal': [], 'fuzzy': [], 'missing': [], 'ambiguous': [], 'how': {}}
     used = set()
     for key, (sec, name) in by_key.items():
         recs, how, form = find(name, [sec])
@@ -184,7 +258,9 @@ def match(site, files, cutoff=0.88):
         used.add(best['path'])
         alts = len(recs) - 1
         tag = {'form': '', 'bag': '  (те же слова)', 'head': '  (по началу названия)', 'similar': '  (похоже)'}[how]
-        if how == 'form' and norm_file(best['path']) == norm_site(name) and mn.literal(os.path.splitext(os.path.basename(best['path']))[0]) == mn.literal(name):
+        report['how'][key] = how
+        title = best.get('kpos') or os.path.splitext(os.path.basename(best['path']))[0]
+        if how == 'form' and best['form'] == norm_site(name) and mn.literal(title) == mn.literal(name):
             report['literal'].append(key)
         else:
             report['fuzzy'].append(f'{key}  ←  {best["path"]}{tag}' + (f'  (+{alts} дубл.)' if alts else ''))
@@ -243,6 +319,103 @@ def apply_overrides(result, report, stats, overrides_path, photos_dir=None, list
     stats['missing'], stats['unused'] = len(report['missing']), len(report['unused'])
 
 
+def apply_primary_overrides(primary, how, path, names):
+    """menu/kaspi_overrides.json {сайт: "kaspi/…" | null} поверх автоматики Kaspi → [строки для отчёта]"""
+    if not path or not os.path.isfile(path):
+        return []
+    with open(path, encoding='utf-8') as f:
+        over = {k: v for k, v in json.load(f).items() if not k.startswith('_')}
+    out = []
+    for key, p in over.items():
+        if p is None:
+            if primary.pop(key, None):
+                out.append(f'{key}  ⇒ фото Kaspi снято (остаётся старое)')
+            how[key] = ('off', '')
+            continue
+        if p not in names:
+            out.append(f'{key}  ←  {p}  — НЕТ ТАКОГО ФАЙЛА, пропущено')
+            continue
+        was = primary.get(key)
+        primary[key] = p
+        how[key] = ('manual', p.split('/')[1])
+        out.append(f'{key}  ←  {p}' + (f'  (автоматика давала: {was})' if was and was != p else ''))
+    return out
+
+
+def kaspi_report_text(site, kaspi, primary, how, manual, old, overrides_path):
+    """menu/kaspi_photo_report.md: сопоставлено / спорное / позиция есть, фото нет / фото есть, позиции нет"""
+    keys = []
+    secs_of = {}
+    for sec, name in site:
+        secs_of.setdefault(name, []).append(sec)
+    seen = set()
+    for sec, name in site:
+        key = (name + mn.SEP + sec) if len(set(secs_of[name])) > 1 else name
+        if key not in seen:
+            seen.add(key)
+            keys.append((key, sec))
+    pos_of = {f['path']: f'{f["ksec"]} / {f["kpos"]}' for f in kaspi}
+    used = {pos_of[p] for p in primary.values()}
+    old_over = {}
+    if overrides_path and os.path.isfile(overrides_path):
+        with open(overrides_path, encoding='utf-8') as f:
+            old_over = {k: v for k, v in json.load(f).items() if not k.startswith('_') and v}
+    lit = [k for k, _ in keys if k in primary and how.get(k, ('',))[0] == 'literal']
+    fuzzy = [k for k, _ in keys if k in primary and how.get(k, ('',))[0] != 'literal']
+    missing = [(k, s) for k, s in keys if k not in primary]
+    small = {}                    # позиция Kaspi, у которой все кадры мельче KASPI_MIN_SIDE → размер лучшего
+    for f in kaspi:
+        small.setdefault(pos_of[f['path']], []).append((f['w'], f['h']))
+    small = {p: max(v, key=min) for p, v in small.items() if max(min(s) for s in v) < KASPI_MIN_SIDE}
+    extra = sorted({pos_of[f['path']] for f in kaspi} - used - set(small))
+    off_site = [e for e in extra if e.split(' / ')[0] not in KASPI_SECTIONS]
+    extra = [e for e in extra if e.split(' / ')[0] in KASPI_SECTIONS]
+    H = {'form': 'та же форма', 'bag': 'те же слова', 'head': 'по началу названия', 'similar': 'похоже',
+         'cross': 'из чужого раздела Kaspi', 'manual': 'ручная пара kaspi_overrides.json'}
+    L = ['# Фото Kaspi QR ↔ позиции сайта', '',
+         'Собрано `menu/match_photos.py` (проход Kaspi): папка Диска «KASPI QR PHOTO DC» скачана в `menu/menu_photos/kaspi/` '
+         '(раздел / позиция / «Позиция - N»). Фото Kaspi — главный источник позиции; где пары нет — остаётся старое фото. '
+         'Из нескольких кадров позиции берётся обработанный 16:9 наибольшего разрешения (png 1672×941 — новее: тарелка '
+         'целиком, без следов вырезки), при равенстве — меньший номер. Ручные пары — `menu/kaspi_overrides.json`.', '',
+         f'Позиций сайта {len(keys)}: с фото Kaspi {len(primary)} (буквально {len(lit)}, спорных {len(fuzzy)}), '
+         f'без фото Kaspi {len(missing)}. Позиций Kaspi {len(set(pos_of.values()))}: без пары на сайте '
+         f'{len(extra)} + {len(off_site)} в разделах, которых на сайте нет (акции, комбо, наборы).', '']
+    L.append(f'## Спорное ({len(fuzzy)}) — совпало не буквально, проверить глазами: сайт ← позиция Kaspi')
+    for k in fuzzy:
+        h = how[k][0]
+        L.append(f'- {k} ← {pos_of[primary[k]]}  ({H.get(h, h)})')
+    L.append('')
+    L.append(f'## Ручные пары ({len(manual)}) — menu/kaspi_overrides.json')
+    L += [f'- {m}' for m in manual] or ['- —']
+    L.append('')
+    beaten = [(k, v) for k, v in old_over.items() if k in primary]
+    L.append(f'## Старые ручные пары, которые уступили Kaspi ({len(beaten)}) — были закреплены в name_map_overrides.json')
+    L += [f'- {k}: было {v} → {pos_of[primary[k]]}' for k, v in beaten] or ['- —']
+    L.append('')
+    L.append(f'## Позиция есть, фото Kaspi нет ({len(missing)}) — остаётся старое фото')
+    for k, s in missing:
+        src = old.get(k)
+        L.append(f'- {k} [{s}] — ' + (f'старое: {src}' if src else 'старого с Диска нет (фото из iiko или без фото)'))
+    L.append('')
+    L.append(f'## Фото Kaspi слишком мелкие (короче {KASPI_MIN_SIDE} px) — не взяты, у позиции остаётся старое ({len(small)})')
+    L += [f'- {p} — {s[0]}×{s[1]}' for p, s in sorted(small.items())] or ['- —']
+    L.append('')
+    L.append(f'## Фото Kaspi есть, позиции на сайте нет ({len(extra)})')
+    L += [f'- {e}' for e in extra] or ['- —']
+    L.append('')
+    L.append(f'<details><summary>Разделы Kaspi, которых нет на сайте ({len(off_site)} позиций)</summary>\n')
+    L += [f'- {e}' for e in off_site]
+    L.append('\n</details>\n')
+    L.append(f'<details><summary>Сопоставлено буквально ({len(lit)})</summary>\n')
+    L += [f'- {k} ← {pos_of[primary[k]]}' for k in lit]
+    L.append('\n</details>')
+    notes = os.path.join(HERE, 'kaspi_report_notes.md')       # ручные разделы (решения владельца, поиск) — дописываются как есть
+    if os.path.isfile(notes):
+        with open(notes, encoding='utf-8') as f:
+            L += ['', f.read().rstrip()]
+    return '\n'.join(L) + '\n'
+
+
 def load_map(path):
     if not os.path.isfile(path):
         return {}
@@ -260,6 +433,9 @@ def main(argv=None):
     ap.add_argument('--map', default=os.path.join(HERE, 'name_map.json'))
     ap.add_argument('--report', default=os.path.join(HERE, 'photo_map_report.md'))
     ap.add_argument('--overrides', default=os.path.join(HERE, 'name_map_overrides.json'), help='ручные пары поверх автоматики')
+    ap.add_argument('--kaspi-overrides', default=os.path.join(HERE, 'kaspi_overrides.json'),
+                    help='ручные пары сайт → kaspi/… (null — фото Kaspi не брать, остаётся старое)')
+    ap.add_argument('--kaspi-report', default=os.path.join(HERE, 'kaspi_photo_report.md'))
     ap.add_argument('--dry-run', action='store_true', help='только отчёт, name_map.json не писать')
     ap.add_argument('--cutoff', type=float, default=0.88)
     a = ap.parse_args(argv)
@@ -270,10 +446,21 @@ def main(argv=None):
             sys.stderr.write(f'нет папки {a.photos}\n')
             return 2
         files, source = scan_folder(a.photos), f'папка {os.path.relpath(a.photos, ROOT)}'
-    result, report, stats = match(mn.site_names(a.menu), files, a.cutoff)
+    site = mn.site_names(a.menu)
+    kaspi = kaspi_records(files)
+    files = [f for f in files if f['path'].split('/')[0] != PRIMARY]
+    result, report, stats = match(site, files, a.cutoff)
     apply_overrides(result, report, stats, a.overrides, photos_dir=None if a.listing else a.photos,
                     listing_names={f['path'] for f in files})
     txt = report_text(report, stats, source)
+    if kaspi:                     # Kaspi поверх старых фото (и поверх их ручных пар); старое остаётся там, где Kaspi нет
+        old = dict(result)
+        primary, how = match_primary(site, kaspi, a.cutoff)
+        manual = apply_primary_overrides(primary, how, a.kaspi_overrides, {f['path'] for f in kaspi})
+        result.update(primary)
+        if a.kaspi_report and not a.dry_run:
+            with open(a.kaspi_report, 'w', encoding='utf-8') as f:
+                f.write(kaspi_report_text(site, kaspi, primary, how, manual, old, a.overrides))
     if not a.dry_run:
         m = load_map(a.map)
         for name in set(m) | set(result):
