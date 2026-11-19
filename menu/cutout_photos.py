@@ -108,7 +108,7 @@ EXTEND_SKIP = {'ribaj', 'pasta-s-krevetkami', 'farfalle-s-tomlenoj-govyadinoj'}
 def base_sign(val):
     """«drive:кухня/X.jpg:446775:v3+cut1 [1920, 1280]» → «drive:кухня/X.jpg:446775:v3»"""
     sign = val.split(' [', 1)[0]
-    return re.sub(r'\+(?:cut|fb)\d+$', '', sign)
+    return re.sub(r'(?:\+(?:cut|fb|cr)\d+)+$', '', sign)
 
 
 def source_of(sign, photos):
@@ -580,8 +580,8 @@ def main():
     for sl in sorted(sources):
         if (only and sl not in only) or sl not in used:   # фото без карточки (сироп) не трогаем
             continue
-        if '+kp' in sources[sl] and sl not in only:      # фото Kaspi «как есть» (build_cards.py, 19.11.2026) — только по --only
-            continue
+        if ('+kp' in sources[sl] or '+cr' in sources[sl]) and sl not in only:
+            continue        # фото Kaspi «как есть» (build_cards.py) и кремовый фон (cream_bg.py), 19.11.2026 — только по --only
         sign = base_sign(sources[sl])
         try:
             raw = Image.open(io.BytesIO(bc.fetch_bytes(source_of(sign, a.photos))))
