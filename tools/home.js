@@ -399,12 +399,14 @@ function loadCards(){
 function cardLang(o){ return o ? (o[menuLang] || o.ru || '') : ''; }
 /* ── Префетч фото карточек: в простое — видимые и следующие ~10, при касании названия — сразу ── */
 const prefetched = new Set();
-function cardImgSrc(c){ return (mmMobile.matches && c.img480) ? c.img480 : c.img; }
+/* фото карточки: 480 и полное (w — его настоящая ширина: у Kaspi 768); sizes — ширина показа: телефон — во всю ширину,
+   компьютер — cover на колонку высотой до 640 px, т. е. квадрат до 640 px (берётся полное, а не 480) */
+const CARD_SIZES='(max-width:680px) 100vw, 640px';
+function cardSrcset(c){ return c.img480 ? `${c.img480} 480w, ${c.img} ${c.ar?c.ar[0]:960}w` : ''; }
 function prefetchCard(key){
-  const c = CARDS && CARDS[key]; if(!c || !c.img) return;
-  const src = cardImgSrc(c); if(prefetched.has(src)) return;
-  prefetched.add(src);
-  const im = new Image(); im.decoding = 'async'; im.src = src;
+  const c = CARDS && CARDS[key]; if(!c || !c.img || prefetched.has(c.img)) return;
+  prefetched.add(c.img);
+  const im = new Image(); im.decoding = 'async'; im.sizes = CARD_SIZES; im.srcset = cardSrcset(c); im.src = c.img;   /* тот же выбор, что у <img> карточки */
 }
 let idleHandle = 0;
 function scheduleIdlePrefetch(){
@@ -439,9 +441,10 @@ function findItem(key){
   }
   return null;
 }
-/* Карточка блюда (владелец 19.11.2026: «как у DC Bakery»): на компьютере две колонки — фото слева во всю высоту окна вплотную
-   к краям (cover), справа название, чипы (объёмы ярусов цены, пометки, «КБЖУ ориентировочно»), крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»; на телефоне — шторка
-   снизу, фото сверху во всю ширину, под ним то же. Поверх фото — крестик и плашки «порция / ккал» (нет данных — нет плашек).
+/* Карточка блюда (владелец 19.11.2026: «как у DC Bakery», ProductSheet.tsx): на компьютере окно постоянной высоты, две колонки —
+   фото слева во всю высоту (cover), справа название, чипы (объёмы ярусов цены, пометки), крупная цена «за порцию», описание и всегда
+   открытые «Состав» и «КБЖУ» (строки «подпись — значение»); правая колонка листается внутри себя — фото не меняется. На телефоне — шторка
+   на весь экран, фото сверху на 52% высоты, белая колонка наезжает на него скруглением. Поверх фото — крестик и плашки «порция / ккал».
    Всё плоское: ровный край фото, сплошные белые плашки (tests/test_flat.py). Чипы пометок — текст легенды меню (LEGEND, MENU_TR). */
 function cardPrice(key, w){
   const f=findItem(key); if(!f) return '';
@@ -453,28 +456,26 @@ function markChip(k){
   return l ? `<span class="mm-chip${k==='new'?' new':''}">${k==='new'?'':s+' '}${escA(T(l).split(' — ')[1])}</span>` : '';
 }
 function cardHTML(key){
-  const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing),
-    w=c.w?escA(cardW(String(c.w))):'', f=findItem(key),
-    tiles=[w&&[w, ui.card_w], k&&k.kcal!=null&&[(c.est?'≈':'')+escA(k.kcal)+' '+ui.kcal, ui.card_kbju]].filter(Boolean),
+  const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju||{}, d=cardLang(c.d), ing=cardLang(c.ing),
+    w=c.w?escA(cardW(String(c.w))):'', f=findItem(key), kc=k.kcal!=null?escA(k.kcal)+' '+ui.kcal:'',
+    tiles=[w&&[w, ui.card_w], kc&&[(c.est?'≈':'')+kc, ui.card_kbju]].filter(Boolean),
+    rows=[[ui.card_w,w],[ui.card_cal,kc]].concat([[ui.prot,k.p],[ui.fat,k.f],[ui.carb,k.c]].map(([l,v])=>[l,v!=null&&escA(cardW(v+' г'))])).filter(r=>r[1]),
     wc=f&&f.it.vol&&/\//.test(f.it.p)?escA(T(f.it.vol)):'',   /* чип порции — только у ярусов цены */
-    chips=(wc?`<span class="mm-chip">${wc}</span>`:'')+(f&&f.it.m||[]).map(markChip).join('')+(c.est?`<span class="mm-chip est">${ui.card_est}</span>`:'');
+    chips=(wc?`<span class="mm-chip">${wc}</span>`:'')+(f&&f.it.m||[]).map(markChip).join('');
   return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
-    (c.img ? `<div class="mm-card-pic"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(c.img480)} 480w, ${escA(c.img)} 960w" sizes="(max-width:680px) 100vw, 440px"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async">` +
+    (c.img ? `<div class="mm-card-pic"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(cardSrcset(c))}" sizes="${CARD_SIZES}"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async">` +
       (tiles.length ? `<div class="mm-card-tiles">${tiles.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div>` : '') + `</div>` : '') +
     `<div class="mm-card-info"><h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` +
     (chips ? `<div class="mm-card-chips">${chips}</div>` : '') + cardPrice(key, w) +
     (d ? `<p class="mm-card-d">${escA(d)}</p>` : '') +
-    (ing||k ? `<details class="mm-card-more"><summary>${ui.card_more}<i aria-hidden="true"></i></summary>` +
-      (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
-      (k ? `<div class="mm-card-h">${ui.card_kbju}</div><div class="mm-card-k">` +
-         [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '') +
-      `</details>` : '') + `</div>`;
+    (ing ? `<div class="mm-card-sec"><h4>${ui.card_ing}</h4><p>${escA(ing)}</p></div>` : '') +
+    (c.kbju&&rows.length ? `<div class="mm-card-sec"><h4>${ui.card_nut}</h4>${rows.map(([l,v])=>`<div class="mm-card-row"><span>${l}</span><b>${v}</b></div>`).join('')}` +
+      (c.est ? `<p class="est">${ui.card_est}</p>` : '') + `</div>` : '') + `</div>`;
 }
-/* перерисовка карточки: класс .pic — раскладка с фото; «Состав и КБЖУ» при смене языка остаётся раскрытым, если был */
+/* перерисовка карточки (и при смене языка): класс .pic — раскладка с фото */
 function fillCard(key){
-  const box=document.getElementById('mm-card-box'), was=box.querySelector('.mm-card-more[open]');
+  const box=document.getElementById('mm-card-box');
   box.innerHTML=cardHTML(key); box.classList.toggle('pic', !!CARDS[key].img);
-  if(was && key===cardName){ const m=box.querySelector('.mm-card-more'); if(m) m.open=true; }
 }
 function openCard(name, opener, sec){
   const key=cardKey(name, sec);

@@ -503,44 +503,46 @@ footer.shell{padding-top:var(--s-24);padding-bottom:var(--s-24)}
 .sheet .x::before,.sheet .x::after,.mm-x::before,.mm-x::after,.mm-card-x::before,.mm-card-x::after{content:'';position:absolute;left:50%;top:50%;width:14px;height:1.5px;margin:-0.75px 0 0 -7px;background:currentColor;border-radius:1px}
 .sheet .x::before,.mm-x::before,.mm-card-x::before{transform:rotate(45deg)}
 .sheet .x::after,.mm-x::after,.mm-card-x::after{transform:rotate(-45deg)}
-/* карточка блюда (19.11, по образцу DC Bakery): фото вплотную к краям окна (cover, на телефоне — сверху во всю ширину,
-   на компьютере — левая колонка 46% во всю высоту), ровный край без перехода в белое; поверх — крестик слева и сплошные белые
-   плашки «порция / ккал»; справа (под фото) — название, чипы, крупная зелёная цена «за порцию», описание, свёрнутый «Состав и КБЖУ».
-   Подложка фото — surface (видна только у вырезок с прозрачным фоном; крема в интерфейсе нет — владелец 31.10) */
-.mm-card-pic{position:relative;flex:none;width:100%;aspect-ratio:1/1;max-height:52vh;max-height:52dvh;overflow:hidden;background:var(--c-surface)}
+/* карточка блюда (19.11, по образцу DC Bakery — ProductSheet.tsx): телефон — шторка на весь экран, фото сверху на 52% высоты во всю ширину,
+   белая колонка наезжает на фото на 28 px со скруглением сверху и листается внутри себя; компьютер — окно постоянной высоты
+   min(88vh,640px), фото слева 46% во всю высоту (cover), справа колонка листается внутри — фото не меняет размер ни от какого
+   текста (владелец 19.11: раньше окно росло вместе с текстом, а с ним и фото). Ровный край фото без перехода в белое; поверх —
+   крестик слева и сплошные белые плашки «порция / ккал»; справа (под фото) — название, чипы, крупная зелёная цена «за порцию»,
+   описание, всегда открытые «Состав» и «КБЖУ» (владелец 19.11: «пусть сразу всегда показываются»).
+   Подложка фото — сплошной кремовый CREAM (237,228,212) из menu/cream_bg.py, как фон самих фото (у DC — градиент, у нас всё плоское) */
+.mm-card-box.pic{height:100vh;height:100dvh;max-height:none;max-width:none;overflow:hidden;border-radius:0}
+.mm-card-pic{position:relative;flex:none;width:100%;height:52vh;height:52dvh;overflow:hidden;background:#EDE4D4}
 .mm-card-img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover}
-.mm-card-tiles{position:absolute;left:var(--s-16);right:var(--s-16);bottom:var(--s-16);display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-8)}
+.mm-card-tiles{position:absolute;left:var(--s-16);right:var(--s-16);bottom:calc(var(--s-16) + 28px);display:grid;grid-template-columns:repeat(3,1fr);gap:var(--s-8)}
 .mm-card-tiles div{min-width:0;padding:var(--s-8) var(--s-4);border-radius:var(--r-sm);background:var(--c-bg);text-align:center}
 .mm-card-tiles b{display:block;font-family:var(--font-display);font-size:15px;line-height:1.2;color:var(--c-text);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .mm-card-tiles span{display:block;margin-top:2px;font-size:11px;font-weight:500;line-height:1.2;color:var(--c-muted);text-transform:lowercase}
 .mm-card-info{padding:var(--s-24) var(--s-16);padding-bottom:calc(var(--s-24) + env(safe-area-inset-bottom))}
+.mm-card-box.pic .mm-card-info{position:relative;flex:1;min-height:0;min-width:0;margin-top:-28px;overflow-y:auto;overscroll-behavior:contain;background:var(--c-bg);border-radius:var(--r-lg) var(--r-lg) 0 0}
 .mm-card-t{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,3vw,30px);line-height:1.15;text-transform:lowercase;color:var(--c-text);margin:0 52px 0 0;overflow-wrap:anywhere}
 .mm-card-box.pic .mm-card-t{margin-right:0}
 .mm-card-chips{display:flex;flex-wrap:wrap;gap:var(--s-8);margin-top:var(--s-12)}
 .mm-chip{display:inline-flex;align-items:center;min-height:28px;padding:var(--s-4) var(--s-12);border-radius:var(--r-pill);background:var(--c-surface);color:var(--c-text);font-size:13px;font-weight:600;line-height:1.2}
 .mm-chip.new{background:var(--c-olive);color:var(--c-on-olive)}
-.mm-chip.est{color:var(--c-muted)}
 .mm-card-p{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s-4) var(--s-12);margin-top:var(--s-16);font-variant-numeric:tabular-nums}
 .mm-card-p b{font-family:var(--font-display);font-size:clamp(28px,3.4vw,34px);font-weight:700;line-height:1.1;color:var(--c-accent)}
 .mm-card-p s{font-size:16px;font-weight:600;color:var(--c-muted)}
 .mm-card-p span{font-size:13px;font-weight:500;color:var(--c-muted)}
 .mm-card-d{margin-top:var(--s-16);font-size:15px;line-height:1.6;color:var(--c-muted)}
-.mm-card-more{margin-top:var(--s-24);border-top:1px solid var(--c-border)}
-.mm-card-more summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s-16);min-height:var(--h-touch);padding-top:var(--s-8);list-style:none;font-size:15px;font-weight:600;color:var(--c-text);cursor:pointer}
-.mm-card-more summary::-webkit-details-marker{display:none}
-.mm-card-more summary i{position:relative;flex:none;width:32px;height:32px;border-radius:50%;background:var(--c-surface)}
-.mm-card-more summary i::before{content:'';position:absolute;left:50%;top:50%;width:7px;height:7px;margin:-6px 0 0 -4px;border:solid var(--c-text);border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
-.mm-card-more[open] summary i::before{margin-top:-2px;transform:rotate(225deg)}
-.mm-card-h{font-family:var(--font-display);font-size:var(--fs-small);font-weight:700;text-transform:lowercase;color:var(--c-text);margin:var(--s-12) 0 var(--s-4)}
-.mm-card-ing{font-size:var(--fs-small);line-height:1.55;color:var(--c-muted);overflow-wrap:anywhere}
-.mm-card-k{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--s-8);margin-top:var(--s-4)}
-.mm-card-k div{background:var(--c-surface);border-radius:var(--r-sm);padding:var(--s-8) var(--s-4);text-align:center}
-.mm-card-k b{display:block;font-size:var(--fs-body);color:var(--c-text);font-variant-numeric:tabular-nums}
-.mm-card-k span{font-size:var(--fs-caption);color:var(--c-muted)}
+.mm-card-sec{margin-top:var(--s-24);padding-top:var(--s-12);border-top:1px solid var(--c-border)}
+.mm-card-sec+.mm-card-sec{margin-top:var(--s-16)}
+.mm-card-sec h4{font-size:15px;font-weight:600;line-height:1.4;color:var(--c-text)}
+.mm-card-sec p{margin-top:var(--s-8);font-size:15px;line-height:1.6;color:var(--c-muted);overflow-wrap:anywhere}
+.mm-card-sec .est{font-size:13px}
+.mm-card-row{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s-16);padding:var(--s-8) 0;border-bottom:1px solid var(--c-raised)}
+.mm-card-row:last-of-type{border-bottom:0}
+.mm-card-row span{font-size:13.5px;color:var(--c-muted);text-transform:lowercase}
+.mm-card-row b{font-size:15px;font-weight:600;color:var(--c-text);text-align:right;font-variant-numeric:tabular-nums}
 @media(min-width:681px){.mm-card{align-items:center;padding:24px}.mm-card-box{border-radius:var(--r-lg);max-height:min(88vh,780px)}
-  .mm-card-box.pic{flex-direction:row;max-width:960px;overflow:hidden}
-  .mm-card-box.pic .mm-card-pic{flex:0 0 46%;max-height:none;align-self:stretch}
-  .mm-card-box.pic .mm-card-info{flex:1;min-width:0;overflow:auto;overscroll-behavior:contain;padding:var(--s-32)}
+  .mm-card-box.pic{flex-direction:row;max-width:1040px;height:min(88vh,640px);border-radius:var(--r-lg)}
+  .mm-card-box.pic .mm-card-pic{flex:0 0 46%;height:auto}
+  .mm-card-tiles{bottom:var(--s-16)}
+  .mm-card-box.pic .mm-card-info{margin-top:0;border-radius:0;padding:var(--s-32)}
   .mm-card-box:not(.pic) .mm-card-info{padding:var(--s-24)}}
 .mk{font-style:normal;font-size:12px;color:var(--c-accent)}
 /* NEW — маленькой пилюлей olive с тёмным текстом */
@@ -1724,19 +1726,19 @@ const MENU_MODES = {
 const MENU_UI = {
   ru:{to_togo:'Меню Жандосова', to_cafe:'Меню кофеен', only:'Только:', only_aria:'Есть не во всех кофейнях', mode_cafe:'Кофейни', mode_togo:'Bakery to go', tab_frozen:'Полуфабрикаты',
       tab_kitchen:'Кухня', tab_bar:'Бар', tab_dessert:'Десерты', close:'Закрыть', dialog:'Меню',
-      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', card_per:'за %', card_est:'КБЖУ ориентировочно', card_more:'Состав и КБЖУ', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы',
+      card_aria:'Подробнее о блюде', card_w:'Порция', card_ing:'Состав', card_kbju:'На порцию', card_per:'за %', card_est:'КБЖУ ориентировочно', card_nut:'КБЖУ', card_cal:'Калорийность', kcal:'ккал', prot:'белки', fat:'жиры', carb:'углеводы',
       allergy:'Предупредите официанта<br>об аллергии на продукты',
       search:'Поиск по меню', search_none:'Ничего не нашлось',
       fee:'Сервисный сбор 10% добавляется к счёту.'},
   kk:{to_togo:'Жандосов мәзірі', to_cafe:'Кофеханалар мәзірі', only:'Тек мына жерде:', only_aria:'Барлық кофеханада емес', mode_cafe:'Кофеханалар', mode_togo:'Bakery to go', tab_frozen:'Жартылай фабрикаттар',
       tab_kitchen:'Тағамдар', tab_bar:'Бар', tab_dessert:'Десерттер', close:'Жабу', dialog:'Мәзір',
-      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', card_per:'% үшін', card_est:'Тағамдық құндылығы шамамен', card_more:'Құрамы және тағамдық құндылығы', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу',
+      card_aria:'Тағам туралы толығырақ', card_w:'Порция', card_ing:'Құрамы', card_kbju:'Бір порцияға', card_per:'% үшін', card_est:'Тағамдық құндылығы шамамен', card_nut:'Тағамдық құндылығы', card_cal:'Калориялылығы', kcal:'ккал', prot:'ақуыз', fat:'май', carb:'көмірсу',
       allergy:'Тағамға аллергияңыз болса,<br>даяшыға ескертіңіз',
       search:'Мәзірден іздеу', search_none:'Ештеңе табылмады',
       fee:'Шотқа 10% қызмет ақысы қосылады.'},
   en:{to_togo:'Zhandosov St menu', to_cafe:'Café menu', only:'Only at:', only_aria:'Not available at every café', mode_cafe:'Cafés', mode_togo:'Bakery to go', tab_frozen:'Ready to cook',
       tab_kitchen:'Kitchen', tab_bar:'Bar', tab_dessert:'Desserts', close:'Close', dialog:'Menu',
-      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', card_per:'per %', card_est:'Approx. nutrition', card_more:'Ingredients & nutrition', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs',
+      card_aria:'About this dish', card_w:'Serving', card_ing:'Ingredients', card_kbju:'Per serving', card_per:'per %', card_est:'Approx. nutrition', card_nut:'Nutrition', card_cal:'Calories', kcal:'kcal', prot:'protein', fat:'fat', carb:'carbs',
       allergy:'Please tell your server<br>about any food allergies',
       search:'Search the menu', search_none:'Nothing found',
       fee:'A 10% service charge is added to the bill.'},
@@ -2065,7 +2067,7 @@ const MENU_TR = {
  },
 };
 </script>
-<script src="/assets/home.9301bd24.js" defer></script>
+<script src="/assets/home.8188ffd8.js" defer></script>
 <script>
 /* Пилюля точки в шапке: последняя точка, с которой работали (кнопки карточки или окна выбора филиала), — адрес и
    «открыто до …» / «откроется в …» по часам из BRANCHES (время Алматы, UTC+5). Номер точки — в localStorage dc_point. */

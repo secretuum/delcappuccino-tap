@@ -24,7 +24,7 @@
  * tests/test_perf.py предупреждает, если забыли). Новый SW ставится сразу (skipWaiting), при активации
  * удаляет старые dc-shell-* и dc-rt-*; кэш картинок между версиями страницы переживает.
  */
-var VERSION = 'bd8f7ef67c';
+var VERSION = 'ecd324809a';
 var SHELL = 'dc-shell-' + VERSION;
 var RT = 'dc-rt-v1';
 var PRECACHE = [
@@ -42,7 +42,7 @@ var PRECACHE = [
   'assets/halal-104.webp',
   // код главной и общий код /, /kk/, /en/ (вынесены из страниц 11.11.2026): в оболочке, чтобы меню офлайн работало, как
   // когда код был встроен в index.html; имена вписывает tools/sw_version.py по тегам index.html
-  'assets/home.9301bd24.js',
+  'assets/home.8188ffd8.js',
   'assets/site.4337af88.js'
 ];
 var HASHED = new RegExp('\\.[0-9a-f]{8}\\.(woff2|webp|png|jpg|svg|js|css)$');
