@@ -193,7 +193,7 @@ def main(argv=None):
         done[sl] = ar
         print(f'{sl:48} {how}; {before // 1024} → {after // 1024} КБ (960+480)', flush=True)
         if not a.out:
-            sources[sl] = re.sub(r' \[.*\]$', '', sig) + f'+{MARK} {json.dumps(ar)}'
+            sources[sl] = re.sub(r'(?:\+cr\d+)* \[.*\]$', '', sig) + f'+{MARK} {json.dumps(ar)}'   # --force: без «+cr1+cr1»
     for sl, why in sorted(kept.items()):
         print(f'{sl:48} оставлено как есть: {why}')
     if not a.out and done:

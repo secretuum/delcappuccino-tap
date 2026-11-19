@@ -721,6 +721,8 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
         return rel, rel480, json.loads(cut.group(1))
     if have and cut is None and not kaspi and re.search(r'\+(?:cut|fb|cr)\d+ ', cur):
         rep.add(f'  источник фото сменился — вырезку перезаписываем исходником, запустите menu/cutout_photos.py: {item["name"]}')
+    if have and cut is None and kaspi and '+cr' in cur:
+        rep.add(f'  источник фото Kaspi сменился — кремовый фон пропадёт, запустите menu/cream_bg.py: {item["name"]}')
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')
         return (rel, rel480, json.loads(cur.split(' ', 1)[1]) if have and ' ' in cur else None) if have else (None, None, None)
