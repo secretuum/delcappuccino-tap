@@ -441,7 +441,7 @@ function findItem(key){
   return null;
 }
 /* Карточка блюда (владелец 19.11.2026: «как у DC Bakery»): на компьютере две колонки — фото слева во всю высоту окна вплотную
-   к краям (cover), справа название, чипы, крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»; на телефоне — шторка
+   к краям (cover), справа название, чипы (объёмы ярусов цены, пометки, «КБЖУ ориентировочно»), крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»; на телефоне — шторка
    снизу, фото сверху во всю ширину, под ним то же. Поверх фото — крестик и плашки «порция / ккал» (нет данных — нет плашек).
    Всё плоское: ровный край фото, сплошные белые плашки (tests/test_flat.py). Чипы пометок — текст легенды меню (LEGEND, MENU_TR). */
 function cardPrice(key, w){
@@ -457,7 +457,7 @@ function cardHTML(key){
   const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing),
     w=c.w?escA(cardW(String(c.w))):'', f=findItem(key),
     tiles=[w&&[w, ui.card_w], k&&k.kcal!=null&&[(c.est?'≈':'')+escA(k.kcal)+' '+ui.kcal, ui.card_kbju]].filter(Boolean),
-    wc=f&&f.it.vol&&/\//.test(f.it.p)?escA(T(f.it.vol)):w,   /* ярусы цены — чип объёмов из меню, «за …» не пишем */
+    wc=f&&f.it.vol&&/\//.test(f.it.p)?escA(T(f.it.vol)):'',   /* чип порции — только у ярусов цены */
     chips=(wc?`<span class="mm-chip">${wc}</span>`:'')+(f&&f.it.m||[]).map(markChip).join('')+(c.est?`<span class="mm-chip est">${ui.card_est}</span>`:'');
   return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
     (c.img ? `<div class="mm-card-pic"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(c.img480)} 480w, ${escA(c.img)} 960w" sizes="(max-width:680px) 100vw, 440px"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async">` +

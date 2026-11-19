@@ -850,13 +850,13 @@ console.log(JSON.stringify(out));
         self.assertTrue(got['cardOk'])
         self.assertFalse(got['cardHidden'])
         # 19.11 (владелец, «как у DC Bakery»): крестик, фото с плашками «порция / ккал» поверх, затем колонка: название, чипы
-        # (порция, пометки меню, «КБЖУ ориентировочно»), крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»
+        # (объёмы ярусов цены, пометки меню, «КБЖУ ориентировочно»; порции чипом нет — она на плашке и в «за …»), крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»
         card = got['card']
         self.assertRegex(card, r'^<button type="button" class="mm-card-x" aria-label="[^"]+">×</button><div class="mm-card-pic"><img class="mm-card-img"')
         self.assertIn('<div class="mm-card-tiles"><div><b>300 г</b><span>Порция</span></div><div><b>932 ккал</b><span>На порцию</span></div></div></div>'
                       '<div class="mm-card-info"><h3 class="mm-card-t" id="mm-card-t">Рибай на кости</h3>', card, 'плашки — только факты из данных')
-        self.assertIn('<div class="mm-card-chips"><span class="mm-chip">300 г</span><span class="mm-chip">☆ популярное</span>'
-                      '<span class="mm-chip">⏱ время ожидания от 30 минут</span></div>', card, 'чипы: порция и пометки меню текстом легенды')
+        self.assertIn('<div class="mm-card-chips"><span class="mm-chip">☆ популярное</span>'
+                      '<span class="mm-chip">⏱ время ожидания от 30 минут</span></div>', card, 'чипы: пометки меню текстом легенды; чипа порции нет (владелец 19.11)')
         self.assertIn('<div class="mm-card-p"><s>7%s200</s><b>3%s990&nbsp;₸</b><span>за 300 г</span></div>' % (nb, nb), card)
         self.assertRegex(card, r'<details class="mm-card-more"><summary>Состав и КБЖУ<i aria-hidden="true"></i></summary>'
                                r'<div class="mm-card-h">Состав</div>.*class="mm-card-k".*</details></div>$', 'состав и КБЖУ — свёрнуты')
