@@ -175,7 +175,7 @@ class TestMarkup(unittest.TestCase):
         """перед ₸ — неразрывный пробел (в тексте страниц; подписи aria-label не в счёт)"""
         for p, pg in self.pages.items():
             self.assertNotRegex(''.join(pg.text), r'\d[ \t\n]₸', p)
-        self.assertIn('}&nbsp;₸</div>`', main_run(), 'цена в карточке блюда')
+        self.assertIn('}&nbsp;₸</b>', main_run(), 'цена в карточке блюда')
 
     def test_social_preview(self):
         from PIL import Image

@@ -65,7 +65,7 @@ function openModal(intent){
 let modalOpener=null;
 function closeModal(){const m=document.getElementById('modal');if(!m.classList.contains('open'))return;m.classList.remove('open','in');gone(m,()=>bg(0));if(modalOpener&&modalOpener.focus)modalOpener.focus();modalOpener=null}
 /* Tab — по кругу внутри окна */
-function trapTab(e,box){if(e.key!=='Tab')return;const f=[...box.querySelectorAll('a[href],button,input,[tabindex="0"]')].filter(x=>x.offsetParent&&x.tabIndex>=0),n=f.length-1,i=f.indexOf(document.activeElement);if(n>=0&&(e.shiftKey?i<=0:i<0||i===n)){e.preventDefault();f[e.shiftKey?n:0].focus()}}
+function trapTab(e,box){if(e.key!=='Tab')return;const f=[...box.querySelectorAll('a[href],button,input,summary,[tabindex="0"]')].filter(x=>x.offsetParent&&x.tabIndex>=0),n=f.length-1,i=f.indexOf(document.activeElement);if(n>=0&&(e.shiftKey?i<=0:i<0||i===n)){e.preventDefault();f[e.shiftKey?n:0].focus()}}
 document.getElementById('modal').addEventListener('keydown',e=>trapTab(e,document.querySelector('#modal .sheet')));
 document.addEventListener('keydown',e=>{if(e.key==='Escape'){closeMenu();closeModal()}});
 
@@ -397,11 +397,6 @@ function loadCards(){
   return cardsReq;
 }
 function cardLang(o){ return o ? (o[menuLang] || o.ru || '') : ''; }
-/* пропорция контейнера фото: натуральная w/h, но не уже 4/5 (совсем высокие — с полями по бокам) */
-function picRatio(ar){
-  const r = ar && ar[1] ? ar[0]/ar[1] : 4/3;
-  return Math.max(r, 0.8).toFixed(3);
-}
 /* ── Префетч фото карточек: в простое — видимые и следующие ~10, при касании названия — сразу ── */
 const prefetched = new Set();
 function cardImgSrc(c){ return (mmMobile.matches && c.img480) ? c.img480 : c.img; }
@@ -444,30 +439,50 @@ function findItem(key){
   }
   return null;
 }
-/* цена карточки — пилюлей forest: цена позиции (или раздела), старая — зачёркнута */
-function cardPrice(key){
+/* Карточка блюда (владелец 19.11.2026: «как у DC Bakery»): на компьютере две колонки — фото слева во всю высоту окна вплотную
+   к краям (cover), справа название, чипы, крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»; на телефоне — шторка
+   снизу, фото сверху во всю ширину, под ним то же. Поверх фото — крестик и плашки «порция / ккал» (нет данных — нет плашек).
+   Всё плоское: ровный край фото, сплошные белые плашки (tests/test_flat.py). Чипы пометок — текст легенды меню (LEGEND, MENU_TR). */
+function cardPrice(key, w){
   const f=findItem(key); if(!f) return '';
   const p=f.it.p!=null?f.it.p:f.s.p; if(p==null) return '';
-  return `<div class="mm-card-p">${f.it.old?`<span class="old">${fmtP(f.it.old)}</span> `:''}${fmtP(p)}&nbsp;₸</div>`;
+  return `<div class="mm-card-p">${f.it.old?`<s>${fmtP(f.it.old)}</s>`:''}<b>${fmtP(p)}&nbsp;₸</b>${w&&!/\//.test(p)?`<span>${MENU_UI[menuLang].card_per.replace('%',w)}</span>`:''}</div>`;
+}
+function markChip(k){
+  const s=(MK[k]||'').replace(/<[^>]+>/g,''), l=Object.values(LEGEND).flat().find(x=>x.startsWith(s+' — '));
+  return l ? `<span class="mm-chip${k==='new'?' new':''}">${k==='new'?'':s+' '}${escA(T(l).split(' — ')[1])}</span>` : '';
 }
 function cardHTML(key){
-  const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing);
+  const c=CARDS[key], name=key.split(' @ ')[0], ui=MENU_UI[menuLang], k=c.kbju, d=cardLang(c.d), ing=cardLang(c.ing),
+    w=c.w?escA(cardW(String(c.w))):'', f=findItem(key),
+    tiles=[w&&[w, ui.card_w], k&&k.kcal!=null&&[(c.est?'≈':'')+escA(k.kcal)+' '+ui.kcal, ui.card_kbju]].filter(Boolean),
+    wc=f&&f.it.vol&&/\//.test(f.it.p)?escA(T(f.it.vol)):w,   /* ярусы цены — чип объёмов из меню, «за …» не пишем */
+    chips=(wc?`<span class="mm-chip">${wc}</span>`:'')+(f&&f.it.m||[]).map(markChip).join('')+(c.est?`<span class="mm-chip est">${ui.card_est}</span>`:'');
   return `<button type="button" class="mm-card-x" aria-label="${ui.close}">×</button>` +
-    (c.img ? `<div class="mm-card-pic" style="aspect-ratio:${picRatio(c.ar)}"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(c.img480)} 480w, ${escA(c.img)} 960w" sizes="(max-width:680px) calc(100vw - 44px), 476px"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async"></div>` : '') +
-    `<h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` + cardPrice(key) +
-    (c.w ? `<div class="mm-card-w">${ui.card_w}: ${escA(cardW(String(c.w)))}</div>` : '') +
+    (c.img ? `<div class="mm-card-pic"><img class="mm-card-img" src="${escA(c.img)}"${c.img480?` srcset="${escA(c.img480)} 480w, ${escA(c.img)} 960w" sizes="(max-width:680px) 100vw, 440px"`:''}${c.ar?` width="${c.ar[0]}" height="${c.ar[1]}"`:''} alt="" fetchpriority="high" decoding="async">` +
+      (tiles.length ? `<div class="mm-card-tiles">${tiles.map(([v,l])=>`<div><b>${v}</b><span>${l}</span></div>`).join('')}</div>` : '') + `</div>` : '') +
+    `<div class="mm-card-info"><h3 class="mm-card-t" id="mm-card-t">${T(name)}</h3>` +
+    (chips ? `<div class="mm-card-chips">${chips}</div>` : '') + cardPrice(key, w) +
     (d ? `<p class="mm-card-d">${escA(d)}</p>` : '') +
-    (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
-    (k ? `<div class="mm-card-h">${ui.card_kbju}</div><div class="mm-card-k">` +
-         [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '');
+    (ing||k ? `<details class="mm-card-more"><summary>${ui.card_more}<i aria-hidden="true"></i></summary>` +
+      (ing ? `<div class="mm-card-h">${ui.card_ing}</div><p class="mm-card-ing">${escA(ing)}</p>` : '') +
+      (k ? `<div class="mm-card-h">${ui.card_kbju}</div><div class="mm-card-k">` +
+         [[k.kcal,ui.kcal],[k.p,ui.prot],[k.f,ui.fat],[k.c,ui.carb]].map(([v,l])=>`<div><b>${v==null?'—':escA(v)}</b><span>${l}</span></div>`).join('') + `</div>` : '') +
+      `</details>` : '') + `</div>`;
+}
+/* перерисовка карточки: класс .pic — раскладка с фото; «Состав и КБЖУ» при смене языка остаётся раскрытым, если был */
+function fillCard(key){
+  const box=document.getElementById('mm-card-box'), was=box.querySelector('.mm-card-more[open]');
+  box.innerHTML=cardHTML(key); box.classList.toggle('pic', !!CARDS[key].img);
+  if(was && key===cardName){ const m=box.querySelector('.mm-card-more'); if(m) m.open=true; }
 }
 function openCard(name, opener, sec){
   const key=cardKey(name, sec);
   if(!key) return false;
   hidePop(); closeLangMenu();
   const wrap=document.getElementById('mm-card'), box=document.getElementById('mm-card-box');
-  cardName=key; cardOpener=opener||document.activeElement;
-  box.innerHTML=cardHTML(key);
+  cardName=null; cardOpener=opener||document.activeElement;
+  fillCard(key); cardName=key;
   stay(wrap); wrap.hidden=false; enter(wrap);
   document.getElementById('menu-modal').style.overflow='hidden';
   box.scrollTop=0; box.focus();
@@ -486,7 +501,7 @@ function closeCard(){
 /* смена языка при открытой карточке — перерисовать её */
 function refreshCard(){
   if(!cardName) return;
-  if(CARDS && CARDS[cardName]) document.getElementById('mm-card-box').innerHTML=cardHTML(cardName);
+  if(CARDS && CARDS[cardName]) fillCard(cardName);
   else closeCard();
 }
 
