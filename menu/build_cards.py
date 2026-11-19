@@ -602,7 +602,10 @@ def kaspi_square(im, pad=0.04):
     поля pad, а недостающее по короткой стороне — продолжением крайних строк/столбцов фона (фон Kaspi ровный)"""
     from PIL import Image
     W, H = im.size
-    box = subject_box(im) or (0, W, 0, H)
+    box = subject_box(im)
+    if box is None:                                   # предмет не отличить от фона — центральный квадрат, без добивки
+        s = min(W, H)
+        return im.crop(((W - s) // 2, (H - s) // 2, (W - s) // 2 + s, (H - s) // 2 + s))
     cx, cy = (box[0] + box[1]) / 2, (box[2] + box[3]) / 2
     long_ = (box[1] - box[0]) if W >= H else (box[3] - box[2])
     side = min(max(min(W, H), round(long_ * (1 + 2 * pad))), max(W, H))
@@ -612,7 +615,7 @@ def kaspi_square(im, pad=0.04):
         if side == H:
             return crop
         out = Image.new('RGB', (side, side))
-        top = (side - H) // 2
+        top = int(min(max(side / 2 - cy, 0), side - H))          # предмет по центру квадрата и по высоте
         out.paste(crop, (0, top))
         bot = side - H - top
         if top:
@@ -625,7 +628,7 @@ def kaspi_square(im, pad=0.04):
     if side == W:
         return crop
     out = Image.new('RGB', (side, side))
-    left = (side - W) // 2
+    left = int(min(max(side / 2 - cx, 0), side - W))
     out.paste(crop, (left, 0))
     right = side - W - left
     if left:
@@ -653,11 +656,15 @@ def save_kaspi_webp(data, dst):
         one = im.copy()
         if one.width > px:
             one = one.resize((px, px), Image.LANCZOS)
-        for q in (KASPI_Q, 80, 75, 70, 60):
-            buf = io.BytesIO()
-            one.save(buf, 'WEBP', quality=q, method=6)
-            if buf.tell() <= limit:
+        while True:
+            for q in (KASPI_Q, 80, 75, 70, 60):
+                buf = io.BytesIO()
+                one.save(buf, 'WEBP', quality=q, method=6)
+                if buf.tell() <= limit:
+                    break
+            if buf.tell() <= limit or one.width <= MIN_PX:
                 break
+            one = one.resize((one.width * 4 // 5,) * 2, Image.LANCZOS)   # не влезло и на q60 — меньше сторона
         with open(out, 'wb') as f:
             f.write(buf.getvalue())
         if first is None:
@@ -703,7 +710,7 @@ def handle_photo(item, img_dir, rep, no_photos, refresh, photos_dir=None, drive_
     cut = re.match(re.escape(sign) + r'\+(?:cut|fb)\d+ (\[.*\])$', cur)
     if have and not refresh and cut:
         return rel, rel480, json.loads(cut.group(1))
-    if have and cut is None and re.search(r'\+(?:cut|fb)\d+ ', cur):
+    if have and cut is None and not kaspi and re.search(r'\+(?:cut|fb)\d+ ', cur):
         rep.add(f'  источник фото сменился — вырезку перезаписываем исходником, запустите menu/cutout_photos.py: {item["name"]}')
     if no_photos:
         rep.add(f'  фото пропущено (--no-photos): {item["name"]}')

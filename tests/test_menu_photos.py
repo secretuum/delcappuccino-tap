@@ -139,6 +139,22 @@ class TestKaspiSquare(unittest.TestCase):
         self.assertEqual(out.getpixel((5, 5)), (240, 225, 205))          # поле сверху — тот же фон
         self.assertEqual(out.getpixel((out.width // 2, out.height // 2)), (150, 40, 30))
 
+    def test_wide_subject_high_in_frame_centered_vertically(self):
+        out = self.sq(self.frame(1600, 900, (200, 50, 1400, 250)))       # широкий предмет у верхнего края кадра
+        self.assertEqual(out.size, (1296, 1296))
+        # всё поле (396 px) — сверху, предмет сдвинут к середине: 446…646 (без сдвига было бы 248…448)
+        self.assertEqual(out.getpixel((648, 600)), (150, 40, 30))
+        self.assertEqual(out.getpixel((648, 420)), (240, 225, 205))
+
+    def test_portrait_frame(self):
+        out = self.sq(self.frame(900, 1600, (300, 1100, 600, 1400)))     # вертикальный кадр, предмет внизу
+        self.assertEqual(out.size, (900, 900))
+        self.assertEqual(out.getpixel((450, 450)), (150, 40, 30))
+
+    def test_plain_frame_without_subject(self):
+        out = self.sq(Image.new('RGB', (1600, 900), (240, 225, 205)))    # рамки нет — центральный квадрат
+        self.assertEqual(out.size, (900, 900))
+
 
 if __name__ == '__main__':
     unittest.main()

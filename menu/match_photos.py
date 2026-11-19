@@ -50,7 +50,7 @@ KASPI_SECTIONS = {
     'Паста Фреш': ('Паста фреш',), 'Пицца': ('Пицца',), 'Полуфабрикаты': ('Полуфабрикаты',), 'Раф': ('Раф',),
     'Рыбные блюда на гриле': ('Блюда на гриле',), 'Салаты': ('Салаты',), 'Сладкие завтраки': ('Сладкие завтраки',),
     'Сладкий кофе': ('Спешл напитки', 'Холодные кофейные напитки'), 'Смузи': ('Смузи',), 'Соусы': ('Соусы',),
-    'Супы': ('Супы',), 'Торты целиком': ('Торты (целиком)',), 'Фаст фуд': ('Сэндвичи / Закуски',), 'Фреши': ('Фреши',),
+    'Супы': ('Супы',), 'Торты целиком': ('Торты (целиком)',), 'Фаст фуд': ('Сэндвичи / Закуски', 'Сэндвичи'), 'Фреши': ('Фреши',),
     'Хлеба': ('Хлеба',), 'Чаи': ('Авторские чаи', 'Листовые чаи'), 'На компанию': ('На компанию',),
 }
 SHOT_RE = re.compile(r'\s+-\s*(\d+)$')
@@ -409,6 +409,10 @@ def kaspi_report_text(site, kaspi, primary, how, manual, old, overrides_path):
     L.append(f'<details><summary>Сопоставлено буквально ({len(lit)})</summary>\n')
     L += [f'- {k} ← {pos_of[primary[k]]}' for k in lit]
     L.append('\n</details>')
+    notes = os.path.join(HERE, 'kaspi_report_notes.md')       # ручные разделы (решения владельца, поиск) — дописываются как есть
+    if os.path.isfile(notes):
+        with open(notes, encoding='utf-8') as f:
+            L += ['', f.read().rstrip()]
     return '\n'.join(L) + '\n'
 
 
@@ -454,7 +458,7 @@ def main(argv=None):
         primary, how = match_primary(site, kaspi, a.cutoff)
         manual = apply_primary_overrides(primary, how, a.kaspi_overrides, {f['path'] for f in kaspi})
         result.update(primary)
-        if a.kaspi_report:
+        if a.kaspi_report and not a.dry_run:
             with open(a.kaspi_report, 'w', encoding='utf-8') as f:
                 f.write(kaspi_report_text(site, kaspi, primary, how, manual, old, a.overrides))
     if not a.dry_run:
