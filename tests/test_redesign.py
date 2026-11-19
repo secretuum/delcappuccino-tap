@@ -765,7 +765,8 @@ console.log(JSON.stringify({lang: R('menuLang'), open: els['menu-modal'].classLi
 
     def test_menu_overlay_in_node(self):
         """этап 2: оверлей меню на заглушке DOM — открыть, фото-превью у позиций с фото, вкладки, режим togo, язык kk/en,
-        карточка блюда в виде DC Bakery (19.11): фото с плашками, чипы, крупная цена «за порцию», старая зачёркнута, «Состав и КБЖУ» свёрнут"""
+        карточка блюда в виде DC Bakery (19.11): фото с плашками, чипы, крупная цена «за порцию», старая зачёркнута, «Состав» и «КБЖУ» всегда видны;
+        все карточки на трёх языках — без ошибок и без undefined/null/NaN"""
         node = find_node()
         if not node:
             self.skipTest('нет node')
@@ -817,6 +818,21 @@ R("closeCard()");
 R("openCard('Рибай на кости', null, 'Блюда на гриле'); switchMenuLang('kk')"); out.kkCard = els['mm-card-box'].innerHTML;
 R("switchMenuLang('en')"); out.enCard = els['mm-card-box'].innerHTML;
 R("switchMenuLang('ru'); closeCard()");
+out.sweep = { n: 0, bad: [] };
+for (const lang of ['ru', 'kk', 'en']) {
+  R(`switchMenuLang('${lang}')`);
+  for (const key of Object.keys(cards)) {
+    const [name, sec] = key.split(' @ ');
+    try {
+      if (!R(`openCard(${JSON.stringify(name)}, null, ${JSON.stringify(sec || '')})`)) { out.sweep.bad.push(lang + ': не открылась ' + key); continue; }
+      const h = els['mm-card-box'].innerHTML; out.sweep.n++;
+      if (/undefined|null|NaN|\$\{/.test(h)) out.sweep.bad.push(lang + ': мусор в ' + key);
+      if (/<details|<summary/.test(h)) out.sweep.bad.push(lang + ': сворачивается ' + key);
+      R('closeCard()');
+    } catch (e) { out.sweep.bad.push(lang + ': ' + key + ': ' + String(e).split('\n')[0]); }
+  }
+}
+R("switchMenuLang('ru')");
 console.log(JSON.stringify(out));
 """
         with tempfile.TemporaryDirectory() as d:
@@ -847,10 +863,13 @@ console.log(JSON.stringify(out));
         self.assertNotIn('<h3 class="mm-part-h">Кухня</h3>', got['togo'], 'togo — свои вкладки')
         self.assertIn('<h3 class="mm-part-h">Тағамдар</h3>', got['kk'])
         self.assertIn('<h3 class="mm-part-h">Kitchen</h3>', got['en'])
+        self.assertEqual(got['sweep']['bad'], [], 'все карточки на ru/kk/en')
+        self.assertEqual(got['sweep']['n'], 3 * len(cards))
         self.assertTrue(got['cardOk'])
         self.assertFalse(got['cardHidden'])
         # 19.11 (владелец, «как у DC Bakery»): крестик, фото с плашками «порция / ккал» поверх, затем колонка: название, чипы
-        # (объёмы ярусов цены, пометки меню, «КБЖУ ориентировочно»; порции чипом нет — она на плашке и в «за …»), крупная цена «за порцию», описание, свёрнутый «Состав и КБЖУ»
+        # (объёмы ярусов цены, пометки меню; порции чипом нет — она на плашке и в «за …»), крупная цена «за порцию», описание,
+        # всегда открытые «Состав» и «КБЖУ» (владелец 19.11: «пусть сразу всегда показываются» — без <details> и раскрытия)
         card = got['card']
         self.assertRegex(card, r'^<button type="button" class="mm-card-x" aria-label="[^"]+">×</button><div class="mm-card-pic"><img class="mm-card-img"')
         self.assertIn('<div class="mm-card-tiles"><div><b>300 г</b><span>Порция</span></div><div><b>932 ккал</b><span>На порцию</span></div></div></div>'
@@ -858,24 +877,44 @@ console.log(JSON.stringify(out));
         self.assertIn('<div class="mm-card-chips"><span class="mm-chip">☆ популярное</span>'
                       '<span class="mm-chip">⏱ время ожидания от 30 минут</span></div>', card, 'чипы: пометки меню текстом легенды; чипа порции нет (владелец 19.11)')
         self.assertIn('<div class="mm-card-p"><s>7%s200</s><b>3%s990&nbsp;₸</b><span>за 300 г</span></div>' % (nb, nb), card)
-        self.assertRegex(card, r'<details class="mm-card-more"><summary>Состав и КБЖУ<i aria-hidden="true"></i></summary>'
-                               r'<div class="mm-card-h">Состав</div>.*class="mm-card-k".*</details></div>$', 'состав и КБЖУ — свёрнуты')
-        self.assertNotIn('<details class="mm-card-more" open', card)
+        self.assertRegex(card, r'<div class="mm-card-sec"><h4>Состав</h4><p>[^<]+</p></div>'
+                               r'<div class="mm-card-sec"><h4>КБЖУ</h4><div class="mm-card-row"><span>Порция</span><b>300 г</b></div>'
+                               r'<div class="mm-card-row"><span>Калорийность</span><b>932 ккал</b></div>'
+                               r'<div class="mm-card-row"><span>белки</span><b>\d+ г</b></div><div class="mm-card-row"><span>жиры</span><b>\d+ г</b></div>'
+                               r'<div class="mm-card-row"><span>углеводы</span><b>\d+ г</b></div></div></div>$', '«Состав» и «КБЖУ» — два раздела, всегда видны, КБЖУ строками')
+        for c_ in (card, got['cap'], got['kkCard'], got['enCard'], got['noPic']):
+            self.assertNotRegex(c_, r'<details|<summary|mm-card-more', 'ничего не сворачивается')
+        # фото: 480 и полное с настоящей шириной; на компьютере показ до 640 px — берётся полное, а не 480 (было «440px» — пиксели)
+        self.assertRegex(card, r'srcset="img/menu/[^" ]+-480\.webp 480w, img/menu/[^" ]+\.webp (\d+)w" sizes="\(max-width:680px\) 100vw, 640px"')
+        from test_perf import pick_candidate
+        img = dict(re.findall(r'(srcset|sizes)="([^"]+)"', card))
+        full = re.search(r' src="([^"]+)"', card).group(1)
+        self.assertEqual(int(re.search(r'(\d+)w$', img['srcset']).group(1)), cards['Рибай на кости']['ar'][0], 'w — настоящая ширина файла')
+        self.assertEqual(pick_candidate(img, 1280, 1), full, 'компьютер 1280: полное фото, не 480')
+        self.assertEqual(pick_candidate(img, 1920, 1), full)
+        self.assertEqual(pick_candidate(img, 390, 3), full, 'телефон 390@3x: полное')
+        self.assertTrue(pick_candidate(img, 360, 1).endswith('-480.webp'), 'телефон 1x: 480 хватает')
         self.assertNotRegex(card, r'корзин|В корзину|★', 'корзины и избранного у нас нет')
         cap = got['cap']
         self.assertIn('<div class="mm-card-p"><b>1%s400 / 1%s500 / 1%s700&nbsp;₸</b></div>' % (nb, nb, nb), cap, 'ярусы цены — как в меню, без «за …»')
         self.assertIn('<span class="mm-chip">200/300/400 мл</span>', cap, 'ярусы — объёмы из меню чипом')
-        self.assertIn('<span class="mm-chip est">КБЖУ ориентировочно</span>', cap, 'оценочные КБЖУ — чип')
         self.assertIn('<b>≈', cap, 'оценочные ккал на плашке — «≈»')
+        self.assertRegex(cap, r'<p class="est">КБЖУ ориентировочно</p></div></div>$', 'оценочные КБЖУ — пометка под строками КБЖУ (чипа нет)')
+        self.assertNotIn('mm-chip est', cap)
         self.assertIn('<div class="mm-card-p">', got['togoCard'], 'карточка в режиме togo — цена из меню bakery')
         no_pic = got['noPic']
         self.assertNotIn('mm-card-pic', no_pic, 'без фото — без колонки фото и плашек')
         self.assertNotIn('mm-card-tiles', no_pic)
         self.assertIn('<div class="mm-card-info"><h3 class="mm-card-t" id="mm-card-t">Декаф</h3>', no_pic)
-        self.assertIn('<summary>Құрамы және тағамдық құндылығы<i', got['kkCard'])
+        self.assertIn('<h4>Құрамы</h4>', got['kkCard'])
+        self.assertIn('<h4>Тағамдық құндылығы</h4>', got['kkCard'])
+        self.assertIn('<span>Калориялылығы</span><b>932 ккал</b>', got['kkCard'])
         self.assertIn('<span class="mm-chip">☆ танымал</span>', got['kkCard'], 'чипы пометок — переводом легенды')
         self.assertIn('<span>300 г үшін</span>', got['kkCard'])
-        self.assertIn('<summary>Ingredients & nutrition<i', got['enCard'])
+        self.assertIn('<h4>Ingredients</h4>', got['enCard'])
+        self.assertIn('<h4>Nutrition</h4>', got['enCard'])
+        self.assertIn('<span>Calories</span><b>932 kcal</b>', got['enCard'])
+        self.assertRegex(got['enCard'], r'<span>protein</span><b>\d+ g</b>')
         self.assertIn('<span class="mm-chip">☆ popular</span>', got['enCard'])
         self.assertIn('<span>per 300 g</span>', got['enCard'])
 
@@ -1149,7 +1188,7 @@ console.log(JSON.stringify(out));
         цена крупно зелёным; крема и старых шрифтов нет"""
         css = re.sub(r'/\*.*?\*/', '', style(self.pages['ru']), flags=re.S)
         rule = lambda sel: re.search(r'(?:^|\})' + re.escape(sel) + r'\{([^}]*)\}', css).group(1)
-        for sel in ('.mm-part-h', '.mm-sec h4', '.mm-card-t', '.mm-card-h'):
+        for sel in ('.mm-part-h', '.mm-sec h4', '.mm-card-t'):
             r_ = rule(sel)
             self.assertIn('text-transform:lowercase', r_, sel)
             self.assertIn('font-family:var(--font-display)', r_, sel)
@@ -1197,11 +1236,28 @@ console.log(JSON.stringify(out));
         self.assertIn('border-radius:var(--r-lg) var(--r-lg) 0 0', box, 'телефон: шторка снизу, скругление сверху')
         self.assertIn('background:var(--c-bg)', rule('.mm-card-tiles div'), 'плашки поверх фото — сплошные белые')
         self.assertIn('left:var(--s-16)', rule('.mm-card-box.pic .mm-card-x'), 'крестик — слева сверху поверх фото')
-        self.assertIn('display:none', rule('.mm-card-more summary::-webkit-details-marker'))
+        self.assertNotRegex(css, r'mm-card-more|\.mm-card-k\b', 'раскрытия и плиток КБЖУ больше нет')
+        # 19.11 (жалоба владельца после #74): окно росло вместе с текстом, а фото с ним — теперь высота окна постоянная, правая колонка
+        # листается внутри себя; телефон — шторка на весь экран, фото 52% высоты, белая колонка наезжает на фото со скруглением
+        mob = rule('.mm-card-box.pic')
+        for need in ('height:100vh;height:100dvh', 'max-height:none', 'overflow:hidden', 'border-radius:0'):
+            self.assertIn(need, mob, 'телефон: шторка на весь экран')
+        self.assertIn('height:52vh;height:52dvh', pic, 'телефон: фото — 52% высоты')
+        self.assertNotIn('aspect-ratio', pic, 'фото не тянется квадратом за колонкой')
+        self.assertIn('background:#EDE4D4', pic, 'подложка — кремовый CREAM (237,228,212) как фон фото, сплошной')
+        info = rule('.mm-card-box.pic .mm-card-info')
+        for need in ('flex:1', 'min-height:0', 'overflow-y:auto', 'margin-top:-28px', 'border-radius:var(--r-lg) var(--r-lg) 0 0', 'background:var(--c-bg)'):
+            self.assertIn(need, info, 'колонка текста листается внутри себя и наезжает на фото')
+        self.assertIn('bottom:calc(var(--s-16) + 28px)', rule('.mm-card-tiles'), 'плашки — над наездом белой колонки')
+        self.assertIn('border-top:1px solid var(--c-border)', rule('.mm-card-sec'), 'разделы — с тонкой линией сверху')
+        self.assertIn('border-bottom:1px solid', rule('.mm-card-row'), 'строки КБЖУ — с тонкими разделителями')
+        self.assertIn('scrollbar-width:none', rule('*'), 'полос прокрутки нет (колонка листается без полосы)')
         wide = re.search(r'@media\(min-width:681px\)\{\.mm-card\{.*?\}\}', css).group(0)      # компьютер: две колонки
-        self.assertIn('.mm-card-box.pic{flex-direction:row;max-width:960px;overflow:hidden}', wide)
-        self.assertIn('.mm-card-box.pic .mm-card-pic{flex:0 0 46%;max-height:none;align-self:stretch}', wide, 'фото слева во всю высоту')
-        self.assertRegex(wide, r'\.mm-card-box\.pic \.mm-card-info\{[^}]*overflow:auto', 'длинный текст листается справа, фото стоит')
+        self.assertIn('.mm-card-box.pic{flex-direction:row;max-width:1040px;height:min(88vh,640px);border-radius:var(--r-lg)}', wide,
+                      'компьютер: окно постоянной высоты — раскрытие и длина текста фото не меняют')
+        self.assertNotRegex(wide, r'\.mm-card-box\.pic\{[^}]*max-height', 'не max-height: с ним окно растёт вместе с текстом')
+        self.assertIn('.mm-card-box.pic .mm-card-pic{flex:0 0 46%;height:auto}', wide, 'фото слева во всю высоту окна')
+        self.assertIn('.mm-card-box.pic .mm-card-info{margin-top:0;border-radius:0;padding:var(--s-32)}', wide)
         self.assertNotRegex(css.replace('--c-brand-cream:#FEF1E7', ''), r'(?i)#FEF1E7|#F7E7D8|#F7EFE2|254,\s*241,\s*231', 'крема в меню нет (кроме токена бренда)')
         self.assertNotRegex(self.live['ru'], OLD_FONTS)
         self.assertIn('<span class="old">${fmtP(it.old)}</span> <span class="sale">${fmtP(it.p)}</span>', self.live['ru'])
