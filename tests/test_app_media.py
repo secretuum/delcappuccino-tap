@@ -14,6 +14,9 @@ v3 (05.11.2026): 10 роликов + 10 обложек *-poster.jpg + manifest.j
 v4 (09.11.2026): те же 10 роликов + 10 обложек + публичный manifest.json в /media/app/v4/ (~/kofe-design-export/media/video-v4/),
 байт в байт; «дизайн» пересобрал их из оригиналов стоков в 1080×1920 (владелец о v3: «слишком сжатые, пиксельные»). Стоки,
 страницы и лицензии те же, что у v3. Ролик ≤ 3,2 МБ, обложка ≤ 500 КБ (как в check.py «дизайна»). v1–v3 не трогаем.
+v5 (25.11.2026): свои ролики владельца (не сток) — 8 роликов + 8 обложек в /media/app/v5/ (~/kofe-design-export/media/video-v5/),
+байт в байт, без manifest.json (лицензия одна — владелец); neizvestnyi-okno не выкладываем (владелец его не использует).
+Пределы те же, что у v4. v1–v4 не трогаем.
 menu-media.json (06.11.2026, задача M3 kofe-app «медиа приложения без iiko»): список «позиция меню → фото / ролик» в корне
 /media/app/, байт в байт из ~/kofe-design-export/media/menu-media/. Адрес постоянный, содержимое меняется — его будет читать
 сервер kofe-app. Формат 1 проверяется здесь своим кодом (как check.py «дизайна», он лежит вне репозитория и из тестов не
@@ -52,8 +55,12 @@ FILES_V4 = sorted(LICENSE_V4)
 POSTERS_V4 = [f[:-4] + '-poster.jpg' for f in FILES_V4]
 MAX_BYTES_V4 = 3_200_000         # байт, как в check.py «дизайна»: ролик v4 1080×1920 до ~3,2 МБ (сейчас 1,01–2,59 МБ)
 MAX_POSTER_V4 = 500_000          # байт, обложка 1080×1920 до ~500 КБ (сейчас 66–212 КБ)
+V5 = os.path.join(APP, 'v5')
+FILES_V5 = ['amerikano.mp4', 'doppio.mp4', 'espresso.mp4', 'kofeinyi-glintvein.mp4', 'latte.mp4', 'latte-steklo.mp4',
+            'neizvestnyi.mp4', 'speshl.mp4']   # свои ролики владельца (25.11); neizvestnyi-okno — не используется, не выкладываем
+POSTERS_V5 = [f[:-4] + '-poster.jpg' for f in FILES_V5]
 MENU_MEDIA = 'menu-media.json'   # список медиа меню (06.11.2026), адрес https://tap.delcappuccino.kz/media/app/menu-media.json
-ROOT_LIST = FILES + [MENU_MEDIA, 'v2', 'v3', 'v4']   # состав корня media/app/ (новая папка v5/ — дописать сюда)
+ROOT_LIST = FILES + [MENU_MEDIA, 'v2', 'v3', 'v4', 'v5']   # состав корня media/app/ (новая папка v6/ — дописать сюда)
 # формат 1 menu-media.json — те же правила, что в check.py «дизайна» (~/kofe-design-export/media/menu-media/check.py)
 MM_BASE = 'https://tap.delcappuccino.kz/media/app/'
 MM_PATH = re.compile(r'^[a-z0-9][a-z0-9/_-]*\.(mp4|jpg)$')    # относительный путь латиницей, без «..», без пробелов
@@ -118,6 +125,22 @@ PINNED = {
     'v4/raf-klassicheskii-poster.jpg': 'a265a4eedeaecf4a',
     'v4/raf-medovyi.mp4': 'f02ed37ca2f91418',
     'v4/raf-medovyi-poster.jpg': 'd255b3dc58de14e9',
+    'v5/amerikano.mp4': 'f5291a14d9523b9d',
+    'v5/amerikano-poster.jpg': '0473e95fa41b48d9',
+    'v5/doppio.mp4': 'a987eb1e9c6d539e',
+    'v5/doppio-poster.jpg': '11e83a23d881b37a',
+    'v5/espresso.mp4': 'eea76a0d9128537e',
+    'v5/espresso-poster.jpg': '3e31769f81796a3f',
+    'v5/kofeinyi-glintvein.mp4': 'f7675ea7f15f0b4a',
+    'v5/kofeinyi-glintvein-poster.jpg': '0c785f2f965f8707',
+    'v5/latte.mp4': 'c20071c4ea71a459',
+    'v5/latte-poster.jpg': '050fde94a6956b31',
+    'v5/latte-steklo.mp4': 'cfe113e11fd81580',
+    'v5/latte-steklo-poster.jpg': '40c8f88d3c7fbfb0',
+    'v5/neizvestnyi.mp4': 'b20f69e0e7b08133',
+    'v5/neizvestnyi-poster.jpg': '76c676148796ea27',
+    'v5/speshl.mp4': 'cc2d8d10a2320655',
+    'v5/speshl-poster.jpg': '95301d24262d13a4',
 }
 REF = r'media/app'               # подпапки media/app/v2/, v3/, v4/ ловит тот же шаблон
 SKIP_DIRS = {'tests', 'docs', 'media', 'node_modules', '__pycache__'}   # не страницы сайта (docs описывает адреса)
@@ -279,6 +302,21 @@ class TestAppMediaFiles(unittest.TestCase):
             self.assertGreater(len(data), 10 * 1024, 'media/app/v4/%s подозрительно мала' % f)
             self.assertLessEqual(len(data), MAX_POSTER_V4, 'media/app/v4/%s: %d байт > ~500 КБ' % (f, len(data)))
 
+    def test_v5_present_and_small(self):
+        self.assertEqual(sorted(os.listdir(V5)), sorted(FILES_V5 + POSTERS_V5),
+                         'media/app/v5/: только 8 роликов и 8 обложек (без manifest.json, README, neizvestnyi-okno)')
+        for f in FILES_V5:
+            size = os.path.getsize(os.path.join(V5, f))
+            self.assertGreater(size, 300 * 1024, 'media/app/v5/%s подозрительно мал для 1080×1920' % f)
+            self.assertLessEqual(size, MAX_BYTES_V4, 'media/app/v5/%s: %d байт > ~3,2 МБ' % (f, size))
+        for f in POSTERS_V5:
+            with open(os.path.join(V5, f), 'rb') as fh:
+                data = fh.read()
+            self.assertTrue(data.startswith(b'\xff\xd8\xff'), 'media/app/v5/%s: не JPEG (нет сигнатуры FFD8)' % f)
+            self.assertTrue(data.endswith(b'\xff\xd9'), 'media/app/v5/%s: JPEG обрезан (нет FFD9 в конце)' % f)
+            self.assertGreater(len(data), 10 * 1024, 'media/app/v5/%s подозрительно мала' % f)
+            self.assertLessEqual(len(data), MAX_POSTER_V4, 'media/app/v5/%s: %d байт > ~500 КБ' % (f, len(data)))
+
     def check_public_manifest(self, folder, ver, files, licenses):
         # публичный manifest: {"files": [{file, poster, license}]}, по одной записи на ролик (эспрессо и эспрессо
         # двойной — один файл и одна запись); размер и звук проверяются по самим файлам (тесты выше и ниже)
@@ -311,7 +349,7 @@ class TestAppMediaFiles(unittest.TestCase):
 
     def test_mp4_faststart_video_only(self):
         # moov до mdat (+faststart: iPhone начинает играть, не дожидаясь конца файла); дорожка видео есть, звука нет
-        for f in FILES + ['v2/' + x for x in FILES_V2] + ['v3/' + x for x in FILES_V3] + ['v4/' + x for x in FILES_V4]:
+        for f in FILES + ['v2/' + x for x in FILES_V2] + ['v3/' + x for x in FILES_V3] + ['v4/' + x for x in FILES_V4] + ['v5/' + x for x in FILES_V5]:
             with open(os.path.join(APP, f), 'rb') as fh:
                 data = fh.read()
             top = atoms(data)
@@ -328,7 +366,7 @@ class TestAppMediaFiles(unittest.TestCase):
 
     def test_root_listing(self):
         self.assertEqual(sorted(os.listdir(APP)), sorted(ROOT_LIST),
-                         'media/app/: только три ролика v1, menu-media.json и папки v2/, v3/, v4/ (новая папка v5/ — дописать в ROOT_LIST)')
+                         'media/app/: только три ролика v1, menu-media.json и папки v2/–v5/ (новая папка v6/ — дописать в ROOT_LIST)')
 
 
 class TestAppMediaImmutable(unittest.TestCase):
@@ -429,8 +467,9 @@ class TestAppMediaHidden(unittest.TestCase):
             self.assertIn(must, files)
         for addr in ('/media/app/v2/latte.mp4', '/media/app/v3/latte.mp4', '/media/app/v3/latte-poster.jpg', 'media/app/v3/manifest.json',
                      '/media/app/v4/latte.mp4', '/media/app/v4/latte-poster.jpg', 'media/app/v4/manifest.json',
+                     '/media/app/v5/latte.mp4', '/media/app/v5/latte-poster.jpg',
                      MM_BASE + 'v4/glavnaya.mp4', MM_BASE + MENU_MEDIA, '/media/app/menu-media.json'):
-            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/, v3/, v4/, и menu-media.json')
+            self.assertRegex(addr, REF, 'шаблон REF должен ловить и подпапки v2/–v5/, и menu-media.json')
         # сам menu-media.json называет base …/media/app/ — он лежит в media/ (SKIP_DIRS), страницей сайта не считается
         self.assertNotIn(os.path.join('media', 'app', MENU_MEDIA), files)
         for p in files:
@@ -452,7 +491,7 @@ class TestAppMediaHidden(unittest.TestCase):
         self.assertNotIn('media/app', precache, 'media/app/ не в PRECACHE')
         # v2, v3, v4 — подпапки: выход по префиксу '/media/app/' (indexOf === 0) покрывает и их, вместе с обложками .jpg и
         # manifest.json (без него SW взял бы .jpg в кэш, а .json — «сначала сеть»), и menu-media.json в корне;
-        # поведение в node — test_perf, app_v2_*, app_v3_*, app_v4_*, app_menu_media
+        # поведение в node — test_perf, app_v2_*, app_v3_*, app_v4_*, app_v5_*, app_menu_media
         self.assertNotRegex(src, r'media/app/v\d', 'sw.js: для v2/, v3/, v4/ отдельных правил не нужно')
 
     def test_documented(self):
@@ -497,6 +536,20 @@ class TestAppMediaHidden(unittest.TestCase):
         doc = read('docs', 'COORDINATION.md')
         self.assertIn('### v4 — `/media/app/v4/` (09.11.2026)', doc, 'подраздел v4 в docs/COORDINATION.md')
         self.assertIn('слишком сжатые, пиксельные', doc, 'причина v4 — слова владельца о v3')
+
+    def test_documented_v5(self):
+        # таблица v5 — по строке на файл; лицензия одна: свои ролики владельца (не сток), manifest.json нет
+        doc = read('docs', 'COORDINATION.md')
+        self.assertIn('### v5 — `/media/app/v5/` (25.11.2026)', doc, 'подраздел v5 в docs/COORDINATION.md')
+        rows = {}
+        for line in doc.splitlines():
+            m = re.match(r'\| `/media/app/v5/([^`]+)` \|', line)
+            if m:
+                self.assertNotIn(m.group(1), rows, 'v5/%s описан в таблице дважды' % m.group(1))
+                rows[m.group(1)] = line
+        self.assertEqual(sorted(rows), sorted(FILES_V5 + POSTERS_V5), 'таблица v5: по строке на каждый файл папки')
+        for name, line in rows.items():
+            self.assertIn('свой ролик владельца', line, 'v5/%s: в таблице нет отметки «свой ролик владельца»' % name)
 
 
 if __name__ == '__main__':

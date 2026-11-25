@@ -588,6 +588,8 @@ async function run(name, { url, mode, cache, net, slow }) {   // net: {body, sta
     run('app_v4_mp4', { url: '/media/app/v4/latte.mp4', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/v4/latte.mp4', 'old']], net: fresh }),
     run('app_v4_poster', { url: '/media/app/v4/latte-poster.jpg', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/v4/latte-poster.jpg', 'old']], net: fresh }),
     run('app_v4_json', { url: '/media/app/v4/manifest.json', mode: 'cors', cache: [[S, ORIGIN + '/media/app/v4/manifest.json', 'old']], net: fresh }),
+    run('app_v5_mp4', { url: '/media/app/v5/latte.mp4', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/v5/latte.mp4', 'old']], net: fresh }),
+    run('app_v5_poster', { url: '/media/app/v5/latte-poster.jpg', mode: 'no-cors', cache: [[R, ORIGIN + '/media/app/v5/latte-poster.jpg', 'old']], net: fresh }),
     run('app_menu_media', { url: '/media/app/menu-media.json', mode: 'cors', cache: [[S, ORIGIN + '/media/app/menu-media.json', 'old']], net: fresh }),
   ]);
   console.log(JSON.stringify(out));
@@ -687,10 +689,10 @@ class TestServiceWorkerStrategy(unittest.TestCase):
     def test_app_media_not_intercepted(self):
         # /media/app/ (ролики мобильного приложения, 31.10.2026) — мимо SW целиком, не только *.mp4: Range через SW ломает iPhone
         self.need()
-        # v2/, v3/, v4/ — подпапки, тот же префикс; у v3 и v4 ещё обложки .jpg и manifest.json — их SW тоже не трогает;
+        # v2/–v5/ — подпапки, тот же префикс; у v3–v5 ещё обложки .jpg, у v3 и v4 manifest.json — их SW тоже не трогает;
         # menu-media.json (список медиа меню, 06.11.2026) — в корне /media/app/, тоже мимо SW: иначе .json шёл бы «сначала сеть» в кэш
         for name in ('app_mp4', 'app_nav', 'app_other', 'app_v2_mp4', 'app_v2_nav', 'app_v3_mp4', 'app_v3_poster', 'app_v3_json',
-                     'app_v4_mp4', 'app_v4_poster', 'app_v4_json', 'app_menu_media'):
+                     'app_v4_mp4', 'app_v4_poster', 'app_v4_json', 'app_v5_mp4', 'app_v5_poster', 'app_menu_media'):
             r = self.res[name]
             self.assertTrue(r.get('passthrough'), '%s: /media/app/ не перехватывается (fetch-обработчик выходит без respondWith)' % name)
             self.assertEqual((r['fetched'], r['waits']), (0, 0), '%s: SW сам не ходит в сеть и не пишет в кэш' % name)
