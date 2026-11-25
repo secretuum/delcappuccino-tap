@@ -1,56 +1,43 @@
 {
   "format": 1,
-  "updated": "2026-11-09",
+  "updated": "2026-11-25",
   "base": "https://tap.delcappuccino.kz/media/app/",
   "home": {
-    "video": "v4/glavnaya.mp4",
-    "poster": "v4/glavnaya-poster.jpg",
-    "dark": true,
-    "drink": null
+    "video": null,
+    "poster": null,
+    "dark": false,
+    "drink": "латте"
   },
-  "default": {
-    "video": "v4/kapuchino.mp4",
-    "dark": false
-  },
+  "default": null,
   "items": {
     "эспрессо": {
-      "photo": "v4/espresso-poster.jpg",
-      "video": "v4/espresso.mp4",
+      "photo": "v5/espresso-poster.jpg",
+      "video": "v5/espresso.mp4",
       "dark": true
     },
     "эспрессо двойной": {
-      "photo": "v4/espresso-poster.jpg",
-      "video": "v4/espresso.mp4",
+      "photo": "v5/doppio-poster.jpg",
+      "video": "v5/doppio.mp4",
       "dark": true
     },
     "американо": {
-      "photo": "v4/amerikano-poster.jpg",
-      "video": "v4/amerikano.mp4",
-      "dark": true
-    },
-    "капучино": {
-      "photo": "v4/kapuchino-poster.jpg",
-      "video": "v4/kapuchino.mp4",
+      "photo": "v5/amerikano-poster.jpg",
+      "video": "v5/amerikano.mp4",
       "dark": false
     },
     "латте": {
-      "photo": "v4/latte-poster.jpg",
-      "video": "v4/latte.mp4",
+      "photo": "v5/latte-poster.jpg",
+      "video": "v5/latte.mp4",
       "dark": false
     },
-    "флэт уайт": {
-      "photo": "v4/flet-uait-poster.jpg",
-      "video": "v4/flet-uait.mp4",
+    "ходзича банан": {
+      "photo": "v5/neizvestnyi-poster.jpg",
+      "video": "v5/neizvestnyi.mp4",
       "dark": false
     },
-    "раф классический": {
-      "photo": "v4/raf-klassicheskii-poster.jpg",
-      "video": "v4/raf-klassicheskii.mp4",
-      "dark": false
-    },
-    "раф медовый": {
-      "photo": "v4/raf-medovyi-poster.jpg",
-      "video": "v4/raf-medovyi.mp4",
+    "тыквенная матча": {
+      "photo": "v5/speshl-poster.jpg",
+      "video": "v5/speshl.mp4",
       "dark": false
     }
   }
