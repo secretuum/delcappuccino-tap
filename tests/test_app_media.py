@@ -202,7 +202,10 @@ def menu_media_errors(doc):
         errors.append('home: нужен объект')
         home = {}
     else:
-        path('home.video', home.get('video'), 'mp4')
+        # с 25.11 (как check.py «дизайна»): home.video можно null, если на главной напиток — home.drink с video в items
+        path('home.video', home.get('video'), 'mp4', need=False)
+        if home.get('video') is None and not home.get('drink'):
+            errors.append('home: без home.video нужен home.drink — иначе главная пустая')
         path('home.poster', home.get('poster'), 'jpg', need=False)
         dark('home', home.get('dark'))
         if home.get('drink') is not None and not isinstance(home.get('drink'), str):
@@ -456,6 +459,7 @@ class TestMenuMedia(unittest.TestCase):
             ('повтор после нормализации', lambda d: d['items'].update({name.upper(): d['items'][name]})),
             ('home.drink без записи', lambda d: d['home'].update(drink='нет такого')),
             ('пустые items', lambda d: d.update(items={})),
+            ('главная пустая: ни home.video, ни home.drink', lambda d: d['home'].update(video=None, drink=None)),
         ]:
             self.assertNotEqual(spoiled(fn), [], 'проверка menu-media.json пропустила: %s' % why)
 
