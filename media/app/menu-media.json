@@ -1,6 +1,6 @@
 {
   "format": 1,
-  "updated": "2026-11-25",
+  "updated": "2026-11-28",
   "base": "https://tap.delcappuccino.kz/media/app/",
   "home": {
     "video": null,
@@ -26,9 +26,9 @@
       "dark": false
     },
     "латте": {
-      "photo": "v5/latte-poster.jpg",
-      "video": "v5/latte.mp4",
-      "dark": false
+      "photo": "v5/latte-steklo-poster.jpg",
+      "video": "v5/latte-steklo.mp4",
+      "dark": true
     },
     "ходзича банан": {
       "photo": "v5/neizvestnyi-poster.jpg",
@@ -38,6 +38,11 @@
     "тыквенная матча": {
       "photo": "v5/speshl-poster.jpg",
       "video": "v5/speshl.mp4",
+      "dark": false
+    },
+    "кофейный глинтвейн": {
+      "photo": "v5/kofeinyi-glintvein-poster.jpg",
+      "video": "v5/kofeinyi-glintvein.mp4",
       "dark": false
     }
   }
